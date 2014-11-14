@@ -1,0 +1,89 @@
+#header,#content,#footer {
+	display:inline-block;
+	width:100%;
+}
+
+html {
+	width:100%;
+	height:100%;
+}
+
+body {
+	background-color:white;
+	padding:0px;
+	margin:0px;
+}
+
+#header {
+	text-align:center;
+	position:absolute;
+	height:3.5em;
+	width:auto;
+	left:.9em; right: .9em;
+	padding-top:.5em;
+	background-color:white;
+	border-bottom:1px solid #ddd;
+	z-index:10;
+}
+
+.fixed #header{
+    position:fixed;
+}
+
+#main-menu {
+	float:right;
+	margin-right:5em;
+}
+
+
+#wrapper {
+	position:relative;
+	height:auto;
+	min-height:100%;
+	margin: 0px 1em;
+	border-left:1px solid #ddd;
+	border-right:1px solid #ddd;
+}
+
+#content {
+	height:auto;
+	margin:3.5em 0 1.5em 0;
+	padding:.5em;
+	overflow-y:auto;
+	box-sizing:border-box;
+	position:relative;
+}
+
+#content .row div {
+
+}
+
+#content .row div:not(:first-child){
+	border-left:1px solid #ddd;
+}
+
+#footer {
+	text-align:center;
+	position:absolute;
+	border-top:1px solid #ddd;
+	background-color:white;
+	padding:0px 2px;
+	box-sizing:content-box;
+	bottom:0px; left:-1px;
+}
+
+.fixed #footer{
+	position:fixed;
+	width:auto;
+	left:.9em; right:.9em;
+}
+
+.scroll {
+    overflow-y:auto;
+    max-height:100%;
+}
+
+/**
+ *  Over ride Bootstrap 
+ **/
+

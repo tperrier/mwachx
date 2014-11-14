@@ -1,0 +1,44 @@
+{% load staticfiles %}
+<html>
+
+<head>
+
+<link rel='stylesheet' href='{% static "libs/bootstrap/css/bootstrap.css" %}'>
+<link rel='stylesheet' href='{% static "libs/font-awesome/css/font-awesome.css" %}'>
+<link rel='stylesheet' href='{% static "style.css" %}'>
+
+<script src='{% static "libs/jquery.js" %}'></script>
+<script src='{% static "libs/bootstrap/js/bootstrap.js" %}'></script>
+
+<title>{% block title %}mWaCHx{% endblock %}</title>
+
+</head>
+
+<body>
+	
+	<div id='header'>
+	
+		<ul id='main-menu' class='nav nav-tabs'>
+			<li {% url 'contacts.views.dashboard' as u %}{{u}} {{request.path}} {% if request.path == u %}class='active'{% endif %}><a href='/dashboard'>Dashboard</a></li>
+			<li {% url 'contacts.views.messages' as u %}{% if request.path == u %}class='active'{% endif %}><a href='/messages'>Messages</a></li>
+			<li {% if 'contact' in request.path %}class='active'{% endif %}><a href='/contact'>Contacts</a></li>
+			<li><a href='#visit-tab'>Visits</a></li>
+		</ul>
+	
+	</div>
+	
+	<div id='wrapper'>
+	
+        <div id='content'>
+		{% block content %}
+            Base Template
+        {% endblock %}
+        </div>
+	
+        <div id='footer'><i class='fa fa-copyright'></i> mWaCHx</div>
+	
+    </div>
+
+</body>
+
+</html>

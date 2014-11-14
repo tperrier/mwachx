@@ -1,0 +1,10 @@
+{% comment %}
+Renders a list of all contacts from the contex
+{% endcomment %}
+
+{% for contact in contacts %}
+    <div>
+        {{contact.study_id}}) <a href='/contact/{{contact.study_id}}'>{{contact.first_name}} {{contact.last_name}}</a><br/>
+        {{contact.study_group}} - {{contact.status}}
+    </div>
+{% endfor %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Contacts{% endblock %}
+
+{% block content %}
+    {% if contacts %}
+    <table class='table table-striped table-hover table-condensed'>
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Nickname</th>
+            <th>Study Group</th>
+            <th>Status</th>
+            <th>Number</th>
+        </tr>
+    {% for contact in contacts %}
+        <tr>
+            <td>{{contact.study_id}}</td>
+            <td><a href='/contact/{{contact.study_id}}'>{{contact.first_name}}</a></td>
+            <td>{{contact.last_name}}</td>
+            <td>{{contact.nick_name}}</td>
+            <td>{{contact.study_group}}</td>
+            <td>{{contact.status}}</td>
+            <td>{{contact.connection_set.first.identity}}</td>
+        </tr>
+    {% endfor %}
+    
+    {% endif %}
+{% endblock %}
