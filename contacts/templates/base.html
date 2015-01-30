@@ -22,9 +22,7 @@
 	
 		<ul id='main-menu'>
 			<li {% if 'home' in request.path %}class='active'{% endif %}> <a href='/home'><i class='fa fa-home'></i>Home</a></li><li {% url 'contacts.views.dashboard' as u %}{% if request.path == u %}class='active'{% endif %}><a href='/dashboard'>Dashboard</a></li><li {% url 'contacts.views.messages' as u %}{% if request.path == u %}class='active'{% endif %}><a href='/messages'>Messages</a></li><li {% if 'contact' in request.path %}class='active'{% endif %}>
-                <a href='/contact'>Contacts</a>
-                <a class='tab-addon' href='/contact/add'><i class='fa fa-plus-circle'></i></a>
-            </li><li><a href='#visit-tab'>Visits</a></li>
+                <a href='/contact'>Contacts</a></li><li><a href='#visit-tab'>Visits</a></li>
 		</ul>
 	
 	</div>
