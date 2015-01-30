@@ -32,10 +32,9 @@ def add_client(client,i):
         'study_group':random.choice(study_groups),
         'due_date':get_due_date(),
         'last_msg_client':client['last_msg_client'],
-        'phone_number':client['phone_number'],
         }
     contact = cont.Contact.objects.create(**new_client)
-    connection = cont.Connection.objects.create(identity=contact.phone_number,contact=contact,is_primary=True)
+    connection = cont.Connection.objects.create(identity=client['phone_number'],contact=contact,is_primary=True)
     
     for m in client['messages']:
         add_message(m,contact,connection)

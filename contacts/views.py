@@ -63,7 +63,7 @@ def contact_send(request):
     print request.POST
     contact = cont.Contact.objects.get(study_id=request.POST['study_id'])
     message = request.POST['message']
-    cont.Message.send(contact,message,is_system=False,is_viewed=True)
+    cont.Message.send(contact,message,is_system=False)
     return redirect('contacts.views.contact',study_id=request.POST['study_id'])
     
     
@@ -71,17 +71,21 @@ def contact_add(request):
     
     if request.POST:
         cf = forms.ContactAdd(request.POST)
-        
-        
         if cf.is_valid():
-            print 'Add Contact and Do Stuff Here'
-        
+            print 'valid'
+            #Create new contact but do not save in DB
+            contact = cf.save(commit=False)
+            contact.save()
+            cont.Connection.objects.create(identity=cf.cleaned_data['phone_number'],contact=contact,is_primary=True)
+            return redirect('contacts.views.contact',study_id=contact.study_id)
     else:
         cf = forms.ContactAdd()
         
     fieldsets = {
-        'Study Information':[cf['study_id'],cf['anc_num'],cf['study_group']],
-        'Client Information':[cf['nickname'],cf['phone_number'],cf['birthdate'],cf['partner_name'],cf['relationship_status'],cf['previous_pregnancies']],
+        'Study Information':[cf['study_id'],cf['anc_num'],cf['study_group'],cf['send_day'],cf['send_time']],
+        'Client Information':[cf['nickname'],cf['phone_number'],cf['birthdate'],cf['partner_name'],
+                              cf['relationship_status'],cf['previous_pregnancies'],cf['language']],
+        'Medical Information':[cf['condition'],cf['art_initiation'],cf['due_date']],
     }
     
     return render(request,'contacts/contact_create.html',{'fieldsets':fieldsets})

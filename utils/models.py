@@ -4,6 +4,9 @@ from django.db import models
 
 class TimeStampedModel(models.Model):
 
+    class Meta:
+        ordering = ('-created',)
+    
     #The date and time this message was created or modified
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)

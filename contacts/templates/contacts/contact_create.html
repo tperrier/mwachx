@@ -4,23 +4,21 @@
 {% block title %}Contact{% endblock %}
 
 {% block content %}
-        <form id='#contact-create-form' action='' method='post' class='form'>
+        <form id='contact-create-form' action='' method='post' class='form'>
         <h1> Add Contact </h1>
             {% csrf_token %}
-            
-            
             
             {% for name,set in fieldsets.items %}
                 <fieldset><legend>{{name}}</legend>
                 {% for field in set %}
                     <div class='form-ele col-md-4'> 
-                        {{ field.label_tag }}</span>
+                        {{ field.label_tag }}
                         <div>{{ field }}</div>
                         {{ field.errors }}
                     </div>
                 {% endfor %}
                 </fieldset>
             {% endfor %}
-            <input type='submit' value='Create'/>
+            <input class='btn btn-primary' type='submit' value='Create'/>
         </form>
 {% endblock %}
