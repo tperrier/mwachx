@@ -10,8 +10,15 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-PROJECT_DIR = os.path.dirname(__file__)
-BASE_DIR = os.path.dirname(PROJECT_DIR)
+#Determain if we are running on OpenShift
+ON_OPENSHIFT = True if os.environ.has_key('OPENSHIFT_REPO_DIR') else False
+
+# The top directory for this project. Contains requirements/, manage.py,
+PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
+
+# The directory with this project's templates, settings, urls, static dir,
+# wsgi.py, fixtures, etc.
+PROJECT_PATH = os.path.join(PROJECT_ROOT, 'mwach')
 
 
 # Quick-start development settings - unsuitable for production
@@ -66,17 +73,18 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 ROOT_URLCONF = 'mwach.urls'
 
-WSGI_APPLICATION = 'mwach.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
+SQLITE_DB_FOLDER = os.environ['OPENSHIFT_DATA_DIR'] if ON_OPENSHIFT else PROJECT_PATH
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(PROJECT_DIR, 'mwach.db'),
-    }
+        'NAME': os.path.join(SQLITE_DB_FOLDER, 'mwach.db'),
+   }
 }
 
 # Internationalization
@@ -84,11 +92,11 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Nairobi'
 
-USE_I18N = True
+USE_I18N = False
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 
@@ -96,12 +104,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
+STATIC_URL = '/static/'
 if ON_OPENSHIFT:
     STATIC_ROOT = os.path.join(os.environ.get('OPENSHIFT_REPO_DIR'),'wsgi','static')
 else:
     STATIC_ROOT = os.path.join(PROJECT_ROOT, STATIC_URL.strip("/"))
 
-STATIC_URL = '/static/'
 
 #############
 # Custom Settings
