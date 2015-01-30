@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule /static/(.+)$ /static_collect/$1 [L]
