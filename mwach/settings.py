@@ -105,3 +105,4 @@ STATIC_URL = '/static/'
 MESSAGING_CONTACT = 'contacts.Contact'
 MESSAGING_CONNECTION = 'contacts.Connection'
 MESSAGING_ADMIN = 'auth.User'
+CURRENT_DATE =  "2014-10-20"

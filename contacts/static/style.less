@@ -334,29 +334,32 @@ a[data-toggle='collapse'] {
 }
 .action-item {
     width: 90%;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 20px auto 20px auto;
     display: block;
-    box-sizing: content-box;
     text-align: left;
-    
- 
-    &:hover, &:focus {
-        text-decoration: none;
+    padding: 15px;
+}
+
+
+/* TODO: update */
+.btn-danger{
+    color: #a94442;
+    background-color: #f2dede;
+    &:hover {
+        color: #a94442;
+        background-color: #ebccd1;
+    }
+}
+.btn-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    &:hover {
+        color: #3c763d;
+        background-color: #d6e9c6;
     }
 }
 
-
-/* TODO: Update this when we have LESS version of bootstrap. use alert-danger-background or whatever */
-.action-item .alert-danger:hover {
-    background-color: #ebccd1;
-}
-.action-item .alert-success:hover {
-    background-color: #d6e9c6;
-}
-
-
-
+/* fix for centering things */
 .action-item-text {
     font-size: 3em;
     vertical-align: middle;
