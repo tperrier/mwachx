@@ -1,337 +1,320 @@
-@accent-light:#B2E6FF;
-@accent-dark:#336680;
-
-@background-light:#F0F0F0;
-@background-mid:#A0A0A0;
-@background-dark:#707070;
-
+@accent-light: #B2E6FF;
+@accent-dark: #336680;
+@background-light: #F0F0F0;
+@background-mid: #A0A0A0;
+@background-dark: #707070;
 html {
-	width:100%;
-	height:100%;
+    width: 100%;
+    height: 100%;
 }
-
 body {
-	background-color:white;
-	padding:0px;
-	margin:0px;
+    background-color: white;
+    padding: 0px;
+    margin: 0px;
 }
-
 /**
  * Main Layout: Center Full Screen Column
  **/
 
 #header {
-    text-align:center;
-	z-index:10;
-	width:auto;
-	position:absolute;
-	left:.5em; right:.5em; top:.5em;
+    text-align: center;
+    z-index: 10;
+    width: auto;
+    position: absolute;
+    left: .5em;
+    right: .5em;
+    top: .5em;
 }
-
 #main-menu {
-	float:right;
-	margin-right:5em;
-    border-bottom:none;
-    margin-bottom:0;
-    
-    
-     li {
-        
-        display:inline-block;
-        list-style-type:none;
-        border:1px @accent-dark solid;
-        border-bottom:none;
-        padding:.3em .5em;
+    float: right;
+    margin-right: 5em;
+    border-bottom: none;
+    margin-bottom: 0;
+    li {
+        display: inline-block;
+        list-style-type: none;
+        border: 1px @accent-dark solid;
+        border-bottom: none;
+        padding: .3em .5em;
         border-radius: 1em 1em 0 0;
-        
         &.active {
-            font-weight:bold;
-            background-color:@background-light;
+            font-weight: bold;
+            background-color: @background-light;
         }
-        
         a {
-            display:inline-block;
+            display: inline-block;
         }
-        
         a.tab-addon {
-            cursor:pointer;
-            margin-left:.5em;
+            cursor: pointer;
+            margin-left: .5em;
         }
     }
-    
 }
-
 #content {
-	height:auto;
-    width:auto;
-    bottom:1.5em; top:2.5em; right:.5em; left:.5em;
-	position:absolute;
-	overflow-y:auto;
-	box-sizing:border-box;
-	border:1px solid #ddd;
+    height: auto;
+    width: auto;
+    bottom: 1.5em;
+    top: 2.5em;
+    right: .5em;
+    left: .5em;
+    position: absolute;
+    overflow-y: auto;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
 }
-
 #content>.container-fluid, #content>.container-fluid>.row {
-    padding:0px;
-    margin:0px;
+    padding: 0px;
+    margin: 0px;
 }
-
-#content .row>div:not(:first-child){
-	border-left:1px solid #ddd;
+#content .row>div:not(:first-child) {
+    border-left: 1px solid #ddd;
 }
-
-#content .row>div:first-child{
-    padding-left:0em;
+#content .row>div:first-child {
+    padding-left: 0em;
 }
-
 #footer {
-	text-align:center;
-	position:absolute;
-	bottom:0px;
-    background-color:white;
-    width:100%;
+    text-align: center;
+    position: absolute;
+    bottom: 0px;
+    background-color: white;
+    width: 100%;
 }
-
 .scroll {
-    overflow-y:auto;
-    max-height:100%;
+    overflow-y: auto;
+    max-height: 100%;
 }
-
 /**
  * Bootstrap Fixes
  **/
- 
- .col-full {
-    padding:0px;
- }
 
+.col-full {
+    padding: 0px;
+}
 /**
  * Contact List
  **/
-  #contact-pane {
-     .contact {
+
+#contact-pane {
+    .contact {
         border-bottom: 1px solid gray;
-        text-decoration:none;
-        display:block;
-        color:black;
-        
+        text-decoration: none;
+        display: block;
+        color: black;
         &:hover {
-            text-decoration:none;
-            color:#428bca;
+            text-decoration: none;
+            color: #428bca;
         }
-        
-        &:nth-child(odd){
-            background-color:@background-light;
+        &:nth-child(odd) {
+            background-color: @background-light;
         }
-        
         &.selected {
-            font-weight:bold;
+            font-weight: bold;
         }
-        
         .fa-stack {
-            float:left;
+            float: left;
         }
-        
         .bottom {
-            font-size:.75em;
-            font-style:italic;
-            text-align:center;
-            position:relative;
-            top:-.5em;
-            font-weight:normal;
+            font-size: .75em;
+            font-style: italic;
+            text-align: center;
+            position: relative;
+            top: -.5em;
+            font-weight: normal;
         }
     }
-        
     .option-group {
-
-        .option-tab{
-            display:inline-block;
+        .option-tab {
+            display: inline-block;
             border: @accent-dark 1px solid;
             border-radius: 10px 10px 0px 0px;
-            border-bottom:none;
+            border-bottom: none;
         }
-
     }
 }
- 
- .message-icon {
-    font-size:1.5em;
- }
- 
- .message-arrow {
-    color:white;
-    position:relative;
-    top:-.3em;
- }
- 
- .one-way .message-icon {
-    color:gray;
- }
- 
- .one-way:hover .message-icon {
-    color:#428bca;
- }
- 
- /*
+.message-icon {
+    font-size: 1.5em;
+}
+.message-arrow {
+    color: white;
+    position: relative;
+    top: -.3em;
+}
+.one-way .message-icon {
+    color: gray;
+}
+.one-way:hover .message-icon {
+    color: #428bca;
+}
+/*
   * Contact Group
   */
-  
-.details-group {
 
+.details-group {
     h1 {
-        background-color:@background-mid;
-        text-align:center;
-        margin:0px;
+        background-color: @background-mid;
+        text-align: center;
+        margin: 0px;
     }
-    
     h3 {
-        font-size:1.5em;
-        margin:0px;
-        background-color:@background-mid;
+        font-size: 1.5em;
+        margin: 0px;
+        background-color: @background-mid;
     }
-    
     div.details {
-        margin:auto;
-        width:80%;
-        margin-bottom:5px;
+        margin: auto;
+        width: 80%;
+        margin-bottom: 5px;
     }
-    
     tr {
-        
-        border-bottom:1px dashed black;
-        background-color:@background-light;
-        
+        border-bottom: 1px dashed black;
+        background-color: @background-light;
         td {
-            padding:5px 20px;
+            padding: 5px 20px;
         }
-        
-        td:first-child{
-            text-align:right;
+        td:first-child {
+            text-align: right;
             &:after {
-                content:":";
+                content: ":";
             }
         }
     }
 }
- 
 /*
  * Contact Message List
  */
- 
- #message-list {
-    padding:10px 25px;
+
+#message-list {
+    padding: 10px 25px;
 }
- 
- #message-list .message {
-    width:75%;
-    float:left;
-    border:solid 1px black;
-    border-radius:25px;
-    margin-bottom:10px;
-    padding:10px;
-    background-color:#9A9A9A;
- }
- 
- #message-list .message.system, #message-list .message.nurse {
-    float:right;
-    background-color:#E0E0E0
- }
- 
- #message-list .message.nurse {
-    background-color:#C6C6C6;
- }
- 
- .message .top span {
-    font-size:.75em;
+#message-list .message {
+    width: 75%;
+    float: left;
+    border: solid 1px black;
+    border-radius: 25px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #9A9A9A;
+}
+#message-list .message.system, #message-list .message.nurse {
+    float: right;
+    background-color: #E0E0E0
+}
+#message-list .message.nurse {
+    background-color: #C6C6C6;
+}
+.message .top span {
+    font-size: .75em;
     padding: 0px 10px;
- }
- 
- .message .top i {
-    font-size:.75em;
-    font-style:italic;
-    float:right;
- }
- 
+}
+.message .top i {
+    font-size: .75em;
+    font-style: italic;
+    float: right;
+}
 /*
  * Week Message List
  */
 
-#message-weeks{
-    padding-left:10px;
+#message-weeks {
+    padding-left: 10px;
     h1 {
-        font-size:1.5em;
-        margin:5px;
+        font-size: 1.5em;
+        margin: 5px;
     }
-    
     .messages {
-        padding-left:10px;
+        padding-left: 10px;
         .message {
             span {
-                display:block;
-                font-style:italic;
+                display: block;
+                font-style: italic;
             }
             div {
-                padding-left:25px;
+                padding-left: 25px;
             }
         }
     }
 }
-
 /*
  * Data Toggle Collapse
  */
- 
- a[data-toggle='collapse'] {
-    text-decoration:none;
-    color:black;
+
+a[data-toggle='collapse'] {
+    text-decoration: none;
+    color: black;
     &[aria-expanded="true"] {
-        .fa-folder, .fa-chevron-circle-up{
-            display:none;
+        .fa-folder, .fa-chevron-circle-up {
+            display: none;
         }
     }
-    
     &[aria-expanded="false"] {
-        .fa-folder-open, .fa-chevron-circle-down{
-            display:none;
+        .fa-folder-open, .fa-chevron-circle-down {
+            display: none;
         }
     }
 }
-
 #contacts-table {
-    
     tbody tr {
-        cursor:pointer;
+        cursor: pointer;
     }
-
 }
-
 .dashboard {
     h1 {
-        background-color:@background-mid;
-        margin:0px;
-        font-size:2em;
-        padding-left:10px;
+        background-color: @background-mid;
+        margin: 0px;
+        font-size: 2em;
+        padding-left: 10px;
     }
-    
     #new-messages {
         .message {
-            border:1px solid black;
-            background-color:@background-light;
-            padding:5px;
-            border-radius:20px;
-            margin:5px 20px;
-            
-            &:nth-child(odd){
-                background-color:@background-mid;
+            border: 1px solid black;
+            background-color: @background-light;
+            padding: 5px;
+            border-radius: 20px;
+            margin: 5px 20px;
+            &:nth-child(odd) {
+                background-color: @background-mid;
             }
-            
             div {
-                margin-left:20px;
+                margin-left: 20px;
             }
-            
             span em {
-                font-weight:bold;
+                font-weight: bold;
             }
         }
     }
+}
+.sms-text {
+    font-size: 0.6em;
+}
+.action-item {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    box-sizing: content-box;
+    text-align: left;
+    
+ 
+    &:hover, &:focus {
+        text-decoration: none;
+    }
+}
+
+
+/* TODO: Update this when we have LESS version of bootstrap. use alert-danger-background or whatever */
+.action-item .alert-danger:hover {
+    background-color: #ebccd1;
+}
+.action-item .alert-success:hover {
+    background-color: #d6e9c6;
+}
+
+
+
+.action-item-text {
+    font-size: 3em;
+    vertical-align: middle;
+}
+.action-item-icon {
+    vertical-align: middle;
 }

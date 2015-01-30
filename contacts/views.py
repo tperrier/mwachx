@@ -13,6 +13,15 @@ import models as cont
 import forms
 
 
+def home(request):
+    status =  {
+        "messages": 5,
+        "visits": 3,
+        "calls": 0,
+        "translations": 1,
+    }
+    return render(request,'home.html', {'status':status})
+
 def dashboard(request):
     contacts = cont.Contact.objects.all()
     statuses = get_status_by_group()

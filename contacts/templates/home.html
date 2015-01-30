@@ -1,0 +1,42 @@
+{% extends 'base.html' %} {% block title %}Home{% endblock %} {% block content %}
+<div class='col-full'>
+    {% with number=status.messages %}
+    <a class='action-item' href="#">
+        <div class="alert {% if status.messages == 0 %} alert-success {% else %} alert-danger {% endif %}" role="alert">
+            {% include 'icons/sms-icon.html' %}
+            <span class="action-item-text">{% if status.messages != 0 %} You have {% include 'icons/number.html' %} new messages to view {% else %} No new messages! {% endif %}</span>
+        </div>
+    </a>
+    {% endwith %} 
+    {% with number=status.visits %}
+    <a class='action-item' href="#">
+        <div class="alert {% if status.visits == 0 %} alert-success {% else %} alert-danger {% endif %}" role="alert">
+            <span class="fa-stack fa-3x action-item-icon fa-fw">
+			<i class="fa fa-hospital-o fa-2x"></i>
+		</span>
+            <span class="action-item-text">{% if status.visits != 0 %} You have {% include 'icons/number.html' %} new visits to view {% else %} No new visits! {% endif %}</span>
+        </div>
+    </a>
+    {% endwith %} 
+    {% with number=status.calls %}
+    <a class='action-item' href="#">
+        <div class="alert {% if status.calls == 0 %} alert-success {% else %} alert-danger {% endif %}" role="alert">
+            <span class="fa-stack fa-3x action-item-icon fa-fw">
+	    	<i class="fa fa-mobile fa-2x"></i>
+    	</span>
+            <span class="action-item-text">{% if status.calls != 0 %} You have {% include 'icons/number.html' %} new calls to make {% else %} No new calls! {% endif %}</span>
+        </div>
+    </a>
+    {% endwith %} 
+    {% with number=status.translations %}
+    <a class='action-item' href="#">
+        <div class="alert {% if status.translations == 0 %} alert-success {% else %} alert-danger {% endif %}" role="alert">
+            <span class="fa-stack fa-3x action-item-icon fa-fw">
+	    	<i class="fa fa-language fa-2x"></i>
+	    </span>
+            <span class="action-item-text">{% if status.translations != 0 %} You have {% include 'icons/number.html' %} new translations to perform {% else %} No new translations! {% endif %}</span>
+        </div>
+    </a>
+    {% endwith %}
+</div>
+{% endblock %}
