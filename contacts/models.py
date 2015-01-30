@@ -29,11 +29,19 @@ class Contact(TimeStampedModel):
     
     CONDITION_CHOICES = (
         ('normal','Normal'),
+        ('adolescent','Adolescent'),
     )
     
     FAMILY_PLANNING_CHOICES = (
+        ('none','None'),
         ('iud','IUD'),
         ('pill','Pills'),
+    )
+    
+    RELATIONSHIP_CHOICES = (
+        ('single','Single'),
+        ('parner','Parner'),
+        ('married','Married'),
     )
     
     DAY_CHOICES = (
@@ -52,18 +60,22 @@ class Contact(TimeStampedModel):
         (19,'Evening'),
     )
     
+    #Study Attributes
     study_id = models.PositiveIntegerField(unique=True)
     anc_num = models.PositiveIntegerField()
+    study_group = models.CharField(max_length=10,choices=GROUP_CHOICES)
     
     #Client Personal Information
     nickname = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=20)
     birthdate = models.DateField()
+    partner_name = models.CharField(max_length=100,blank=True,null=True)
+    relationship_status = models.CharField(max_length=30,default='married')
+    previous_pregnancies = models.IntegerField(default=0)
+    
     
     #Attributes for contact context
     status = models.CharField(max_length=20,choices=STATUS_CHOICES, default='Pregnant')
-    due_date = models.DateField()
-    study_group = models.CharField(max_length=10,choices=GROUP_CHOICES)
     language = models.CharField(max_length=25,choices=LANGUAGE_CHOICES)
     condition = models.CharField(max_length=40,choices=CONDITION_CHOICES)
     
@@ -71,9 +83,9 @@ class Contact(TimeStampedModel):
     send_time = models.IntegerField(choices=TIME_CHOICES,default=13)
     
     #Clinical Context
-    partner_name = models.CharField(max_length=100,blank=True,null=True)
     family_planning = models.CharField(max_length=50,blank=True,null=True,choices=FAMILY_PLANNING_CHOICES)
     art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART initiation')
+    due_date = models.DateField()
     
     #State attributes to be edited by the system
     last_msg_client = models.DateField(blank=True,null=True,help_text='Date of last client message received')

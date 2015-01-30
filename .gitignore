@@ -1,0 +1,6 @@
+*.swp
+*.db
+*.pyc
+*~
+*.json
+ignore/

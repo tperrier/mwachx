@@ -8,7 +8,19 @@
         <h1> Add Contact </h1>
             {% csrf_token %}
             
-            {{ form.as_p }}
+            
+            
+            {% for name,set in fieldsets.items %}
+                <fieldset><legend>{{name}}</legend>
+                {% for field in set %}
+                    <div class='form-ele col-md-4'> 
+                        {{ field.label_tag }}</span>
+                        <div>{{ field }}</div>
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+                </fieldset>
+            {% endfor %}
             <input type='submit' value='Create'/>
         </form>
 {% endblock %}

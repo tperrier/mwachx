@@ -59,15 +59,23 @@ def contact_send(request):
     
     
 def contact_add(request):
+    
     if request.POST:
-        contact_add_form = forms.ContactAdd(request.POST)
-        if contact_add_form.is_valid():
+        cf = forms.ContactAdd(request.POST)
+        
+        
+        if cf.is_valid():
             print 'Add Contact and Do Stuff Here'
         
     else:
-        contact_add_form = forms.ContactAdd()
+        cf = forms.ContactAdd()
+        
+    fieldsets = {
+        'Study Information':[cf['study_id'],cf['anc_num'],cf['study_group']],
+        'Client Information':[cf['nickname'],cf['phone_number'],cf['birthdate'],cf['partner_name'],cf['relationship_status'],cf['previous_pregnancies']],
+    }
     
-    return render(request,'contacts/contact_create.html',{'form':contact_add_form})
+    return render(request,'contacts/contact_create.html',{'fieldsets':fieldsets})
 
 #############
 # Utility Functions
