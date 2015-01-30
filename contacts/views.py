@@ -14,8 +14,9 @@ import forms
 
 
 def home(request):
+    cont
     status =  {
-        "messages": 5,
+        "messages": cont.Message.objects.filter(is_viewed=False).count(),
         "visits": 3,
         "calls": 0,
         "translations": 1,
