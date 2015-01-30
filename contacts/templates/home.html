@@ -1,26 +1,30 @@
 {% extends 'base.html' %} {% block title %}Home{% endblock %} {% block content %}
 <div class='col-full'>
     {% with number=status.messages %}
-    <a class='btn {% if status.messages != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="#">
+    {% url 'contacts.views.new_messages' as u %}
+    <a class='btn {% if status.messages != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="{{u}}">
         <span class="action-item-icon"> {% include 'icons/sms-icon.html' %}</span>
         <span class="action-item-text">{% if status.messages != 0 %} You have {% include 'icons/number.html' %} new messages to view {% else %} No new messages! {% endif %}</span>
     </a>
     {% endwith %} {% with number=status.visits %}
-    <a class='btn {% if status.visits != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="#">
+    {% url 'contacts.views.visits' as u %}
+    <a class='btn {% if status.visits != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="{{u}}">
         <span class="action-item-icon">
             <i class="fa fa-hospital-o"></i>
         </span>
         <span class="action-item-text">{% if status.visits != 0 %} You have {% include 'icons/number.html' %} new visits to view {% else %} No new visits! {% endif %}</span>
     </a>
     {% endwith %} {% with number=status.calls %}
-    <a class='btn {% if status.calls != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="#">
+    {% url 'contacts.views.calls' as u %}
+    <a class='btn {% if status.calls != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="{{u}}">
         <span class="action-item-icon">
             <i class="fa fa-mobile"></i>
         </span>
         <span class="action-item-text">{% if status.calls != 0 %} You have {% include 'icons/number.html' %} new calls to make {% else %} No new calls! {% endif %}</span>
     </a>
     {% endwith %} {% with number=status.translations %}
-    <a class='btn {% if status.translations != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="#">
+    {% url 'contacts.views.translations' as u %}
+    <a class='btn {% if status.translations != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="{{u}}">
         <span class="action-item-icon"> 
             <i class="fa fa-language"></i>
         </span>

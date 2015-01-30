@@ -3,8 +3,12 @@ import views
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', views.dashboard),
-    url(r'^home/$', views.home),
+    # url(r'^$', views.dashboard),
+    url(r'^$', views.home),
+    url(r'^newmessages/$', views.new_messages),
+    url(r'^visits/$', views.visits),
+    url(r'^calls/$', views.calls),
+    url(r'^translations/$', views.translations),
     url(r'^dashboard/$', views.dashboard),
     url(r'^contact/$', views.contacts),
     url(r'^contact/(?P<study_id>\d{1,3})/$', views.contact),

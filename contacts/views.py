@@ -13,8 +13,22 @@ import models as cont
 import forms
 
 
+def translations(request):
+    return render(request, 'translations.html')
+def new_messages(request):
+    return render(request, 'new-messages.html')
+def calls(request):
+    return render(request, 'calls-to-make.html')
+
+def visits(request):
+    visits = {
+        'upcoming': ['nickname1', 'nickname2'],
+        'oneweek': [],
+        'onemonth': [],
+    }
+    return render(request,'upcoming-visits.html', {'visits':visits})
+
 def home(request):
-    cont
     status =  {
         "messages": cont.Message.objects.filter(is_viewed=False).count(),
         "visits": 3,

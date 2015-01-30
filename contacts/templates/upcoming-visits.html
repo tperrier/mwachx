@@ -1,0 +1,23 @@
+{% extends 'base.html' %} {% block title %}Upcoming visits{% endblock %} {% block content %}
+<div class='col-full'>
+    <fieldset class="action-item visit-list">
+        <legend>Today's visits</legend>
+        {% for name in visits.upcoming %}
+	        <div>{{name}}</div>
+		{% endfor %}
+    </fieldset>
+
+    <fieldset class="action-item visit-list">
+        <legend>More than 1 week overdue</legend>
+        {% for name in visits.oneweek %}
+	        <div>{{name}}</div>
+		{% endfor %}
+    </fieldset>
+    <fieldset class="action-item visit-list">
+        <legend>More than 1 month overdue</legend>
+        {% for name in visits.onemonth %}
+	        <div>{{name}}</div>
+		{% endfor %}
+    </fieldset>
+</div>
+{% endblock %}
