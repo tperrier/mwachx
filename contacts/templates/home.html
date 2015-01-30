@@ -2,33 +2,37 @@
 <div class='col-full'>
     {% with number=status.messages %}
     <a class='btn {% if status.messages != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="#">
-        {% include 'icons/sms-icon.html' %}
+        <span class="action-item-icon"> {% include 'icons/sms-icon.html' %}</span>
         <span class="action-item-text">{% if status.messages != 0 %} You have {% include 'icons/number.html' %} new messages to view {% else %} No new messages! {% endif %}</span>
     </a>
-    {% endwith %} 
-    {% with number=status.visits %}
+    {% endwith %} {% with number=status.visits %}
     <a class='btn {% if status.visits != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="#">
-            <span class="fa-stack fa-3x action-item-icon fa-fw">
-			<i class="fa fa-hospital-o fa-2x"></i>
-		</span>
-            <span class="action-item-text">{% if status.visits != 0 %} You have {% include 'icons/number.html' %} new visits to view {% else %} No new visits! {% endif %}</span>
+        <span class="action-item-icon">
+            <i class="fa fa-hospital-o"></i>
+        </span>
+        <span class="action-item-text">{% if status.visits != 0 %} You have {% include 'icons/number.html' %} new visits to view {% else %} No new visits! {% endif %}</span>
     </a>
-    {% endwith %} 
-    {% with number=status.calls %}
+    {% endwith %} {% with number=status.calls %}
     <a class='btn {% if status.calls != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="#">
-            <span class="fa-stack fa-3x action-item-icon fa-fw">
-	    	<i class="fa fa-mobile fa-2x"></i>
-    	</span>
-            <span class="action-item-text">{% if status.calls != 0 %} You have {% include 'icons/number.html' %} new calls to make {% else %} No new calls! {% endif %}</span>
+        <span class="action-item-icon">
+            <i class="fa fa-mobile"></i>
+        </span>
+        <span class="action-item-text">{% if status.calls != 0 %} You have {% include 'icons/number.html' %} new calls to make {% else %} No new calls! {% endif %}</span>
     </a>
-    {% endwith %} 
-    {% with number=status.translations %}
+    {% endwith %} {% with number=status.translations %}
     <a class='btn {% if status.translations != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="#">
-            <span class="fa-stack fa-3x action-item-icon fa-fw">
-	    	<i class="fa fa-language fa-2x"></i>
-	    </span>
-            <span class="action-item-text">{% if status.translations != 0 %} You have {% include 'icons/number.html' %} new translations to perform {% else %} No new translations! {% endif %}</span>
+        <span class="action-item-icon"> 
+            <i class="fa fa-language"></i>
+        </span>
+        <span class="action-item-text">{% if status.translations != 0 %} You have {% include 'icons/number.html' %} new translations to perform {% else %} No new translations! {% endif %}</span>
     </a>
     {% endwith %}
+
+     <a class='btn btn-info action-item' href="#">
+        <span class="action-item-icon"> 
+            <i class="fa fa-user-plus"></i>
+        </span>
+        <span class="action-item-text">Add new user</span>
+    </a>
 </div>
 {% endblock %}

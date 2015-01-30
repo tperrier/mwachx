@@ -283,41 +283,67 @@ a[data-toggle='collapse'] {
         }
     }
 }
-.sms-text {
-    font-size: 0.6em;
+.custom-stack {
+    position: relative;
+line-height: 1em;
+vertical-align: middle;
 }
+.sms-text {
+    font-size: 0.3em;
+}
+
 .action-item {
     width: 90%;
     margin: 20px auto 20px auto;
-    display: block;
+    // display: block;
     text-align: left;
-    padding: 15px;
+    padding: 0px;
+    display: table;
+    border-bottom: solid 8px;
 }
-
-
 /* TODO: update */
-.btn-danger{
-    color: #a94442;
-    background-color: #f2dede;
-    &:hover {
-        color: #a94442;
-        background-color: #ebccd1;
+
+.btn-danger {
+    background-color: rgb(255, 68, 52);
+    border-color: rgb(218, 0, 0);
+    &:hover,&:focus {
+        background-color: rgb(244, 42, 30);
+    }
+    .action-item-icon {
+        background-color: rgb(244, 42, 30);
     }
 }
 .btn-success {
-    color: #3c763d;
-    background-color: #dff0d8;
-    &:hover {
-        color: #3c763d;
-        background-color: #d6e9c6;
+    background-color: rgb(0,233, 152);
+    border-color: rgb(0,180,136);
+    &:hover, &:focus {
+        background-color: rgb(0, 221, 150);
+    }
+    .action-item-icon {
+        background-color: rgb(0, 221, 150);
     }
 }
 
+.btn-info {
+    border-color: rgb(37,152,185);
+    .action-item-icon {
+        background-color: rgb(49,176,213);
+    }
+}
 /* fix for centering things */
+
 .action-item-text {
     font-size: 3em;
     vertical-align: middle;
+    display: table-cell;
+    padding-left: 15px;
 }
 .action-item-icon {
+    padding: 15px;
+    width: 1.5em;
+    text-align: center;
+    font-size: 6em;
+    white-space: nowrap;
     vertical-align: middle;
+    display: table-cell;
 }
