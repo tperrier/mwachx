@@ -1,0 +1,41 @@
+{% load staticfiles %}
+{% comment %}
+Renders a list of all contacts from the contex
+{% endcomment %}
+
+<div id='contact-pane'>
+    
+    <div id='contact-header'>
+        <div class='input-group'>
+            <span id='contact-search-icon' class='input-group-addon'><i class='fa fa-search'></i></span>
+            <input type='text' id='contact-search' class='form-control' placeholder='name, anc, or study ID'>
+        </div>
+        <!--
+        <div class='option-group'>
+            <div class='option-tab'>
+                {% include 'icons/two-way.html' %}
+            </div><div class='option-tab'>
+                {% include 'icons/one-way.html' %}
+            </div><div class='option-tab'>
+                {% include 'icons/control.html' %}
+            </div>
+        </div>
+        -->
+    </div>
+
+    <div id="contact-list">
+    {% for c in contacts %}
+        <a class='contact {{c.study_group}} {% if contact.study_id == c.study_id %}selected{% endif %}' id='{{c.study_id}}' 
+            data-search-str='{{c.study_id}}{{c.first_name}}{{c.last_name}}{{c.anc_num}}'
+            href='/contact/{{c.study_id}}'>
+            {% include 'contacts/contact_icon.html' %}
+            {{c.study_id|stringformat:'03i'}} <em>#{{c.anc_num}}</em>
+            {{c.nickname}}
+            <div class='bottom'>{{c.status}} -- {{c.last_msg}}</div>
+        </a>
+    {% endfor %}
+    </div>
+
+</div>
+
+<script src='{% static "js/contact_list.js" %}'></script>

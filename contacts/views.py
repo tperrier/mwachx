@@ -1,24 +1,45 @@
 #Django Imports
 from django.shortcuts import render, redirect
 from django.db.models import Count
+from django.views.generic.edit import CreateView
+from django.views.decorators.http import require_POST
+
+#Python Imports
+import datetime,collections
+import code
 
 #Local Imports
 import models as cont
+import forms
 
 
 def dashboard(request):
     contacts = cont.Contact.objects.all()
     statuses = get_status_by_group()
-    return render(request,'dashboard.html',{'contacts':contacts,'statuses':statuses})
+    new_messages = cont.Message.objects.filter(is_viewed=False)
+    return render(request,'dashboard.html',{'contacts':contacts,'statuses':statuses,'new_messages':new_messages})
     
 def messages(request):
     messages = cont.Message.objects.all()
     contacts = cont.Contact.objects.all()
-    return render(request,'messages.html',{'messages':messages,'contacts':contacts})
+    
+    grouped_messages = collections.OrderedDict()
+    for m in messages:
+        key = m.created.date() - datetime.timedelta(days=m.created.date().weekday())
+        if key in grouped_messages:
+            grouped_messages[key].append(m)
+        else:
+            grouped_messages[key] = [m]
+    return render(request,'contacts/messages.html',{'grouped_messages':grouped_messages,'contacts':contacts})
     
 def contacts(request):
-    contacts = cont.Contact.objects.all()
-    return render(request,'contacts.html',{'contacts':contacts})
+    contacts = cont.Contact.objects.all().extra(
+        select={
+            'messages_sent':'select count(*) from contacts_message where contacts_message.contact_id = contacts_contact.id and contacts_message.is_outgoing = 0',
+            'messages_received':'select count(*) from contacts_message where contacts_message.contact_id = contacts_contact.id and contacts_message.is_outgoing = 1',
+        }
+    )
+    return render(request,'contacts/contacts.html',{'contacts':contacts})
     
 def contact(request,study_id):
     try:
@@ -26,7 +47,27 @@ def contact(request,study_id):
     except cont.Contact.DoesNotExist as e:
         return redirect('/contact/')
     contacts = cont.Contact.objects.all()
-    return render(request,'contact.html',{'contact':contact,'contacts':contacts})
+    return render(request,'contacts/contact.html',{'contact':contact,'contacts':contacts})
+
+@require_POST
+def contact_send(request):
+    print request.POST
+    contact = cont.Contact.objects.get(study_id=request.POST['study_id'])
+    message = request.POST['message']
+    cont.Message.send(contact,message,is_system=False,is_viewed=True)
+    return redirect('contacts.views.contact',study_id=request.POST['study_id'])
+    
+    
+def contact_add(request):
+    if request.POST:
+        contact_add_form = forms.ContactAdd(request.POST)
+        if contact_add_form.is_valid():
+            print 'Add Contact and Do Stuff Here'
+        
+    else:
+        contact_add_form = forms.ContactAdd()
+    
+    return render(request,'contacts/contact_create.html',{'form':contact_add_form})
 
 #############
 # Utility Functions
@@ -43,5 +84,13 @@ def get_status_by_group():
         s_idx = status_map[status['status']]
         g_idx = group_map[status['study_group']]
         statuses[s_idx][g_idx] = status['count']
+       
+    #add totals
+    for row in statuses:
+        row.append(sum(row[1:]))
+    totals = ['']
+    for col in range(1,5):
+        totals.append(sum([row[col] for row in statuses]))
+    statuses.append(totals)
         
     return statuses

@@ -37,9 +37,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admindocs',
     
     'contacts',
     'utils',
+    'http_transport',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -102,3 +104,4 @@ STATIC_URL = '/static/'
 
 MESSAGING_CONTACT = 'contacts.Contact'
 MESSAGING_CONNECTION = 'contacts.Connection'
+MESSAGING_ADMIN = 'auth.User'

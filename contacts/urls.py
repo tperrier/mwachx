@@ -7,5 +7,7 @@ urlpatterns = patterns('',
     url(r'^dashboard/$', views.dashboard),
     url(r'^contact/$', views.contacts),
     url(r'^contact/(?P<study_id>\d{1,3})/$', views.contact),
+    url(r'^contact/add/?',views.contact_add),
+    url(r'^contact/send/?',views.contact_send),
     url(r'^messages/$', views.messages),
 )

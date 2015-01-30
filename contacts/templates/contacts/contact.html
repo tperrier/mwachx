@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}Contact{% endblock %}
+
+{% block content %}
+        <div class='col-md-2 scroll col-full'>
+            {% include 'contacts/contact_list_frag.html' %}
+        </div>
+        
+        <div class='col-md-6 scroll col-full'>
+            <div id='message-send'>
+                <form method='post' action='/contact/send'>
+                    {% csrf_token %}
+                    <textarea class='form-control' name='message' placeholder='Message to send....'></textarea>
+                    <input type='hidden' name='study_id' value='{{contact.study_id}}'/>
+                    <input class='form-control' type='submit' value='Send'/>
+                </form>
+            </div>
+            <div id='message-list'>
+                {% for message in contact.message_set.all %}
+                   <div class='message {{message.html_class}}'>
+                        <div class='top'><span>{{message.sent_by}}</span><i>{{ message.created }}</i></div>
+                        <div class='content'>{{ message.text }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class='col-md-4 col-full'>
+            
+            <div class='details-group'>
+                <h1>Contact Details </h1>
+                <div class='details'>
+                <table>
+                    <tr><td>Contact ID</td><td>{{contact.study_id|stringformat:"03i"}}</td></tr>
+                    <tr><td>ANC #</td><td>{{contact.anc_num}}</td></tr>
+                    <tr><td>Nickname</td><td>{{contact.nickname}}</td></tr>
+                    <tr><td>Phonenumber</td><td>{{contact.phone_number}}</td></tr>
+                    <tr><td>Pregnancy Status</td><td>{{contact.status}}</td></tr>
+                    <tr><td>Due Date</td><td>{{contact.due_date}}</td></tr>
+                </table>
+                </div>
+            </div>
+            
+            <div class='details-group'>
+                <h1>Clinic Visit History</h1>
+                <div class='details'>
+                     <table>
+                        <tr><td>Next Visit</td><td>{{contact.visit_set.first.scheduled}}</td></tr>
+                    </table>
+                     <h3>
+                        <a data-toggle="collapse" href='#previous-visits-detail' aria-expanded="false">
+                            <i class='fa fa-chevron-circle-up'></i>
+                            <i class='fa fa-chevron-circle-down'></i>
+                            Previous Visits ({{contact.visit_set.count}})
+                        </a>
+                    </h3>
+                    <div id='previous-visits-detail'  class='extra collapse' data-heading='Previous Visits'>
+                        <table>
+                            <tr><th>Scheduled</th><th>Arrived</th></tr>
+                            {% for visit in contact.visit_set.all %}
+                            <tr><td>{{visit.scheduled}}</td><td>{{visit.arrived}}</td></tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class='details-group'>
+                <h1>Clinic Notes</h1>
+                <div class='details'>
+                    <div class='note'>
+                       This is the first note 
+                    </div>
+                    <h3>
+                        <a data-toggle='collapse' href='#previous-notes-detail' aria-expanded='false'>
+                            <i class='fa fa-chevron-circle-up'></i>
+                            <i class='fa fa-chevron-circle-down'></i>
+                            Previous Notes
+                        </a>
+                    </h3>
+                    <div id='previous-notes-detail' class='extra collapse' data-heading='Previous Notes'>
+                        {% for n in '0123' %}
+                            <div class='note'>
+                                Another Note
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+{% endblock %}

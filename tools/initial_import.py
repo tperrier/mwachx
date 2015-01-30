@@ -2,7 +2,9 @@
 import json,datetime,sys,os,code,random
 
 # Setup Django Environment
-FILE_DIR = os.path.dirname(__file__)
+FILE_DIR = os.path.dirname(os.path.abspath(__file__))
+os.chdir(FILE_DIR)
+print FILE_DIR
 PROJECT_ROOT = os.path.join(FILE_DIR,'..')
 sys.path.append(PROJECT_ROOT) #path to mWaCh
 
@@ -11,6 +13,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE','mwach.settings')
 django.setup()
 # End Django Setup 
 
+from django.db.models import Max
 import contacts.models as cont
 
 
@@ -18,48 +21,34 @@ import contacts.models as cont
 # Utility Functions
 ###################
 
-def get_messages(client):
-    client_id = client['pk']
-    interactions = get_interactions(client)
-
-    client_messages = []
-    for i in interactions:
-        message = get_message(i)
-        if message:
-            client_messages.append( dict(i['fields'].items() + message['fields'].items() ) )
-
-    return client_messages
-    
-def get_interactions(client):
-    return [i for i in data['interaction'] if i['fields']['client_id'] == client['pk']]
-    
-def get_message(interaction):
-    for m in data['message']:
-        if m['pk'] == interaction['pk']:
-            return m
-    return None
 
 study_groups = ['control','one-way','two-way']
 def add_client(client,i):
     new_client = {
         'study_id':i,
-        'anc_num':i,
-        'first_name':client['fields']['first_name'],
-        'last_name':client['fields']['last_name'],
-        'nick_name':client['fields']['nickname'],
-        'birth_date':client['fields']['birth_date'],
+        'anc_num':client['anc_num'],
+        'nickname':client['nickname'],
+        'birthdate':client['birth_date'],
         'study_group':random.choice(study_groups),
         'due_date':get_due_date(),
+        'last_msg_client':client['last_msg_client'],
+        'phone_number':client['phone_number'],
         }
     contact = cont.Contact.objects.create(**new_client)
-    connection = cont.Connection.objects.create(identity=random.randint(10000,1000000),contact=contact)
-    for m in get_messages(client):
+    connection = cont.Connection.objects.create(identity=contact.phone_number,contact=contact,is_primary=True)
+    
+    for m in client['messages']:
         add_message(m,contact,connection)
+    for v in client['visits']:
+        add_visit(v,contact)
+    for n in client['notes']:
+        add_note(n,contact)
+            
     return new_client
     
 def add_message(message,contact,connection):
-    outgoing = True if random.random() < 0.5 else False
-    system = False if not outgoing else True if random.random() < 0.66 else False
+    outgoing = message['sent_by'] != 'Client'
+    system = message['sent_by'] == 'System'
     new_message = {
         'text':message['content'],
         'is_outgoing':outgoing,
@@ -71,6 +60,27 @@ def add_message(message,contact,connection):
     _message.created = message['date']
     _message.save()
     
+def add_visit(visit,contact):
+    if visit['scheduled_date']:
+        new_visit = {
+            'scheduled':visit['scheduled_date'],
+            'arrived':visit['date'],
+            'skipped':True if random.random() < .25 else False,
+            'comment':visit['comments'],
+            'contact':contact
+        }
+        _visit = cont.Visit.objects.create(**new_visit)
+        
+def add_note(note,contact):
+    new_note = {
+        'contact':contact,
+        'comment':note['content'],
+    }
+    
+    _note = cont.Note.objects.create(**new_note)    
+    _note.created = note['date']
+    _note.save()
+    
     
 def get_due_date():
     return datetime.date.today() + datetime.timedelta(days=random.randint(0,100))
@@ -79,18 +89,17 @@ def get_due_date():
 # End Utility Functions
 ###################
 
-JSON_DATA_FILE = 'last_backup.json'
-
-json_data = json.load(open(JSON_DATA_FILE))
-data = {}
-for d in json_data:
-    try:
-        data[d['model'][9:]].append(d)
-    except KeyError as e:
-        data[d['model'][9:]] = [d]
-        
-clients = random.sample(data['client'],10)
+JSON_DATA_FILE = 'small.json'
+IMPORT_COUNT = 10
+clients = json.load(open(JSON_DATA_FILE))
+clients = random.sample(clients.values(),IMPORT_COUNT)
 
 for i,c in enumerate(clients):
     print add_client(c,i)
 
+last_messages = cont.Message.objects.filter(is_outgoing=False).values('contact_id').order_by().annotate(Max('id'))
+cont.Message.objects.exclude(id__in=[d['id__max'] for d in last_messages]).update(is_viewed=True)
+'''    
+update contacts_message set is_viewed = 1 where id not in 
+(select max(id) contacts_message where is_outgoing=0 group by contact_id); 
+'''

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+        <div class='col-md-2 col-full'>
+            {% include 'contacts/contact_list_frag.html' %}
+        </div>
+        
+        <div class='col-md-10 col-full scroll'>
+             <div id='message-weeks'>
+            {% for week, messages in grouped_messages.items %}
+                <h1>
+                    <a data-toggle="collapse" href='#week-{{week|date:"Y-m-d"}}' aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}">
+                    <i class='fa fa-folder'></i>
+                    <i class='fa fa-folder-open'></i>
+                    {{week|date:'D M d'}} {{messages|length}}
+                    </a>
+                </h1>
+                <div id='week-{{week|date:"Y-m-d"}}' class='messages collapse {%if forloop.first %}in{% endif %}'>
+               {% for m in messages%}
+                <div class='message'>
+                    <span>
+                    {% if m.is_outgoing %}
+                        <i class='fa fa-reply'></i>
+                    {% else %}
+                        <i class='fa fa-reply fa-rotate-180'></i>
+                    {% endif %}
+                    {{m.contact_name}}
+                    </span>
+                    <div>{{m.text}}</div>
+                </div>
+                {% endfor %}
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+        
+{% endblock %}

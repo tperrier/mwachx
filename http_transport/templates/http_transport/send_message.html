@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}Contact{% endblock %}
+
+{% block content %}
+        {% if contact %}
+            <div>
+                Message sent to <a href='/contact/{{contact.study_id}}'>{{contact.nickname}}</a>
+            </div>
+        {% endif %}
+        <form id='#contact-create-form' action='' method='post' class='form'>
+        <h1> Send Message </h1>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type='submit' value='Send'/>
+        </form>
+{% endblock %}

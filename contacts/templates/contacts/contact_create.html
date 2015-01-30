@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}Contact{% endblock %}
+
+{% block content %}
+        <form id='#contact-create-form' action='' method='post' class='form'>
+        <h1> Add Contact </h1>
+            {% csrf_token %}
+            
+            {{ form.as_p }}
+            <input type='submit' value='Create'/>
+        </form>
+{% endblock %}
