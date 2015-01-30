@@ -8,13 +8,13 @@ from utils.models import TimeStampedModel
 class Contact(TimeStampedModel):
     
     STATUS_CHOICES = (
-        ('Pregnant','Pregnant'),
-        ('Over','Post-Date'),
-        ('Post','Post-Partum'),
-        ('CCC','CCC'),
-        ('Completed','Completed'),
-        ('Stopped','Withdrew'),
-        ('Other','Stopped Other')
+        ('pregnant','Pregnant'),
+        ('over','Post-Date'),
+        ('post','Post-Partum'),
+        ('ccc','CCC'),
+        ('completed','Completed'),
+        ('stopped','Withdrew'),
+        ('other','Stopped Other')
     )
     
     GROUP_CHOICES = (
@@ -61,31 +61,27 @@ class Contact(TimeStampedModel):
     )
     
     #Study Attributes
-    study_id = models.PositiveIntegerField(unique=True)
-    anc_num = models.PositiveIntegerField()
-    study_group = models.CharField(max_length=10,choices=GROUP_CHOICES)
+    study_id = models.PositiveIntegerField(unique=True,verbose_name='Study ID')
+    anc_num = models.PositiveIntegerField(verbose_name='ANC #')
     
+    study_group = models.CharField(max_length=10,choices=GROUP_CHOICES,verbose_name='Group')
+    send_day = models.IntegerField(choices=DAY_CHOICES, default=3,verbose_name='Send Day')
+    send_time = models.IntegerField(choices=TIME_CHOICES,default=13,verbose_name='Send Time')
+
     #Client Personal Information
     nickname = models.CharField(max_length=50)
-    phone_number = models.CharField(max_length=20)
-    birthdate = models.DateField()
-    partner_name = models.CharField(max_length=100,blank=True,null=True)
-    relationship_status = models.CharField(max_length=30,default='married')
+    birthdate = models.DateField(verbose_name='DOB')
+    partner_name = models.CharField(max_length=100,blank=True,null=True,verbose_name='Partner Name')
+    relationship_status = models.CharField(max_length=30,choices=RELATIONSHIP_CHOICES,default='married',verbose_name='Relationship Status')
     previous_pregnancies = models.IntegerField(default=0)
     
-    
-    #Attributes for contact context
-    status = models.CharField(max_length=20,choices=STATUS_CHOICES, default='Pregnant')
-    language = models.CharField(max_length=25,choices=LANGUAGE_CHOICES)
-    condition = models.CharField(max_length=40,choices=CONDITION_CHOICES)
-    
-    send_day = models.IntegerField(choices=DAY_CHOICES, default=3)
-    send_time = models.IntegerField(choices=TIME_CHOICES,default=13)
-    
-    #Clinical Context
-    family_planning = models.CharField(max_length=50,blank=True,null=True,choices=FAMILY_PLANNING_CHOICES)
-    art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART initiation')
-    due_date = models.DateField()
+    #Medical Information
+    status = models.CharField(max_length=20,choices=STATUS_CHOICES, default='pregnant')
+    language = models.CharField(max_length=25,choices=LANGUAGE_CHOICES,default='english')
+    condition = models.CharField(max_length=40,choices=CONDITION_CHOICES,default='normal')
+    family_planning = models.CharField(max_length=50,blank=True,null=True,choices=FAMILY_PLANNING_CHOICES,default='none')
+    art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART initiation',verbose_name='ART Initiantion')
+    due_date = models.DateField(verbose_name='Due Date')
     
     #State attributes to be edited by the system
     last_msg_client = models.DateField(blank=True,null=True,help_text='Date of last client message received')
@@ -100,11 +96,13 @@ class Contact(TimeStampedModel):
         
     @property
     def connection(self):
-        return Connection.objects.get(identity=self.phone_number)
+        return Connection.objects.get(contact=self,is_primary=True)
+        
+    @property
+    def phone_number(self):
+        return self.connection.identity
     
 class PhoneCall(TimeStampedModel):
-    class Meta:
-        ordering = ('-created',)
         
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
     answered = models.BooleanField(default=False)
@@ -112,8 +110,6 @@ class PhoneCall(TimeStampedModel):
     comment = models.CharField(max_length=500,blank=True,null=True)
     
 class Note(TimeStampedModel):
-    class Meta:
-        ordering = ('-created',)
         
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
     admin = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
@@ -239,7 +235,8 @@ class Message(TimeStampedModel):
             is_system=is_system,
             text=message,
             connection=contact.connection,
-            contact=contact
+            contact=contact,
+            is_viewed=True,
         )
 
 
