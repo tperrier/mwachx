@@ -81,6 +81,12 @@ def contact_send(request):
     cont.Message.send(contact,message,is_system=False)
     return redirect('contacts.views.contact',study_id=request.POST['study_id'])
     
+def message_dismiss(request,message_id):
+    message = cont.Message.objects.get(pk=message_id)
+    message.is_viewed=True
+    message.save()
+    return redirect('contacts.views.contact',study_id=message.contact.study_id)
+    
     
 def contact_add(request):
     

@@ -4,19 +4,35 @@
 {% block title %}Contact{% endblock %}
 
 {% block content %}
+
+        <div class='modal fade' id='sendModal' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method='post' action='/contact/send'>
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Send Message</h4>
+                    </div>
+                    <div class="modal-body message-send">
+                        {% csrf_token %}
+                        <textarea class='form-control' name='message' rows='5' placeholder='Message to send....'></textarea>
+                        <input type='hidden' name='study_id' value='{{contact.study_id}}'/>
+                    </div>
+                    <div class="modal-footer">
+                        <input class='btn btn-primary' type='submit' value='Send'/>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                    </form>
+                </div>
+          </div>
+        </div>
+        
+
         <div class='col-md-2 scroll col-full'>
             {% include 'contacts/contact_list_frag.html' %}
         </div>
         
         <div class='col-md-6 scroll col-full'>
-            <div id='message-send'>
-                <form method='post' action='/contact/send'>
-                    {% csrf_token %}
-                    <textarea class='form-control' name='message' placeholder='Message to send....'></textarea>
-                    <input type='hidden' name='study_id' value='{{contact.study_id}}'/>
-                    <input class='form-control' type='submit' value='Send'/>
-                </form>
-            </div>
             <div id='message-list'>
                 {% for message in contact.message_set.all %}
                    <div class='message {{message.html_class}}'>
@@ -26,8 +42,12 @@
                         <div class='top'><span>{{message.sent_by}} -- {{message.weeks}} wk</span><i>{{ message.created }}</i></div>
                         <div class='content'>{{ message.text }}</div>
                         <div class='footer'>
-                            {% if not message.is_outgoing %}<a class='btn btn-sm btn-primary'>Reply</a>{% endif %}
-                            {% if not message.is_viewed %}<a class='btn btn-sm btn-primary'>Dismiss</a>{% endif %}
+                            {% if not message.is_outgoing %}
+                                <button class='btn btn-sm btn-primary' data-toggle='modal' data-target='#sendModal'>Reply</button>
+                            {% endif %}
+                            {% if not message.is_viewed %}
+                                <a class='btn btn-sm btn-primary' href='{% url "contacts.views.message_dismiss" message.id%}'>Dismiss</a>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}

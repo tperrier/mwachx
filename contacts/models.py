@@ -195,7 +195,7 @@ class Message(TimeStampedModel):
     is_viewed = models.BooleanField(default=False)
     
     # ToDo:Link To Automated Message
-    reply = models.ForeignKey('contacts.Message',related_name='parent',blank=True,null=True)
+    parent = models.ForeignKey('contacts.Message',related_name='message_set',blank=True,null=True)
 
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
