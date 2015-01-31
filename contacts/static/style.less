@@ -1,11 +1,22 @@
 @import "libs/bootstrap-src/bootstrap.less";
 
+
+@brand-success:         rgb(0,196,158);
+@brand-info:            rgb(43,150,222);
+@brand-danger:          rgb(251,41,28);
+
+@dark-base:             rgb(47, 72, 95);
+@navbar-inverse-bg:     lighten(@dark-base, 10%);
+@navbar-inverse-link-active-bg: darken(@dark-base, 5%);
+@navbar-inverse-link-color:                      lighten(@gray-light, 40%);
+@navbar-inverse-border: @navbar-inverse-link-active-bg;
+
+
 @accent-light: #B2E6FF;
 @accent-dark: #336680;
 @background-light: #F0F0F0;
 @background-mid: #A0A0A0;
 @background-dark: #707070;
-@dark-base: rgb(47, 72, 95);
 // @darker: rgb(45,62,80);
 @dark: lighten(@dark-base, 10%);
 @darker: darken(@dark-base, 5%);
@@ -23,58 +34,13 @@ body {
  * Main Layout: Center Full Screen Column
  **/
 
-#header {
-    text-align: center;
-    z-index: 10;
-    width: auto;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    background-color: @dark;
-    border-bottom: 5px solid @darker;
-    ul {
-        margin-bottom: 0px;
-        border-bottom: none;
-        padding: 0px;
-        font-size: 1.25em;
-        li {
-            display: inline-block;
-            list-style-type: none;
-            background-color: @dark;
-            &.active, &.active a:hover {
-                background-color: @darker;
-            }
-            a {
-                color: @navtext;
-                padding: .5em 1em;
-                display: inline-block;
-                &:hover {
-                    text-decoration: none;
-                    background-color: @dark-base;
-                }
-            }
-            a.tab-addon {
-                cursor: pointer;
-                margin-left: .5em;
-            }
-        }
-    }
-    #left-menu {
-        float: left;
-        margin-left: 1em;
-        li {
-            float: left;
-        }
-    }
-    #right-menu {
-        float: right;
-        margin-right: 1em;
-        li {
-            float: right;
-        }
-    }
-}
+ .navbar {
+    border-bottom: 5px solid @navbar-inverse-link-active-bg;
+ }
+ .nav {
+    font-size: 1.2em;
+ }
+
 #content {
     height: auto;
     width: auto;
@@ -95,15 +61,6 @@ body {
 }
 #content .row>div:first-child {
     padding-left: 0em;
-}
-#footer {
-    text-align: center;
-    position: absolute;
-    bottom: 0px;
-    background-color: @dark;
-    color: @navtext;
-    width: 100%;
-    height: 1.5em;
 }
 .scroll {
     overflow-y: auto;
@@ -385,42 +342,35 @@ a[data-toggle='collapse'] {
     display: table;
     border-bottom: solid 8px;
 }
-/* TODO: update */
 
 .btn-danger {
-    background-color: rgb(255, 68, 52);
-    border-color: rgb(218, 0, 0);
-    &:hover, &:focus {
-        background-color: rgb(244, 42, 30);
-        border-color: rgb(218, 0, 0);
-    }
+    border-color: darken(@btn-danger-border, 12%); /* start with dark border */
     .action-item-icon {
-        background-color: rgb(244, 42, 30);
+        background-color: darken(@btn-danger-bg, 10%);
     }
 }
 .btn-success {
-    background-color: rgb(0, 233, 152);
-    border-color: rgb(0, 180, 136);
-    &:hover, &:focus {
-        background-color: rgb(0, 221, 150);
-        border-color: rgb(0, 180, 136);
-    }
+    border-color: darken(@btn-success-border, 12%); /* start with dark border */
     .action-item-icon {
-        background-color: rgb(0, 221, 150);
+        background-color: darken(@btn-success-bg, 10%);
     }
 }
 .btn-info {
-    border-color: rgb(37, 152, 185);
+    border-color: darken(@btn-info-border, 12%); /* start with dark border */
     .action-item-icon {
-        background-color: rgb(49, 176, 213);
+        background-color: darken(@btn-info-bg, 10%);
     }
 }
+
 /* fix for centering things */
 
-.action-item-text {
-    font-size: 3em;
+.action-item-text,
+.action-item-icon {    
     vertical-align: middle;
     display: table-cell;
+}
+.action-item-text {
+    font-size: 3em;   
     padding-left: 15px;
 }
 .action-item-icon {
@@ -429,8 +379,6 @@ a[data-toggle='collapse'] {
     text-align: center;
     font-size: 6em;
     white-space: nowrap;
-    vertical-align: middle;
-    display: table-cell;
 }
 .visit-list {
     border-bottom: none;
