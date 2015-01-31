@@ -24,30 +24,33 @@
 	
 	<div id='header'>
 	
-		<ul id='main-menu'>
+		<ul id='left-menu'>
 			<li {% url 'contacts.views.home' as u %}{% if request.path == u %}class='active'{% endif %}> 
-				<a href='{{u}}'><i class='fa fa-home'></i>Home</a>
+				<a href='{{u}}'><i class='fa fa-home'></i> Home</a>
 			</li>
 			<li {% url 'contacts.views.new_messages' as u %}{% if request.path == u %}class='active'{% endif %}> 
-				<a href='{{u}}'><i class='fa fa-hospital-o'></i>Unread Messages</a>
+				<a href='{{u}}'><i class='fa fa-hospital-o'></i> Unread Messages</a>
 			</li>
 			<li {% url 'contacts.views.visits' as u %}{% if request.path == u %}class='active'{% endif %}> 
-				<a href='{{u}}'><i class='fa fa-hospital-o'></i>Upcoming Visits</a>
+				<a href='{{u}}'><i class='fa fa-hospital-o'></i> Upcoming Visits</a>
 			</li>
 			<li {% url 'contacts.views.calls' as u %}{% if request.path == u %}class='active'{% endif %}> 
-				<a href='{{u}}'><i class='fa fa-mobile'></i>Calls</a>
+				<a href='{{u}}'><i class='fa fa-mobile'></i> Calls</a>
 			</li>
 			<li {% url 'contacts.views.translations' as u %}{% if request.path == u %}class='active'{% endif %}> 
-				<a href='{{u}}'><i class='fa fa-language'></i>Translations</a>
+				<a href='{{u}}'><i class='fa fa-language'></i> Translations</a>
 			</li>
+        </ul>
+        <ul id='right-menu'>
+            <!-- Only show this if Admin User Is Logged in -->
 			<li {% url 'contacts.views.dashboard' as u %}{% if request.path == u %}class='active'{% endif %}>
 				<a href='{{u}}'>Dashboard</a>
 			</li>
 			<li {% url 'contacts.views.messages' as u %}{% if request.path == u %}class='active'{% endif %}>
-				<a href='/{{u}}'>Messages</a>
+				<a href='{{u}}'>Messages</a>
 			</li>
 			<li {% if 'contact' in request.path %}class='active'{% endif %}>
-                <a href='/{{u}}'>Contacts</a>
+                <a href='/contact'>Contacts</a>
             </li>
 			<li>
 				<a href='#visit-tab'>Visits</a>

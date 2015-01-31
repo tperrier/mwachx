@@ -33,36 +33,56 @@ body {
     left: 0;
     right: 0;
     top: 0;
-background-color: @dark;
+    background-color: @dark;
     border-bottom: 5px solid @darker;
-}
-#main-menu {
-    float: right;
-    margin-right: 5em;
-    border-bottom: none;
-    margin-bottom: 0;
-    li {
-        display: inline-block;
-        list-style-type: none;
-        background-color: @dark;
-        // border: 1px @accent-dark solid;
-        // border-bottom: none;
-        padding: .5em 1em;
-        // border-radius: 1em 1em 0 0;
-        &.active {
-            font-weight: bold;
-            background-color: @darker;
+    ul {
+        margin-bottom:0px;
+        border-bottom: none;
+        padding:0px;
+        font-size:1.25em;
+        li {
+            display:inline-block;
+            list-style-type: none;
+            background-color: @dark;
+            &.active, &.active a:hover {
+                background-color: @darker;
+                font-weight: bold;
+            }
+            a {
+                color: @navtext;
+                padding: .25em .5em;
+                display:inline-block;
+                &:hover {
+                    text-decoration:none;
+                    background-color:@dark-base;
+                }
+            }
+            a.tab-addon {
+                cursor: pointer;
+                margin-left: .5em;
+            }
         }
-        a {
-            color: @navtext;
-            display: inline-block;
+    }
+    
+    #left-menu {
+        float:left;
+        margin-left:1em;
+        
+        li {
+            float:left;
         }
-        a.tab-addon {
-            cursor: pointer;
-            margin-left: .5em;
+    }
+    
+    #right-menu {
+        float:right;
+        margin-right:1em;
+        
+        li {
+            float:right;
         }
     }
 }
+
 #content {
     height: auto;
     width: auto;
