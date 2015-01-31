@@ -3,13 +3,33 @@
 from django.db import models
 from django.conf import settings
 
+#Python Imports
+import datetime
+
 #Local Imports
 from utils.models import TimeStampedModel
+
+class VisitQuerySet(models.QuerySet):
+    
+    def pending(self):
+        return self.filter(arrived=None,skipped=None)
+    
+    def visit_range(self,start,end=None):
+        today = settings.CURRENT_DATE
+        start = today - datetime.timedelta(**start)
+        if end is not None:
+            end = today - datetime.timedelta(**end)
+            return self.pending().filter(scheduled__range=(end,start))
+        return self.pending().filter(scheduled__lte=start)
+            
 
 
 class Visit(TimeStampedModel):
     class Meta:
         ordering = ('scheduled',)
+    
+    #Set Custom Manager
+    objects = VisitQuerySet.as_manager()
     
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
     parent = models.ForeignKey('self', related_name='children_set', null=True, blank=True, default=None)

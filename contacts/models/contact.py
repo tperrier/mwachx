@@ -7,6 +7,22 @@ from django.conf import settings
 from utils.models import TimeStampedModel
 from contacts.models import Message
 
+class ContactQuerySet(models.QuerySet):
+    
+    def pregnant(self):
+        return self.filter(models.Q(status='pregnant')|models.Q(status='over'))
+        
+    def active(self):
+        return self.exclude(models.Q(status='completed')|models.Q(status='stopped')|models.Q('other'))
+        
+    def post_partum(self):
+        return self.filter(models.Q(status='post')|models.Q(status='ccc'))
+        
+    def has_pending(self):
+        return set([message.contact for message in Message.objects.pending().prefetch_related('contact')])
+    
+    
+
 class Contact(TimeStampedModel):
     
     STATUS_CHOICES = (
@@ -61,6 +77,9 @@ class Contact(TimeStampedModel):
         (13,'Afternoon'),
         (19,'Evening'),
     )
+    
+    #Set Custom Manager
+    objects = ContactQuerySet.as_manager()
     
     #Study Attributes
     study_id = models.PositiveIntegerField(unique=True,verbose_name='Study ID')

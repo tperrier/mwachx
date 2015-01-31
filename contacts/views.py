@@ -40,9 +40,9 @@ def visit_dismiss(request,visit_id):
 
 
 def visits(request):
-    today = settings.CURRENT_DATE
-    # upcoming = cont.Visit.objects.filter(scheduled=today,skipped=None, arrived=None)
-    upcoming = cont.Visit.objects.filter(
+    '''
+    upcoming = visit_count = cont.Visit.objects.filter(
+    Stashed changes
         scheduled__gte=today-datetime.timedelta(weeks=1),
         scheduled__lte=today,
         skipped=None, 
@@ -56,6 +56,12 @@ def visits(request):
         scheduled__lte=today-datetime.timedelta(weeks=4),
         skipped=None, 
         arrived=None)
+    '''
+    
+    upcoming = cont.Visit.objects.visit_range({'weeks':0},{'weeks':1})
+    oneweek = cont.Visit.objects.visit_range({'weeks':1},{'weeks':4})
+    onemonth = cont.Visit.objects.visit_range({'weeks':4})
+    
     visits = {
         'upcoming': upcoming,
         'oneweek': oneweek,

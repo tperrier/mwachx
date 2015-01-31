@@ -6,12 +6,20 @@ from django.conf import settings
 #Local Imports
 from utils.models import TimeStampedModel
 
+class MessageQuerySet(models.QuerySet):
+    
+    def pending(self):
+        return self.filter(is_viewed=False)
+
 class Message(TimeStampedModel):
     
     class Meta:
         ordering = ('-created',)
     
     text = models.CharField(max_length=1000,help_text='Text of the SMS message')
+    
+    #Set Custom Manager
+    objects = MessageQuerySet.as_manager()
     
     #Boolean Flags on Message
     is_outgoing = models.BooleanField(default=True)
