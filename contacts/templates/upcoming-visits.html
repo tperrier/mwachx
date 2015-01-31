@@ -27,6 +27,16 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% else %}
+        {% url 'contacts.views.home' as u %}
+        <h1>Great job! No more visits for today.</h1>
+
+        <a class='btn btn-success action-item btn-xxs visit-btn' href="{{u}}">
+		    <span class="action-item-icon">
+		        <i class="fa fa-home"></i>
+		    </span>
+		    <span class="action-item-text">Return home to see more tasks.</span>
+		</a>
         {% endif %}
     </fieldset>
 
@@ -62,8 +72,8 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
 
 
@@ -98,8 +108,8 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}
