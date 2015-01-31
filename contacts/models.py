@@ -101,6 +101,29 @@ class Contact(TimeStampedModel):
     @property
     def phone_number(self):
         return self.connection.identity
+        
+    @property 
+    def is_pregnant(self):
+        return self.status == 'pregnant' or self.status == 'over'
+        
+    @property
+    def is_active(self):
+        return not (self.status == 'completed' or self.status == 'stopped' or self.status == 'other')
+        
+        
+    def weeks(self,today=None):
+        '''
+        Returns the number weeks until EDD or since delivery
+        '''
+        if today is None:
+            today = settings.CURRENT_DATE
+        if self.is_pregnant:
+            days = (self.due_date - today).days
+        return days/7
+    
+    @property
+    def pending(self):
+        return Message.objects.filter(contact=self,is_viewed=False).count()
     
 class PhoneCall(TimeStampedModel):
         
@@ -211,6 +234,9 @@ class Message(TimeStampedModel):
         return self.connection.identity
     identity.short_description = 'Identity'
     identity.admin_order_field = 'connection__identity'
+    
+    def weeks(self):
+        return self.contact.weeks(today=self.created.date())
     
     @staticmethod
     def receive(number,message):

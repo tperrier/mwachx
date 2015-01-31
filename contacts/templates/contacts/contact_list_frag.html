@@ -10,28 +10,29 @@ Renders a list of all contacts from the contex
             <span id='contact-search-icon' class='input-group-addon'><i class='fa fa-search'></i></span>
             <input type='text' id='contact-search' class='form-control' placeholder='name, anc, or study ID'>
         </div>
-        <!--
-        <div class='option-group'>
-            <div class='option-tab'>
-                {% include 'icons/two-way.html' %}
-            </div><div class='option-tab'>
-                {% include 'icons/one-way.html' %}
-            </div><div class='option-tab'>
-                {% include 'icons/control.html' %}
-            </div>
-        </div>
-        -->
+        <ul class='filter-icons'>
+            <li>{% include 'icons/two-way.html' %}</li>
+            <li>{% include 'icons/one-way.html' %}</li>
+            <li>{% include 'icons/control.html' %}</li>
+            <li>{% include 'icons/pending.html' %}</li>
+        </ul>
     </div>
 
     <div id="contact-list">
     {% for c in contacts %}
         <a class='contact {{c.study_group}} {% if contact.study_id == c.study_id %}selected{% endif %}' id='{{c.study_id}}' 
-            data-search-str='{{c.study_id}}{{c.first_name}}{{c.last_name}}{{c.anc_num}}'
+            data-search-str='{{c.study_id}}{{c.nickname}}{{c.anc_num}}'
             href='/contact/{{c.study_id}}'>
-            {% include 'contacts/contact_icon.html' %}
-            {{c.study_id|stringformat:'03i'}} <em>#{{c.anc_num}}</em>
-            {{c.nickname}}
-            <div class='bottom'>{{c.status}} -- {{c.last_msg}}</div>
+            <div class='left'>{% include 'contacts/contact_icon.html' %}</div>
+            <div class='top'> {{c.study_id|stringformat:'03i'}} <em>#{{c.anc_num}}</em> -- {{c.nickname}}</div>
+            <div class='bottom'>{{c.status}} -- {{c.weeks}} wk</div>
+            <div class='right'>
+                {% if c.pending %}
+                    {% with pending=c.pending %}
+                        {% include 'icons/pending.html' %}
+                    {% endwith %}
+                {% endif %}
+            </div>
         </a>
     {% endfor %}
     </div>

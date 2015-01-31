@@ -20,8 +20,15 @@
             <div id='message-list'>
                 {% for message in contact.message_set.all %}
                    <div class='message {{message.html_class}}'>
-                        <div class='top'><span>{{message.sent_by}}</span><i>{{ message.created }}</i></div>
+                        <div class='icon'>
+                            <i class='fa fa-{% if message.is_outgoing %}reply{% else %}share{% endif %}'></i>
+                        </div>
+                        <div class='top'><span>{{message.sent_by}} -- {{message.weeks}} wk</span><i>{{ message.created }}</i></div>
                         <div class='content'>{{ message.text }}</div>
+                        <div class='footer'>
+                            {% if not message.is_outgoing %}<a class='btn btn-sm btn-primary'>Reply</a>{% endif %}
+                            {% if not message.is_viewed %}<a class='btn btn-sm btn-primary'>Dismiss</a>{% endif %}
+                        </div>
                     </div>
                 {% endfor %}
             </div>

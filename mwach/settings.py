@@ -129,4 +129,5 @@ STATICFILES_FINDERS = (
 MESSAGING_CONTACT = 'contacts.Contact'
 MESSAGING_CONNECTION = 'contacts.Connection'
 MESSAGING_ADMIN = 'auth.User'
-CURRENT_DATE =  "2014-10-20"
+from datetime import date
+CURRENT_DATE =  date(2014,10,20)
