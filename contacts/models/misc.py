@@ -4,10 +4,12 @@ from django.db import models
 from django.conf import settings
 
 #Local Imports
-from utils.models import TimeStampedModel
+from utils.models import TimeStampedModel,BaseQuerySet
 from contacts.models import Contact
 
 class PhoneCall(TimeStampedModel):
+    
+    objects = BaseQuerySet.as_manager()
     
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
     answered = models.BooleanField(default=False)
@@ -16,12 +18,15 @@ class PhoneCall(TimeStampedModel):
     
 class Note(TimeStampedModel):
     
+    objects = BaseQuerySet.as_manager()
+     
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
     admin = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     comment = models.CharField(max_length=500,blank=True,null=True)
     
 class Connection(TimeStampedModel):
     
+    objects = BaseQuerySet.as_manager()
     
     TYPE_CHOICES = (
         ('phone','Phone Number'),
@@ -37,9 +42,13 @@ class Connection(TimeStampedModel):
     is_primary = models.BooleanField(default=False)
 
 class StatusChange(TimeStampedModel):
+    
+    objects = BaseQuerySet.as_manager()
+    
     class Meta:
         ordering = ('created',)
     
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
     old = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
     new = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
+    

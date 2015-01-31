@@ -126,8 +126,9 @@ def contact(request,study_id):
 def contact_send(request):
     print request.POST
     contact = cont.Contact.objects.get(study_id=request.POST['study_id'])
+    parent = cont.Message.objects.get_or_none(pk=request.POST.get('parent_id',None))
     message = request.POST['message']
-    cont.Message.send(contact,message,is_system=False)
+    cont.Message.send(contact,message,is_system=False,parent=parent)
     return redirect('contacts.views.contact',study_id=request.POST['study_id'])
     
 def message_dismiss(request,message_id):

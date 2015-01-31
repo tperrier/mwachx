@@ -7,9 +7,9 @@ from django.conf import settings
 import datetime
 
 #Local Imports
-from utils.models import TimeStampedModel
+from utils.models import TimeStampedModel,BaseQuerySet
 
-class VisitQuerySet(models.QuerySet):
+class VisitQuerySet(BaseQuerySet):
     
     def pending(self):
         return self.filter(arrived=None,skipped=None)

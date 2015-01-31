@@ -28,9 +28,7 @@ Renders a list of all contacts from the contex
             <div class='bottom'>{{c.status}} -- {{c.weeks}} wk</div>
             <div class='right'>
                 {% if c.pending %}
-                    {% with pending=c.pending %}
-                        {% include 'icons/pending.html' %}
-                    {% endwith %}
+                    <span class='badge'>{{c.pending}}</span>
                 {% endif %}
             </div>
         </a>

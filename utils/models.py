@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.core.exceptions import ObjectDoesNotExist
 # Create your models here.
 
 class TimeStampedModel(models.Model):
@@ -16,3 +16,14 @@ class TimeStampedModel(models.Model):
 
     class Meta:
         abstract = True
+        
+class BaseQuerySet(models.QuerySet):
+    
+    def get_or_none(self,**kwargs):
+        return self.get_or_default(None,**kwargs)
+            
+    def get_or_default(self,default=None,**kwargs):
+        try:
+            return self.get(**kwargs)
+        except ObjectDoesNotExist:
+            return default

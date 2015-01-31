@@ -15,8 +15,10 @@
                     </div>
                     <div class="modal-body message-send">
                         {% csrf_token %}
+                        <div id='reply-message' class='alert alert-success'></div>
                         <textarea class='form-control' name='message' rows='5' placeholder='Message to send....'></textarea>
                         <input type='hidden' name='study_id' value='{{contact.study_id}}'/>
+                        <input type='hidden' name='parent_id' value=''/>
                     </div>
                     <div class="modal-footer">
                         <input class='btn btn-primary' type='submit' value='Send'/>
@@ -43,7 +45,7 @@
                         <div class='content'>{{ message.text }}</div>
                         <div class='footer'>
                             {% if not message.is_outgoing %}
-                                <button class='btn btn-sm btn-primary' data-toggle='modal' data-target='#sendModal'>Reply</button>
+                                <button class='btn btn-sm btn-primary' data-toggle='modal' data-target='#sendModal' data-message='{{message.id}}'>Reply</button>
                             {% endif %}
                             {% if not message.is_viewed %}
                                 <a class='btn btn-sm btn-primary' href='{% url "contacts.views.message_dismiss" message.id%}'>Dismiss</a>
@@ -118,5 +120,7 @@
             </div>
             
         </div>
+        
+        <script src='{% static "js/contact_messages.js" %}'></script>
         
 {% endblock %}

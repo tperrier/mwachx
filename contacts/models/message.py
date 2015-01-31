@@ -4,9 +4,9 @@ from django.db import models
 from django.conf import settings
 
 #Local Imports
-from utils.models import TimeStampedModel
+from utils.models import TimeStampedModel, BaseQuerySet
 
-class MessageQuerySet(models.QuerySet):
+class MessageQuerySet(BaseQuerySet):
     
     def pending(self):
         return self.filter(is_viewed=False)
@@ -88,11 +88,12 @@ class Message(TimeStampedModel):
         )
         
     @staticmethod
-    def send(contact,message,is_system=True):
+    def send(contact,message,is_system=True,parent=None):
         Message.objects.create(
             is_system=is_system,
             text=message,
             connection=contact.connection,
             contact=contact,
             is_viewed=True,
+            parent=parent,
         )
