@@ -32,11 +32,18 @@
     </a>
     {% endwith %}
 
-     <a class='btn btn-info action-item' href="/contact/add">
-        <span class="action-item-icon"> 
-            <i class="fa fa-user-plus"></i>
-        </span>
-        <span class="action-item-text">Add new user</span>
-    </a>
+    <div class='btn-group btn-group-justified action-btn-group' role="group">
+        <a class='btn btn-info action-button action-item' href="/contact/add">
+            <span class="action-item-icon"> 
+                <i class="fa fa-user-plus"></i>
+            </span>
+            <span class="action-item-text">Add new user</span>
+        </a><a class='btn btn-info action-button action-item' href="/contact/add">
+            <span class="action-item-icon"> 
+                <i class="fa fa-hospital-o"></i>
+            </span>
+            <span class="action-item-text">Record new visit</span>
+        </a>
+    </div>
 </div>
 {% endblock %}

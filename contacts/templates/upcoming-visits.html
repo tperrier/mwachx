@@ -1,4 +1,27 @@
 {% extends 'base.html' %} {% block title %}Upcoming visits{% endblock %} {% block content %}
+
+		<div class='modal fade' id='sendModal' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method='post' action='/contact/send'>
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Date of next visit</h4>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        
+                        <input type='hidden' name='study_id' value='{{contact.study_id}}'/>
+                    </div>
+                    <div class="modal-footer">
+                        <input class='btn btn-primary' type='submit' value='Save'/>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                    </form>
+                </div>
+          </div>
+        </div>
+
 <div class='col-full'>
     <fieldset class="action-item visit-list">
         <legend>Today's visits</legend>
@@ -17,7 +40,7 @@
 
                 {% for visit in visits.upcoming %}
                 <tr class="link-row">
-                    <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-success">Visited</a>
+                    <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-success" data-toggle='modal' data-target='#sendModal'>Visited</a>
                     </td>
                     <td>{{visit.contact.nickname}}</td>
                     <td>{{visit.contact.study_group}}</td>
@@ -62,7 +85,7 @@
 
                     {% for visit in visits.oneweek %}
                     <tr class="link-row">
-                        <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-success">Visited</a>
+                        <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-success" data-toggle='modal' data-target='#sendModal'>Visited</a>
                         </td>
                         <td>{{visit.contact.nickname}}</td>
                         <td>{{visit.contact.study_group}}</td>
@@ -98,7 +121,7 @@
 
                     {% for visit in visits.onemonth %}
                     <tr class="link-row">
-                        <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-success">Visited</a>
+                        <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-success" data-toggle='modal' data-target='#sendModal'>Visited</a>
                         </td>
                         <td>{{visit.contact.nickname}}</td>
                         <td>{{visit.contact.study_group}}</td>

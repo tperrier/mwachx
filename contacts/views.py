@@ -42,7 +42,7 @@ def visit_dismiss(request,visit_id):
 def visits(request):
     today = settings.CURRENT_DATE
     # upcoming = cont.Visit.objects.filter(scheduled=today,skipped=None, arrived=None)
-    upcoming = visit_count = cont.Visit.objects.filter(
+    upcoming = cont.Visit.objects.filter(
         scheduled__gte=today-datetime.timedelta(weeks=1),
         scheduled__lte=today,
         skipped=None, 
@@ -66,7 +66,7 @@ def visits(request):
 def home(request):
     today = settings.CURRENT_DATE
     # visit_count = cont.Visit.objects.filter(Q(parent__scheduled__lt=today-datetime.timedelta(days=7))|Q(scheduled=today), skipped=None, arrived=None).count()
-    visit_count = visit_count = cont.Visit.objects.filter(
+    visit_count = cont.Visit.objects.filter(
         scheduled__gte=today-datetime.timedelta(weeks=1),
         scheduled__lte=today,
         skipped=None, 
