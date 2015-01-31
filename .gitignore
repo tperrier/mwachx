@@ -4,3 +4,4 @@
 *~
 *.json
 ignore/
+node_modules/
