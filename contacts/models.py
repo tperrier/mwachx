@@ -143,9 +143,10 @@ class Visit(TimeStampedModel):
         ordering = ('scheduled',)
     
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
-    scheduled = models.DateField(blank=True,null=True)
-    arrived = models.DateField(blank=True,null=True)
-    skipped = models.BooleanField(default=False)
+    parent = models.ForeignKey('self', related_name='children_set', null=True, blank=True, default=None)
+    scheduled = models.DateField()
+    arrived = models.DateField(blank=True,null=True,default=None)
+    skipped = models.NullBooleanField(default=None)
     comment = models.CharField(max_length=500,blank=True,null=True)
     
     def study_id(self):
@@ -158,6 +159,14 @@ class Visit(TimeStampedModel):
     contact_name.short_description = 'Nickname'
     contact_name.admin_order_field = 'contact__nickname'
     
+    @property
+    def original(self):
+        return self.parent.scheduled if self.parent else self.scheduled
+
+    @property
+    def overdue(self):
+        today = settings.CURRENT_DATE
+        return (today-self.original).days
     
 class StatusChange(TimeStampedModel):
     class Meta:

@@ -2,22 +2,104 @@
 <div class='col-full'>
     <fieldset class="action-item visit-list">
         <legend>Today's visits</legend>
-        {% for name in visits.upcoming %}
-	        <div>{{name}}</div>
-		{% endfor %}
+        {% if visits.upcoming|length > 0 %}
+        <table id="visits-table" class="table table-striped table-hover table-condensed">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nickname</th>
+                    <th>Study Group</th>
+                    <th>Original Scheduled Visit</th>
+                    <th>Days Overdue</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for visit in visits.upcoming %}
+                <tr class="link-row">
+                    <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-success">Visited</a>
+                    </td>
+                    <td>{{visit.contact.nickname}}</td>
+                    <td>{{visit.contact.study_group}}</td>
+                    <td>{{visit.original}}</td>
+                    <td>{{visit.overdue}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
     </fieldset>
 
-    <fieldset class="action-item visit-list">
-        <legend>More than 1 week overdue</legend>
-        {% for name in visits.oneweek %}
-	        <div>{{name}}</div>
-		{% endfor %}
-    </fieldset>
-    <fieldset class="action-item visit-list">
-        <legend>More than 1 month overdue</legend>
-        {% for name in visits.onemonth %}
-	        <div>{{name}}</div>
-		{% endfor %}
-    </fieldset>
+
+    <div class="panel panel-default action-item visit-list">
+        <a data-toggle="collapse" data-target="#collapseOneWeek" href="#collapseOneWeek">
+            <div class="panel-heading">More than 1 week overdue <span class="badge pull-right">{{visits.oneweek|length}}</span>
+            </div>
+        </a>
+        <div id="collapseOneWeek" class="panel-collapse collapse">
+            {% if visits.oneweek|length > 0 %}
+            <table id="visits-table" class="table table-striped table-hover table-condensed">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Nickname</th>
+                        <th>Study Group</th>
+                        <th>Original Scheduled Visit</th>
+                        <th>Days Overdue</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for visit in visits.oneweek %}
+                    <tr class="link-row">
+                        <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-success">Visited</a>
+                        </td>
+                        <td>{{visit.contact.nickname}}</td>
+                        <td>{{visit.contact.study_group}}</td>
+                        <td>{{visit.original}}</td>
+                        <td>{{visit.overdue}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+
+
+    <div class="panel panel-default action-item visit-list">
+        <a data-toggle="collapse" data-target="#collapseFourWeeks" href="#collapseFourWeeks">
+            <div class="panel-heading">More than 4 weeks overdue <span class="badge pull-right">{{visits.onemonth|length}}</span>
+            </div>
+        </a>
+        <div id="collapseFourWeeks" class="panel-collapse collapse">
+            {% if visits.onemonth|length > 0 %}
+            <table id="visits-table" class="table table-striped table-hover table-condensed">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Nickname</th>
+                        <th>Study Group</th>
+                        <th>Original Scheduled Visit</th>
+                        <th>Days Overdue</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for visit in visits.onemonth %}
+                    <tr class="link-row">
+                        <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-success">Visited</a>
+                        </td>
+                        <td>{{visit.contact.nickname}}</td>
+                        <td>{{visit.contact.study_group}}</td>
+                        <td>{{visit.original}}</td>
+                        <td>{{visit.overdue}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

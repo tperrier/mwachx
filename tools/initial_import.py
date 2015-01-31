@@ -96,8 +96,14 @@ clients = random.sample(clients.values(),IMPORT_COUNT)
 for i,c in enumerate(clients):
     print add_client(c,i)
 
+#Make the last message for each contact is_viewed=False
 last_messages = cont.Message.objects.filter(is_outgoing=False).values('contact_id').order_by().annotate(Max('id'))
 cont.Message.objects.exclude(id__in=[d['id__max'] for d in last_messages]).update(is_viewed=True)
+
+# Make last visit arrived = None.
+last_visits = cont.Visit.objects.all().values('contact_id').order_by().annotate(Max('id'))
+cont.Visit.objects.filter(id__in=[d['id__max'] for d in last_visits]).update(arrived=None,skipped=None)
+
 '''    
 update contacts_message set is_viewed = 1 where id not in 
 (select max(id) contacts_message where is_outgoing=0 group by contact_id); 

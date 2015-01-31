@@ -30,4 +30,6 @@ class ConnectionAdmin(admin.ModelAdmin):
 class VisitAdmin(admin.ModelAdmin):
     
     list_display = ('study_id','contact_name','scheduled','arrived','skipped')
+    date_hierarchy = 'scheduled'
+    list_filter = ('skipped',)
     
