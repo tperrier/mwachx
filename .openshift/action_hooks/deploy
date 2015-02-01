@@ -6,10 +6,9 @@
 # Activate VirtualEnv in order to use the correct libraries
 
 echo "---> ACTION HOOK: deploy <---"
-source $OPENSHIFT_HOMEDIR/python/virtenv/bin/activate
+source "$OPENSHIFT_HOMEDIR/python/virtenv/bin/activate"
 
-echo "Executing lesscpy '${OPENSHIFT_REPO_DIR}contacts/static/style.less > ${OPENSHIFT_REPO_DIR}contacts/static/style.css'"
-lesscpy "${OPENSHIFT_REPO_DIR}contacts/static/style.less" > "${OPENSHIFT_REPO_DIR}contacts/static/style.css"
+rm "${OPENSHIFT_DATA_DIR}/mwach.db"
 
 echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py migrate --noinput'"
 python "${OPENSHIFT_REPO_DIR}manage.py migrate" --noinput
