@@ -6,8 +6,12 @@ $(function(){
         var message = button.closest('div.message');
         
         var modal = $(this);
-        modal.find('input[name="parent_id"]').val(message_id);
-        modal.find('#reply-message').html(message.find('.content').html());
+        if(message_id) {
+            modal.find('input[name="parent_id"]').val(message_id);
+            modal.find('#reply-message').show().html(message.find('.content').html());
+        }else {
+            modal.find('#reply-message').hide();
+        }
         
     });
 });

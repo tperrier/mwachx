@@ -126,8 +126,15 @@ def contact(request,study_id):
 def contact_send(request):
     print request.POST
     contact = cont.Contact.objects.get(study_id=request.POST['study_id'])
-    parent = cont.Message.objects.get_or_none(pk=request.POST.get('parent_id',None))
     message = request.POST['message']
+    parent_id = request.POST.get('parent_id',-1)
+    parent = cont.Message.objects.get_or_none(pk=parent_id if parent_id else -1)
+    
+    #Mark Parent As Viewed If Unviewed
+    if parent and parent.is_viewed == False:
+        parent.is_viewed = True
+        parent.save()
+        
     cont.Message.send(contact,message,is_system=False,parent=parent)
     return redirect('contacts.views.contact',study_id=request.POST['study_id'])
     
