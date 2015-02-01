@@ -11,7 +11,7 @@ source "$OPENSHIFT_HOMEDIR/python/virtenv/bin/activate"
 rm "${OPENSHIFT_DATA_DIR}/mwach.db"
 
 echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py migrate --noinput'"
-python "${OPENSHIFT_REPO_DIR}manage.py migrate" --noinput
+python "${OPENSHIFT_REPO_DIR}manage.py" migrate --noinput
 
 echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py collectstatic --noinput'"
 python "${OPENSHIFT_REPO_DIR}manage.py" collectstatic --noinput
