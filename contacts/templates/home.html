@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% block title %}Home{% endblock %} {% block content %}
 <div class='col-full'>
     {% with number=status.messages %}
-    {% url 'contacts.views.new_messages' as u %}
+    {% url 'contacts.views.messages_new' as u %}
     <a class='btn {% if status.messages != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="{{u}}">
         <span class="action-item-icon"> {% include 'icons/sms-icon.html' %}</span>
         <span class="action-item-text">{% if status.messages != 0 %} You have {% include 'icons/number.html' %} new messages to view {% else %} No new messages! {% endif %}</span>

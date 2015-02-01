@@ -15,9 +15,11 @@ gulp.task('less', function() {
 
 gulp.task('watch', function() {
 	livereload.listen();
-    gulp.watch('./contacts/static/**/*.less', ['less']);
+    gulp.watch('**.less', ['less']);
     /* Trigger a live reload on any Django template changes */
     gulp.watch('**/templates/*').on('change', livereload.changed);
+    gulp.watch('**views.py').on('change', livereload.changed);
+    gulp.watch('**admin.py').on('change', livereload.changed);
 });
 
 gulp.task('default', ['less', 'watch'], function() {

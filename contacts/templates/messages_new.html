@@ -1,0 +1,27 @@
+{% extends 'base.html' %} 
+
+{% block title %}Unread Messages{% endblock %} 
+
+{% block content %}
+<div id='new-message-list' class='col-md-10 col-md-offset-1'>
+    
+    <div class='panel panel-primary'>
+        
+        <div class='panel-heading'>
+            <h3 class='panel-title'>New Messages <span class='badge'>3</span></h3>
+        </div>
+        
+        <div class='panel-body'>
+            {% for message in new_message_list %}
+                <div class='message'>
+                    <div class='message-count'>{{forloop.counter}}</div>
+                    {{message.text}}
+                    <span>{{message.created}} -- {{message.contact.nickname}} -- {{message.weeks}} wk </span>
+                </div>
+            {% endfor %}
+        </div>
+        
+    <div>
+    
+</div>
+{% endblock %}

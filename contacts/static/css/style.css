@@ -6719,6 +6719,25 @@ body {
   text-align: center;
   padding-top: .2em;
 }
+#new-message-list .message {
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  padding: 10px;
+  padding-left: 0px;
+  margin-bottom: 10px;
+  position: relative;
+}
+#new-message-list .message .message-count {
+  float: left;
+  width: 50px;
+  background-color: #a0a0a0;
+}
+#new-message-list .message span {
+  display: block;
+  font-style: italic;
+  margin-left: 50px;
+  margin-top: 10px;
+}
 /*
  * Week Message List
  */

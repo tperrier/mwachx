@@ -5,7 +5,7 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', views.dashboard),
     url(r'^$', views.home),
-    url(r'^newmessages/$', views.new_messages),
+    url(r'^message/new/?$', views.messages_new),
     url(r'^visits/$', views.visits),
     url(r'^visit/dismiss/(?P<visit_id>\d*)/?$',views.visit_dismiss),
     url(r'^calls/$', views.calls),

@@ -17,8 +17,7 @@ import forms
 
 def translations(request):
     return render(request, 'translations.html')
-def new_messages(request):
-    return render(request, 'new-messages.html')
+
 def calls(request):
     return render(request, 'calls-to-make.html')
 
@@ -143,7 +142,9 @@ def message_dismiss(request,message_id):
     message.is_viewed=True
     message.save()
     return redirect('contacts.views.contact',study_id=message.contact.study_id)
-    
+
+def messages_new(request):
+    return render(request, 'messages_new.html',{'new_message_list':cont.Message.objects.pending()})
     
 def contact_add(request):
     
