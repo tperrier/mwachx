@@ -151,7 +151,8 @@ class Contact(TimeStampedModel):
             today = settings.CURRENT_DATE
         if self.is_pregnant:
             days = (self.due_date - today).days
-        return days/7
+        weeks =  days/7
+        return 40 - weeks
     
     @property
     def pending(self):
