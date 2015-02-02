@@ -220,25 +220,45 @@ body {
 
 #new-message-list {
     
-    .message {
-        background-color:@background-light;
-        border-radius:5px;
-        padding:10px;
-        padding-left:0px;
-        margin-bottom:10px;
-        position:relative;
+    .panel {
+        margin-top:10px;
         
-        .message-count {
-            float:left;
-            width:50px;
-            background-color:@background-mid;
-        }
-        
-        span {
-            display:block;
-            font-style:italic;
-            margin-left:50px;
-            margin-top:10px;
+        .message {
+            background-color:@background-light;
+            border-radius:5px;
+            padding:0px;
+            margin-bottom:10px;
+            display: table;
+            width:100%;
+            text-decoration:none;
+            cursor:pointer;
+            
+            &:hover {
+                background-color:@background-mid;
+            }
+            
+            .message-count {
+                width:50px;
+                background-color:@background-mid;
+                vertical-align: middle;
+                text-align: center;
+                display: table-cell;
+                height:100%;
+            }
+            
+            .message-content {
+                display:table-cell;
+                vertical-align:middle;
+                padding: 5px 5px 5px 20px;
+                
+                span {
+                    display:block;
+                    font-style:italic;
+                    padding-left:30px;
+                }
+            }
+            
+            
         }
     }
 }

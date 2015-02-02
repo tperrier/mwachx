@@ -105,7 +105,7 @@ class Contact(TimeStampedModel):
     family_planning = models.CharField(max_length=50,blank=True,null=True,choices=FAMILY_PLANNING_CHOICES,default='none')
     art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART initiation',verbose_name='ART Initiantion')
     #~ hiv_disclosed = models.BooleanField(default=False)
-    due_date = models.DateField(verbose_name='Due Date')
+    due_date = models.DateField(verbose_name='Expected Delivery')
     
     #State attributes to be edited by the system
     last_msg_client = models.DateField(blank=True,null=True,help_text='Date of last client message received')
