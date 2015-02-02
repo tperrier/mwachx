@@ -6539,7 +6539,7 @@ body {
   margin: 0px;
 }
 /**
- * Main Layout: Center Full Screen Column
+ * nav changes
  **/
 .navbar {
   border-bottom: 5px solid #273b4e;
@@ -6547,6 +6547,14 @@ body {
 .nav {
   font-size: 1.2em;
 }
+.visit-list h3 {
+  font-weight: 200;
+  color: #333333;
+  border-bottom: 1px solid #e5e5e5;
+}
+/**
+ * Main Layout: Center Full Screen Column
+ **/
 #content {
   height: auto;
   width: auto;
