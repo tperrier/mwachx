@@ -6552,6 +6552,10 @@ body {
   color: #333333;
   border-bottom: 1px solid #e5e5e5;
 }
+.navbar-inverse .navbar-brand i {
+  color: #ffffff;
+  font-size: 1.5em;
+}
 /**
  * Main Layout: Center Full Screen Column
  **/

@@ -1,0 +1,32 @@
+@font-face {
+    font-family: 'mwach';
+    src: url('fonts/mwach.eot?wt1vht');
+    src: url('fonts/mwach.eot?#iefixwt1vht') format('embedded-opentype'), url('fonts/mwach.woff?wt1vht') format('woff'), url('fonts/mwach.ttf?wt1vht') format('truetype'), url('fonts/mwach.svg?wt1vht#mwach') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+.mw {
+    font-family: 'mwach';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    /* Better Font Rendering =========== */
+    
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.mw-mwach-d:before {
+    content: "\e600";
+}
+.mw-mwach-phone-d:before {
+    content: "\e601";
+}
+.mw-mwach-phone:before {
+    content: "\e602";
+}
+.mw-mwach:before {
+    content: "\e603";
+}
