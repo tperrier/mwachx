@@ -6719,24 +6719,39 @@ body {
   text-align: center;
   padding-top: .2em;
 }
-#new-message-list .message {
+#new-message-list .panel {
+  margin-top: 10px;
+}
+#new-message-list .panel .message {
   background-color: #f0f0f0;
   border-radius: 5px;
-  padding: 10px;
-  padding-left: 0px;
+  padding: 0px;
   margin-bottom: 10px;
-  position: relative;
+  display: table;
+  width: 100%;
+  text-decoration: none;
+  cursor: pointer;
 }
-#new-message-list .message .message-count {
-  float: left;
-  width: 50px;
+#new-message-list .panel .message:hover {
   background-color: #a0a0a0;
 }
-#new-message-list .message span {
+#new-message-list .panel .message .message-count {
+  width: 50px;
+  background-color: #a0a0a0;
+  vertical-align: middle;
+  text-align: center;
+  display: table-cell;
+  height: 100%;
+}
+#new-message-list .panel .message .message-content {
+  display: table-cell;
+  vertical-align: middle;
+  padding: 5px 5px 5px 20px;
+}
+#new-message-list .panel .message .message-content span {
   display: block;
   font-style: italic;
-  margin-left: 50px;
-  margin-top: 10px;
+  padding-left: 30px;
 }
 /*
  * Week Message List

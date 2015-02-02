@@ -8,16 +8,18 @@
     <div class='panel panel-primary'>
         
         <div class='panel-heading'>
-            <h3 class='panel-title'>New Messages <span class='badge'>3</span></h3>
+            <h3 class='panel-title'>New Messages <span class='badge pull-right'>3</span></h3>
         </div>
         
         <div class='panel-body'>
             {% for message in new_message_list %}
-                <div class='message'>
-                    <div class='message-count'>{{forloop.counter}}</div>
-                    {{message.text}}
-                    <span>{{message.created}} -- {{message.contact.nickname}} -- {{message.weeks}} wk </span>
-                </div>
+                <a class='message' href='/contact/{{message.contact.study_id}}'>
+                    <span class='message-count'><span class='badge'>{{forloop.counter}}</span></span>
+                    <span class='message-content'>
+                        {{message.text}}
+                        <span>{{message.created}} -- {{message.contact.nickname}} -- {{message.weeks}} wk </span>
+                    </span>
+                </a>
             {% endfor %}
         </div>
         
