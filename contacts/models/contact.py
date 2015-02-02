@@ -80,6 +80,12 @@ class Contact(TimeStampedModel):
         (19,'Evening'),
     )
     
+    CHILD_STATUS_CHOICES = (
+        ('unknown','Unkown'),
+        ('negative','Negative'),
+        ('positive','Positive'),
+    )
+    
     #Set Custom Manager
     objects = ContactQuerySet.as_manager()
     
@@ -104,7 +110,8 @@ class Contact(TimeStampedModel):
     condition = models.CharField(max_length=40,choices=CONDITION_CHOICES,default='normal')
     family_planning = models.CharField(max_length=50,blank=True,null=True,choices=FAMILY_PLANNING_CHOICES,default='none')
     art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART initiation',verbose_name='ART Initiantion')
-    #~ hiv_disclosed = models.BooleanField(default=False)
+    hiv_disclosed = models.NullBooleanField(default=None)
+    child_hiv_status = models.CharField(max_length=20,choices=CHILD_STATUS_CHOICES,default='unkown')
     due_date = models.DateField(verbose_name='Expected Delivery')
     
     #State attributes to be edited by the system

@@ -16,6 +16,7 @@ class ContactAdd(forms.ModelForm):
         widgets = {
             'due_date':util.Html5DateInput(),
             'birthdate':util.Html5DateInput(),
+            'art_initiation':util.Html5DateInput(),
         }
 
 class ScheduleVisit(forms.ModelForm):
