@@ -44,15 +44,19 @@ def calls(request):
 def visit_schedule(request):
     next_visit = request.POST['next_visit']
     arrived = request.POST['arrived']
-    parent_visit = cont.Visit.objects.get(pk=request.POST['parent_visit_id'])
+    study_id = request.POST['study_id']
+    contact = cont.Contact.objects.get(study_id=study_id)
+
+    # find any open visits for this client
+    parent_visit = cont.Visit.objects.get_or_none(contact__study_id=study_id, arrived=None,skipped=None)
 
     # Mark Parent arrival time.
     if parent_visit:
         parent_visit.arrived = arrived
         parent_visit.save()
         
-    cont.Visit.new_visit(parent_visit.contact,next_visit)
-    return redirect('contacts.views.visits')
+    cont.Visit.new_visit(contact,next_visit)
+    return redirect(request.POST['src'])
 
 def visit_dismiss(request,visit_id):
     today = settings.CURRENT_DATE

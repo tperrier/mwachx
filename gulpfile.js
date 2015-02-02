@@ -17,7 +17,7 @@ gulp.task('watch', function() {
 	livereload.listen();
     gulp.watch('**.less', ['less']);
     /* Trigger a live reload on any Django template changes */
-    gulp.watch('**/templates/*').on('change', livereload.changed);
+    gulp.watch('**/templates/**/*.html').on('change', livereload.changed);
     gulp.watch('**views.py').on('change', livereload.changed);
     gulp.watch('**admin.py').on('change', livereload.changed);
 });

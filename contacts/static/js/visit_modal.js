@@ -2,9 +2,11 @@
 $(function(){
     $('#visitScheduleModal').on('show.bs.modal',function(evt){
         var button = $(evt.relatedTarget); //button that triggered the modal
-        var visit_id = button.data('visit');
+        var study_id = button.data('study-id');
+        var src = button.data('src');
         
         var modal = $(this);
-        modal.find('input[name="parent_visit_id"]').val(visit_id);
+        modal.find('input[name="study_id"]').val(study_id);
+        modal.find('input[name="src"]').val(src);
     });
 });
