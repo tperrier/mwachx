@@ -1,17 +1,17 @@
-{% extends 'base.html' %} {% block title %}Upcoming visits{% endblock %} {% block content %}
-
-		<div class='modal fade' id='sendModal' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+{% extends 'base.html' %} {% load staticfiles %}{% block title %}Upcoming visits{% endblock %} {% block content %}
+		<div class='modal fade' id='visitScheduleModal' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
-                    <form method='post' action='/contact/send'>
+                    <form method='post' action='{% url 'contacts.views.visit_schedule' %}'>
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <h4 class="modal-title" id="myModalLabel">Date of next visit</h4>
                     </div>
                     <div class="modal-body">
                         {% csrf_token %}
-                        
-                        <input type='hidden' name='study_id' value='{{contact.study_id}}'/>
+                        <input type='date' name='next_visit' class="form-control" min='{% with d=CURRENT_DATE %}{{d|date:"Y-m-d"}}{% endwith %}' />
+                        <input type='hidden' name='arrived' value='{% with d=CURRENT_DATE %}{{d|date:"Y-m-d"}}{% endwith %}'/>
+                        <input type='hidden' name='parent_visit_id' value=''/>
                     </div>
                     <div class="modal-footer">
                         <input class='btn btn-primary' type='submit' value='Save'/>
@@ -40,7 +40,8 @@
 
                 {% for visit in visits.upcoming %}
                 <tr class="link-row">
-                    <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-success" data-toggle='modal' data-target='#sendModal'>Visited</a>
+                    <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-primary" data-toggle='modal' data-target='#visitScheduleModal' data-visit={{visit.id}}>Visited</a>
+                    <!--<button class='btn btn-sm btn-primary' data-toggle='modal' data-target='#visitScheduleModal' data-visit={{visit.id}} data-message='{{message.id}}'>Reply</button>-->
                     </td>
                     <td>{{visit.contact.nickname}}</td>
                     <td>{{visit.contact.study_group}}</td>
@@ -85,7 +86,7 @@
 
                     {% for visit in visits.oneweek %}
                     <tr class="link-row">
-                        <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-success" data-toggle='modal' data-target='#sendModal'>Visited</a>
+                        <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-primary" data-toggle='modal' data-target='#visitScheduleModal' data-visit={{visit.id}}>Visited</a>
                         </td>
                         <td>{{visit.contact.nickname}}</td>
                         <td>{{visit.contact.study_group}}</td>
@@ -121,7 +122,7 @@
 
                     {% for visit in visits.onemonth %}
                     <tr class="link-row">
-                        <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-success" data-toggle='modal' data-target='#sendModal'>Visited</a>
+                        <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-primary" data-toggle='modal' data-target='#visitScheduleModal' data-visit={{visit.id}}>Visited</a>
                         </td>
                         <td>{{visit.contact.nickname}}</td>
                         <td>{{visit.contact.study_group}}</td>
@@ -135,4 +136,7 @@
         </div>
     </div>
 </div>
+
+<script src='{% static "js/visit_modal.js" %}'></script>
+
 {% endblock %}

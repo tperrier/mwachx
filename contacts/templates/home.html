@@ -33,16 +33,21 @@
     {% endwith %}
 
     <div class='btn-group btn-group-justified action-btn-group' role="group">
-        <a class='btn btn-info action-button action-item' href="/contact/add">
+        <a class='btn btn-info action-button action-item' href="{% url 'contacts.views.contact_add' %}">
             <span class="action-item-icon"> 
                 <i class="fa fa-user-plus"></i>
             </span>
             <span class="action-item-text">Add new user</span>
-        </a><a class='btn btn-info action-button action-item' href="/contact/add">
+        </a><a class='btn btn-info action-button action-item' href="{% url 'contacts.views.contacts' %}">
             <span class="action-item-icon"> 
-                <i class="fa fa-hospital-o"></i>
+                <i class="fa fa-user"></i>
             </span>
-            <span class="action-item-text">Record new visit</span>
+            <span class="action-item-text">Find a user</span>
+        </a><a class='btn btn-info action-button action-item' href="{% url 'contacts.views.contacts' %}">
+            <span class="action-item-icon"> 
+                <i class="fa fa-list"></i>
+            </span>
+            <span class="action-item-text">List of upcoming visits</span>
         </a>
     </div>
 </div>

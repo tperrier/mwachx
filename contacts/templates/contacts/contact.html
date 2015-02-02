@@ -5,7 +5,7 @@
 
 {% block content %}
 
-        <div class='modal fade' id='sendModal' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class='modal fade' id='newVisitModal' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
                     <form method='post' action='/contact/send'>
@@ -35,7 +35,7 @@
         </div>
         
         <div class='col-md-6 scroll col-full'>
-            <button data-toggle='modal' data-target='#sendModal' class='btn btn-primary form-control'>Send</button>
+            <button data-toggle='modal' data-target='#newVisitModal' class='btn btn-primary form-control'>Send</button>
             <div id='message-list'>
                 {% for message in contact.message_set.all %}
                    <div class='message {{message.html_class}}'>
@@ -46,7 +46,7 @@
                         <div class='content'>{{ message.text }}</div>
                         <div class='footer'>
                             {% if not message.is_outgoing %}
-                                <button class='btn btn-sm btn-primary' data-toggle='modal' data-target='#sendModal' data-message='{{message.id}}'>Reply</button>
+                                <button class='btn btn-sm btn-primary' data-toggle='modal' data-target='#newVisitModal' data-message='{{message.id}}'>Reply</button>
                             {% endif %}
                             {% if not message.is_viewed %}
                                 <a class='btn btn-sm btn-primary' href='{% url "contacts.views.message_dismiss" message.id%}'>Dismiss</a>

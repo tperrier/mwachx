@@ -70,6 +70,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.static',
     'utils.context_processors.openshift',
+    'utils.context_processors.current_date',
 )
 
 ROOT_URLCONF = 'mwach.urls'
@@ -130,4 +131,4 @@ MESSAGING_CONTACT = 'contacts.Contact'
 MESSAGING_CONNECTION = 'contacts.Connection'
 MESSAGING_ADMIN = 'auth.User'
 from datetime import date
-CURRENT_DATE =  date(2014,7,31)
+CURRENT_DATE =  date(2014,7,25)

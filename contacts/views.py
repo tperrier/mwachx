@@ -14,12 +14,45 @@ import code
 import models as cont
 import forms
 
+import logging, logging.config
+import sys
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+        }
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO'
+    }
+}
+
+logging.config.dictConfig(LOGGING)
+
 
 def translations(request):
     return render(request, 'translations.html')
 
 def calls(request):
     return render(request, 'calls-to-make.html')
+
+@require_POST
+def visit_schedule(request):
+    next_visit = request.POST['next_visit']
+    arrived = request.POST['arrived']
+    parent_visit = cont.Visit.objects.get(pk=request.POST['parent_visit_id'])
+
+    # Mark Parent arrival time.
+    if parent_visit:
+        parent_visit.arrived = arrived
+        parent_visit.save()
+        
+    cont.Visit.new_visit(parent_visit.contact,next_visit)
+    return redirect('contacts.views.visits')
 
 def visit_dismiss(request,visit_id):
     today = settings.CURRENT_DATE
@@ -39,24 +72,6 @@ def visit_dismiss(request,visit_id):
 
 
 def visits(request):
-    '''
-    upcoming = visit_count = cont.Visit.objects.filter(
-    Stashed changes
-        scheduled__gte=today-datetime.timedelta(weeks=1),
-        scheduled__lte=today,
-        skipped=None, 
-        arrived=None)
-    oneweek = visit_count = cont.Visit.objects.filter(
-        scheduled__gte=today-datetime.timedelta(weeks=4),
-        scheduled__lte=today-datetime.timedelta(weeks=1),
-        skipped=None, 
-        arrived=None)
-    onemonth = visit_count = cont.Visit.objects.filter(
-        scheduled__lte=today-datetime.timedelta(weeks=4),
-        skipped=None, 
-        arrived=None)
-    '''
-    
     upcoming = cont.Visit.objects.visit_range({'weeks':0},{'weeks':1})
     oneweek = cont.Visit.objects.visit_range({'weeks':1},{'weeks':4})
     onemonth = cont.Visit.objects.visit_range({'weeks':4})

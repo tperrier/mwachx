@@ -56,3 +56,14 @@ class Visit(TimeStampedModel):
     def overdue(self):
         today = settings.CURRENT_DATE
         return (today-self.original).days
+
+    @staticmethod
+    def new_visit(contact,scheduled,parent=None,arrived=None,skipped=None,comment=None,):
+        Visit.objects.create(
+            contact=contact,
+            scheduled=scheduled,
+            arrived=arrived,
+            skipped=skipped,
+            comment=comment,
+            parent=parent,
+        )
