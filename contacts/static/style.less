@@ -240,7 +240,6 @@ body {
         
         .message {
             background-color:@background-light;
-            border-radius:5px;
             padding:0px;
             margin-bottom:10px;
             display: table;
@@ -250,9 +249,14 @@ body {
             
             &:hover {
                 background-color:@background-mid;
+                
+                .message-label {
+                    border-right:1px solid @background-dark;
+                    width:52px;
+                }
             }
             
-            .message-count {
+            .message-label {
                 width:50px;
                 background-color:@background-mid;
                 vertical-align: middle;
@@ -262,15 +266,15 @@ body {
             }
             
             .message-content {
-                display:table-cell;
                 vertical-align:middle;
                 padding: 5px 5px 5px 20px;
-                
-                span {
-                    display:block;
-                    font-style:italic;
-                    padding-left:30px;
-                }
+                text-align:left;
+                display:table-cell;
+            }
+            
+            .date {
+                text-align: center;
+                width:150px;
             }
             
             

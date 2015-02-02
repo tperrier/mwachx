@@ -6736,7 +6736,6 @@ body {
 }
 #new-message-list .panel .message {
   background-color: #f0f0f0;
-  border-radius: 5px;
   padding: 0px;
   margin-bottom: 10px;
   display: table;
@@ -6747,7 +6746,11 @@ body {
 #new-message-list .panel .message:hover {
   background-color: #a0a0a0;
 }
-#new-message-list .panel .message .message-count {
+#new-message-list .panel .message:hover .message-label {
+  border-right: 1px solid #707070;
+  width: 52px;
+}
+#new-message-list .panel .message .message-label {
   width: 50px;
   background-color: #a0a0a0;
   vertical-align: middle;
@@ -6756,14 +6759,14 @@ body {
   height: 100%;
 }
 #new-message-list .panel .message .message-content {
-  display: table-cell;
   vertical-align: middle;
   padding: 5px 5px 5px 20px;
+  text-align: left;
+  display: table-cell;
 }
-#new-message-list .panel .message .message-content span {
-  display: block;
-  font-style: italic;
-  padding-left: 30px;
+#new-message-list .panel .message .date {
+  text-align: center;
+  width: 150px;
 }
 /*
  * Week Message List

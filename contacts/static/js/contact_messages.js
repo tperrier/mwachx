@@ -6,6 +6,7 @@ $(function(){
         var message = button.closest('div.message');
         
         var modal = $(this);
+        console.log('Message: ',message_id);
         if(message_id) {
             modal.find('input[name="parent_id"]').val(message_id);
             modal.find('#reply-message').show().html(message.find('.content').html());
