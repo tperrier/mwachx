@@ -1,5 +1,46 @@
-{% extends 'base.html' %} {% block title %}Calls to make{% endblock %} {% block content %}
-<div class='col-full'>
-    Not yet implemented.
+{% extends 'base.html' %} {% block title %}Translations{% endblock %} {% block content %}
+<div class='col-full col-md-10 col-md-offset-1'>
+     <div class='panel panel-primary'>
+        
+        <div class='panel-heading'>
+            <h3 class='panel-title'>One Month Calls<span class='badge pull-right'>{{2}}</span></h3>
+        </div>
+        A list of calls to make for one month postpartum.  Make this zero every day.</br>
+        Mark:
+        <ul>
+            <li>Answered</li>
+            <li>No Answer</li>
+            <li>No Ring</li>
+        </ul>
+    </div>
+    
+    <div class='panel panel-primary'>
+        
+        <div class='panel-heading'>
+            <h3 class='panel-title'>One Year Calls<span class='badge pull-right'>{{2}}</span></h3>
+        </div>
+        A list of calls to make for one month postpartum.  Make this zero every day.</br>
+        Mark:
+        <ul>
+            <li>Answered</li>
+            <li>No Answer</li>
+            <li>No Ring</li>
+        </ul>
+    </div>
+    
+    <div class='panel panel-primary'>
+        
+        <div class='panel-heading'>
+            <h3 class='panel-title'>Secondary Contact Follow Up<span class='badge pull-right'>{{2}}</span></h3>
+        </div>
+        A list of calls to make for to secondary contacts for those participants who did not answer for four days.</br>
+        Mark:
+        <ul>
+            <li>Answered</li>
+            <li>No Answer</li>
+            <li>No Ring</li>
+        </ul>
+    </div>
+    
 </div>
 {% endblock %}

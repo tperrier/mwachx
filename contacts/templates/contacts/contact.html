@@ -29,13 +29,15 @@
           </div>
         </div>
         
-
-        <div class='col-md-2 scroll col-full'>
-            {% include 'contacts/contact_list_frag.html' %}
+        <div class='col-md-10 col-md-offset-1'>
+            <h3>Messages and Contact Infomation for <em>{{contact.nickname}}</em> -- ID: {{contact.study_id_short}} ANC: {{contact.anc_num}} -- {{contact.weeks_display}} -- {{contact.get_study_group_display}}</h3>
         </div>
         
-        <div class='col-md-6 scroll col-full'>
-            <button data-toggle='modal' data-target='#newVisitModal' class='btn btn-primary form-control'>Send</button>
+        <div class='col-md-6 scroll col-full col-md-offset-1'>
+            <div class='btn-group btn-group-justified'>
+                <a data-toggle='modal' data-target='#sendModal' class='btn btn-success'>Send Message</a>
+                <a class='btn btn-info'>Record Call</a>
+            </div>
             <div id='message-list'>
                 {% for message in contact.message_set.all %}
                    <div class='message {{message.html_class}}'>
@@ -61,6 +63,19 @@
                                 <i style='padding-left:20px'> Related </i>
                                 <input type='radio' value='1' name='related'>Yes
                                 <input type='radio' value='0' name='related'>No
+                                
+                                <select name='topic'>
+                                    <option value='none'>None</option>
+                                    <option value='adherence'>Adherence</option>
+                                    <option value='side-effects'>Side Effects</option>
+                                    <option value='visits'>Visits</option>
+                                    <option value='antenatal-concerns'>Antenatal Concerns</option>
+                                    <option value='delivery-concenrs'>Delivery Concerns</option>
+                                    <option value='family-planing'>Family Planing</option>
+                                    <option value='infant-health'>Infant Health</option>
+                                    <option value='sexual-behavior'>Sexual Behavior</option>
+                                    <option value='other'>Other</option>
+                                </select>
                             {% endif %}
                         </div>
                     </div>
@@ -68,49 +83,63 @@
             </div>
         </div>
         
-        <div class='col-md-4 col-full'>
+        <div id='contact-details' class='col-md-4 col-full'>
             
-            <div class='details-group'>
-                <h1>Contact Details </h1>
-                <div class='details'>
-                <table>
-                    <tr><td>Contact ID</td><td>{{contact.study_id|stringformat:"03i"}}</td></tr>
-                    <tr><td>ANC #</td><td>{{contact.anc_num}}</td></tr>
-                    <tr><td>Nickname</td><td>{{contact.nickname}}</td></tr>
-                    <tr><td>Phonenumber</td><td>{{contact.phone_number}}</td></tr>
-                    <tr><td>Pregnancy Status</td><td>{{contact.status}}</td></tr>
-                    <tr><td>Due Date</td><td>{{contact.due_date}}</td></tr>
-                </table>
+            <div class='panel panel-success'>
+                <div class='panel-heading'>
+                    <h3 class='panel-title'>Contact Details <i id='context-edit' class='fa fa-cogs pull-right'></i></h3>
+                </div>
+                <div class='panel-body'>
+                    <div class='details'>
+                    <table>
+                        <tr><td>Contact ID</td><td>{{contact.study_id_short}}</td></tr>
+                        <tr><td>ANC #</td><td>{{contact.anc_num}}</td></tr>
+                        <tr><td>Nickname</td><td>{{contact.nickname}}</td></tr>
+                        <tr><td>Age</td><td>{{contact.age}}</td></tr>
+                        <tr><td>Phonenumber</td><td>{{contact.phone_number}}</td></tr>
+                        <tr><td>Pregnancy Status</td><td>{{contact.get_status_display}}</td></tr>
+                        <tr><td>Due Date</td><td>{{contact.due_date}}</td></tr>
+                    </table>
+                    </div>
+                
                 </div>
             </div>
             
-            <div class='details-group'>
-                <h1>Clinic Visit History</h1>
-                <div class='details'>
-                     <table>
-                        <tr><td>Next Visit</td><td>{{contact.visit_set.first.scheduled}}</td></tr>
-                    </table>
-                     <h3>
-                        <a data-toggle="collapse" href='#previous-visits-detail' aria-expanded="false">
-                            <i class='fa fa-chevron-circle-up'></i>
-                            <i class='fa fa-chevron-circle-down'></i>
-                            Previous Visits ({{contact.visit_set.count}})
-                        </a>
-                    </h3>
-                    <div id='previous-visits-detail'  class='extra collapse' data-heading='Previous Visits'>
-                        <table>
-                            <tr><th>Scheduled</th><th>Arrived</th></tr>
-                            {% for visit in contact.visit_set.all %}
-                            <tr><td>{{visit.scheduled}}</td><td>{{visit.arrived}}</td></tr>
-                            {% endfor %}
+            <div class='panel panel-success'>
+                <div class='panel-heading'>
+                    <h3 class='panel-title'>Clinic Visit History</h3>
+                </div>
+                <div class='panel-body'>
+                    <div class='details'>
+                         <table>
+                            <tr><td>Next Visit</td><td>{{contact.visit_set.first.scheduled}}</td></tr>
                         </table>
+                         <h3>
+                            <a data-toggle="collapse" href='#previous-visits-detail' aria-expanded="false">
+                                <i class='fa fa-chevron-circle-up'></i>
+                                <i class='fa fa-chevron-circle-down'></i>
+                                Previous Visits ({{contact.visit_set.count}})
+                            </a>
+                        </h3>
+                        <div id='previous-visits-detail'  class='extra collapse' data-heading='Previous Visits'>
+                            <table>
+                                <tr><th>Scheduled</th><th>Arrived</th></tr>
+                                {% for visit in contact.visit_set.all %}
+                                <tr><td>{{visit.scheduled}}</td><td>{{visit.arrived}}</td></tr>
+                                {% endfor %}
+                            </table>
+                        </div>
                     </div>
                 </div>
+                
             </div>
             
-            <div class='details-group'>
-                <h1>Clinic Notes</h1>
-                <div class='details'>
+             <div class='panel panel-success'>
+                <div class='panel-heading'>
+                    <h3 class='panel-title'>Clinic Notes<i id='note-add' class='fa fa-plus-square pull-right'></i></h3>
+                </div>
+                <div class='panel-body'>
+                    <div class='details'>
                     <div class='note'>
                        This is the first note 
                     </div>
@@ -129,6 +158,8 @@
                         {% endfor %}
                     </div>
                 </div>
+                </div>
+                
             </div>
             
         </div>

@@ -8373,9 +8373,6 @@ body {
   padding: 0px;
   margin: 0px;
 }
-#content .row > div:not(:first-child) {
-  border-left: 1px solid #ddd;
-}
 #content .row > div:first-child {
   padding-left: 0em;
 }
@@ -8456,33 +8453,26 @@ body {
 /*
   * Contact Group
   */
-.details-group h1 {
-  background-color: #a0a0a0;
-  text-align: center;
-  margin: 0px;
-}
-.details-group h3 {
-  font-size: 1.5em;
-  margin: 0px;
-  background-color: #a0a0a0;
-}
-.details-group div.details {
-  margin: auto;
+#contact-details .panel-body table {
   width: 80%;
-  margin-bottom: 5px;
+  margin: auto;
 }
-.details-group tr {
+#contact-details tr {
   border-bottom: 1px dashed black;
   background-color: #f0f0f0;
 }
-.details-group tr td {
+#contact-details tr td {
   padding: 5px 20px;
 }
-.details-group tr td:first-child {
-  text-align: right;
+#contact-details tr td:firstchild {
+  textalign: right;
 }
-.details-group tr td:first-child:after {
+#contact-details tr td:firstchild:after {
   content: ":";
+}
+#context-edit,
+#note-add {
+  cursor: pointer;
 }
 /*
  * Contact Message List

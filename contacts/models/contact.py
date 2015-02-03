@@ -144,7 +144,12 @@ class Contact(TimeStampedModel):
     @property
     def is_active(self):
         return not (self.status == 'completed' or self.status == 'stopped' or self.status == 'other')
-        
+    
+    @property
+    def age(self):
+        today = settings.CURRENT_DATE
+        delta = today - self.birthdate
+        return int((delta.days - delta.seconds/86400.0)/365.2425)
         
     def weeks(self,today=None):
         '''
@@ -154,8 +159,14 @@ class Contact(TimeStampedModel):
             today = settings.CURRENT_DATE
         if self.is_pregnant:
             days = (self.due_date - today).days
-        weeks =  days/7
-        return 40 - weeks
+            weeks =  days/7
+            return 40 - weeks
+        
+    def weeks_display(self):
+        return 'EGA: %i wks'%self.weeks()
+        
+    def study_id_short(self):
+        return '%04i'%self.study_id
     
     @property
     def pending(self):
