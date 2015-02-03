@@ -47,9 +47,20 @@
                         <div class='footer'>
                             {% if not message.is_outgoing %}
                                 <button class='btn btn-sm btn-primary' data-toggle='modal' data-target='#sendModal' data-message='{{message.id}}'>Reply</button>
-                            {% endif %}
+                            
                             {% if not message.is_viewed %}
                                 <a class='btn btn-sm btn-primary' href='{% url "contacts.views.message_dismiss" message.id%}'>Dismiss</a>
+                            {% endif %}
+                                <input type='radio' value='english'>English
+                                <input type='radio' value='kiswahili'>Kiswahili
+                                <input type='radio' value='dholuo'>Dholuo
+                                <br>
+                                Prompted
+                                <input type='radio' value='1' name='prompted'>Yes
+                                <input type='radio' value='0' name='prompted'>No
+                                <i style='padding-left:20px'> Related </i>
+                                <input type='radio' value='1' name='related'>Yes
+                                <input type='radio' value='0' name='related'>No
                             {% endif %}
                         </div>
                     </div>
