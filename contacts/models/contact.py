@@ -50,6 +50,9 @@ class Contact(TimeStampedModel):
     CONDITION_CHOICES = (
         ('normal','Normal'),
         ('adolescent','Adolescent'),
+        ('first','First Time Mother'),
+        ('cesarean','Previous Cesarean'),
+        ('art','Starting Art'),
     )
     
     FAMILY_PLANNING_CHOICES = (
