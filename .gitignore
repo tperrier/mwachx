@@ -5,3 +5,4 @@
 *.json
 ignore/
 node_modules/
+contacts/static/css/maps/

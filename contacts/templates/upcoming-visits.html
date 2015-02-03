@@ -1,10 +1,7 @@
-{% extends 'base.html' %} {% load staticfiles %}{% block title %}Upcoming visits{% endblock %} {% block content %}
-
-{% include 'add-new-visit.html' %}
+{% extends 'base.html' %} {% load staticfiles %}{% block title %}Upcoming visits{% endblock %} {% block content %} {% include 'add-new-visit.html' %}
 <div class='col-full'>
     <div class="action-item visit-list">
-        <h3>Today's visits</h3>
-        {% if visits.upcoming|length > 0 %}
+        <h3>Today's visits</h3> {% if visits.upcoming|length > 0 %}
         <table id="visits-table" class="table table-striped table-hover table-condensed">
             <thead>
                 <tr>
@@ -31,24 +28,25 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% else %}
-        {% url 'contacts.views.home' as u %}
+        {% else %} {% url 'contacts.views.home' as u %}
         <h1>Great job! No more visits for today.</h1>
 
         <a class='btn btn-success action-item btn-xxs visit-btn' href="{{u}}">
-		    <span class="action-item-icon">
-		        <i class="fa fa-home"></i>
-		    </span>
-		    <span class="action-item-text">Return home to see more tasks.</span>
-		</a>
+            <span class="action-item-icon">
+                <i class="fa fa-home"></i>
+            </span>
+            <span class="action-item-text">Return home to see more tasks.</span>
+        </a>
         {% endif %}
     </div>
 
 
     <div class="panel panel-default action-item visit-list">
-        <a data-toggle="collapse" data-target="#collapseOneWeek" href="#collapseOneWeek">
-            <div class="panel-heading">More than 1 week overdue <span class="badge pull-right">{{visits.oneweek|length}}</span>
+        <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#collapseOneWeek" href="#collapseOneWeek">
+            <button class="btn btn-normal"></button>
+            <div class="panel-heading">More than 1 week overdue
             </div>
+            <span class="badge">{{visits.oneweek|length}}</span>
         </a>
         <div id="collapseOneWeek" class="panel-collapse collapse">
             {% if visits.oneweek|length > 0 %}
@@ -84,9 +82,11 @@
 
 
     <div class="panel panel-default action-item visit-list">
-        <a data-toggle="collapse" data-target="#collapseFourWeeks" href="#collapseFourWeeks">
-            <div class="panel-heading">More than 4 weeks overdue <span class="badge pull-right">{{visits.onemonth|length}}</span>
+        <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#collapseFourWeeks" href="#collapseFourWeeks">
+            <button class="btn btn-normal"></button>
+            <div class="panel-heading">More than 4 weeks overdue
             </div>
+            <span class="badge">{{visits.onemonth|length}}</span>
         </a>
         <div id="collapseFourWeeks" class="panel-collapse collapse">
             {% if visits.onemonth|length > 0 %}
