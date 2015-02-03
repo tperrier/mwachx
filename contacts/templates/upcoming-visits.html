@@ -9,9 +9,10 @@
             <thead>
                 <tr>
                     <th></th>
-                    <th>Nickname</th>
+                    <th>Name</th>
                     <th>Study Group</th>
-                    <th>Original Scheduled Visit</th>
+                    <th>ANC</th>
+                    <th>Orig. Scheduled Visit</th>
                     <th>Days Overdue</th>
                 </tr>
             </thead>
@@ -20,10 +21,10 @@
                 {% for visit in visits.upcoming %}
                 <tr class="link-row">
                     <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-primary" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}}>Visited</a>
-                    <!--<button class='btn btn-sm btn-primary' data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}} data-message='{{message.id}}'>Reply</button>-->
                     </td>
                     <td>{{visit.contact.nickname}}</td>
                     <td>{{visit.contact.study_group}}</td>
+                    <td>{{visit.contact.anc_num}}</td>
                     <td>{{visit.original}}</td>
                     <td>{{visit.overdue}}</td>
                 </tr>
@@ -55,9 +56,10 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Nickname</th>
+                        <th>Name</th>
                         <th>Study Group</th>
-                        <th>Original Scheduled Visit</th>
+                        <th>ANC</th>
+                        <th>Orig. Scheduled Visit</th>
                         <th>Days Overdue</th>
                     </tr>
                 </thead>
@@ -69,6 +71,7 @@
                         </td>
                         <td>{{visit.contact.nickname}}</td>
                         <td>{{visit.contact.study_group}}</td>
+                        <td>{{visit.contact.anc_num}}</td>
                         <td>{{visit.original}}</td>
                         <td>{{visit.overdue}}</td>
                     </tr>
@@ -91,9 +94,10 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Nickname</th>
+                        <th>Name</th>
                         <th>Study Group</th>
-                        <th>Original Scheduled Visit</th>
+                        <th>ANC</th>
+                        <th>Orig. Scheduled Visit</th>
                         <th>Days Overdue</th>
                     </tr>
                 </thead>
@@ -105,6 +109,7 @@
                         </td>
                         <td>{{visit.contact.nickname}}</td>
                         <td>{{visit.contact.study_group}}</td>
+                        <td>{{visit.contact.anc_num}}</td>
                         <td>{{visit.original}}</td>
                         <td>{{visit.overdue}}</td>
                     </tr>
