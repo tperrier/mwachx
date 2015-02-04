@@ -101,7 +101,13 @@
                                 <input type='checkbox' value='kiswahili'>Kiswahili
                                 <input type='checkbox' value='dholuo'>Dholuo
                                 <br>
-                              
+                                Prompted
+                                <input type="checkbox" name="my-checkbox" data-on-text="Yes" data-off-text="No" checked>
+
+                                <script type="text/javascript">
+                                    $("[name='my-checkbox']").bootstrapSwitch();
+                                </script>
+                                
                                 <i style='padding-left:20px'> Related </i>
                                 <input type='radio' value='1' name='related'>Yes
                                 <input type='radio' value='0' name='related'>No

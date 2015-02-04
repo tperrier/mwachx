@@ -25,17 +25,3 @@ class ContactModify(forms.ModelForm):
         model = cont.Contact
         fields = ['status','family_planning','art_initiation','child_hiv_status',
                 'hiv_disclosed','relationship_status','partner_name']
-    
-
-
-class ScheduleVisit(forms.ModelForm):
-    
-    phone_number = forms.CharField(max_length=20,label='Phone Number')
-    
-    class Meta:
-        model = cont.Visit
-        fields = '__all__'
-        
-        widgets = {
-            'scheduled':util.Html5DateInput(),
-        }

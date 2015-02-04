@@ -1,20 +1,32 @@
 @import "libs/bootstrap-src/bootstrap.less";
+@import "libs/bootstrap-switch-src/bootstrap-switch.less";
 @import "libs/font-awesome-src/font-awesome.less";
+
+
+
+// Colors
 @dark-base: rgb(47, 72, 95);
+
+// Override bootstrap
 @brand-success: rgb(0, 196, 158);
 @brand-info: rgb(43, 150, 222);
+@brand-warning: rgb(247, 119, 0);
 @brand-danger: rgb(251, 41, 28);
 @brand-primary: lighten(@dark-base, 10%);
 @navbar-inverse-bg: @brand-primary;
 @navbar-inverse-link-active-bg: darken(@dark-base, 5%);
 @navbar-inverse-link-color: lighten(@gray-light, 30%);
 @navbar-inverse-border: @navbar-inverse-link-active-bg;
+
+// trevor colors!
 @accent-light: #B2E6FF;
 @accent-dark: #336680;
 @background-light: #F0F0F0;
 @background-mid: #A0A0A0;
 @background-dark: #707070;
 // @darker: rgb(45,62,80);
+
+// Some specific bits for nav
 @dark: lighten(@dark-base, 10%);
 @darker: darken(@dark-base, 5%);
 @navtext: white;
@@ -30,14 +42,30 @@ body {
 /**
  * nav changes
  **/
-
+.navbar-inverse .brand-status-success {
+    background-color: @brand-success;
+    &:hover, &:focus {
+        background-color: darken(@brand-success, 10%)
+    }
+}
+.navbar-inverse .brand-status-warning {
+    background-color: @brand-warning;
+    &:hover, &:focus {
+        background-color: darken(@brand-warning, 10%)
+    }
+}
+.navbar-inverse .brand-status-danger {
+    background-color: @brand-danger;
+    &:hover, &:focus {
+        background-color: darken(@brand-danger, 10%)
+    }
+}
 .navbar {
     border-bottom: 5px solid @navbar-inverse-link-active-bg;
 }
 .nav {
     font-size: 1.2em;
 }
-
 .navbar-inverse .navbar-brand i {
     color: @navbar-inverse-link-active-color;
     font-size: 1.5em;
@@ -57,12 +85,10 @@ body {
     overflow-y: auto;
     box-sizing: border-box;
 }
-
 #content>.container-fluid, #content>.container-fluid>.row {
     padding: 0px;
     margin: 0px;
 }
-
 #content .row>div:first-child {
     padding-left: 0em;
 }
@@ -122,14 +148,13 @@ body {
 /*
   * Contact Group
   */
+
 #contact-details {
-      
-      .panel-body table {
-        width:80%;
-        margin:auto;
-      }
-      
-      tr {
+    .panel-body table {
+        width: 80%;
+        margin: auto;
+    }
+    tr {
         border-bottom: 1px dashed black;
         background-color: @background-light;
         td {
@@ -143,11 +168,9 @@ body {
         }
     }
 }
-
 #context-edit, #note-add {
-    cursor:pointer;
+    cursor: pointer;
 }
-
 /*
  * Contact Message List
  */
@@ -416,8 +439,7 @@ a[data-toggle='collapse'] {
 .action-button {
     font-size: 0.6em;
 }
-.accordion-toggle,
-.visit-list {
+.accordion-toggle, .visit-list {
     border-bottom: 1px solid @btn-default-border;
     border-radius: @border-radius-base;
 }
@@ -431,7 +453,7 @@ a[data-toggle='collapse'] {
     border-bottom-right-radius: 0;
     .panel-heading {
         display: flex;
-        flex:1;
+        flex: 1;
     }
     .badge {
         height: 1.5em;
@@ -450,4 +472,18 @@ a[data-toggle='collapse'] {
         content: @fa-var-chevron-right;
     }
     border-bottom: none;
+}
+.btn-stack {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.link-row i.fa-fw {
+    width: 1.3em;
+    height: 0.8em;
+    font-size: 1.4em;
+}
+
+.x-out {
+    text-shadow: 1px 1px lightgray;
+    color: darken(@state-danger-text, 10%);
 }

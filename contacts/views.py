@@ -49,52 +49,45 @@ def visit_schedule(request):
 
     # find any open visits for this client
     parent_visit = cont.Visit.objects.get_or_none(contact__study_id=study_id, arrived=None,skipped=None)
+    original_scheduled = next_visit
 
     # Mark Parent arrival time.
     if parent_visit:
         parent_visit.arrived = arrived
         parent_visit.save()
+        original_scheduled = parent_visit.original_scheduled
         
-    cont.Visit.new_visit(contact,next_visit)
+    cont.Visit.new_visit(contact,next_visit,original_scheduled,parent=parent_visit)
     return redirect(request.POST['src'])
 
-def visit_dismiss(request,visit_id):
+def visit_dismiss(request,visit_id,days):
     today = settings.CURRENT_DATE
     visit = cont.Visit.objects.get(pk=visit_id)
     visit.skipped=True
-    visit.comment='skipped_via_web'
+    visit.comment='skipped_via_web for ' + str(days) + ' days.'
     visit.save()
 
     # and make a new visit
     cont.Visit.objects.create(**{
         'parent': visit.parent if visit.parent else visit,
-        'scheduled': today + datetime.timedelta(days=1),
+        'scheduled': visit.scheduled,
         'contact': visit.contact,
+        'reminder_last_seen': today,
         })
     return redirect('contacts.views.visits')
     
 
 
 def visits(request):
-    upcoming = cont.Visit.objects.visit_range({'weeks':0},{'weeks':1})
-    oneweek = cont.Visit.objects.visit_range({'weeks':1},{'weeks':4})
-    onemonth = cont.Visit.objects.visit_range({'weeks':4})
-    
     visits = {
-        'upcoming': upcoming,
-        'oneweek': oneweek,
-        'onemonth': onemonth,
+        'upcoming': cont.Visit.objects.get_upcoming_visits(),
+        'bookcheck': cont.Visit.objects.get_bookcheck(),
     }
     return render(request,'upcoming-visits.html', {'visits':visits})
 
 def home(request):
     today = settings.CURRENT_DATE
-    # visit_count = cont.Visit.objects.filter(Q(parent__scheduled__lt=today-datetime.timedelta(days=7))|Q(scheduled=today), skipped=None, arrived=None).count()
-    visit_count = cont.Visit.objects.filter(
-        scheduled__gte=today-datetime.timedelta(weeks=1),
-        scheduled__lte=today,
-        skipped=None, 
-        arrived=None).count()
+    visit_count = cont.Visit.objects.get_bookcheck().count() + cont.Visit.objects.get_upcoming_visits().count()
 
     status =  {
         "messages": cont.Message.objects.filter(is_viewed=False).count(),
