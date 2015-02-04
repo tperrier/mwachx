@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^contact/(?P<study_id>\d{1,3})/?$', views.contact),
     url(r'^contact/add/?$',views.contact_add),
     url(r'^contact/send/?$',views.contact_send),
+    url(r'^contact/note/?$',views.add_note),
     url(r'^message/?$', views.messages),
     url(r'^message/dismiss/(?P<message_id>\d*)/?$',views.message_dismiss),
 )

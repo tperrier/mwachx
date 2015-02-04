@@ -5,13 +5,13 @@
 
 {% block content %}
 
-        <div class='modal fade' id='sendModal' role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class='modal fade' id='sendModal' role="dialog"  aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
                     <form method='post' action='/contact/send'>
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="myModalLabel">Send Message</h4>
+                        <h4 class="modal-title">Send Message</h4>
                     </div>
                     <div class="modal-body message-send">
                         {% csrf_token %}
@@ -27,6 +27,50 @@
                     </form>
                 </div>
           </div>
+        </div>
+        
+        <div class='modal fade' id='contactDetailsModal' role='dialog' aria-hidden='true'>
+            <div class='modal-dialog'>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Contact Details</h4>
+                    </div>
+                    
+                    <div class='modal-body'>
+                        {{modify_form.as_p}}
+                    </div>
+                    
+                    <div class='modal-footer'>
+                        <input class='btn btn-primary' type='submit' value='Modify'/>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class='modal fade' id='addNoteModal' role='dialog' aria-hidden='true'>
+            <div class='modal-dialog'>
+                <div class='modal-content'>
+                    <form method='post' action='/contact/note/'>
+                    <div class='modal-header'>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Add Note</h4>
+                    </div>
+                    
+                    <div class='modal-body'>
+                        {% csrf_token %}
+                        <textarea class='form-control' name='comment' rows='5' placeholder='Message to send....'></textarea>
+                        <input type='hidden' name='study_id' value='{{contact.study_id}}'/>
+                    </div>
+                    
+                    <div class='modal-footer'>
+                        <input class='btn btn-primary' type='submit' value='Add'/>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
         </div>
         
         <div class='col-md-10 col-md-offset-1'>
@@ -48,7 +92,7 @@
                         <div class='content'>{{ message.text }}</div>
                         <div class='footer'>
                             {% if not message.is_outgoing %}
-                                <button class='btn btn-sm btn-primary' data-toggle='modal' data-target='#sendModal' data-message='{{message.id}}'>Reply</button>
+                                <button class='btn btn-sm btn-primary' data-toggle='modal' data-target='#sendModal' data-message-id='{{message.id}}'>Reply</button>
                             
                             {% if not message.is_viewed %}
                                 <a class='btn btn-sm btn-primary' href='{% url "contacts.views.message_dismiss" message.id%}'>Dismiss</a>
@@ -87,17 +131,19 @@
             
             <div class='panel panel-success'>
                 <div class='panel-heading'>
-                    <h3 class='panel-title'>Contact Details <i id='context-edit' class='fa fa-cogs pull-right'></i></h3>
+                    <h3 class='panel-title'>Contact Details <i id='context-edit' class='fa fa-cogs pull-right' data-toggle='modal' data-target='#contactDetailsModal'></i></h3>
                 </div>
                 <div class='panel-body'>
                     <div class='details'>
                     <table>
-                        <tr><td>Contact ID</td><td>{{contact.study_id_short}}</td></tr>
-                        <tr><td>ANC #</td><td>{{contact.anc_num}}</td></tr>
-                        <tr><td>Nickname</td><td>{{contact.nickname}}</td></tr>
+                        <tr><td>Partner Name</td><td>{{contact.partner_name}}</td></tr>
                         <tr><td>Age</td><td>{{contact.age}}</td></tr>
                         <tr><td>Phonenumber</td><td>{{contact.phone_number}}</td></tr>
-                        <tr><td>Pregnancy Status</td><td>{{contact.get_status_display}}</td></tr>
+                        <tr><td>Relationship Status</td><td>{{contact.relationship_status}}</td></tr>
+                        <tr><td>Previous Pregnancies</td><td>{{contact.previous_pregnancies}}</td></tr>
+                        <tr><td>SMS Track</td><td>{{contact.condition}}</td></tr>
+                        <tr><td>Family Planning</td><td>{{contact.family_planning}}</td></tr>
+                        <tr><td>ART Initiation</td><td>{{contact.art_initiation}}</td></tr>
                         <tr><td>Due Date</td><td>{{contact.due_date}}</td></tr>
                     </table>
                     </div>
@@ -136,24 +182,23 @@
             
              <div class='panel panel-success'>
                 <div class='panel-heading'>
-                    <h3 class='panel-title'>Clinic Notes<i id='note-add' class='fa fa-plus-square pull-right'></i></h3>
+                    <h3 class='panel-title'>Clinic Notes<i id='note-add' class='fa fa-plus-square pull-right' data-toggle='modal' data-target='#addNoteModal'></i></h3>
                 </div>
                 <div class='panel-body'>
                     <div class='details'>
                     <div class='note'>
-                       This is the first note 
+                       {{contact.note_set.first.comment}}
                     </div>
                     <h3>
                         <a data-toggle='collapse' href='#previous-notes-detail' aria-expanded='false'>
                             <i class='fa fa-chevron-circle-up'></i>
                             <i class='fa fa-chevron-circle-down'></i>
-                            Previous Notes
                         </a>
                     </h3>
                     <div id='previous-notes-detail' class='extra collapse' data-heading='Previous Notes'>
-                        {% for n in '0123' %}
+                        {% for note in contact.note_set.all %}
                             <div class='note'>
-                                Another Note
+                                {{note.comment}}
                             </div>
                         {% endfor %}
                     </div>

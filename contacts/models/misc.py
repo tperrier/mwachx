@@ -9,6 +9,9 @@ from contacts.models import Contact
 
 class PhoneCall(TimeStampedModel):
     
+    class Meta:
+        ordering = ('-created',)
+    
     objects = BaseQuerySet.as_manager()
     
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
@@ -17,6 +20,9 @@ class PhoneCall(TimeStampedModel):
     comment = models.CharField(max_length=500,blank=True,null=True)
     
 class Note(TimeStampedModel):
+    
+    class Meta:
+        ordering = ('-created',)
     
     objects = BaseQuerySet.as_manager()
      

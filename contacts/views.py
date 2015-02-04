@@ -139,12 +139,11 @@ def contact(request,study_id):
         contact = cont.Contact.objects.get(study_id=study_id)
     except cont.Contact.DoesNotExist as e:
         return redirect('/contact/')
-    contacts = cont.Contact.objects.all()
-    return render(request,'contacts/contact.html',{'contact':contact,'contacts':contacts})
+    modify_form = forms.ContactModify(instance=contact)
+    return render(request,'contacts/contact.html',{'contact':contact,'modify_form':modify_form})
 
 @require_POST
 def contact_send(request):
-    print request.POST
     contact = cont.Contact.objects.get(study_id=request.POST['study_id'])
     message = request.POST['message']
     parent_id = request.POST.get('parent_id',-1)
@@ -163,6 +162,13 @@ def message_dismiss(request,message_id):
     message.is_viewed=True
     message.save()
     return redirect('contacts.views.contact',study_id=message.contact.study_id)
+    
+@require_POST
+def add_note(request):
+    contact = cont.Contact.objects.get(study_id=request.POST['study_id'])
+    comment = request.POST['comment']
+    cont.Note.objects.create(contact=contact,comment=comment)
+    return redirect(request.META['HTTP_REFERER'])
 
 def messages_new(request):
     return render(request, 'messages_new.html',{'new_message_list':cont.Message.objects.pending()})

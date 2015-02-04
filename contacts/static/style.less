@@ -78,42 +78,17 @@ body {
  * Contact List
  **/
 
-#contact-pane {
-    .contact {
-        border-bottom: 1px solid gray;
-        text-decoration: none;
-        display: block;
-        color: black;
-        &:hover {
-            text-decoration: none;
-            color: #428bca;
-        }
-        &:nth-child(odd) {
-            background-color: @background-light;
-        }
-        &.selected {
-            font-weight: bold;
-        }
-        .fa-stack {
-            float: left;
-        }
-        .bottom {
-            font-size: .75em;
-            font-style: italic;
-            position: relative;
-            top: -.5em;
-            font-weight: normal;
-        }
-        .right {
-            float: right;
-            position: relative;
-            top: -2.25em;
-        }
+#contacts-header {
+
+    #contacts-search-group {
+        float:left;
     }
+    
     .filter-icons {
         margin: 0px;
         padding: 0px;
-        position: relative;
+        float:left;
+        display:inline;
         li {
             display: inline-block;
             background-color: lighten(@dark-base, 20%);

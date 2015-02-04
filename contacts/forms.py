@@ -18,3 +18,10 @@ class ContactAdd(forms.ModelForm):
             'birthdate':util.Html5DateInput(),
             'art_initiation':util.Html5DateInput(),
         }
+
+class ContactModify(forms.ModelForm):
+    
+    class Meta:
+        model = cont.Contact
+        fields = ['status','family_planning','art_initiation','child_hiv_status',
+                'hiv_disclosed','relationship_status','partner_name']

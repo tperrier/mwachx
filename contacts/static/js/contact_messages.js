@@ -2,7 +2,7 @@
 $(function(){
     $('#sendModal').on('show.bs.modal',function(evt){
         var button = $(evt.relatedTarget); //button that triggered the modal
-        var message_id = button.data('message');
+        var message_id = button.data('message-id');
         var message = button.closest('div.message');
         
         var modal = $(this);
