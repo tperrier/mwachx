@@ -169,12 +169,13 @@ def contact_add(request):
     if request.POST:
         cf = forms.ContactAdd(request.POST)
         if cf.is_valid():
-            print 'valid'
             #Create new contact but do not save in DB
             contact = cf.save(commit=False)
             contact.save()
             cont.Connection.objects.create(identity=cf.cleaned_data['phone_number'],contact=contact,is_primary=True)
             return redirect('contacts.views.contact',study_id=contact.study_id)
+        else:
+            print 'Form Error'
     else:
         cf = forms.ContactAdd()
         

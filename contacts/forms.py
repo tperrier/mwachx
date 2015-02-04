@@ -11,7 +11,7 @@ class ContactAdd(forms.ModelForm):
     
     class Meta:
         model = cont.Contact
-        exclude = ['status']
+        exclude = ['status','child_hiv_status']
         
         widgets = {
             'due_date':util.Html5DateInput(),
