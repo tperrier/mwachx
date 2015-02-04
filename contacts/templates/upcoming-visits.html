@@ -62,7 +62,6 @@
                     </tr>
                 </thead>
                 <tbody>
-
                     {% for visit in visits.oneweek %}
                     <tr class="link-row">
                         <td><a class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id %}'>No show</a> <a class="btn btn-primary" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}}>Visited</a>
@@ -76,6 +75,8 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <h2>No visits to display</h2>
             {% endif %}
         </div>
     </div>
@@ -116,6 +117,8 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <h2>No visits to display</h2>
             {% endif %}
         </div>
     </div>

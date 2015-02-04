@@ -31,6 +31,7 @@
             <td>{{contact.messages_sent}}</td>
             <td>{{contact.messages_received}}</td>
             <td><a class="btn btn-primary" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.contacts' %} data-study-id={{contact.study_id}}>Visited</a></td>
+            <td><a class="btn btn-primary"><i class="fa fa-phone"></i></a></td>
         </tr>
         </a>
     {% endfor %}
