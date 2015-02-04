@@ -10,29 +10,7 @@ import datetime
 from utils.models import TimeStampedModel,BaseQuerySet
 
 class VisitQuerySet(BaseQuerySet):
-    
-    # def pending(self,today=None,overdue_start=None,overdue_end=None):
-    #     if overdue_start is not None and overdue_end is not None:
-    #         return self.original_visit_range(overdue_start,overdue_end)
-    #     else: 
-    #         return self.filter(arrived=None,skipped=None)
-    
-    # def scheduled_visit_range(self,start,end=None,overdue_start=None,overdue_end=None):
-    #     today = settings.CURRENT_DATE
-    #     start = today - datetime.timedelta(**start)
-    #     if end is not None:
-    #         end = today - datetime.timedelta(**end)
-    #         return self.pending(today,overdue_start,overdue_end).filter(scheduled__range=(end,start))
-    #     return self.pending(today,overdue_start,overdue_end).filter(scheduled__lte=start)
 
-    # def original_visit_range(self,start,end=None):
-    #     today = settings.CURRENT_DATE
-    #     start = today - datetime.timedelta(**start)
-    #     if end is not None:
-    #         end = today - datetime.timedelta(**end)
-    #         return self.pending().filter(original_scheduled__range=(end,start))
-    #     return self.pending().filter(original_scheduled__lte=start)
-    
     def pending(self):
         return self.filter(arrived=None,skipped=None)
     
