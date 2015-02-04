@@ -14,10 +14,14 @@ def current_date(context):
 
 def brand_status(context):
 	# do we have work to do?
-	visit_count = contacts.models.Visit.objects.get_bookcheck().count() + contacts.models.Visit.objects.get_upcoming_visits().count()
-	msg_count = contacts.models.Message.objects.filter(is_viewed=False).count()
-	calls_count = 0 # TODO
-	translation_count = 0 # TODO
-	if (visit_count+msg_count+calls_count+translation_count) > 0:
+	nonzero = 0
+	if contacts.models.Visit.objects.get_bookcheck().count() + contacts.models.Visit.objects.get_upcoming_visits().count() > 0: nonzero = nonzero + 1
+	if contacts.models.Message.objects.filter(is_viewed=False).count() > 0: nonzero = nonzero + 1
+	if 0 > 0: nonzero = nonzero + 1
+	if 0 > 0: nonzero = nonzero + 1
+
+	if nonzero > 0:
+		if nonzero == 1:
+			return {'BRAND_STATUS': "brand-status-warning"}	
 		return {'BRAND_STATUS': "brand-status-danger"}
 	return {'BRAND_STATUS': "brand-status-success"}
