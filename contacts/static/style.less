@@ -1,6 +1,13 @@
 @import "libs/bootstrap-src/bootstrap.less";
+@import "libs/bootstrap-switch-src/bootstrap-switch.less";
 @import "libs/font-awesome-src/font-awesome.less";
+
+
+
+// Colors
 @dark-base: rgb(47, 72, 95);
+
+// Override bootstrap
 @brand-success: rgb(0, 196, 158);
 @brand-info: rgb(43, 150, 222);
 @brand-danger: rgb(251, 41, 28);
@@ -9,12 +16,16 @@
 @navbar-inverse-link-active-bg: darken(@dark-base, 5%);
 @navbar-inverse-link-color: lighten(@gray-light, 30%);
 @navbar-inverse-border: @navbar-inverse-link-active-bg;
+
+// trevor colors!
 @accent-light: #B2E6FF;
 @accent-dark: #336680;
 @background-light: #F0F0F0;
 @background-mid: #A0A0A0;
 @background-dark: #707070;
 // @darker: rgb(45,62,80);
+
+// Some specific bits for nav
 @dark: lighten(@dark-base, 10%);
 @darker: darken(@dark-base, 5%);
 @navtext: white;
