@@ -79,21 +79,13 @@ def visit_dismiss(request,visit_id,days):
 
 
 def visits(request):
-    # upcoming = cont.Visit.objects.scheduled_visit_range({'weeks':0},{'weeks':1},{'weeks':0},{'weeks':1})
-    # bookcheck = cont.Visit.objects.scheduled_visit_range({'weeks':0},overdue_start={'weeks':2})
-    # # oneweek = cont.Visit.objects.scheduled_visit_range({'weeks':1})
-    # oneweek = cont.Visit.objects.scheduled_visit_range({'weeks':1},overdue_start={'weeks':1})
     upcoming = cont.Visit.objects.visit_range(start={'weeks':0},end={'days':7},reminder_start={'days':1})
     bookcheck_weekly = cont.Visit.objects.visit_range(start={'days':8},end={'days':35},reminder_start={'weeks':1})
     bookcheck_monthly = cont.Visit.objects.visit_range(start={'days':36},reminder_start={'weeks':4})
     bookcheck = bookcheck_weekly | bookcheck_monthly
-    # oneweek = cont.Visit.objects.visit_range({'weeks':1})
-    # oneweek = cont.Visit.objects.scheduled_visit_range({'weeks':1},overdue_start={'weeks':1})
-    oneweek = None
     visits = {
         'upcoming': upcoming,
         'bookcheck': bookcheck,
-        'oneweek': oneweek,
     }
     return render(request,'upcoming-visits.html', {'visits':visits})
 
