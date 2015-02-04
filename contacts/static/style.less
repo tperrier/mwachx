@@ -37,7 +37,6 @@ body {
 .nav {
     font-size: 1.2em;
 }
-
 .navbar-inverse .navbar-brand i {
     color: @navbar-inverse-link-active-color;
     font-size: 1.5em;
@@ -57,12 +56,10 @@ body {
     overflow-y: auto;
     box-sizing: border-box;
 }
-
 #content>.container-fluid, #content>.container-fluid>.row {
     padding: 0px;
     margin: 0px;
 }
-
 #content .row>div:first-child {
     padding-left: 0em;
 }
@@ -147,14 +144,13 @@ body {
 /*
   * Contact Group
   */
+
 #contact-details {
-      
-      .panel-body table {
-        width:80%;
-        margin:auto;
-      }
-      
-      tr {
+    .panel-body table {
+        width: 80%;
+        margin: auto;
+    }
+    tr {
         border-bottom: 1px dashed black;
         background-color: @background-light;
         td {
@@ -168,11 +164,9 @@ body {
         }
     }
 }
-
 #context-edit, #note-add {
-    cursor:pointer;
+    cursor: pointer;
 }
-
 /*
  * Contact Message List
  */
@@ -441,8 +435,7 @@ a[data-toggle='collapse'] {
 .action-button {
     font-size: 0.6em;
 }
-.accordion-toggle,
-.visit-list {
+.accordion-toggle, .visit-list {
     border-bottom: 1px solid @btn-default-border;
     border-radius: @border-radius-base;
 }
@@ -456,7 +449,7 @@ a[data-toggle='collapse'] {
     border-bottom-right-radius: 0;
     .panel-heading {
         display: flex;
-        flex:1;
+        flex: 1;
     }
     .badge {
         height: 1.5em;
@@ -475,4 +468,18 @@ a[data-toggle='collapse'] {
         content: @fa-var-chevron-right;
     }
     border-bottom: none;
+}
+.btn-stack {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.link-row i.fa-fw {
+    width: 1.3em;
+    height: 0.8em;
+    font-size: 1.4em;
+}
+
+.x-out {
+    text-shadow: 1px 1px lightgray;
+    color: darken(@state-danger-text, 10%);
 }

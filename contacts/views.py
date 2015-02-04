@@ -49,41 +49,51 @@ def visit_schedule(request):
 
     # find any open visits for this client
     parent_visit = cont.Visit.objects.get_or_none(contact__study_id=study_id, arrived=None,skipped=None)
+    original_scheduled = next_visit
 
     # Mark Parent arrival time.
     if parent_visit:
         parent_visit.arrived = arrived
         parent_visit.save()
+        original_scheduled = parent_visit.original_scheduled
         
-    cont.Visit.new_visit(contact,next_visit)
+    cont.Visit.new_visit(contact,next_visit,original_scheduled,parent=parent_visit)
     return redirect(request.POST['src'])
 
-def visit_dismiss(request,visit_id):
+def visit_dismiss(request,visit_id,days):
     today = settings.CURRENT_DATE
     visit = cont.Visit.objects.get(pk=visit_id)
     visit.skipped=True
-    visit.comment='skipped_via_web'
+    visit.comment='skipped_via_web for ' + str(days) + ' days.'
     visit.save()
 
     # and make a new visit
     cont.Visit.objects.create(**{
         'parent': visit.parent if visit.parent else visit,
-        'scheduled': today + datetime.timedelta(days=1),
+        'scheduled': visit.scheduled,
         'contact': visit.contact,
+        'reminder_last_seen': today,
         })
     return redirect('contacts.views.visits')
     
 
 
 def visits(request):
-    upcoming = cont.Visit.objects.visit_range({'weeks':0},{'weeks':1})
-    oneweek = cont.Visit.objects.visit_range({'weeks':1},{'weeks':4})
-    onemonth = cont.Visit.objects.visit_range({'weeks':4})
-    
+    # upcoming = cont.Visit.objects.scheduled_visit_range({'weeks':0},{'weeks':1},{'weeks':0},{'weeks':1})
+    # bookcheck = cont.Visit.objects.scheduled_visit_range({'weeks':0},overdue_start={'weeks':2})
+    # # oneweek = cont.Visit.objects.scheduled_visit_range({'weeks':1})
+    # oneweek = cont.Visit.objects.scheduled_visit_range({'weeks':1},overdue_start={'weeks':1})
+    upcoming = cont.Visit.objects.visit_range(start={'weeks':0},end={'days':7},reminder_start={'days':1})
+    bookcheck_weekly = cont.Visit.objects.visit_range(start={'days':8},end={'days':35},reminder_start={'weeks':1})
+    bookcheck_monthly = cont.Visit.objects.visit_range(start={'days':36},reminder_start={'weeks':4})
+    bookcheck = bookcheck_weekly | bookcheck_monthly
+    # oneweek = cont.Visit.objects.visit_range({'weeks':1})
+    # oneweek = cont.Visit.objects.scheduled_visit_range({'weeks':1},overdue_start={'weeks':1})
+    oneweek = None
     visits = {
         'upcoming': upcoming,
+        'bookcheck': bookcheck,
         'oneweek': oneweek,
-        'onemonth': onemonth,
     }
     return render(request,'upcoming-visits.html', {'visits':visits})
 

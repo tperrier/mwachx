@@ -8758,5 +8758,18 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
 .accordion-toggle.collapsed .btn:before {
   content: "\f054";
 }
+.btn-stack {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.link-row i.fa-fw {
+  width: 1.3em;
+  height: 0.8em;
+  font-size: 1.4em;
+}
+.x-out {
+  text-shadow: 1px 1px lightgray;
+  color: #843534;
+}
 
 /*# sourceMappingURL=maps/style.css.map */

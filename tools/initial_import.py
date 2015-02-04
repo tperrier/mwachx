@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import json,datetime,sys,os,code,random
 
+import dateutil.parser
 # Setup Django Environment
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(FILE_DIR)
@@ -63,6 +64,7 @@ def add_visit(visit,contact):
     if visit['scheduled_date']:
         new_visit = {
             'scheduled':visit['scheduled_date'],
+            'reminder_last_seen':dateutil.parser.parse(visit['scheduled_date'])-datetime.timedelta(days=1),
             'arrived':visit['date'],
             'skipped':True if random.random() < .25 else False,
             'comment':visit['comments'],

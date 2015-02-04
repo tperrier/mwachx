@@ -18,14 +18,3 @@ class ContactAdd(forms.ModelForm):
             'birthdate':util.Html5DateInput(),
             'art_initiation':util.Html5DateInput(),
         }
-
-class ScheduleVisit(forms.ModelForm):
-    
-    phone_number = forms.CharField(max_length=20,label='Phone Number')
-    
-    class Meta:
-        model = cont.Visit
-        
-        widgets = {
-            'scheduled':util.Html5DateInput(),
-        }

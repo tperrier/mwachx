@@ -131,4 +131,4 @@ MESSAGING_CONTACT = 'contacts.Contact'
 MESSAGING_CONNECTION = 'contacts.Connection'
 MESSAGING_ADMIN = 'auth.User'
 from datetime import date
-CURRENT_DATE =  date(2014,7,25)
+CURRENT_DATE =  date(2014,5,15)
