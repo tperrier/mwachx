@@ -10,6 +10,7 @@
 // Override bootstrap
 @brand-success: rgb(0, 196, 158);
 @brand-info: rgb(43, 150, 222);
+@brand-warning: rgb(247, 119, 0);
 @brand-danger: rgb(251, 41, 28);
 @brand-primary: lighten(@dark-base, 10%);
 @navbar-inverse-bg: @brand-primary;
@@ -41,7 +42,24 @@ body {
 /**
  * nav changes
  **/
-
+.navbar-inverse .brand-status-success {
+    background-color: @brand-success;
+    &:hover, &:focus {
+        background-color: darken(@brand-success, 10%)
+    }
+}
+.navbar-inverse .brand-status-warning {
+    background-color: @brand-warning;
+    &:hover, &:focus {
+        background-color: darken(@brand-warning, 10%)
+    }
+}
+.navbar-inverse .brand-status-danger {
+    background-color: @brand-danger;
+    &:hover, &:focus {
+        background-color: darken(@brand-danger, 10%)
+    }
+}
 .navbar {
     border-bottom: 5px solid @navbar-inverse-link-active-bg;
 }

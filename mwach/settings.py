@@ -71,6 +71,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'utils.context_processors.openshift',
     'utils.context_processors.current_date',
+    'utils.context_processors.brand_status',
 )
 
 ROOT_URLCONF = 'mwach.urls'

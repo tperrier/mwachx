@@ -79,24 +79,15 @@ def visit_dismiss(request,visit_id,days):
 
 
 def visits(request):
-    upcoming = cont.Visit.objects.visit_range(start={'weeks':0},end={'days':7},reminder_start={'days':1})
-    bookcheck_weekly = cont.Visit.objects.visit_range(start={'days':8},end={'days':35},reminder_start={'weeks':1})
-    bookcheck_monthly = cont.Visit.objects.visit_range(start={'days':36},reminder_start={'weeks':4})
-    bookcheck = bookcheck_weekly | bookcheck_monthly
     visits = {
-        'upcoming': upcoming,
-        'bookcheck': bookcheck,
+        'upcoming': cont.Visit.objects.get_upcoming_visits(),
+        'bookcheck': cont.Visit.objects.get_bookcheck(),
     }
     return render(request,'upcoming-visits.html', {'visits':visits})
 
 def home(request):
     today = settings.CURRENT_DATE
-    # visit_count = cont.Visit.objects.filter(Q(parent__scheduled__lt=today-datetime.timedelta(days=7))|Q(scheduled=today), skipped=None, arrived=None).count()
-    visit_count = cont.Visit.objects.filter(
-        scheduled__gte=today-datetime.timedelta(weeks=1),
-        scheduled__lte=today,
-        skipped=None, 
-        arrived=None).count()
+    visit_count = cont.Visit.objects.get_bookcheck().count() + cont.Visit.objects.get_upcoming_visits().count()
 
     status =  {
         "messages": cont.Message.objects.filter(is_viewed=False).count(),

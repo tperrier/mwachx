@@ -10,6 +10,13 @@ import datetime
 from utils.models import TimeStampedModel,BaseQuerySet
 
 class VisitQuerySet(BaseQuerySet):
+    def get_upcoming_visits(self):
+        return self.visit_range(start={'weeks':0},end={'days':7},reminder_start={'days':1})
+
+    def get_bookcheck(self):
+        bookcheck_weekly = self.visit_range(start={'days':8},end={'days':35},reminder_start={'weeks':1})
+        bookcheck_monthly = self.visit_range(start={'days':36},reminder_start={'weeks':4})
+        return bookcheck_weekly | bookcheck_monthly
 
     def pending(self):
         return self.filter(arrived=None,skipped=None)
