@@ -2,3 +2,4 @@ Django>=1.7.3
 pytz>=2014.10
 lesscpy>=0.10.2
 python-dateutil>=2.4.0
+requests>=2.2.1
