@@ -21,7 +21,7 @@ def brand_status(context):
 	if 0 > 0: nonzero = nonzero + 1
 
 	if nonzero > 0:
-		if nonzero == 1:
-			return {'BRAND_STATUS': "brand-status-warning"}	
+		# if nonzero == 1:
+		# 	return {'BRAND_STATUS': "brand-status-warning"}	
 		return {'BRAND_STATUS': "brand-status-danger"}
 	return {'BRAND_STATUS': "brand-status-success"}

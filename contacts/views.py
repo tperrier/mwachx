@@ -93,7 +93,7 @@ def home(request):
         "messages": cont.Message.objects.filter(is_viewed=False).count(),
         "visits": visit_count,
         "calls": 0,
-        "translations": 1,
+        "translations": 0,
     }
     return render(request,'home.html', {'status':status})
 
