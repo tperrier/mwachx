@@ -6,3 +6,4 @@
 ignore/
 node_modules/
 contacts/static/css/maps/
+local_settings.py
