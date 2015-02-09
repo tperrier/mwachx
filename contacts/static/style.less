@@ -2,12 +2,8 @@
 @import "libs/bootstrap-switch-src/bootstrap-switch.less";
 @import "libs/font-awesome-src/font-awesome.less";
 @import "libs/fuelux-src/fuelux.less";
-
-
-
 // Colors
 @dark-base: rgb(47, 72, 95);
-
 // Override bootstrap
 @brand-success: rgb(0, 196, 158);
 @brand-info: rgb(43, 150, 222);
@@ -18,7 +14,6 @@
 @navbar-inverse-link-active-bg: darken(@dark-base, 5%);
 @navbar-inverse-link-color: lighten(@gray-light, 30%);
 @navbar-inverse-border: @navbar-inverse-link-active-bg;
-
 // trevor colors!
 @accent-light: #B2E6FF;
 @accent-dark: #336680;
@@ -26,7 +21,6 @@
 @background-mid: #A0A0A0;
 @background-dark: #707070;
 // @darker: rgb(45,62,80);
-
 // Some specific bits for nav
 @dark: lighten(@dark-base, 10%);
 @darker: darken(@dark-base, 5%);
@@ -43,6 +37,7 @@ body {
 /**
  * nav changes
  **/
+
 .navbar-inverse .brand-status-success {
     background-color: @brand-success;
     &:hover, &:focus {
@@ -109,16 +104,14 @@ body {
  **/
 
 #contacts-header {
-
     #contacts-search-group {
-        float:left;
+        float: left;
     }
-    
     .filter-icons {
         margin: 0px;
         padding: 0px;
-        float:left;
-        display:inline;
+        float: left;
+        display: inline;
         li {
             display: inline-block;
             background-color: lighten(@dark-base, 20%);
@@ -302,41 +295,6 @@ a[data-toggle='collapse'] {
         cursor: pointer;
     }
 }
-#contact-create-form {
-    h1 {
-        text-align: center;
-    }
-    fieldset {
-        border-radius: 1em;
-        margin: 20px;
-        padding: 10px;
-        border: 1px solid @accent-dark;
-        position: relative;
-        legend {
-            display: inline;
-            margin-left: 50px;
-            width: auto;
-            border: none;
-            margin-bottom: 0px;
-        }
-    }
-    .form-ele {
-        min-height: 40px;
-        label {
-            width: 45%;
-            text-align: right;
-        }
-        div {
-            width: 45%;
-            text-align: left;
-            display: inline-block;
-        }
-    }
-    input[type="submit"] {
-        margin: auto;
-        display: block;
-    }
-}
 .dashboard {
     h1 {
         background-color: @background-mid;
@@ -371,9 +329,11 @@ a[data-toggle='collapse'] {
 .sms-text {
     font-size: 0.3em;
 }
-.action-item {
+.page-conent {
     width: 80%;
     margin: 20px auto 20px auto;
+}
+.action-item:extend(.page-conent) {
     text-align: left;
     padding: 0px;
     display: table;
@@ -483,7 +443,6 @@ a[data-toggle='collapse'] {
     height: 0.8em;
     font-size: 1.4em;
 }
-
 .x-out {
     text-shadow: 1px 1px lightgray;
     color: darken(@state-danger-text, 10%);

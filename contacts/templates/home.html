@@ -1,6 +1,7 @@
 {% extends 'base.html' %} {% block title %}Home{% endblock %} {% block content %}
 
 <div class='col-full'>
+    <div id="myDatepicker"></div>
     {% with number=status.messages %}
     {% url 'contacts.views.messages_new' as u %}
     <a class='btn {% if status.messages != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="{{u}}">
