@@ -11024,5 +11024,8 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
   text-shadow: 1px 1px lightgray;
   color: #843534;
 }
+.tooltip-icon {
+  display: inline;
+}
 
 /*# sourceMappingURL=maps/style.css.map */
