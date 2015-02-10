@@ -10918,7 +10918,7 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
 .sms-text {
   font-size: 0.3em;
 }
-.page-conent,
+.page-content,
 .action-item {
   width: 80%;
   margin: 20px auto 20px auto;
@@ -10985,11 +10985,6 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
 }
 .action-button {
   font-size: 0.6em;
-}
-.accordion-toggle,
-.visit-list {
-  border-bottom: 1px solid #cccccc;
-  border-radius: 4px;
 }
 .visit-list h3 {
   font-weight: 200;
