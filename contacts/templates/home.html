@@ -4,13 +4,13 @@
     <div id="myDatepicker"></div>
     {% with number=status.messages %}
     {% url 'contacts.views.messages_new' as u %}
-    <a class='btn {% if status.messages != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="{{u}}">
+    <a class='btn {% if status.messages != 0 %} btn-danger {% else %} btn-success {% endif %} action-item btn-xxl' href="{{u}}">
         <span class="action-item-icon"> {% include 'icons/sms-icon.html' %}</span>
         <span class="action-item-text">{% if status.messages != 0 %} You have {% include 'icons/number.html' %} new messages {% else %} No new messages! {% endif %}</span>
     </a>
     {% endwith %} {% with number=status.visits %}
     {% url 'contacts.views.visits' as u %}
-    <a class='btn {% if status.visits != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="{{u}}">
+    <a class='btn {% if status.visits != 0 %} btn-danger {% else %} btn-success {% endif %} action-item btn-xxl' href="{{u}}">
         <span class="action-item-icon">
             <i class="fa fa-hospital-o"></i>
         </span>
@@ -18,7 +18,7 @@
     </a>
     {% endwith %} {% with number=status.calls %}
     {% url 'contacts.views.calls' as u %}
-    <a class='btn {% if status.calls != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="{{u}}">
+    <a class='btn {% if status.calls != 0 %} btn-danger {% else %} btn-success {% endif %} action-item btn-xxl' href="{{u}}">
         <span class="action-item-icon">
             <i class="fa fa-mobile"></i>
         </span>
@@ -26,7 +26,7 @@
     </a>
     {% endwith %} {% with number=status.translations %}
     {% url 'contacts.views.translations' as u %}
-    <a class='btn {% if status.translations != 0 %} btn-danger {% else %} btn-success {% endif %} action-item' href="{{u}}">
+    <a class='btn {% if status.translations != 0 %} btn-danger {% else %} btn-success {% endif %} action-item btn-xxl' href="{{u}}">
         <span class="action-item-icon"> 
             <i class="fa fa-language"></i>
         </span>

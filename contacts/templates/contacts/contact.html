@@ -1,218 +1,354 @@
-{% extends 'base.html' %}
-{% load staticfiles %}
+{% extends 'base.html' %} {% load staticfiles %} {% block title %}Participant: {{contact.nickname}}{% endblock %} {% block content %}
 
-{% block title %}Contact{% endblock %}
-
-{% block content %}
-
-        <div class='modal fade' id='sendModal' role="dialog"  aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                    <form method='post' action='/contact/send'>
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Send Message</h4>
-                    </div>
-                    <div class="modal-body message-send">
-                        {% csrf_token %}
-                        <div id='reply-message' class='alert alert-success'></div>
-                        <textarea class='form-control' name='message' rows='5' placeholder='Message to send....'></textarea>
-                        <input type='hidden' name='study_id' value='{{contact.study_id}}'/>
-                        <input type='hidden' name='parent_id' value=''/>
-                    </div>
-                    <div class="modal-footer">
-                        <input class='btn btn-primary' type='submit' value='Send'/>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                    </form>
+<div class='modal fade' id='sendModal' role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method='post' action='/contact/send'>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Send Message</h4>
                 </div>
-          </div>
+                <div class="modal-body message-send">
+                    {% csrf_token %}
+                    <div id='reply-message' class='alert alert-success'></div>
+                    <textarea class='form-control' name='message' rows='5' placeholder='Message to send....'></textarea>
+                    <input type='hidden' name='study_id' value='{{contact.study_id}}' />
+                    <input type='hidden' name='parent_id' value='' />
+                </div>
+                <div class="modal-footer">
+                    <input class='btn btn-primary' type='submit' value='Send' />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
         </div>
-        
-        <div class='modal fade' id='contactDetailsModal' role='dialog' aria-hidden='true'>
-            <div class='modal-dialog'>
-                <div class='modal-content'>
-                    <div class='modal-header'>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Contact Details</h4>
-                    </div>
-                    
-                    <div class='modal-body'>
-                        {{modify_form.as_p}}
-                    </div>
-                    
-                    <div class='modal-footer'>
-                        <input class='btn btn-primary' type='submit' value='Modify'/>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
+    </div>
+</div>
+
+<div class='modal fade' id='contactDetailsModal' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Contact Details</h4>
+            </div>
+
+            <div class='modal-body'>
+                {{modify_form.as_p}}
+            </div>
+
+            <div class='modal-footer'>
+                <input class='btn btn-primary' type='submit' value='Modify' />
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
-        
-        <div class='modal fade' id='addNoteModal' role='dialog' aria-hidden='true'>
-            <div class='modal-dialog'>
-                <div class='modal-content'>
-                    <form method='post' action='/contact/note/'>
-                    <div class='modal-header'>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Add Note</h4>
-                    </div>
-                    
-                    <div class='modal-body'>
-                        {% csrf_token %}
-                        <textarea class='form-control' name='comment' rows='5' placeholder='Message to send....'></textarea>
-                        <input type='hidden' name='study_id' value='{{contact.study_id}}'/>
-                    </div>
-                    
-                    <div class='modal-footer'>
-                        <input class='btn btn-primary' type='submit' value='Add'/>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                    </form>
+    </div>
+</div>
+
+<div class='modal fade' id='addNoteModal' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <form method='post' action='/contact/note/'>
+                <div class='modal-header'>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Add Note</h4>
                 </div>
-            </div>
+
+                <div class='modal-body'>
+                    {% csrf_token %}
+                    <textarea class='form-control' name='comment' rows='5' placeholder='Message to send....'></textarea>
+                    <input type='hidden' name='study_id' value='{{contact.study_id}}' />
+                </div>
+
+                <div class='modal-footer'>
+                    <input class='btn btn-primary' type='submit' value='Add' />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
         </div>
-        
-        <div class='col-md-10 col-md-offset-1'>
-            <h3>Messages and Contact Infomation for <em>{{contact.nickname}}</em> -- ID: {{contact.study_id_short}} ANC: {{contact.anc_num}} -- {{contact.weeks_display}} -- {{contact.get_study_group_display}}</h3>
+    </div>
+</div>
+
+
+<div class="page-content" id="participant-page">
+    <div class="row">
+        <h1><i class="mw mw-mwach-phone"></i> {{contact.nickname}} <small>{{contact.study_id_short}}</small></h1>
+    </div>
+    <div class="row participant-header">
+        <div class="col-md-2" style="text-align: right;"><strong>ANC</strong>
         </div>
-        
-        <div class='col-md-6 scroll col-full col-md-offset-1'>
+        <div class="col-md-2">{{contact.anc_num}}</div>
+        <div class="col-md-2" style="text-align: right;"><strong>Study Group</strong>
+        </div>
+        <div class="col-md-2">{{contact.get_study_group_display}}</div>
+        <div class="col-md-2" style="text-align: right;"><strong>Active since</strong>
+        </div>
+        <div class="col-md-2">{{contact.created|date:"n N Y"}}</div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
             <div class='btn-group btn-group-justified'>
-                <a data-toggle='modal' data-target='#sendModal' class='btn btn-success'>Send Message</a>
-                <a class='btn btn-info'>Record Call</a>
+                <a data-toggle='modal' data-target='#sendModal' class='action-item btn btn-success'><span class="action-item-icon"><i class="fa fa-comment"></i></span> <span class="action-item-text">Send Message</span></a>
+                <a class='action-item btn btn-highlight'><span class="action-item-icon"><i class="fa fa-mobile fa-lg"></i></span> <span class="action-item-text">Record Call</span></a>
             </div>
-            <div id='message-list'>
+            <div class="infinitescroll" id="messagesList">
                 {% for message in contact.message_set.all %}
-                   <div class='message {{message.html_class}}'>
-                        <div class='icon'>
-                            <i class='fa fa-{% if message.is_outgoing %}reply{% else %}share{% endif %}'></i>
+                <div class="row">
+                    {% if message.html_class == "client" %}
+                    <div class="col-md-1 avatar-participant fa-4x"><i class="mw mw-mwach-phone"></i></div>
+                    {% endif %}
+
+                    <div class='col-md-8 message {{message.html_class}}'>
+                        <div class='top'><span><strong>{{message.sent_by}}</strong> ({{message.weeks}} wk)</span><span class="date">{{ message.created|date:"n N y H:i" }}</span>
                         </div>
-                        <div class='top'><span>{{message.sent_by}} -- {{message.weeks}} wk</span><i>{{ message.created }}</i></div>
                         <div class='content'>{{ message.text }}</div>
                         <div class='footer'>
                             {% if not message.is_outgoing %}
-                                <button class='btn btn-sm btn-primary' data-toggle='modal' data-target='#sendModal' data-message-id='{{message.id}}'>Reply</button>
-                            
-                            {% if not message.is_viewed %}
-                                <a class='btn btn-sm btn-primary' href='{% url "contacts.views.message_dismiss" message.id%}'>Dismiss</a>
-                            {% endif %}
-                                <input type='checkbox' value='english'>English
-                                <input type='checkbox' value='kiswahili'>Kiswahili
-                                <input type='checkbox' value='dholuo'>Dholuo
-                                <br>
-                                Prompted
-                                <input type="checkbox" name="my-checkbox" data-on-text="Yes" data-off-text="No" checked>
+                            <div class="row">
+                                <div class="col-md-4">Language:</div>
+                                <div class="col-md-8">
+                                    <div class="btn-group" data-toggle="buttons">
+                                    <label class="btn btn-language">
+                                        <input type="checkbox" autocomplete="off"> English
+                                      </label>
+                                      <label class="btn btn-language">
+                                        <input type="checkbox" autocomplete="off"> Swahili
+                                      </label>
+                                      <label class="btn btn-language">
+                                        <input type="checkbox" autocomplete="off"> Sheng
+                                      </label>
+                                      <label class="btn btn-language">
+                                        <input type="checkbox" autocomplete="off"> Luo
+                                      </label>
+                                    </div>
+                                </div>
+                            </div>
 
-                                <script type="text/javascript">
-                                    $("[name='my-checkbox']").bootstrapSwitch();
-                                </script>
-                                
-                                <i style='padding-left:20px'> Related </i>
-                                <input type='radio' value='1' name='related'>Yes
-                                <input type='radio' value='0' name='related'>No
-                                
-                                <select name='topic'>
-                                    <option value='none'>None</option>
-                                    <option value='adherence'>Adherence</option>
-                                    <option value='side-effects'>Side Effects</option>
-                                    <option value='visits'>Visits</option>
-                                    <option value='antenatal-concerns'>Antenatal Concerns</option>
-                                    <option value='delivery-concenrs'>Delivery Concerns</option>
-                                    <option value='family-planing'>Family Planing</option>
-                                    <option value='infant-health'>Infant Health</option>
-                                    <option value='sexual-behavior'>Sexual Behavior</option>
-                                    <option value='other'>Other</option>
-                                </select>
+                            <div class="row">
+                                <div class="col-md-4">Prompted:</div>
+                                <div class="col-md-8">
+                                    <div class="btn-group" data-toggle="buttons">
+                                    <label class="btn btn-language">
+                                        <input type="radio" autocomplete="off"> Yes
+                                      </label>
+                                      <label class="btn btn-language">
+                                        <input type="radio" autocomplete="off"> No
+                                      </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">Related:</div>
+                                <div class="col-md-8">
+                                    <div class="btn-group" data-toggle="buttons">
+                                    <label class="btn btn-language">
+                                        <input type="radio" autocomplete="off"> Yes
+                                      </label>
+                                      <label class="btn btn-language">
+                                        <input type="radio" autocomplete="off"> No
+                                      </label>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class="row">
+                                <div class="col-md-4">Topic:</div>
+                                <div class="col-md-8">
+                                    <select name='topic'>
+                                        <option value='none'>None</option>
+                                        <option value='adherence'>Adherence</option>
+                                        <option value='side-effects'>Side Effects</option>
+                                        <option value='visits'>Visits</option>
+                                        <option value='antenatal-concerns'>Antenatal Concerns</option>
+                                        <option value='delivery-concenrs'>Delivery Concerns</option>
+                                        <option value='family-planing'>Family Planing</option>
+                                        <option value='infant-health'>Infant Health</option>
+                                        <option value='sexual-behavior'>Sexual Behavior</option>
+                                        <option value='other'>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4"></div>
+                                <div class="col-md-8">
+
+                            <button class='btn btn-sm btn-success' data-toggle='modal' data-target='#sendModal' data-message-id='{{message.id}}'><i class="fa fa-reply"></i> Reply</button>
+
+                            {% if not message.is_viewed %}
+                            <a class='btn btn-sm btn-danger' href='{% url "contacts.views.message_dismiss" message.id%}'><i class="fa fa-times"></i> Dismiss</a> {% endif %}
+                                </div>
+                            </div>
                             {% endif %}
                         </div>
                     </div>
+                    {% if message.html_class == "nurse" %}
+                    <div class="col-md-1 avatar-nurse fa-4x"><i class="fa fa-user-md"></i></div>
+                    {% elif message.html_class == "system" %}
+                    <div class="col-md-1 avatar-system fa-4x"><i class="fa fa-server"></i></div>
+                    {% else %}
+                    {# spacing hack #}
+                    <div></div>
+                    {% endif %}
+                </div>
                 {% endfor %}
             </div>
         </div>
-        
-        <div id='contact-details' class='col-md-4 col-full'>
-            
-            <div class='panel panel-success'>
+
+        <div class="col-md-4">
+            <div class='panel panel-info'>
                 <div class='panel-heading'>
                     <h3 class='panel-title'>Contact Details <i id='context-edit' class='fa fa-cogs pull-right' data-toggle='modal' data-target='#contactDetailsModal'></i></h3>
                 </div>
-                <div class='panel-body'>
-                    <div class='details'>
-                    <table>
-                        <tr><td>Partner Name</td><td>{{contact.partner_name}}</td></tr>
-                        <tr><td>Age</td><td>{{contact.age}}</td></tr>
-                        <tr><td>Phonenumber</td><td>{{contact.phone_number}}</td></tr>
-                        <tr><td>Relationship Status</td><td>{{contact.relationship_status}}</td></tr>
-                        <tr><td>Previous Pregnancies</td><td>{{contact.previous_pregnancies}}</td></tr>
-                        <tr><td>SMS Track</td><td>{{contact.condition}}</td></tr>
-                        <tr><td>Family Planning</td><td>{{contact.family_planning}}</td></tr>
-                        <tr><td>ART Initiation</td><td>{{contact.art_initiation}}</td></tr>
-                        <tr><td>Due Date</td><td>{{contact.due_date}}</td></tr>
-                    </table>
-                    </div>
-                
-                </div>
+                <table class="details-table table table-condensed">
+                    <tr>
+                        <td>Partner Name</td>
+                        <td>{{contact.partner_name}}</td>
+                    </tr>
+                    <tr>
+                        <td>Age</td>
+                        <td>{{contact.age}}</td>
+                    </tr>
+                    <tr>
+                        <td>Phone Number</td>
+                        <td>{{contact.phone_number}}</td>
+                    </tr>
+                    <tr>
+                        <td>Relationship Status</td>
+                        <td>{{contact.relationship_status}}</td>
+                    </tr>
+                    <tr>
+                        <td>Previous Pregnancies</td>
+                        <td>{{contact.previous_pregnancies}}</td>
+                    </tr>
+                    <tr>
+                        <td>SMS Track</td>
+                        <td>{{contact.condition}}</td>
+                    </tr>
+                    <tr>
+                        <td>Family Planning</td>
+                        <td>{{contact.family_planning}}</td>
+                    </tr>
+                    <tr>
+                        <td>ART Initiation</td>
+                        <td>{{contact.art_initiation}}</td>
+                    </tr>
+                    <tr>
+                        <td>Due Date</td>
+                        <td>{{contact.due_date}}</td>
+                    </tr>
+                </table>
             </div>
-            
-            <div class='panel panel-success'>
+
+            <div class='panel panel-info'>
                 <div class='panel-heading'>
                     <h3 class='panel-title'>Clinic Visit History</h3>
                 </div>
                 <div class='panel-body'>
                     <div class='details'>
-                         <table>
-                            <tr><td>Next Visit</td><td>{{contact.visit_set.first.scheduled}}</td></tr>
+                        <table>
+                            <tr>
+                                <td>Next Visit</td>
+                                <td>{{contact.visit_set.first.scheduled}}</td>
+                            </tr>
                         </table>
-                         <h3>
+                        <h3>
                             <a data-toggle="collapse" href='#previous-visits-detail' aria-expanded="false">
-                                <i class='fa fa-chevron-circle-up'></i>
                                 <i class='fa fa-chevron-circle-down'></i>
+                                <i class='fa fa-chevron-circle-up'></i>
                                 Previous Visits ({{contact.visit_set.count}})
                             </a>
                         </h3>
-                        <div id='previous-visits-detail'  class='extra collapse' data-heading='Previous Visits'>
+                        <div id='previous-visits-detail' class='extra collapse' data-heading='Previous Visits'>
                             <table>
-                                <tr><th>Scheduled</th><th>Arrived</th></tr>
+                                <tr>
+                                    <th>Scheduled</th>
+                                    <th>Arrived</th>
+                                </tr>
                                 {% for visit in contact.visit_set.all %}
-                                <tr><td>{{visit.scheduled}}</td><td>{{visit.arrived}}</td></tr>
+                                <tr>
+                                    <td>{{visit.scheduled}}</td>
+                                    <td>{{visit.arrived}}</td>
+                                </tr>
                                 {% endfor %}
                             </table>
                         </div>
                     </div>
                 </div>
-                
+
             </div>
-            
-             <div class='panel panel-success'>
+
+            <div class='panel panel-info'>
                 <div class='panel-heading'>
                     <h3 class='panel-title'>Clinic Notes<i id='note-add' class='fa fa-plus-square pull-right' data-toggle='modal' data-target='#addNoteModal'></i></h3>
                 </div>
                 <div class='panel-body'>
                     <div class='details'>
-                    <div class='note'>
-                       {{contact.note_set.first.comment}}
-                    </div>
-                    <h3>
+                        <div class='note'>
+                            {{contact.note_set.first.comment}}
+                        </div>
+                        <h3>
                         <a data-toggle='collapse' href='#previous-notes-detail' aria-expanded='false'>
                             <i class='fa fa-chevron-circle-up'></i>
                             <i class='fa fa-chevron-circle-down'></i>
                         </a>
                     </h3>
-                    <div id='previous-notes-detail' class='extra collapse' data-heading='Previous Notes'>
-                        {% for note in contact.note_set.all %}
+                        <div id='previous-notes-detail' class='extra collapse' data-heading='Previous Notes'>
+                            {% for note in contact.note_set.all %}
                             <div class='note'>
                                 {{note.comment}}
                             </div>
-                        {% endfor %}
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
-                </div>
-                
+
             </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class='col-md-6 scroll col-full'>
+        <div id='message-list'>
             
         </div>
-        
-        <script src='{% static "js/contact_messages.js" %}'></script>
-        
-{% endblock %}
+    </div>
+
+    <script src='{% static "js/contact_messages.js" %}'></script>
+
+    <script type="text/javascript">
+    $(function(require) {
+        var content = '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tincidunt auctor leo, ut ultricies lectus feugiat id. Duis sagittis erat id varius hendrerit. Etiam et hendrerit lectus. Nullam mattis, mauris vitae vestibulum gravida, enim ante adipiscing leo, sed imperdiet lacus dui bibendum erat. Sed convallis sed leo ac dapibus. Phasellus posuere lobortis euismod. Nam tempor elit ut justo tempor, eget egestas lectus sollicitudin. Cras vehicula sapien quis nisi ultricies rutrum. Nam ornare lorem mollis ullamcorper vestibulum.</p>' +
+            '<p>Nullam in vulputate erat, in mattis enim. Curabitur consequat velit a sem ornare adipiscing. Pellentesque nisl lectus, venenatis sed dui ut, placerat mollis urna. Nulla diam diam, consectetur et magna id, lobortis cursus risus. Curabitur feugiat purus sed massa imperdiet rutrum. Mauris eu sodales libero, eu ultrices orci. Nunc vel metus erat. Donec ornare bibendum leo id fermentum. Fusce nec justo consectetur, posuere elit ac, tincidunt odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>' +
+            '<p>Etiam et magna in dui convallis consectetur sit amet sed quam. Vestibulum non libero et justo porttitor cursus nec ac arcu. Aliquam feugiat non ipsum et interdum. Aenean ac lectus erat. Integer vulputate turpis ac accumsan fermentum. Curabitur nec feugiat enim. Nullam lobortis mauris odio, a commodo mauris facilisis quis. Praesent id dapibus lectus. Morbi id blandit magna. Quisque adipiscing viverra massa, vitae sagittis eros dignissim sed. Praesent ornare placerat malesuada. Quisque nec eros dictum, ornare erat non, fringilla felis. Proin sollicitudin arcu ac turpis euismod rhoncus.</p>';
+        var delays = ['300', '600', '900', '1200'];
+        var jquery = require('jquery');
+        var setup = function(selector) {
+            $(selector).append(content + content + content);
+            $(selector).scrollTop(0);
+        };
+
+        require('bootstrap');
+        require('fuelux');
+
+        // INFINITE SCROLL
+        $('#messagesList').infinitescroll({
+            dataSource: function(helpers, callback) {
+                setTimeout(function() {
+                    callback({
+                        content: content
+                    });
+                }, delays[Math.floor(Math.random() * 4)]);
+            }
+        });
+        setup('#messagesList');
+    });
+    </script>
+
+    {% endblock %}

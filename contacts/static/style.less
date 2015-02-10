@@ -14,6 +14,21 @@
 @navbar-inverse-link-active-bg: darken(@dark-base, 5%);
 @navbar-inverse-link-color: lighten(@gray-light, 30%);
 @navbar-inverse-border: @navbar-inverse-link-active-bg;
+
+
+
+@brand-highlight: rgb(172, 60, 184);
+
+
+@btn-highlight-color:              #fff;
+@btn-highlight-bg:                 @brand-highlight;
+@btn-highlight-border:             darken(@btn-highlight-bg, 5%);
+
+.btn-highlight {
+  .button-variant(@btn-highlight-color; @btn-highlight-bg; @btn-highlight-border);
+}
+
+
 // trevor colors!
 @accent-light: #B2E6FF;
 @accent-dark: #336680;
@@ -92,6 +107,9 @@ body {
 }
 #content .row>div:first-child {
     padding-left: 0em;
+}
+#content .row>div:last-child {
+    padding-right: 0em;
 }
 .scroll {
     overflow-y: auto;
@@ -174,47 +192,7 @@ body {
  * Contact Message List
  */
 
-#message-list {
-    padding: 10px 25px;
-    .message {
-        width: 75%;
-        float: left;
-        border: solid 1px black;
-        border-radius: 20px 0px;
-        margin-bottom: 15px;
-        padding: 10px;
-        background-color: #9A9A9A;
-        position: relative;
-        &.system, &.nurse {
-            float: right;
-            background-color: #E0E0E0
-        }
-        &.nurse {
-            background-color: #C6C6C6;
-        }
-        .top span {
-            font-size: .75em;
-            padding: 0px 10px;
-        }
-        .top i {
-            font-size: .75em;
-            font-style: italic;
-            float: right;
-        }
-        .icon {
-            position: absolute;
-            left: -10px;
-            top: -10px;
-            border-radius: 10px;
-            height: 25px;
-            width: 25px;
-            border: 2px solid black;
-            background-color: white;
-            text-align: center;
-            padding-top: .2em;
-        }
-    }
-}
+
 #new-message-list {
     .panel {
         margin-top: 10px;
@@ -350,14 +328,18 @@ a[data-toggle='collapse'] {
     text-align: left;
     padding: 0px;
     display: table;
-    border-bottom: solid 8px;
+    border-bottom: solid 0.5em;
 }
 .btn-danger {
     border-color: darken(@btn-danger-border, 12%);
-    /* start with dark border */
-    
     .action-item-icon {
         background-color: darken(@btn-danger-bg, 10%);
+    }
+}
+.btn-highlight {
+    border-color: darken(@btn-highlight-border, 12%);
+    .action-item-icon {
+        background-color: darken(@btn-highlight-bg, 10%);
     }
 }
 .btn-success {
@@ -383,14 +365,13 @@ a[data-toggle='collapse'] {
     display: table-cell;
 }
 .action-item-text {
-    font-size: 3em;
     padding-left: 15px;
 }
 .action-item-icon {
     // padding: 15px;
     width: 1.5em;
     text-align: center;
-    font-size: 6em;
+    font-size: 2em;
     white-space: nowrap;
 }
 #visits-table tbody tr td:first-child {
@@ -398,6 +379,10 @@ a[data-toggle='collapse'] {
 }
 .badge {
     font-size: inherit;
+}
+
+.btn-xxl {
+    font-size: 3em;
 }
 .btn-xxs {
     font-size: 6px;
@@ -411,7 +396,7 @@ a[data-toggle='collapse'] {
     margin: 0 auto;
 }
 .action-button {
-    font-size: 0.6em;
+    font-size: 2em;
 }
 .visit-list h3 {
     font-weight: 200;
@@ -467,7 +452,7 @@ a[data-toggle='collapse'] {
 }
 /* Get rid of box in chrome */
 .fuelux .datepicker-calendar-days tbody:before {
-                content:"\2009";
+    content:"\2009";
 }
 
 
@@ -480,6 +465,126 @@ a[data-toggle='collapse'] {
 .table .rowlink td:not(.rowlink-skip) {
     cursor: pointer;
 }
+
+
+/* 
+ * Participant page
+ */
+.participant-header {
+    // background-color: lighten(@brand-highlight, 30%);
+    background-color: @panel-info-heading-bg;
+    color: @panel-info-text;
+    padding: 5px;
+    margin-bottom: 20px;
+}
+.page-content .row {
+    margin-right: 0;
+    margin-left: 0;
+}
+.details-table tbody tr td:first-child {
+    font-weight: bold;
+    text-align: right;
+    width: 50%;
+}
+
+#participant-page .row {
+    display: table;
+}
+
+#participant-page [class*="col-"] {
+    float: none;
+    display: table-cell;
+    vertical-align: top;
+}
+#messagesList {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    float: left;
+    padding: 6px 10px;
+    width: 100%;
+    height: 625px;
+    .avatar-nurse {
+        vertical-align: bottom;
+        color: @brand-success;
+    }
+    .avatar-system {
+        vertical-align: bottom;
+        color: gray;
+    }
+    .avatar-participant {
+        vertical-align: bottom;
+        color: @brand-primary;
+    }
+    .message {
+        width: 75%;
+        float: left;
+        border: solid 1px black;
+        border-radius: 20px 0px;
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: @panel-info-heading-bg;
+        position: relative;
+        &.system, &.nurse {
+            float: right;
+            border-radius: 0 20px;
+            background-color: #E0E0E0
+        }
+        &.nurse {
+            background-color: @panel-success-heading-bg;
+        }
+
+        .top span {
+            font-size: .75em;
+            padding: 0px 10px;
+        }
+        .top .date {
+            font-size: .75em;
+            float: right;
+        }
+        .icon {
+            position: absolute;
+            left: -10px;
+            top: -10px;
+            border-radius: 10px;
+            height: 25px;
+            width: 25px;
+            border: 2px solid black;
+            background-color: white;
+            text-align: center;
+            padding-top: .2em;
+        }
+        .content {
+            padding: 0 10px;
+        }
+
+        &.client {
+            .content {
+                border-bottom: solid 1px @panel-info-text;
+                padding-bottom: 0.5em;
+                margin-bottom: 1em;
+            }
+        }
+        .footer .col-md-4,
+        .footer .col-md-6 {
+            text-align: right;
+            vertical-align: middle;
+        }
+    }
+}
+
+.btn-language {
+    background-color: lightgray;
+    border-color: gray;
+    &:hover,
+    &:focus,
+    &.focus,
+    &:active,
+    &.active {
+        background-color: @brand-primary;
+        color: white;
+    }
+}
+
 
 /* TOOD: Temporary */
 .navbar-collapse {

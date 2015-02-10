@@ -10624,6 +10624,51 @@ END
   padding: 0;
   text-shadow: 0 1px #fff;
 }
+.btn-highlight {
+  color: #ffffff;
+  background-color: #ac3cb8;
+  border-color: #9a36a5;
+}
+.btn-highlight:hover,
+.btn-highlight:focus,
+.btn-highlight.focus,
+.btn-highlight:active,
+.btn-highlight.active,
+.open > .dropdown-toggle.btn-highlight {
+  color: #ffffff;
+  background-color: #882f92;
+  border-color: #6f2777;
+}
+.btn-highlight:active,
+.btn-highlight.active,
+.open > .dropdown-toggle.btn-highlight {
+  background-image: none;
+}
+.btn-highlight.disabled,
+.btn-highlight[disabled],
+fieldset[disabled] .btn-highlight,
+.btn-highlight.disabled:hover,
+.btn-highlight[disabled]:hover,
+fieldset[disabled] .btn-highlight:hover,
+.btn-highlight.disabled:focus,
+.btn-highlight[disabled]:focus,
+fieldset[disabled] .btn-highlight:focus,
+.btn-highlight.disabled.focus,
+.btn-highlight[disabled].focus,
+fieldset[disabled] .btn-highlight.focus,
+.btn-highlight.disabled:active,
+.btn-highlight[disabled]:active,
+fieldset[disabled] .btn-highlight:active,
+.btn-highlight.disabled.active,
+.btn-highlight[disabled].active,
+fieldset[disabled] .btn-highlight.active {
+  background-color: #ac3cb8;
+  border-color: #9a36a5;
+}
+.btn-highlight .badge {
+  color: #ac3cb8;
+  background-color: #ffffff;
+}
 html {
   width: 100%;
   height: 100%;
@@ -10688,6 +10733,9 @@ body {
 }
 #content .row > div:first-child {
   padding-left: 0em;
+}
+#content .row > div:last-child {
+  padding-right: 0em;
 }
 .scroll {
   overflow-y: auto;
@@ -10763,48 +10811,6 @@ body {
 /*
  * Contact Message List
  */
-#message-list {
-  padding: 10px 25px;
-}
-#message-list .message {
-  width: 75%;
-  float: left;
-  border: solid 1px black;
-  border-radius: 20px 0px;
-  margin-bottom: 15px;
-  padding: 10px;
-  background-color: #9A9A9A;
-  position: relative;
-}
-#message-list .message.system,
-#message-list .message.nurse {
-  float: right;
-  background-color: #e0e0e0;
-}
-#message-list .message.nurse {
-  background-color: #C6C6C6;
-}
-#message-list .message .top span {
-  font-size: .75em;
-  padding: 0px 10px;
-}
-#message-list .message .top i {
-  font-size: .75em;
-  font-style: italic;
-  float: right;
-}
-#message-list .message .icon {
-  position: absolute;
-  left: -10px;
-  top: -10px;
-  border-radius: 10px;
-  height: 25px;
-  width: 25px;
-  border: 2px solid black;
-  background-color: white;
-  text-align: center;
-  padding-top: .2em;
-}
 #new-message-list .panel {
   margin-top: 10px;
 }
@@ -10927,14 +10933,19 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
   text-align: left;
   padding: 0px;
   display: table;
-  border-bottom: solid 8px;
+  border-bottom: solid 0.5em;
 }
 .btn-danger {
   border-color: #bd0e03;
-  /* start with dark border */
 }
 .btn-danger .action-item-icon {
   background-color: #e01104;
+}
+.btn-highlight {
+  border-color: #6f2777;
+}
+.btn-highlight .action-item-icon {
+  background-color: #882f92;
 }
 .btn-success {
   border-color: #006d58;
@@ -10957,13 +10968,12 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
   display: table-cell;
 }
 .action-item-text {
-  font-size: 3em;
   padding-left: 15px;
 }
 .action-item-icon {
   width: 1.5em;
   text-align: center;
-  font-size: 6em;
+  font-size: 2em;
   white-space: nowrap;
 }
 #visits-table tbody tr td:first-child {
@@ -10971,6 +10981,9 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
 }
 .badge {
   font-size: inherit;
+}
+.btn-xxl {
+  font-size: 3em;
 }
 .btn-xxs {
   font-size: 6px;
@@ -10984,7 +10997,7 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
   margin: 0 auto;
 }
 .action-button {
-  font-size: 0.6em;
+  font-size: 2em;
 }
 .visit-list h3 {
   font-weight: 200;
@@ -11044,6 +11057,116 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
  */
 .table .rowlink td:not(.rowlink-skip) {
   cursor: pointer;
+}
+/* 
+ * Participant page
+ */
+.participant-header {
+  background-color: #d9edf7;
+  color: #31708f;
+  padding: 5px;
+  margin-bottom: 20px;
+}
+.page-content .row {
+  margin-right: 0;
+  margin-left: 0;
+}
+.details-table tbody tr td:first-child {
+  font-weight: bold;
+  text-align: right;
+  width: 50%;
+}
+#participant-page .row {
+  display: table;
+}
+#participant-page [class*="col-"] {
+  float: none;
+  display: table-cell;
+  vertical-align: top;
+}
+#messagesList {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  float: left;
+  padding: 6px 10px;
+  width: 100%;
+  height: 625px;
+}
+#messagesList .avatar-nurse {
+  vertical-align: bottom;
+  color: #00c49e;
+}
+#messagesList .avatar-system {
+  vertical-align: bottom;
+  color: gray;
+}
+#messagesList .avatar-participant {
+  vertical-align: bottom;
+  color: #406281;
+}
+#messagesList .message {
+  width: 75%;
+  float: left;
+  border: solid 1px black;
+  border-radius: 20px 0px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #d9edf7;
+  position: relative;
+}
+#messagesList .message.system,
+#messagesList .message.nurse {
+  float: right;
+  border-radius: 0 20px;
+  background-color: #e0e0e0;
+}
+#messagesList .message.nurse {
+  background-color: #dff0d8;
+}
+#messagesList .message .top span {
+  font-size: .75em;
+  padding: 0px 10px;
+}
+#messagesList .message .top .date {
+  font-size: .75em;
+  float: right;
+}
+#messagesList .message .icon {
+  position: absolute;
+  left: -10px;
+  top: -10px;
+  border-radius: 10px;
+  height: 25px;
+  width: 25px;
+  border: 2px solid black;
+  background-color: white;
+  text-align: center;
+  padding-top: .2em;
+}
+#messagesList .message .content {
+  padding: 0 10px;
+}
+#messagesList .message.client .content {
+  border-bottom: solid 1px #31708f;
+  padding-bottom: 0.5em;
+  margin-bottom: 1em;
+}
+#messagesList .message .footer .col-md-4,
+#messagesList .message .footer .col-md-6 {
+  text-align: right;
+  vertical-align: middle;
+}
+.btn-language {
+  background-color: lightgray;
+  border-color: gray;
+}
+.btn-language:hover,
+.btn-language:focus,
+.btn-language.focus,
+.btn-language:active,
+.btn-language.active {
+  background-color: #406281;
+  color: white;
 }
 /* TOOD: Temporary */
 .navbar-collapse h3 {
