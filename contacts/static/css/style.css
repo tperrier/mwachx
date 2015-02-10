@@ -11030,7 +11030,7 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
   color: #843534;
 }
 .tooltip-icon {
-  display: inline;
+  display: inline-block;
 }
 .with-errors ul li {
   padding-right: 1em;
