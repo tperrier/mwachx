@@ -89,7 +89,9 @@
 </div>
 
 <script src='{% static "js/visit_modal.js" %}'></script>
-<script type="text/javascript">$(function () {
+<script type="text/javascript">
+// TODO: Move this somewhere smarter.
+$(function () {
   $('[data-toggle="tooltip"]').tooltip()
 });</script>
 {% endblock %}

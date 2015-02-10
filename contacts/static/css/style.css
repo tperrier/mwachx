@@ -11039,6 +11039,12 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
 .fuelux .datepicker-calendar-days tbody:before {
   content: "\2009";
 }
+/* 
+ * NEW MSG PAGE
+ */
+.table .rowlink td:not(.rowlink-skip) {
+  cursor: pointer;
+}
 /* TOOD: Temporary */
 .navbar-collapse h3 {
   margin-bottom: 0;
