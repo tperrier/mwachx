@@ -1389,7 +1389,8 @@ ul ol,
 ol ol {
   margin-bottom: 0;
 }
-.list-unstyled {
+.list-unstyled,
+.with-errors ul {
   padding-left: 0;
   list-style: none;
 }
@@ -6292,7 +6293,8 @@ button.close {
   margin-left: auto;
   margin-right: auto;
 }
-.pull-right {
+.pull-right,
+.with-errors ul li {
   float: right !important;
 }
 .pull-left {
@@ -6774,7 +6776,8 @@ button.close {
   border: solid 0.08em #eeeeee;
   border-radius: .1em;
 }
-.pull-right {
+.pull-right,
+.with-errors ul li {
   float: right;
 }
 .pull-left {
@@ -11026,6 +11029,13 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
 }
 .tooltip-icon {
   display: inline;
+}
+.with-errors ul li {
+  padding-right: 1em;
+}
+/* Get rid of box in chrome */
+.fuelux .datepicker-calendar-days tbody:before {
+  content: "\2009";
 }
 
 /*# sourceMappingURL=maps/style.css.map */

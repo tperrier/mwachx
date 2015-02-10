@@ -451,3 +451,12 @@ a[data-toggle='collapse'] {
 .tooltip-icon {
     display: inline;
 }
+.with-errors ul:extend(.list-unstyled){
+    li:extend(.pull-right){
+        padding-right: 1em;
+    }
+}
+/* Get rid of box in chrome */
+.fuelux .datepicker-calendar-days tbody:before {
+                content:"\2009";
+}
