@@ -323,8 +323,16 @@ a[data-toggle='collapse'] {
 }
 .custom-stack {
     position: relative;
-    line-height: 1em;
-    vertical-align: middle;
+    display: inline-block;
+    width: 2em;
+    height: 2em;
+    line-height: 2em;
+    top: 0.2em;
+    font-size: 0.5em;
+    strong {
+        font-weight: bold;
+        font-size: 0.7em;
+    }
 }
 .sms-text {
     font-size: 0.3em;
@@ -374,7 +382,7 @@ a[data-toggle='collapse'] {
     padding-left: 15px;
 }
 .action-item-icon {
-    padding: 15px;
+    // padding: 15px;
     width: 1.5em;
     text-align: center;
     font-size: 6em;
@@ -459,4 +467,12 @@ a[data-toggle='collapse'] {
 /* Get rid of box in chrome */
 .fuelux .datepicker-calendar-days tbody:before {
                 content:"\2009";
+}
+
+
+
+
+/* TOOD: Temporary */
+.navbar-collapse {
+    h3 { margin-bottom:0;}
 }
