@@ -22,9 +22,9 @@
                 {% for visit in visits.upcoming %}
                 <tr class="link-row">
                     <td>
-                        <a data-toggle="tooltip" data-placement="top" title="Did not visit today" class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id 1 %}'>
+                        <a data-toggle="tooltip" data-placement="top" title="{{visit.contact.nickname}} did not visit today" class="btn btn-danger" href='{% url "contacts.views.visit_dismiss" visit.id 1 %}'>
                             <i class="fa fa-eye-slash fa-fw"></i>
-                        </a> <div class="tooltip-icon" data-toggle="tooltip" data-title="Came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}}><i class="fa fa-hospital-o fa-fw"></i></a></div>
+                        </a> <div class="tooltip-icon" data-toggle="tooltip" data-title="{{visit.contact.nickname}} came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}}><i class="fa fa-hospital-o fa-fw"></i></a></div>
                     </td>
                     <td>{{visit.contact.nickname}}</td>
                     <td>{{visit.contact.study_group}}</td>
@@ -58,11 +58,11 @@
                 {% for visit in visits.bookcheck %}
                 <tr class="link-row">
                     <td>
-<a data-toggle="tooltip" data-placement="top" title="No visit in book" class="btn btn-danger btn-stack" href='{% url "contacts.views.visit_dismiss" visit.id 7 %}'>
+<a data-toggle="tooltip" data-placement="top" title="{{visit.contact.nickname}} has no visit in book" class="btn btn-danger btn-stack" href='{% url "contacts.views.visit_dismiss" visit.id 7 %}'>
                         <span class="fa-stack fa-sm fa-fw">
                           <i class="fa fa-book fa-stack-2x "></i>  
                           {# <i class="fa fa-stack-2x x-out">X</i> #}
-                        </span> </a> <div class="tooltip-icon" data-toggle="tooltip" data-placement="top" title="Came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}} ><i class="fa fa-hospital-o fa-fw"></i></a></div>
+                        </span> </a> <div class="tooltip-icon" data-toggle="tooltip" data-placement="top" title="{{visit.contact.nickname}} came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}} ><i class="fa fa-hospital-o fa-fw"></i></a></div>
                     </td>
                     <td>{{visit.contact.nickname}}</td>
                     <td>{{visit.contact.study_group}}</td>

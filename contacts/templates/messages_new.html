@@ -16,7 +16,7 @@
                 {% for message in new_message_list %}
                 <tr class="link-row">
                     <td>
-                        <a href='{% url "contacts.views.contact" message.contact.study_id %}' class="btn btn-info" data-toggle="tooltip" data-title="View user">
+                        <a href='{% url "contacts.views.contact" message.contact.study_id %}' class="btn btn-info" data-toggle="tooltip" data-title="View {{message.contact.nickname}}'s page">
                         <i class="mw mw-mwach-phone fa-2x"></i>
                         </a>
                     </td>
