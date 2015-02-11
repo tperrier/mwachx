@@ -122,6 +122,17 @@ body {
 .col-full {
     padding: 0px;
 }
+
+// .btn-group .btn {
+//     border-left: 1px solid #ccc;
+//     }
+// .btn-group .btn:last-child {
+//     border-right: 1px solid #ccc;
+//     }
+.btn-group .btn+.btn {
+    margin: 0;
+}
+
 /**
  * Contact List
  **/
@@ -584,6 +595,24 @@ a[data-toggle='collapse'] {
         color: white;
     }
 }
+.btn-sm {
+    font-size: 0.7em;
+    padding: 2px 4px;
+}
+
+/* 
+ * Translation page
+ */
+#translations-table {
+    tbody tr td:nth-child(2) {
+        width: 350px;
+    }
+    textarea {
+        width: 350px;
+        height: 100px;
+    }
+}
+
 
 
 /* TOOD: Temporary */

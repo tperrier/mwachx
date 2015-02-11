@@ -35,7 +35,8 @@ logging.config.dictConfig(LOGGING)
 
 
 def translations(request):
-    return render(request, 'translations.html')
+    msgs_to_translate = cont.Message.objects.filter(Q(translation=None)|Q(translation__is_complete=False))
+    return render(request, 'translations.html', {'to_translate_list': msgs_to_translate})
 
 def calls(request):
     return render(request, 'calls-to-make.html')

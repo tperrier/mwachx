@@ -10747,6 +10747,9 @@ body {
 .col-full {
   padding: 0px;
 }
+.btn-group .btn + .btn {
+  margin: 0;
+}
 /**
  * Contact List
  **/
@@ -11167,6 +11170,21 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
 .btn-language.active {
   background-color: #406281;
   color: white;
+}
+.btn-sm,
+.btn-group-sm > .btn {
+  font-size: 0.7em;
+  padding: 2px 4px;
+}
+/* 
+ * Translation page
+ */
+#translations-table tbody tr td:nth-child(2) {
+  width: 350px;
+}
+#translations-table textarea {
+  width: 350px;
+  height: 100px;
 }
 /* TOOD: Temporary */
 .navbar-collapse h3 {
