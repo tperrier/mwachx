@@ -28,11 +28,16 @@ class Message(TimeStampedModel):
     
     # ToDo:Link To Automated Message
     parent = models.ForeignKey('contacts.Message',related_name='message_set',blank=True,null=True)
+    
+    translation = models.ForeignKey('contacts.Translation',related_name='message_translation',blank=True,null=True)
 
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
     contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
     
+    def is_translated(self):
+        return self.translation.is_complete if self.translation else False
+
     def html_class(self):
         '''
         Determines how to display the message in a template
