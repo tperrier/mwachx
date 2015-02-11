@@ -45,8 +45,12 @@ def add_client(client,i):
         add_note(n,contact)
             
     return new_client
-    
+
+message_counter = 0
 def add_message(message,contact,connection):
+    # Trevor, forgive me...
+    global message_counter
+    message_counter = message_counter + 1
     outgoing = message['sent_by'] != 'Client'
     system = message['sent_by'] == 'System'
     new_message = {
@@ -59,6 +63,16 @@ def add_message(message,contact,connection):
     _message = cont.Message.objects.create(**new_message)
     _message.created = message['date']
     _message.save()
+
+    if message_counter < 800:
+        new_translation = {
+            'text':message['content'],
+            'is_complete':True,
+            'parent': _message,
+        }
+        _trans = cont.Translation.objects.create(**new_translation)
+        _message.translation = _trans
+        _message.save()
     
 def add_visit(visit,contact):
     if visit['scheduled_date']:

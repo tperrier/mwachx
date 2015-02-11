@@ -11179,12 +11179,18 @@ a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
 /* 
  * Translation page
  */
-#translations-table tbody tr td:nth-child(2) {
-  width: 350px;
+#translations-table tbody tr td:first-child {
+  width: 80px;
 }
-#translations-table textarea {
-  width: 350px;
-  height: 100px;
+#translations-table tbody tr td:nth-child(2),
+#translations-table tbody tr td:nth-child(3) {
+  width: 35%;
+}
+#translations-table tbody tr.dirty {
+  background-color: #fcf8e3;
+}
+[contenteditable]:hover:not(:focus) {
+  outline: 2px solid #ac3cb8;
 }
 /* TOOD: Temporary */
 .navbar-collapse h3 {

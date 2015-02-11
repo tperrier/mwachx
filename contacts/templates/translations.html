@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% block title %}Translations{% endblock %} {% block content %}
+{% extends 'base.html' %} {% load staticfiles %}{% block title %}Translations{% endblock %} {% block content %}
 <div class='col-full'>
     <div class="page-content">
     	<div class="row">
@@ -9,7 +9,6 @@
 	            <thead>
 	                <tr>
 	                    <th>From</th>
-	                    <th>Language</th>
 	                    <th>Original text</th>
 	                    <th>Translated text</th>
 	                    <th></th>
@@ -19,22 +18,28 @@
 	                {% for message in to_translate_list %}
 	                <tr class="link-row">
 	                    <td><strong>{{message.contact.nickname}}</strong><br>
-	                        <div class="btn-group" data-toggle="buttons">
-								<label class="btn btn-language btn-sm" data-toggle="tooltip" data-placement="top" title="English">E</label>
-								<label class="btn btn-language btn-sm" data-toggle="tooltip" data-placement="top" title="Swahili">S</label>
-								<label class="btn btn-language btn-sm" data-toggle="tooltip" data-placement="top" title="Sheng">H</label>
-								<label class="btn btn-language btn-sm" data-toggle="tooltip" data-placement="top" title="Luo">L</label>
-	                        </div>
+	                        <div class="btn-group" data-toggle="buttons" id="lang{{forloop.counter}}">
+								<label onclick="mark_dirty()" class="btn btn-language btn-sm" data-toggle="tooltip" data-placement="top" title="English"><input  name='English' type="checkbox" autocomplete="off">E</label>
+								<label onclick="mark_dirty()" class="btn btn-language btn-sm" data-toggle="tooltip" data-placement="top" title="Swahili"><input  name='Swahili' type="checkbox" autocomplete="off">S</label>
+								<label onclick="mark_dirty()" class="btn btn-language btn-sm" data-toggle="tooltip" data-placement="top" title="Sheng"><input  name='Sheng' type="checkbox" autocomplete="off">H</label>
+								<label onclick="mark_dirty()" class="btn btn-language btn-sm" data-toggle="tooltip" data-placement="top" title="Luo"><input  name='Luo' type="checkbox" autocomplete="off">L</label>
+	                        </div><br>
+
 	                    </td>
 	                    <td>{{message.text}}</td>
 	                    <td>
 	                    {% if message.translation %}
-		                    <textarea>{{message.translation.text}}</textarea>
+		                    <div onkeydown="mark_dirty()" contenteditable="true" id="translated{{forloop.counter}}">{{message.translation.text}}</div>
 	                    {% else %}
-	                    	<textarea>{{message.text}}</textarea>
+	                    	<div onkeydown="mark_dirty()" contenteditable="true" id="translated{{forloop.counter}}">{{message.text}}</div>
 	                    {% endif %}
 	                    </td>
-	                    <td><button class="btn btn-success"><i class="fa fa-check"></i></button></td>
+	                    <td>
+		                    <button class="btn btn-success">Done</button>
+		                    <button class="btn btn-danger" onclick="not_required()" data-count='{{forloop.counter}}'>Not req'd</button>
+		                    <h4 id="languageError{{forloop.counter}}" class="text-danger" style="display: none;">Select at least one language</h4>
+		                    <h4 id="transError{{forloop.counter}}" class="text-danger" style="display: none;">Must enter translation</h4>
+	                    </td>
 	                </tr>
 	                {% endfor %}
 	            </tbody>
@@ -43,6 +48,7 @@
 	</div>
 </div>
 
+<script type="text/javascript" src='{% static "js/translations.js" %}'></script>
 <script type="text/javascript">
 // TODO: Move this somewhere smarter.
 $(function () {

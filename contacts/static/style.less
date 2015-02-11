@@ -604,16 +604,22 @@ a[data-toggle='collapse'] {
  * Translation page
  */
 #translations-table {
-    tbody tr td:nth-child(2) {
-        width: 350px;
+    tbody tr td:first-child {
+        width: 80px;
     }
-    textarea {
-        width: 350px;
-        height: 100px;
+    tbody tr td:nth-child(2),
+    tbody tr td:nth-child(3) {
+        width: 35%;
+    }
+
+    tbody tr.dirty{
+        background-color: @panel-warning-heading-bg;
     }
 }
 
-
+[contenteditable]:hover:not(:focus) {
+    outline: 2px solid @brand-highlight;
+}
 
 /* TOOD: Temporary */
 .navbar-collapse {
