@@ -18,6 +18,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+.mw-mwach-phone-add:before {
+    content: "\e604";
+}
 .mw-mwach-d:before {
     content: "\e600";
 }
