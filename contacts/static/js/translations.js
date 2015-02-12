@@ -1,3 +1,10 @@
+window.onbeforeunload = function() {
+	// Check the dirty bit
+	if ($('.dirty').length > 0 ) {
+		return "You have unsaved translation changes. Please click 'Done' or 'Not required' for any highlighted rows before you continue. If you choose to leave, your changes will not be saved.";
+	}
+}
+
 function not_required(e) {
 	e = e || window.event;
     var targ = e.target || e.srcElement;
