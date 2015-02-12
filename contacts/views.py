@@ -35,7 +35,7 @@ logging.config.dictConfig(LOGGING)
 
 
 def translations(request):
-    msgs_to_translate = cont.Message.objects.filter(Q(translation=None)|Q(translation__is_complete=False))
+    msgs_to_translate = cont.Message.objects.filter(is_system=False).filter(Q(translation=None)|Q(translation__is_complete=False))
     langs = cont.Language.objects.all()
     return render(request, 'translations.html', {'to_translate_list': msgs_to_translate, 'langs': langs})
 

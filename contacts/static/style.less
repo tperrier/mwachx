@@ -511,24 +511,24 @@ a[data-toggle='collapse'] {
 //     display: table-cell;
 //     vertical-align: top;
 // }
+.avatar-nurse {
+    vertical-align: bottom;
+    color: @brand-success;
+}
+.avatar-system {
+    vertical-align: bottom;
+    color: gray;
+}
+.avatar-participant {
+    vertical-align: bottom;
+    color: @brand-primary;
+}
 #messagesList {
     border: 1px solid #ccc;
     border-radius: 4px;
     padding: 6px 10px;
     width: 100%;
     height: 625px;
-    .avatar-nurse {
-        vertical-align: bottom;
-        color: @brand-success;
-    }
-    .avatar-system {
-        vertical-align: bottom;
-        color: gray;
-    }
-    .avatar-participant {
-        vertical-align: bottom;
-        color: @brand-primary;
-    }
     .message {
         border: solid 1px black;
         border-radius: 20px 0px;
@@ -604,11 +604,11 @@ a[data-toggle='collapse'] {
  * Translation page
  */
 #translations-table {
-    tbody tr td:first-child {
+    tbody tr td:nth-child(2) {
         width: 80px;
     }
-    tbody tr td:nth-child(2),
-    tbody tr td:nth-child(3) {
+    tbody tr td:nth-child(3),
+    tbody tr td:nth-child(4) {
         width: 35%;
     }
 
@@ -619,6 +619,9 @@ a[data-toggle='collapse'] {
 
 [contenteditable]:hover:not(:focus) {
     outline: 2px solid @brand-highlight;
+}
+.nurse-row{
+    background-color: rgba(173, 255, 47, .2);
 }
 
 /* TOOD: Temporary */
