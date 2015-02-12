@@ -11080,6 +11080,9 @@ a[data-toggle='collapse'].collapsed:before {
   text-align: right;
   width: 50%;
 }
+.visit-table tbody tr td {
+  border: none;
+}
 .avatar-nurse {
   vertical-align: bottom;
   color: #00c49e;
