@@ -101,9 +101,13 @@ body {
     overflow-y: auto;
     box-sizing: border-box;
 }
-#content>.container-fluid, #content>.container-fluid>.row {
-    padding: 0px;
-    margin: 0px;
+// #content>.container-fluid, #content>.container-fluid>.row {
+//     padding: 0px;
+//     margin: 0px;
+// }
+.no-gutter > [class*='col-'] {
+    padding-right:0;
+    padding-left:0;
 }
 #content .row>div:first-child {
     padding-left: 0em;
@@ -488,9 +492,12 @@ a[data-toggle='collapse'] {
     padding: 5px;
     margin-bottom: 20px;
 }
-.page-content .row {
+.skinny-row {
     margin-right: 0;
     margin-left: 0;
+}
+.scroll-row {
+    margin-right: 10px;
 }
 .details-table tbody tr td:first-child {
     font-weight: bold;
@@ -498,19 +505,18 @@ a[data-toggle='collapse'] {
     width: 50%;
 }
 
-#participant-page .row {
-    display: table;
-}
+// #participant-page .row {
+//     display: table;
+// }
 
-#participant-page [class*="col-"] {
-    float: none;
-    display: table-cell;
-    vertical-align: top;
-}
+// #participant-page [class*="col-"] {
+//     float: none;
+//     display: table-cell;
+//     vertical-align: top;
+// }
 #messagesList {
     border: 1px solid #ccc;
     border-radius: 4px;
-    float: left;
     padding: 6px 10px;
     width: 100%;
     height: 625px;
@@ -527,8 +533,6 @@ a[data-toggle='collapse'] {
         color: @brand-primary;
     }
     .message {
-        width: 75%;
-        float: left;
         border: solid 1px black;
         border-radius: 20px 0px;
         margin-bottom: 15px;
@@ -536,7 +540,6 @@ a[data-toggle='collapse'] {
         background-color: @panel-info-heading-bg;
         position: relative;
         &.system, &.nurse {
-            float: right;
             border-radius: 0 20px;
             background-color: #E0E0E0
         }

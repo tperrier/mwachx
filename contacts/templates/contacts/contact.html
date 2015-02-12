@@ -96,12 +96,16 @@
             </div>
             <div class="infinitescroll" id="messagesList">
                 {% for message in contact.message_set.all %}
-                <div class="row">
+                <div class="row skinny-row scroll-row">
                     {% if message.html_class == "client" %}
                     <div class="col-md-1 avatar-participant fa-4x"><i class="mw mw-mwach-phone"></i></div>
                     {% endif %}
 
-                    <div class='col-md-8 message {{message.html_class}}'>
+                    {% if message.html_class == "client" %}
+                    <div class='col-md-9 message {{message.html_class}}'>
+                    {% else %}
+                    <div class='col-md-9 col-md-offset-2 message {{message.html_class}}'>
+                    {% endif %}
                         <div class='top'><span><strong>{{message.sent_by}}</strong> ({{message.weeks}} wk)</span><span class="date">{{ message.created|date:"n N y H:i" }}</span>
                         </div>
                         <div class='content'>{{ message.text }}</div>

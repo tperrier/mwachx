@@ -20,7 +20,7 @@
     {% url 'contacts.views.calls' as u %}
     <a class='btn {% if status.calls != 0 %} btn-danger {% else %} btn-success {% endif %} action-item btn-xxl' href="{{u}}">
         <span class="action-item-icon">
-            <i class="fa fa-mobile"></i>
+            <i class="fa fa-mobile fa-lg"></i>
         </span>
         <span class="action-item-text">{% if status.calls != 0 %} You have {% include 'icons/number.html' %} new calls to make {% else %} No new calls! {% endif %}</span>
     </a>
