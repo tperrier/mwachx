@@ -60,6 +60,12 @@ function delete_row(e) {
 	tr.fadeOut(400, function(){
 	    tr.remove();
 	});
+
+	tr.children('td')
+        .animate({ padding: 0 })
+        .wrapInner('<div />')
+        .children()
+        .slideUp(400, function(){});
 }
 function clear_dirty(e) {
 	$(e).closest('tr').removeClass('dirty');
