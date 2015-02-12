@@ -56,6 +56,9 @@ function not_required(e) {
 }
 
 function delete_row(e) {
+	// Thanks to: 
+	// http://blog.slaks.net/2010/12/animating-table-rows-with-jquery.html
+	// http://stackoverflow.com/questions/15604122/jquery-delete-table-row
 	tr = $(e).closest('tr');
 	tr.fadeOut(400, function(){
 	    tr.remove();
