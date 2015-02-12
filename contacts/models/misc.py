@@ -30,7 +30,7 @@ class Note(TimeStampedModel):
     admin = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     comment = models.CharField(max_length=500,blank=True,null=True)
     
-class Connection(TimeStampedModel):
+class Connection(models.Model):
     
     objects = BaseQuerySet.as_manager()
     
@@ -52,9 +52,21 @@ class StatusChange(TimeStampedModel):
     objects = BaseQuerySet.as_manager()
     
     class Meta:
-        ordering = ('created',)
+        ordering = ('-created',)
     
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
     old = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
     new = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
+    
+class Facility(models.Model):
+    
+    class Meta:
+        verbose_name_plural = 'facilities'
+    
+    name = models.CharField(max_length='50',help_text='Facility Name')
+    
+    def __str__(self):
+        return self.name
+    
+    
     

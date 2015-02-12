@@ -97,6 +97,8 @@ class Contact(TimeStampedModel):
     study_id = models.IntegerField(unique=True,verbose_name='Study ID')
     anc_num = models.IntegerField(verbose_name='ANC #')
     
+    facility = models.ForeignKey('contacts.Facility')
+    
     study_group = models.CharField(max_length=10,choices=GROUP_CHOICES,verbose_name='Group')
     send_day = models.IntegerField(choices=DAY_CHOICES, default=3,verbose_name='Send Day')
     send_time = models.IntegerField(choices=TIME_CHOICES,default=13,verbose_name='Send Time')

@@ -122,7 +122,6 @@ def visits(request):
     return render(request,'upcoming-visits.html', {'visits':visits})
 
 def home(request):
-    today = settings.CURRENT_DATE
     visit_count = cont.Visit.objects.get_bookcheck().count() + cont.Visit.objects.get_upcoming_visits().count()
 
     status =  {

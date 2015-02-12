@@ -24,7 +24,7 @@ import contacts.models as cont
 
 
 study_groups = ['control','one-way','two-way']
-def add_client(client,i):
+def add_client(client,i,facility):
     new_client = {
         'study_id':i,
         'anc_num':client['anc_num'],
@@ -33,12 +33,16 @@ def add_client(client,i):
         'study_group':random.choice(study_groups),
         'due_date':get_due_date(),
         'last_msg_client':client['last_msg_client'],
+        'facility':facility,
         }
     contact = cont.Contact.objects.create(**new_client)
     connection = cont.Connection.objects.create(identity=client['phone_number'],contact=contact,is_primary=True)
     
-    for m in client['messages']:
-        add_message(m,contact,connection)
+    message_count = len(client['messages'])
+    for i,m in enumerate(client['messages']):
+        #only make translations for last five messages
+        translate = i < message_count - 5
+        add_message(m,contact,connection,translate)
     for v in client['visits']:
         add_visit(v,contact)
     for n in client['notes']:
@@ -46,11 +50,7 @@ def add_client(client,i):
             
     return new_client
 
-message_counter = 0
-def add_message(message,contact,connection):
-    # Trevor, forgive me...
-    global message_counter
-    message_counter = message_counter + 1
+def add_message(message,contact,connection,translate=False):
     outgoing = message['sent_by'] != 'Client'
     system = message['sent_by'] == 'System'
 
@@ -69,7 +69,7 @@ def add_message(message,contact,connection):
     mylang.messages.add(_message)
     mylang.save()
 
-    if message_counter < 800:
+    if translate:
         new_translation = {
             'text':message['content'],
             'is_complete':True,
@@ -110,6 +110,12 @@ def create_languages():
     cont.Language.objects.create(**{"short_name":"S", "name": 'Swahili'})
     cont.Language.objects.create(**{"short_name":"H", "name": 'Sheng'})
     cont.Language.objects.create(**{"short_name":"L", "name": 'Luo'})
+    
+def create_facilities():
+    cont.Facility.objects.create(name='Bondo')
+    cont.Facility.objects.create(name='Ahero')
+    cont.Facility.objects.create(name='Mathare')
+    cont.Facility.objects.create(name='Kisumu East')
 
 ###################
 # End Utility Functions
@@ -117,14 +123,17 @@ def create_languages():
 
 
 create_languages()
+create_facilities()
 
 JSON_DATA_FILE = 'small.json'
 IMPORT_COUNT = 10
 clients = json.load(open(JSON_DATA_FILE))
 clients = random.sample(clients.values(),IMPORT_COUNT)
 
+facility_list = cont.Facility.objects.all()
+
 for i,c in enumerate(clients):
-    print add_client(c,i)
+    print add_client(c,i,random.choice(facility_list))
 
 #Make the last message for each contact is_viewed=False
 last_messages = cont.Message.objects.filter(is_outgoing=False).values('contact_id').order_by().annotate(Max('id'))
@@ -134,7 +143,3 @@ cont.Message.objects.exclude(id__in=[d['id__max'] for d in last_messages]).updat
 last_visits = cont.Visit.objects.all().values('contact_id').order_by().annotate(Max('id'))
 cont.Visit.objects.filter(id__in=[d['id__max'] for d in last_visits]).update(arrived=None,skipped=None)
 
-'''    
-update contacts_message set is_viewed = 1 where id not in 
-(select max(id) contacts_message where is_outgoing=0 group by contact_id); 
-'''

@@ -16,6 +16,21 @@ class Language(TimeStampedModel):
     name = models.CharField(max_length=20)
 
     messages = models.ManyToManyField("Message",blank=True, null=True)
+    
+class Translation(TimeStampedModel):
+
+    text = models.CharField(max_length=1000,help_text='Text of the translated message')
+
+    is_complete = models.BooleanField(default=False)
+    is_skipped = models.BooleanField(default=False)
+    
+    @property
+    def parent(self):
+        try:
+            return self.message.text
+        except Translate.DoesNotExist:
+            return ''
+            
 
 
 class Message(TimeStampedModel):
@@ -33,9 +48,9 @@ class Message(TimeStampedModel):
     is_viewed = models.BooleanField(default=False)
     
     # ToDo:Link To Automated Message
-    parent = models.ForeignKey('contacts.Message',related_name='message_set',blank=True,null=True)
+    parent = models.ForeignKey('contacts.Message',related_name='replies',blank=True,null=True)
     
-    translation = models.ForeignKey('contacts.Translation',related_name='message_translation',blank=True,null=True)
+    translation = models.OneToOneField('contacts.Translation',blank=True,null=True)
 
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
