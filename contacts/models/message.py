@@ -11,13 +11,19 @@ class MessageQuerySet(BaseQuerySet):
     def pending(self):
         return self.filter(is_viewed=False)
 
+class Language(TimeStampedModel):
+    short_name = models.CharField(max_length=1)
+    name = models.CharField(max_length=20)
+
+    messages = models.ManyToManyField("Message",blank=True, null=True)
+
+
 class Message(TimeStampedModel):
-    
     class Meta:
         ordering = ('-created',)
     
     text = models.CharField(max_length=1000,help_text='Text of the SMS message')
-    
+
     #Set Custom Manager
     objects = MessageQuerySet.as_manager()
     
@@ -37,6 +43,9 @@ class Message(TimeStampedModel):
     
     def is_translated(self):
         return self.translation.is_complete if self.translation else False
+
+    def lang_ids(self):
+        return [l.id for l in self.language_set.all()]
 
     def html_class(self):
         '''

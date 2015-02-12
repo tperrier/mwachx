@@ -53,6 +53,7 @@ def add_message(message,contact,connection):
     message_counter = message_counter + 1
     outgoing = message['sent_by'] != 'Client'
     system = message['sent_by'] == 'System'
+
     new_message = {
         'text':message['content'],
         'is_outgoing':outgoing,
@@ -63,6 +64,10 @@ def add_message(message,contact,connection):
     _message = cont.Message.objects.create(**new_message)
     _message.created = message['date']
     _message.save()
+
+    mylang = cont.Language.objects.get(id=random.randint(1,4))
+    mylang.messages.add(_message)
+    mylang.save()
 
     if message_counter < 800:
         new_translation = {
@@ -100,9 +105,18 @@ def add_note(note,contact):
 def get_due_date():
     return datetime.date.today() + datetime.timedelta(days=random.randint(0,100))
 
+def create_languages():
+    cont.Language.objects.create(**{"short_name":"E", "name": 'English'})
+    cont.Language.objects.create(**{"short_name":"S", "name": 'Swahili'})
+    cont.Language.objects.create(**{"short_name":"H", "name": 'Sheng'})
+    cont.Language.objects.create(**{"short_name":"L", "name": 'Luo'})
+
 ###################
 # End Utility Functions
 ###################
+
+
+create_languages()
 
 JSON_DATA_FILE = 'small.json'
 IMPORT_COUNT = 10

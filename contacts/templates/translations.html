@@ -18,11 +18,16 @@
 	                {% for message in to_translate_list %}
 	                <tr class="link-row">
 	                    <td><strong>{{message.contact.nickname}}</strong><br>
-	                        <div class="btn-group" data-toggle="buttons" id="lang{{forloop.counter}}">
-								<label onclick="mark_dirty()" class="btn btn-language btn-sm" data-toggle="tooltip" data-placement="top" title="English"><input  name='English' type="checkbox" autocomplete="off">E</label>
-								<label onclick="mark_dirty()" class="btn btn-language btn-sm" data-toggle="tooltip" data-placement="top" title="Swahili"><input  name='Swahili' type="checkbox" autocomplete="off">S</label>
-								<label onclick="mark_dirty()" class="btn btn-language btn-sm" data-toggle="tooltip" data-placement="top" title="Sheng"><input  name='Sheng' type="checkbox" autocomplete="off">H</label>
-								<label onclick="mark_dirty()" class="btn btn-language btn-sm" data-toggle="tooltip" data-placement="top" title="Luo"><input  name='Luo' type="checkbox" autocomplete="off">L</label>
+	                        <div class="btn-group" data-toggle="buttons" id="lang{{forloop.counter}}" >
+	                        	{% for l in langs %}
+									<label onclick="mark_dirty()" class="btn btn-language btn-sm {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}"><input  name='{{l.name}}' type="checkbox" autocomplete="off"
+	                        		{% if l.id in message.lang_ids %}
+		                        		checked="true"
+	                        		{% else %}
+	                        			checked="false"
+	                        		{% endif %}
+									>{{l.short_name}}</label>
+								{% endfor %}
 	                        </div><br>
 
 	                    </td>
@@ -36,7 +41,7 @@
 	                    </td>
 	                    <td>
 		                    <button class="btn btn-success">Done</button>
-		                    <button class="btn btn-danger" onclick="not_required()" data-count='{{forloop.counter}}'>Not req'd</button>
+		                    <button class="btn btn-danger" onclick="not_required()" data-count='{{forloop.counter}}'>Not required</button>
 		                    <h4 id="languageError{{forloop.counter}}" class="text-danger" style="display: none;">Select at least one language</h4>
 		                    <h4 id="transError{{forloop.counter}}" class="text-danger" style="display: none;">Must enter translation</h4>
 	                    </td>
