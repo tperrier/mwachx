@@ -46,7 +46,7 @@
                         <a href='{{u}}'><i class='fa fa-hospital-o'></i> Visits</a>
                     </li>
                     <li {% url 'contacts.views.calls' as u %}{% if request.path == u %}class='active' {% endif %}>
-                        <a href='{{u}}'><i class='fa fa-mobile'></i> Calls</a>
+                        <a href='{{u}}'><i class='fa fa-mobile fa-lg'></i> Calls</a>
                     </li>
                     <li {% url 'contacts.views.translations' as u %}{% if request.path == u %}class='active' {% endif %}>
                         <a href='{{u}}'><i class='fa fa-language'></i> Translations</a>
