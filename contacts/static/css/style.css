@@ -10877,13 +10877,12 @@ a[data-toggle='collapse'] {
   text-decoration: none;
   color: black;
 }
-a[data-toggle='collapse'][aria-expanded="true"] .fa-folder,
-a[data-toggle='collapse'][aria-expanded="true"] .fa-chevron-circle-up {
-  display: none;
+a[data-toggle='collapse']:before {
+  font-family: "FontAwesome";
+  content: "\f139";
 }
-a[data-toggle='collapse'][aria-expanded="false"] .fa-folder-open,
-a[data-toggle='collapse'][aria-expanded="false"] .fa-chevron-circle-down {
-  display: none;
+a[data-toggle='collapse'].collapsed:before {
+  content: "\f13a";
 }
 #contacts-table tbody tr {
   cursor: pointer;

@@ -277,15 +277,12 @@ body {
 a[data-toggle='collapse'] {
     text-decoration: none;
     color: black;
-    &[aria-expanded="true"] {
-        .fa-folder, .fa-chevron-circle-up {
-            display: none;
-        }
+    &:before {
+        font-family: "FontAwesome";
+        content: @fa-var-chevron-circle-up;
     }
-    &[aria-expanded="false"] {
-        .fa-folder-open, .fa-chevron-circle-down {
-            display: none;
-        }
+    &.collapsed:before {
+        content: @fa-var-chevron-circle-down;
     }
 }
 #contacts-table {
