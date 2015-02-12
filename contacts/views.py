@@ -5,6 +5,7 @@ from django.views.generic.edit import CreateView
 from django.views.decorators.http import require_POST
 from django.conf import settings
 from django.db.models import Q
+from django.http import HttpResponseBadRequest, HttpResponse
 
 #Python Imports
 import datetime,collections
@@ -41,6 +42,39 @@ def translations(request):
 
 def calls(request):
     return render(request, 'calls-to-make.html')
+
+
+def record_translation(message_id, txt, langs, is_skipped=False):
+    new_translation = {
+        'text':txt,
+        'is_complete':True,
+        'is_skipped':is_skipped,
+        'parent': cont.Message.objects.get(id=message_id),
+    }
+
+    # TODO: What if we are updating a translation? 
+    # Need to check if one exists first otherwise we're
+    # orphaning a lot of DB entries.
+    _trans = cont.Translation.objects.create(**new_translation)
+
+    _msg = cont.Message.objects.get(id=message_id)
+    lang_objs = cont.Language.objects.filter(id__in=langs)
+    _msg.language_set = lang_objs
+    _msg.translation = _trans
+    _msg.save()
+
+@require_POST
+def translation_not_required(request, message_id):
+
+    record_translation( 
+        message_id,
+        request.POST['translation'],
+        request.POST.getlist('languages[]'),
+        is_skipped=True)
+
+    return HttpResponse()
+    # return HttpResponseBadRequest()
+    # return redirect('contacts.views.visits')
 
 @require_POST
 def visit_schedule(request):
