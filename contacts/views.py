@@ -45,23 +45,30 @@ def calls(request):
 
 
 def record_translation(message_id, txt, langs, is_skipped=False):
-    new_translation = {
-        'text':txt,
-        'is_complete':True,
-        'is_skipped':is_skipped,
-        'parent': cont.Message.objects.get(id=message_id),
-    }
-
-    # TODO: What if we are updating a translation? 
-    # Need to check if one exists first otherwise we're
-    # orphaning a lot of DB entries.
-    _trans = cont.Translation.objects.create(**new_translation)
-
     _msg = cont.Message.objects.get(id=message_id)
     lang_objs = cont.Language.objects.filter(id__in=langs)
     _msg.language_set = lang_objs
-    _msg.translation = _trans
+
+    if(_msg.translation):
+        _msg.translation.text = txt
+        _msg.translation.is_complete = True
+        _msg.translation.is_skipped = is_skipped
+        _msg.translation.save()
+    else:
+        new_translation = {
+            'text':txt,
+            'is_complete':True,
+            'is_skipped':is_skipped,
+            'parent': cont.Message.objects.get(id=message_id),
+        }
+        _trans = cont.Translation.objects.create(**new_translation)
+        _msg.translation = _trans
+    
+
+    # done, so return an http 200
     _msg.save()
+    return HttpResponse()    
+    
 
 @require_POST
 def translation_not_required(request, message_id):
