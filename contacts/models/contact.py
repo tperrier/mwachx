@@ -63,7 +63,7 @@ class Contact(TimeStampedModel):
     
     RELATIONSHIP_CHOICES = (
         ('single','Single'),
-        ('parner','Parner'),
+        ('partner','Partner'),
         ('married','Married'),
     )
     
