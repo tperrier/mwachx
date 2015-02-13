@@ -19,6 +19,13 @@ $(function(){
 });
 
 
+function refresh_participant_details(obj) {
+    $(obj).find(":input").each(function() {
+        if( !$(this).attr('id') )
+            return;
+        $("#display_" + $(this).attr('id').substr(3)).text($(this).val());
+    });
+}
 
 function save_participant_details(e) {
     form_id = "#participant-details-form";
@@ -35,15 +42,12 @@ function save_participant_details(e) {
                 // Here we replace the form if there's an error
                 $(form_id).replaceWith(data['form_html']);
                 $(modal).find('button').attr('disabled', false);
-                console.log('there was an error returned');
-                console.log(data);
             }
             else {
                 // Close the modal
                 $(modal).find('button').attr('disabled', false);
                 $(modal).modal('toggle');
-                console.log('ok, great!');
-
+                refresh_participant_details($(form_id));
             }   
         },
         error: function () {
