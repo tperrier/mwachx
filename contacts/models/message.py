@@ -1,7 +1,9 @@
 #!/usr/bin/python
 #Django Imports
 from django.db import models
+from django.db.models import Q
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 #Local Imports
 from utils.models import TimeStampedModel, BaseQuerySet
@@ -10,6 +12,15 @@ class MessageQuerySet(BaseQuerySet):
     
     def pending(self):
         return self.filter(is_viewed=False)
+        
+    def to_translate(self):
+        return self.filter(is_system=False).filter(Q(translation=None)|Q(translation__is_complete=False))
+        
+    def for_user(self,user):
+        try:
+            return self.filter(contact__facility=user.practitioner.facility)
+        except ObjectDoesNotExist:
+            return self
 
 class Language(TimeStampedModel):
     short_name = models.CharField(max_length=1)

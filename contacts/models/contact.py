@@ -2,12 +2,20 @@
 #Django Imports
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 #Local Imports
 from utils.models import TimeStampedModel, BaseQuerySet
 from contacts.models import Message
 
 class ContactQuerySet(BaseQuerySet):
+    
+    def for_user(self,user):
+        try:
+            return self.filter(facility=user.practitioner.facility)
+        except ObjectDoesNotExist:
+            return self
+        
     
     def pregnant(self):
         return self.filter(models.Q(status='pregnant')|models.Q(status='over'))

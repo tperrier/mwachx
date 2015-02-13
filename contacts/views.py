@@ -39,7 +39,7 @@ LOGGING = {
 
 logging.config.dictConfig(LOGGING)
 
-
+# === Views for main action buttons ===
 
 @json_view
 def update_participant_details(request,pk=None):
@@ -53,13 +53,126 @@ def update_participant_details(request,pk=None):
     form_html = render_crispy_form(form)
     return {'success': False, 'form_html': form_html, 'errors':form.errors}
 
+@login_required()
+def home(request):
+    
+    visits = cont.Visit.objects.for_user(request.user)
+    messages = cont.Message.objects.for_user(request.user)
+    
+    visit_count = visits.get_bookcheck().count() + visits.get_upcoming_visits().count()
+
+    status =  {
+        "messages": messages.filter(is_viewed=False).count(),
+        "visits": visit_count,
+        "calls": 0,
+        "translations": messages.to_translate().count(),
+    }
+    return render(request,'home.html', {'status':status})
+
+@login_required()    
+def messages_new(request):
+    return render(request, 'messages_new.html',{'new_message_list':cont.Message.objects.for_user(request.user).pending()})
+
+@login_required()
+def visits(request):
+    visits = cont.Visit.objects.for_user(request.user)
+    visits = {
+        'upcoming': visits.get_upcoming_visits(),
+        'bookcheck': visits.get_bookcheck(),
+    }
+    return render(request,'upcoming-visits.html', {'visits':visits})
+
+@login_required()
+def calls(request):
+    return render(request, 'calls-to-make.html')
+
+@login_required()
 def translations(request):
-    msgs_to_translate = cont.Message.objects.filter(is_system=False).filter(Q(translation=None)|Q(translation__is_complete=False))
+    msgs_to_translate = cont.Message.objects.for_user(request.user).to_translate()
     langs = cont.Language.objects.all()
     return render(request, 'translations.html', {'to_translate_list': msgs_to_translate, 'langs': langs})
 
-def calls(request):
-    return render(request, 'calls-to-make.html')
+@login_required()
+def contacts(request):
+    contacts = cont.Contact.objects.for_user(request.user).extra(
+        select={
+            'messages_sent':'select count(*) from contacts_message where contacts_message.contact_id = contacts_contact.id and contacts_message.is_outgoing = 0',
+            'messages_received':'select count(*) from contacts_message where contacts_message.contact_id = contacts_contact.id and contacts_message.is_outgoing = 1',
+        }
+    )
+    return render(request,'contacts/contacts.html',{'contacts':contacts})
+
+@login_required()
+def contact(request,study_id):
+    try:
+        contact = cont.Contact.objects.get(study_id=study_id)
+    except cont.Contact.DoesNotExist as e:
+        return redirect('/contact/')
+    modify_form = forms.ContactModify(instance=contact)
+    return render(request,'contacts/contact.html',{'contact':contact,'modify_form':modify_form})
+
+
+@login_required()    
+def contact_add(request):
+    
+    if request.POST:
+        cf = forms.ContactAdd(request.POST)
+        if cf.is_valid():
+            #Create new contact but do not save in DB
+            contact = cf.save(commit=False)
+            
+            cont.Connection.objects.create(identity=to,contact=contact,is_primary=True)
+            contact.save()
+            
+            
+            return redirect('contacts.views.contact',study_id=contact.study_id)
+        else:
+            print 'Form Error'
+    else:
+        cf = forms.ContactAdd()
+        
+    fieldsets = {
+        'Study Information':[cf['study_id'],cf['anc_num'],cf['study_group'],cf['send_day'],cf['send_time']],
+        'Client Information':[cf['nickname'],cf['phone_number'],cf['birthdate'],cf['partner_name'],
+                              cf['relationship_status'],cf['previous_pregnancies'],cf['language']],
+        'Medical Information':[cf['condition'],cf['art_initiation'],cf['hiv_disclosed'],cf['due_date']],
+    }
+    
+    return render(request,'contacts/contact_create.html',{'fieldsets':fieldsets})
+
+# === Action views ===
+
+# ==== Contact Page Action Views ===
+@login_required()
+@require_POST
+def contact_send(request):
+    contact = cont.Contact.objects.get(study_id=request.POST['study_id'])
+    message = request.POST['message']
+    parent_id = request.POST.get('parent_id',-1)
+    parent = cont.Message.objects.get_or_none(pk=parent_id if parent_id else -1)
+    
+    #Mark Parent As Viewed If Unviewed
+    if parent and parent.is_viewed == False:
+        parent.is_viewed = True
+        parent.save()
+        
+    cont.Message.send(contact,message,is_system=False,parent=parent)
+    return redirect('contacts.views.contact',study_id=request.POST['study_id'])
+
+@login_required()
+def message_dismiss(request,message_id):
+    message = cont.Message.objects.get(pk=message_id)
+    message.is_viewed=True
+    message.save()
+    return redirect('contacts.views.contact',study_id=message.contact.study_id)
+
+@login_required()
+@require_POST
+def add_note(request):
+    contact = cont.Contact.objects.get(study_id=request.POST['study_id'])
+    comment = request.POST['comment']
+    cont.Note.objects.create(contact=contact,comment=comment)
+    return redirect(request.META['HTTP_REFERER'])
 
 
 def _record_translation(message_id, txt, langs, is_skipped=False):
@@ -145,28 +258,8 @@ def visit_dismiss(request,visit_id,days):
         'reminder_last_seen': today,
         })
     return HttpResponse()
-    
 
-
-def visits(request):
-    visits = {
-        'upcoming': cont.Visit.objects.get_upcoming_visits(),
-        'bookcheck': cont.Visit.objects.get_bookcheck(),
-    }
-    return render(request,'upcoming-visits.html', {'visits':visits})
-
-@login_required()
-def home(request):
-    visit_count = cont.Visit.objects.get_bookcheck().count() + cont.Visit.objects.get_upcoming_visits().count()
-
-    status =  {
-        "messages": cont.Message.objects.filter(is_viewed=False).count(),
-        "visits": visit_count,
-        "calls": 0,
-        "translations": cont.Message.objects.filter(is_system=False).filter(Q(translation=None)|Q(translation__is_complete=False)).count(),
-    }
-    return render(request,'home.html', {'status':status})
-
+# === Old Views ===
 def dashboard(request):
     contacts = cont.Contact.objects.all()
     statuses = get_status_by_group()
@@ -185,81 +278,6 @@ def messages(request):
         else:
             grouped_messages[key] = [m]
     return render(request,'contacts/messages.html',{'grouped_messages':grouped_messages,'contacts':contacts})
-    
-def contacts(request):
-    contacts = cont.Contact.objects.all().extra(
-        select={
-            'messages_sent':'select count(*) from contacts_message where contacts_message.contact_id = contacts_contact.id and contacts_message.is_outgoing = 0',
-            'messages_received':'select count(*) from contacts_message where contacts_message.contact_id = contacts_contact.id and contacts_message.is_outgoing = 1',
-        }
-    )
-    return render(request,'contacts/contacts.html',{'contacts':contacts})
-    
-def contact(request,study_id):
-    try:
-        contact = cont.Contact.objects.get(study_id=study_id)
-    except cont.Contact.DoesNotExist as e:
-        return redirect('/contact/')
-    modify_form = forms.ContactModify(instance=contact)
-    return render(request,'contacts/contact.html',{'contact':contact,'modify_form':modify_form})
-
-@require_POST
-def contact_send(request):
-    contact = cont.Contact.objects.get(study_id=request.POST['study_id'])
-    message = request.POST['message']
-    parent_id = request.POST.get('parent_id',-1)
-    parent = cont.Message.objects.get_or_none(pk=parent_id if parent_id else -1)
-    
-    #Mark Parent As Viewed If Unviewed
-    if parent and parent.is_viewed == False:
-        parent.is_viewed = True
-        parent.save()
-        
-    cont.Message.send(contact,message,is_system=False,parent=parent)
-    return redirect('contacts.views.contact',study_id=request.POST['study_id'])
-    
-def message_dismiss(request,message_id):
-    message = cont.Message.objects.get(pk=message_id)
-    message.is_viewed=True
-    message.save()
-    return redirect('contacts.views.contact',study_id=message.contact.study_id)
-    
-@require_POST
-def add_note(request):
-    contact = cont.Contact.objects.get(study_id=request.POST['study_id'])
-    comment = request.POST['comment']
-    cont.Note.objects.create(contact=contact,comment=comment)
-    return redirect(request.META['HTTP_REFERER'])
-
-def messages_new(request):
-    return render(request, 'messages_new.html',{'new_message_list':cont.Message.objects.pending()})
-    
-def contact_add(request):
-    
-    if request.POST:
-        cf = forms.ContactAdd(request.POST)
-        if cf.is_valid():
-            #Create new contact but do not save in DB
-            contact = cf.save(commit=False)
-            
-            cont.Connection.objects.create(identity=to,contact=contact,is_primary=True)
-            contact.save()
-            
-            
-            return redirect('contacts.views.contact',study_id=contact.study_id)
-        else:
-            print 'Form Error'
-    else:
-        cf = forms.ContactAdd()
-        
-    fieldsets = {
-        'Study Information':[cf['study_id'],cf['anc_num'],cf['study_group'],cf['send_day'],cf['send_time']],
-        'Client Information':[cf['nickname'],cf['phone_number'],cf['birthdate'],cf['partner_name'],
-                              cf['relationship_status'],cf['previous_pregnancies'],cf['language']],
-        'Medical Information':[cf['condition'],cf['art_initiation'],cf['hiv_disclosed'],cf['due_date']],
-    }
-    
-    return render(request,'contacts/contact_create.html',{'fieldsets':fieldsets})
 
 #############
 # Utility Functions

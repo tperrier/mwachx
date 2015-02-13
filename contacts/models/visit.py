@@ -2,6 +2,7 @@
 #Django Imports
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 #Python Imports
 import datetime
@@ -10,6 +11,7 @@ import datetime
 from utils.models import TimeStampedModel,BaseQuerySet
 
 class VisitQuerySet(BaseQuerySet):
+    
     def get_upcoming_visits(self):
         return self.visit_range(start={'weeks':0},end={'days':7},reminder_start={'days':1})
 
@@ -36,6 +38,12 @@ class VisitQuerySet(BaseQuerySet):
                 reminder_end = today - datetime.timedelta(**reminder_end)
                 return self.pending().filter(scheduled__lte=start, reminder_last_seen__range=(reminder_end,reminder_start))
         return self.pending().filter(scheduled__lte=start, reminder_last_seen__lte=reminder_start)
+        
+    def for_user(self,user):
+        try:
+            return self.filter(contact__facility=user.practitioner.facility)
+        except ObjectDoesNotExist:
+            return self
 
 class Visit(TimeStampedModel):
     VISIT_TYPE_CHOICES = (

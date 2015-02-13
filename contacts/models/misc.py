@@ -3,17 +3,27 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 #Local Imports
 from utils.models import TimeStampedModel,BaseQuerySet
 from contacts.models import Contact
+
+class PhoneCallQuerySet(BaseQuerySet):
+    
+    def for_user(self,user):
+        try:
+            return self.filter(contact__facility=user.practitioner.facility)
+        except ObjectDoesNotExist:
+            return self
+
 
 class PhoneCall(TimeStampedModel):
     
     class Meta:
         ordering = ('-created',)
     
-    objects = BaseQuerySet.as_manager()
+    objects = PhoneCallQuerySet.as_manager()
     
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
     answered = models.BooleanField(default=False)
