@@ -48,8 +48,12 @@
             <td>{{contact.weeks}}</td>
             <td>{{contact.messages_sent}}</td>
             <td>{{contact.messages_received}}</td>
-            <td><a class="btn btn-primary" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.contacts' %} data-study-id={{contact.study_id}}>Visited</a></td>
-            <td><a class="btn btn-primary"><i class="fa fa-phone"></i></a></td>
+            <td>
+            <div class="tooltip-icon" data-toggle="tooltip" data-title="{{contact.nickname}} came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.contacts' %} data-study-id={{contact.study_id}}><i class="fa fa-hospital-o fa-fw"></i></a></div>
+            </td>
+            <td>
+            <div class="tooltip-icon" data-toggle="tooltip" data-title="{{contact.nickname}} called"><a class="btn btn-highlight" data-toggle='modal' data-target='#recordCallModal' data-study-id={{contact.study_id}}><i class="fa fa-mobile fa-fw"></i></a></div>
+            </td>
         </tr>
         </a>
     {% endfor %}
@@ -61,14 +65,22 @@
        $('.link-row').click(
             function(e) {
                 // Only propogate if it is not a button
-                if(! $(e.target).hasClass('btn') ) {
+                if(! $(e.target).hasClass('btn') &&
+                ! $(e.target).hasClass('tooltip-icon') &&
+                ! $(e.target).hasClass('fa') ) {
                     window.location=$(this).data('target');
                 }
             }); 
     });
 </script>
 
-<script src='{% static "js/visit_modal.js" %}'></script>
 <script src='{% static "js/contact_list.js" %}'></script>
+<script type="text/javascript" src='{% static "js/upcoming_visits.js" %}'></script>
+<script type="text/javascript" src='{% static "js/ajax.js" %}'></script>
+<script type="text/javascript">
+// TODO: Move this somewhere smarter.
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+});</script>
     
 {% endblock %}
