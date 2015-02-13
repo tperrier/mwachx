@@ -142,7 +142,7 @@ def home(request):
         "messages": cont.Message.objects.filter(is_viewed=False).count(),
         "visits": visit_count,
         "calls": 0,
-        "translations": cont.Message.objects.filter(Q(translation=None)|Q(translation__is_complete=False)).count(),
+        "translations": cont.Message.objects.filter(is_system=False).filter(Q(translation=None)|Q(translation__is_complete=False)).count(),
     }
     return render(request,'home.html', {'status':status})
 

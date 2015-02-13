@@ -10879,10 +10879,10 @@ a[data-toggle='collapse'] {
 }
 a[data-toggle='collapse']:before {
   font-family: "FontAwesome";
-  content: "\f139";
+  content: "\f13a";
 }
 a[data-toggle='collapse'].collapsed:before {
-  content: "\f13a";
+  content: "\f138";
 }
 #contacts-table tbody tr {
   cursor: pointer;
