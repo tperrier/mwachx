@@ -7,6 +7,7 @@ from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
 
 from jsonview.decorators import json_view
 from crispy_forms.utils import render_crispy_form
@@ -154,6 +155,7 @@ def visits(request):
     }
     return render(request,'upcoming-visits.html', {'visits':visits})
 
+@login_required()
 def home(request):
     visit_count = cont.Visit.objects.get_bookcheck().count() + cont.Visit.objects.get_upcoming_visits().count()
 

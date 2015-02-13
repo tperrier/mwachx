@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 
 #Local Imports
 import models as cont
@@ -38,5 +40,18 @@ class VisitAdmin(admin.ModelAdmin):
     
 @admin.register(cont.Facility)
 class FacilityAdmin(admin.ModelAdmin):
-    list_display = ('pk','name')
+    list_display = ('pk','__str__')
+
+@admin.register(cont.Practitioner)
+class PractitionerAdmin(admin.ModelAdmin):
+    list_display = ('facility','username')
     
+class PractitionerInline(admin.TabularInline):
+    model = cont.Practitioner
+    
+class UserAdmin(UserAdmin):
+    inlines = (PractitionerInline,)
+    
+#Re-register UserAdmin
+admin.site.unregister(User)
+admin.site.register(User,UserAdmin)

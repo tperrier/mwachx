@@ -13,7 +13,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE','mwach.settings')
 django.setup()
 # End Django Setup 
-
+from django.contrib.auth.models import User
 from django.db.models import Max
 import contacts.models as cont
 
@@ -112,11 +112,20 @@ def create_languages():
     cont.Language.objects.create(**{"short_name":"L", "name": 'Luo'})
     
 def create_facilities():
-    cont.Facility.objects.create(name='Bondo')
-    cont.Facility.objects.create(name='Ahero')
-    cont.Facility.objects.create(name='Mathare')
-    cont.Facility.objects.create(name='Kisumu East')
-
+    cont.Facility.objects.create(name='bondo')
+    cont.Facility.objects.create(name='ahero')
+    cont.Facility.objects.create(name='mathare')
+    cont.Facility.objects.create(name='kisumu_east')
+    
+def create_users():
+    #create admin user
+    User.objects.create_superuser('oscard',email='o@o.org',password='ender')
+    #create study nurse users
+    facility_list = ['bondo','ahero','mathare']
+    for f in facility_list:
+        user = User.objects.create_user('n_{}'.format(f),password='ender')
+        cont.Practitioner.objects.create(facility=cont.Facility.objects.get(name=f),user=user)
+    
 ###################
 # End Utility Functions
 ###################
@@ -124,6 +133,7 @@ def create_facilities():
 
 create_languages()
 create_facilities()
+create_users()
 
 JSON_DATA_FILE = 'small.json'
 IMPORT_COUNT = 10

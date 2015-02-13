@@ -2,6 +2,7 @@
 #Django Imports
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import User
 
 #Local Imports
 from utils.models import TimeStampedModel,BaseQuerySet
@@ -66,7 +67,22 @@ class Facility(models.Model):
     name = models.CharField(max_length='50',help_text='Facility Name')
     
     def __str__(self):
-        return self.name
+        #Change kisumu_east to Kisumu East
+        return ' '.join([word.capitalize() for word in self.name.split('_')])
+        
+class Practitioner(models.Model):
+    '''
+    User profile for nurse practitioners to link a User profile to a Facility
+    '''
+    user = models.OneToOneField(User)
+    facility = models.OneToOneField('contacts.Facility')
+    
+    @property
+    def username(self):
+        return self.user.username
+        
+    def __str__(self):
+        return '<{}> <{}>'.format(self.facility,self.user.username)
     
     
     
