@@ -1,76 +1,8 @@
 {% extends 'base.html' %} {% load staticfiles %} {% block title %}Participant: {{contact.nickname}}{% endblock %} {% block content %}
 
-<div class='modal fade' id='sendModal' role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form method='post' action='/contact/send'>
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title">Send Message</h4>
-                </div>
-                <div class="modal-body message-send">
-                    {% csrf_token %}
-                    <div id='reply-message' class='alert alert-success'></div>
-                    <textarea class='form-control' name='message' rows='5' placeholder='Message to send....'></textarea>
-                    <input type='hidden' name='study_id' value='{{contact.study_id}}' />
-                    <input type='hidden' name='parent_id' value='' />
-                </div>
-                <div class="modal-footer">
-                    <input class='btn btn-primary' type='submit' value='Send' />
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class='modal fade' id='contactDetailsModal' role='dialog' aria-hidden='true'>
-    <div class='modal-dialog'>
-        <div class='modal-content'>
-            <div class='modal-header'>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Participant Details</h4>
-            </div>
-
-            <div class='modal-body'>
-                {{modify_form.as_p}}
-            </div>
-
-            <div class='modal-footer'>
-                <input class='btn btn-primary' type='submit' value='Modify' />
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class='modal fade' id='addNoteModal' role='dialog' aria-hidden='true'>
-    <div class='modal-dialog'>
-        <div class='modal-content'>
-            <form method='post' action='/contact/note/'>
-                <div class='modal-header'>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title">Add Note</h4>
-                </div>
-
-                <div class='modal-body'>
-                    {% csrf_token %}
-                    <textarea class='form-control' name='comment' rows='5' placeholder='Message to send....'></textarea>
-                    <input type='hidden' name='study_id' value='{{contact.study_id}}' />
-                </div>
-
-                <div class='modal-footer'>
-                    <input class='btn btn-primary' type='submit' value='Add' />
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
+{% include 'modals/send-message-modal.html' %}
+{% include 'modals/participant-details-modal.html' %}
+{% include 'modals/add-note-modal.html' %}
 
 <div class="page-content" id="participant-page">
     <div class="row">
@@ -126,20 +58,6 @@
                                       </label>
                                       <label class="btn btn-language">
                                         <input type="checkbox" autocomplete="off"> Luo
-                                      </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-4">Prompted:</div>
-                                <div class="col-md-8">
-                                    <div class="btn-group" data-toggle="buttons">
-                                    <label class="btn btn-language">
-                                        <input type="radio" autocomplete="off"> Yes
-                                      </label>
-                                      <label class="btn btn-language">
-                                        <input type="radio" autocomplete="off"> No
                                       </label>
                                     </div>
                                 </div>

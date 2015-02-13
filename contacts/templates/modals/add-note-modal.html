@@ -1,0 +1,24 @@
+<div class='modal fade' id='addNoteModal' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <form method='post' action='/contact/note/'>
+                <div class='modal-header'>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Add Note</h4>
+                </div>
+
+                <div class='modal-body'>
+                    {% csrf_token %}
+                    <textarea class='form-control' name='comment' rows='5' placeholder='Message to send....'></textarea>
+                    <input type='hidden' name='study_id' value='{{contact.study_id}}' />
+                </div>
+
+                <div class='modal-footer'>
+                    <input class='btn btn-primary' type='submit' value='Add' />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

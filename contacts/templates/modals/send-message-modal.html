@@ -1,0 +1,24 @@
+<div class='modal fade' id='sendModal' role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method='post' action='/contact/send'>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Send Message</h4>
+                </div>
+                <div class="modal-body message-send">
+                    {% csrf_token %}
+                    <div id='reply-message' class='alert alert-success'></div>
+                    <textarea class='form-control' name='message' rows='5' placeholder='Message to send....'></textarea>
+                    <input type='hidden' name='study_id' value='{{contact.study_id}}' />
+                    <input type='hidden' name='parent_id' value='' />
+                </div>
+                <div class="modal-footer">
+                    <input class='btn btn-primary' type='submit' value='Send' />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
