@@ -44,7 +44,7 @@ def calls(request):
     return render(request, 'calls-to-make.html')
 
 
-def record_translation(message_id, txt, langs, is_skipped=False):
+def _record_translation(message_id, txt, langs, is_skipped=False):
     _msg = cont.Message.objects.get(id=message_id)
     lang_objs = cont.Language.objects.filter(id__in=langs)
     _msg.language_set = lang_objs
@@ -64,25 +64,32 @@ def record_translation(message_id, txt, langs, is_skipped=False):
         _trans = cont.Translation.objects.create(**new_translation)
         _msg.translation = _trans
     
-
-    # done, so return an http 200
     _msg.save()
-    return HttpResponse()    
+    return
     
 
 @require_POST
-def translation_not_required(request, message_id):
+def save_translation(request, message_id):
+    _record_translation( 
+        message_id,
+        request.POST['translation'],
+        request.POST.getlist('languages[]'),
+        is_skipped=False)
 
-    record_translation( 
+    # done, so return an http 200
+    return HttpResponse()
+
+@require_POST
+def translation_not_required(request, message_id):
+    _record_translation( 
         message_id,
         request.POST['translation'],
         request.POST.getlist('languages[]'),
         is_skipped=True)
 
+    # done, so return an http 200
     return HttpResponse()
-    # return HttpResponseBadRequest()
-    # return redirect('contacts.views.visits')
-
+    
 @require_POST
 def visit_schedule(request):
     next_visit = request.POST['next_visit']

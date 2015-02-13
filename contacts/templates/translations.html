@@ -20,6 +20,7 @@
 	                {% for message in to_translate_list %}
 	                <tr class="link-row">
 	                	<td>{% if message.html_class == 'nurse' %}<i class="fa fa-user-md fa-3x avatar-nurse"></i>{% else %}<i class="mw mw-mwach-phone fa-3x avatar-participant"></i>{% endif %}</td>
+	                	<!-- TODO: Update "you" to the logged in name?? -->
 	                    <td><strong>{% if message.html_class == "client" %}{{message.contact.nickname}}{% else %}YOU{% endif %}</strong><br>
 	                        <div class="btn-group" data-toggle="buttons" id="lang{{message.id}}" >
 	                        	{% for l in langs %}
@@ -39,10 +40,11 @@
 	                    {% endif %}
 	                    </td>
 	                    <td>
-		                    <button class="btn btn-info">Translated</button>
+		                    <button class="btn btn-info" onclick="save_translation()" data-count='{{message.id}}'>Translated</button>
 		                    <button class="btn btn-danger" onclick="not_required()" data-count='{{message.id}}'>Not required</button>
 		                    <h4 id="languageError{{message.id}}" class="text-danger" style="display: none;">Select at least one language</h4>
 		                    <h4 id="transError{{message.id}}" class="text-danger" style="display: none;">Translation must be same as original.</h4>
+		                    <h4 id="transSameError{{message.id}}" class="text-danger" style="display: none;">Translation must be different than original.</h4>
 	                    </td>
 	                </tr>
 	                {% endfor %}

@@ -21,4 +21,5 @@ urlpatterns = patterns('',
     url(r'^message/?$', views.messages),
     url(r'^message/dismiss/(?P<message_id>\d*)/?$',views.message_dismiss),
     url(r'^translation/notrequired/(?P<message_id>\d*)/?$',views.translation_not_required),
+    url(r'^translation/save/(?P<message_id>\d*)/?$',views.save_translation),
 )

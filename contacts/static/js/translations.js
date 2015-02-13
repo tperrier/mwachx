@@ -10,6 +10,14 @@ function has_lang(myid) {
 }
 
 function not_required(e) {
+	_ajax_that_row(e, true);
+}
+
+function save_translation(e) {
+	_ajax_that_row(e, false);
+}
+
+function _ajax_that_row(e, same) {
 	e = e || window.event;
     var targ = e.target || e.srcElement;
     if (targ.nodeType == 3) targ = targ.parentNode; // defeat Safari bug
@@ -23,25 +31,33 @@ function not_required(e) {
     }
     $('#languageError' + myid).css('display','none');
 
+    // Check for mismatch
     if($('#translated' + myid).text() != $('#original' + myid).text()) {
-		$('#transError' + myid).css('display','block');
-    	return;
+	    if(same){    	
+    		$('#transError' + myid).css('display','block');
+        	return;
+        }
+    } else {
+		if(!same){    	
+    		$('#transSameError' + myid).css('display','block');
+        	return;
+        }
     }
-	$('#transError' + myid).css('display','none');
 
-	// Made it through, so process the request
+    // Made it this far, so clear the errors
+	$('#transError' + myid).css('display','none');
+	$('#transSameError' + myid).css('display','none');
+	
+	var langs = [];
 	yes_langs = $("#lang" + myid).find('input:checked');
-	// no_langs = $("#lang" + myid).find('input:not(:checked)');
-	var langs = []
-	for(var i=0;i<yes_langs.length;i++) { 
+	for(var i=0;i<yes_langs.length;i++)
 		langs.push($(yes_langs[i]).attr('value'));
-	}
 	trans_txt = $('#translated' + myid).text();
 
-	// Get the token.
-	token = $($.find('input[name="csrfmiddlewaretoken"]')[0]).attr('value');
-	// console.log(token);
-	$.post("/translation/notrequired/"+myid,{
+	url = "/translation/save/"
+	if(same)
+		url = "/translation/notrequired/"
+	$.post(url+myid,{
 			translation: trans_txt,
 			languages: langs,
 		})
@@ -137,6 +153,3 @@ $(function(){// On DOM Load
 	    }
 	});
 });
-
-
-
