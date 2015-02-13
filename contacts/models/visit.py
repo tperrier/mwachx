@@ -38,6 +38,11 @@ class VisitQuerySet(BaseQuerySet):
         return self.pending().filter(scheduled__lte=start, reminder_last_seen__lte=reminder_start)
 
 class Visit(TimeStampedModel):
+    VISIT_TYPE_CHOICES = (
+        ('clinic','Clinic Visit'),
+        ('study','Study Visit'),
+    )
+
     class Meta:
         ordering = ('scheduled',)
     
@@ -52,6 +57,8 @@ class Visit(TimeStampedModel):
     skipped = models.NullBooleanField(default=None)
     comment = models.CharField(max_length=500,blank=True,null=True)
     
+    visit_type = models.CharField(max_length=25,choices=VISIT_TYPE_CHOICES,null=False,blank=False)
+
     def study_id(self):
         return self.contact.id
     study_id.short_description = 'Study ID'
@@ -68,10 +75,11 @@ class Visit(TimeStampedModel):
         return (today-self.scheduled).days
 
     @staticmethod
-    def new_visit(contact,scheduled,reminder_last_seen=None,parent=None,arrived=None,skipped=None,comment=None,):
+    def new_visit(contact,scheduled,visit_type,reminder_last_seen=None,parent=None,arrived=None,skipped=None,comment=None,):
         Visit.objects.create(
             contact=contact,
             scheduled=scheduled,
+            visit_type=visit_type,
             parent=parent,
             reminder_last_seen=reminder_last_seen,
             arrived=arrived,

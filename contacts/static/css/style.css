@@ -11053,6 +11053,12 @@ a[data-toggle='collapse'].collapsed:before {
 .fuelux .datepicker-calendar-days tbody:before {
   content: "\2009";
 }
+.help-block {
+  display: none;
+}
+.has-error .help-block {
+  display: block;
+}
 /* 
  * NEW MSG PAGE
  */

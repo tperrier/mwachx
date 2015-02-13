@@ -92,23 +92,25 @@ def translation_not_required(request, message_id):
     
 @require_POST
 def visit_schedule(request):
-    next_visit = request.POST['next_visit']
-    arrived = request.POST['arrived']
     study_id = request.POST['study_id']
-    contact = cont.Contact.objects.get(study_id=study_id)
-
     # find any open visits for this client
     parent_visit = cont.Visit.objects.get_or_none(contact__study_id=study_id, arrived=None,skipped=None)
-    original_scheduled = next_visit
 
     # Mark Parent arrival time.
     if parent_visit:
-        parent_visit.arrived = arrived
+        parent_visit.arrived = request.POST['arrived']
         parent_visit.save()
-        original_scheduled = parent_visit.original_scheduled
         
-    cont.Visit.new_visit(contact,next_visit,original_scheduled,parent=parent_visit)
-    return redirect(request.POST['src'])
+    cont.Visit.new_visit( 
+        cont.Contact.objects.get(study_id=study_id),
+        request.POST['next_visit'],
+        request.POST['visit_type'],
+        parent=parent_visit
+    )
+    if 'src' in request.POST.keys():
+        return redirect(request.POST['src'])
+
+    return HttpResponse()
 
 def visit_dismiss(request,visit_id,days):
     today = settings.CURRENT_DATE
@@ -124,7 +126,7 @@ def visit_dismiss(request,visit_id,days):
         'contact': visit.contact,
         'reminder_last_seen': today,
         })
-    return redirect('contacts.views.visits')
+    return HttpResponse()
     
 
 

@@ -20,6 +20,8 @@ urlpatterns = patterns('',
     url(r'^contact/note/?$',views.add_note),
     url(r'^message/?$', views.messages),
     url(r'^message/dismiss/(?P<message_id>\d*)/?$',views.message_dismiss),
+
+    # TODO: this is not a RESTful API. We can do better.
     url(r'^translation/notrequired/(?P<message_id>\d*)/?$',views.translation_not_required),
     url(r'^translation/save/(?P<message_id>\d*)/?$',views.save_translation),
 )
