@@ -24,7 +24,8 @@ import contacts.models as cont
 
 
 study_groups = ['control','one-way','two-way']
-def add_client(client,i,facility):
+facility_list = cont.Facility.objects.exclude(name='kisumu_east')
+def add_client(client,i):
     new_client = {
         'study_id':i,
         'anc_num':client['anc_num'],
@@ -33,7 +34,7 @@ def add_client(client,i,facility):
         'study_group':random.choice(study_groups),
         'due_date':get_due_date(),
         'last_msg_client':client['last_msg_client'],
-        'facility':facility,
+        'facility':facility_list[i%3],
         }
     contact = cont.Contact.objects.create(**new_client)
     connection = cont.Connection.objects.create(identity=client['phone_number'],contact=contact,is_primary=True)
@@ -136,14 +137,12 @@ create_facilities()
 create_users()
 
 JSON_DATA_FILE = 'small.json'
-IMPORT_COUNT = 10
+IMPORT_COUNT = 15
 clients = json.load(open(JSON_DATA_FILE))
 clients = random.sample(clients.values(),IMPORT_COUNT)
 
-facility_list = cont.Facility.objects.all()
-
 for i,c in enumerate(clients):
-    print add_client(c,i,random.choice(facility_list))
+    print add_client(c,i)
 
 #Make the last message for each contact is_viewed=False
 last_messages = cont.Message.objects.filter(is_outgoing=False).values('contact_id').order_by().annotate(Max('id'))
