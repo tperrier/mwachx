@@ -6,6 +6,10 @@ from django.views.decorators.http import require_POST
 from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponseBadRequest, HttpResponse
+from django.shortcuts import get_object_or_404
+
+from jsonview.decorators import json_view
+from crispy_forms.utils import render_crispy_form
 
 #Python Imports
 import datetime,collections
@@ -34,6 +38,19 @@ LOGGING = {
 
 logging.config.dictConfig(LOGGING)
 
+
+
+@json_view
+def update_participant_details(request,pk=None):
+    obj = get_object_or_404(cont.Contact, pk=pk)
+    form = forms.ContactModify(request.POST or None, instance=obj)
+    if form.is_valid():
+        # You could actually save through AJAX and return a success code here
+        form.save()
+        return {'success': True}
+
+    form_html = render_crispy_form(form)
+    return {'success': False, 'form_html': form_html, 'errors':form.errors}
 
 def translations(request):
     msgs_to_translate = cont.Message.objects.filter(is_system=False).filter(Q(translation=None)|Q(translation__is_complete=False))

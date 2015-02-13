@@ -4,3 +4,4 @@ lesscpy>=0.10.2
 python-dateutil>=2.4.0
 requests>=2.2.1
 django-crispy-forms>=1.4.0
+django-jsonview>=0.4.3

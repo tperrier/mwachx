@@ -1,6 +1,6 @@
 {% load crispy_forms_tags %}
 
-<div class='modal fade' id='contactDetailsModal' role='dialog' aria-hidden='true'>
+<div class='modal fade' id='contactDetailsModal' role='dialog' aria-hidden='true' data-participant-id={{contact.id}}>
     <div class='modal-dialog'>
         <div class='modal-content'>
             <div class='modal-header'>
@@ -10,13 +10,11 @@
             </div>
 
             <div class='modal-body'>
-                {# <form class="form"> #}
                 {% crispy modify_form %}      
-                {# </form> #}
             </div>
 
             <div class='modal-footer'>
-                <input class='btn btn-primary' type='submit' value='Modify' />
+                <button type="button" class='btn btn-primary' onclick="save_participant_details()">Modify</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>

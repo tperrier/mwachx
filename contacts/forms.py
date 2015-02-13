@@ -4,8 +4,8 @@ import datetime
 #Django Imports
 from django import forms
 from django.conf import settings
-from crispy_forms.helper import FormHelper
 
+from crispy_forms.helper import FormHelper
 
 #Local App Imports
 import contacts.models as cont
@@ -58,5 +58,6 @@ class ContactModify(forms.ModelForm):
         super(ContactModify, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
+        self.helper.form_id = 'participant-details-form'
         self.helper.label_class = 'col-lg-4'
         self.helper.field_class = 'col-lg-7'
