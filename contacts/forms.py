@@ -1,8 +1,10 @@
 import datetime
 
+
 #Django Imports
 from django import forms
 from django.conf import settings
+from crispy_forms.helper import FormHelper
 
 
 #Local App Imports
@@ -51,3 +53,10 @@ class ContactModify(forms.ModelForm):
         model = cont.Contact
         fields = ['status','family_planning','art_initiation','child_hiv_status',
                 'hiv_disclosed','relationship_status','partner_name']
+
+    def __init__(self, *args, **kwargs):
+        super(ContactModify, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-4'
+        self.helper.field_class = 'col-lg-7'

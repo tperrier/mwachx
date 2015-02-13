@@ -46,11 +46,15 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admindocs',
     
+    'crispy_forms',
+    
     'contacts',
     'utils',
     'http_transport',
     'africas_talking_transport',
 )
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
