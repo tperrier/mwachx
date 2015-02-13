@@ -56,6 +56,9 @@ class Message(TimeStampedModel):
     connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
     contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
     
+    def get_real_text(self):
+        return self.translation.text if self.is_translated() else self.text
+
     def is_translated(self):
         return self.translation.is_complete if self.translation else False
 
