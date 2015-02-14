@@ -11193,6 +11193,27 @@ a[data-toggle='collapse'].collapsed:before {
 .nurse-row {
   background-color: rgba(173, 255, 47, 0.2);
 }
+/*
+ * Login screen
+ */
+.login-page {
+  background-color: #eeeeee;
+}
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-signin input[type="text"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 20px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
 /* TOOD: Temporary */
 .navbar-collapse h3 {
   margin-bottom: 0;
