@@ -11,6 +11,6 @@ urlpatterns = patterns('',
     url(r'^africas_talking/',include(africas_talking_transport.urls)),
     
      url(r'^accounts/login/$', 'django.contrib.auth.views.login',
-       {'template_name': 'admin/login.html'}),
+       {'template_name': 'login.html'}),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout'),
 )

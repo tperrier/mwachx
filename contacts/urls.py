@@ -21,7 +21,6 @@ urlpatterns = patterns('',
     url(r'^message/?$', views.messages),
     url(r'^message/dismiss/(?P<message_id>\d*)/?$',views.message_dismiss),
 
-    # I know, I know...
     url(r'^participant/update/(?P<pk>\d+)/$', views.update_participant_details),
     
     # TODO: this is not a RESTful API. We can do better.

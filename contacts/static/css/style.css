@@ -11197,5 +11197,9 @@ a[data-toggle='collapse'].collapsed:before {
 .navbar-collapse h3 {
   margin-bottom: 0;
 }
+.navbar-collapse h3 .btn {
+  border: none;
+  padding-bottom: 0;
+}
 
 /*# sourceMappingURL=maps/style.css.map */

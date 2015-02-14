@@ -1,25 +1,6 @@
+{% extends 'website-base.html' %}
 {% load staticfiles %}
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-
-    <!--<link rel='stylesheet' href='{% static "libs/font-awesome/css/font-awesome.css" %}'>-->
-
-    <link rel='stylesheet' href='{% static "css/mwach.css" %}'>
-    <link rel='stylesheet' href='{% static "css/style.css" %}'>
-
-    <script src='{% static "libs/jquery.js" %}'></script>
-    <script src='{% static "libs/bootstrap/js/bootstrap.js" %}'></script>
-    <script src='{% static "libs/bootstrap-switch/js/bootstrap-switch.min.js" %}'></script>
-    <script src='{% static "libs/fuelux/js/fuelux.min.js" %}'></script>
-
-    <title>{% block title %}mWaCHx{% endblock %}</title>
-
-</head>
-
-<body class='fuelux'>
+{% block body %}
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -83,6 +64,5 @@
   n = n + '';
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }</script>
-</body>
 
-</html>
+{% endblock %}

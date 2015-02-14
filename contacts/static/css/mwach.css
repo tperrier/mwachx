@@ -33,3 +33,16 @@
 .mw-mwach:before {
     content: "\e603";
 }
+
+.mw-huge {
+    font-size: 20em;
+    display: block;
+    margin-top: 0.2em;
+}
+
+.mw-label {
+    text-align: center;
+    display: block;
+    font-size: 2em;
+    margin-bottom: 1.5em;
+}

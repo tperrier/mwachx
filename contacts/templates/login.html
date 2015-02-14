@@ -1,0 +1,38 @@
+{% extends 'website-base.html' %} {% block title %}Login to mWaCHx{% endblock %} {% block body %}
+<div class='col-full'>
+    <div class="page-content">
+        
+        <div class="row">
+            <div class="col-xs-2 col-xs-offset-5">
+                <i class="mw mw-mwach-phone-d mw-huge"></i>
+                <span class="mw-label">mWaCHx</span>
+            </div>
+        </div>
+        <form class="form-horizontal" name="LoginForm" method="post">
+            {% csrf_token %}
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}" />
+            {% endif %}
+            <div class="form-group">
+                <label class="control-label col-lg-5" for="username">Username</label>
+                <div class="controls col-lg-7">
+                    <input type="text" id="username" name="username"  placeholder="Username">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-5" for="password">Password</label>
+                <div class="controls col-lg-7">
+                    <input type="password" name="password" id="password" placeholder="Password">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-lg-5"></div>
+                <div class="controls col-lg-7">
+                    <button type="submit" class="btn">Login</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
