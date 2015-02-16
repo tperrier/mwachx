@@ -2,13 +2,13 @@
 {% load staticfiles %}
 {% load css_hack %}
 
-{% block title %}Contact{% endblock %}
+{% block title %}Participant{% endblock %}
 
 {% block content %}
 <script src='{% static "libs/validator/validator.min.js" %}'></script>
     <div class="page-conent">
         <form id='contact-create-form' action='' method='post' class='form-horizontal' data-toggle="validator" role="form">
-        <h1> Add Contact </h1>
+        <h1> Add Participant </h1>
             {% csrf_token %}
             
             {% for name,set in fieldsets.items %}
