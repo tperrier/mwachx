@@ -85,7 +85,7 @@ class Practitioner(models.Model):
     User profile for nurse practitioners to link a User profile to a Facility
     '''
     user = models.OneToOneField(User)
-    facility = models.OneToOneField('contacts.Facility')
+    facility = models.ForeignKey('contacts.Facility')
     
     @property
     def username(self):

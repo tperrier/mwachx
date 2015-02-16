@@ -1,27 +1,56 @@
 #!/usr/bin/python
 import json,datetime,sys,os,code,random
-
 import dateutil.parser
-# Setup Django Environment
-FILE_DIR = os.path.dirname(os.path.abspath(__file__))
-os.chdir(FILE_DIR)
-print FILE_DIR
-PROJECT_ROOT = os.path.join(FILE_DIR,'..')
-sys.path.append(PROJECT_ROOT) #path to mWaCh
 
-import django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE','mwach.settings')
-django.setup()
-# End Django Setup 
+#Django Imports
 from django.contrib.auth.models import User
 from django.db.models import Max
 import contacts.models as cont
+from django.core.management import ManagementUtility
+from django.core.management.base import BaseCommand
+from django.conf import settings
 
+class Command(BaseCommand):
+    
+    help = 'Delete old sqlite file, migrate new models, and load fake data'
+    
+    def handle(self,*args,**options):
+        
+        #Delete old DB
+        print 'Deleting old sqlite db....'
+        os.remove(os.path.join(settings.PROJECT_PATH,'mwach.db'))
+        
+        #Migrate new models
+        print 'Migrating new db....'
+        utility = ManagementUtility(['initial_import.py','migrate'])
+        utility.execute()
+        
+        #Add new fake data
+        
+        create_languages()
+        create_facilities()
+        create_users()
+        
+        JSON_DATA_FILE =  os.path.join(settings.PROJECT_ROOT,'tools','small.json')
+        IMPORT_COUNT = 15
+        clients = json.load(open(JSON_DATA_FILE))
+        clients = random.sample(clients.values(),IMPORT_COUNT)
 
+        for i,c in enumerate(clients):
+            print add_client(c,i)
+
+        #Make the last message for each contact is_viewed=False
+        last_messages = cont.Message.objects.filter(is_outgoing=False).values('contact_id').order_by().annotate(Max('id'))
+        cont.Message.objects.exclude(id__in=[d['id__max'] for d in last_messages]).update(is_viewed=True)
+
+        # Make last visit arrived = None.
+        last_visits = cont.Visit.objects.all().values('contact_id').order_by().annotate(Max('id'))
+        cont.Visit.objects.filter(id__in=[d['id__max'] for d in last_visits]).update(arrived=None,skipped=None)
+        
+        
 ###################
 # Utility Functions
 ###################
-
 
 study_groups = ['control','one-way','two-way']
 facility_list = cont.Facility.objects.exclude(name='kisumu_east')
@@ -120,35 +149,10 @@ def create_facilities():
     
 def create_users():
     #create admin user
-    User.objects.create_superuser('oscard',email='o@o.org',password='ender')
+    oscard = User.objects.create_superuser('oscard',email='o@o.org',password='ender')
+    cont.Practitioner.objects.create(facility=cont.Facility.objects.get(pk=1),user=oscard)
     #create study nurse users
     facility_list = ['bondo','ahero','mathare']
     for f in facility_list:
         user = User.objects.create_user('n_{}'.format(f),password='ender')
         cont.Practitioner.objects.create(facility=cont.Facility.objects.get(name=f),user=user)
-    
-###################
-# End Utility Functions
-###################
-
-
-create_languages()
-create_facilities()
-create_users()
-
-JSON_DATA_FILE = 'small.json'
-IMPORT_COUNT = 15
-clients = json.load(open(JSON_DATA_FILE))
-clients = random.sample(clients.values(),IMPORT_COUNT)
-
-for i,c in enumerate(clients):
-    print add_client(c,i)
-
-#Make the last message for each contact is_viewed=False
-last_messages = cont.Message.objects.filter(is_outgoing=False).values('contact_id').order_by().annotate(Max('id'))
-cont.Message.objects.exclude(id__in=[d['id__max'] for d in last_messages]).update(is_viewed=True)
-
-# Make last visit arrived = None.
-last_visits = cont.Visit.objects.all().values('contact_id').order_by().annotate(Max('id'))
-cont.Visit.objects.filter(id__in=[d['id__max'] for d in last_visits]).update(arrived=None,skipped=None)
-
