@@ -104,6 +104,8 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Africa/Nairobi'
 
+DATE_INPUT_FORMATS = ('%d-%m-%Y','%Y-%m-%d')
+
 USE_I18N = False
 
 USE_L10N = False

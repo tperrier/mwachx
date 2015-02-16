@@ -64,7 +64,7 @@ function _ajax_that_row(e, same) {
 		.done(function() {
 		    console.log( "success" );
 		    clear_dirty(targ);
-		    delete_row(targ);
+		    mw.delete_row(targ);
 		})
 		.fail(function() {
 			console.log( "error" );

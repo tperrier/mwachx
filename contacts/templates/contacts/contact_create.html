@@ -39,7 +39,11 @@
             </div>
         </form>
     </div>
-<script type="text/javascript">
+    
+{% endblock %}
+
+{% block js_onLoad %}
+{% comment %} <script> /*for syntax highlighting*/ {% endcomment %} 
     $('#contact-create-form').validator().on('submit', function (e) {
       if (e.isDefaultPrevented()) {
         // handle the invalid form...
@@ -51,5 +55,7 @@
         return true;
       }
     });
-</script>
+    
+    mw.makeDatepickers();
+{% comment %} </script> {% endcomment %} 
 {% endblock %}

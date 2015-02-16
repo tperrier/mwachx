@@ -17,7 +17,7 @@ class ContactAdd(forms.ModelForm):
     
     class Meta:
         model = cont.Contact
-        exclude = ['status','child_hiv_status']
+        exclude = ['status','child_hiv_status','facility']
 
 
         birth_BO = [{

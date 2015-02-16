@@ -121,13 +121,23 @@ def contact_add(request):
             #Create new contact but do not save in DB
             contact = cf.save(commit=False)
             
-            cont.Connection.objects.create(identity=to,contact=contact,is_primary=True)
+            #Set contacts facility to facility of current user
+            facility = cont.Facility.objects.get(pk=1) #default to first facility if none found
+            try:
+                facility = request.user.practitioner.facility
+            except cont.Practitioner.DoesNotExist:
+                pass
+                
+            contact.facility = facility
+            
+            cont.Connection.objects.create(identity=cf.cleaned_data['phone_number'],contact=contact,is_primary=True)
             contact.save()
             
             
             return redirect('contacts.views.contact',study_id=contact.study_id)
         else:
             print 'Form Error'
+            print cf.errors
     else:
         cf = forms.ContactAdd()
         

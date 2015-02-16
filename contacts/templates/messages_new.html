@@ -30,10 +30,10 @@
         </table></div>
     </div>
 </div>
+{% endblock %}
 
-<script type="text/javascript">
-// TODO: Move this somewhere smarter.
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-});</script>
+{% block js_onLoad %}
+{% comment %} <script> /*for syntax highlighting*/ {% endcomment %} 
+   mw.tooltips();
+{% comment %} </script> {% endcomment %} 
 {% endblock %}

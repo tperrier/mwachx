@@ -14,12 +14,22 @@
     <script src='{% static "libs/bootstrap/js/bootstrap.js" %}'></script>
     <script src='{% static "libs/bootstrap-switch/js/bootstrap-switch.min.js" %}'></script>
     <script src='{% static "libs/fuelux/js/fuelux.min.js" %}'></script>
+    
+    <script src='{% static "js/mwach.js" %}'></script>
 
     <title>{% block title %}mWaCHx{% endblock %}</title>
+    
+    {% block head_custom %}{% endblock %}
+    
+    <script type="text/javascript">
+        $(function(){
+            {% block js_onLoad %}{% endblock %}
+        });
+    </script>
 
 </head>
 
-<body class='fuelux {% url "django.contrib.auth.views.login" as u %}{% if request.path == u %} login-page{% endif %}'>
+<body class='fuelux'>
 {% block body %} Website base template {% endblock %}
 </body>
 

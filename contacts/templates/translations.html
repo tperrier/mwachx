@@ -56,10 +56,11 @@
 
 <script type="text/javascript" src='{% static "js/translations.js" %}'></script>
 <script type="text/javascript" src='{% static "js/ajax.js" %}'></script>
-<script type="text/javascript">
-// TODO: Move this somewhere smarter.
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-});</script>
 
+{% endblock %}
+
+{% block js_onLoad %}
+{% comment %} <script> /*for syntax highlighting*/ {% endcomment %} 
+   mw.tooltips();
+{% comment %} </script> {% endcomment %} 
 {% endblock %}

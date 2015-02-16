@@ -23,7 +23,7 @@ function save_visit(e) {
 		$('#visitScheduleModal').find('button').attr('disabled', false);
 		$('#visitScheduleModal').modal('toggle');
 		id = $('#visitScheduleModal').find("#save_button").data('row-id');
-		delete_row($("#" + id));
+		mw.delete_row($("#" + id));
 	})
 	.fail(function() {
 		console.log('error');
@@ -51,7 +51,7 @@ $(function(){ // On DOM Load
     	url = me.data('post-url');
     	$.post(url, {})
 			.done(function() {
-				delete_row(me);
+				mw.delete_row(me);
 			})
 			.fail(function() {
 				// TODO: add some error handling here.
