@@ -141,15 +141,8 @@ def contact_add(request):
             print cf.errors
     else:
         cf = forms.ContactAdd()
-        
-    fieldsets = {
-        'Study Information':[cf['study_id'],cf['anc_num'],cf['study_group'],cf['send_day'],cf['send_time']],
-        'Client Information':[cf['nickname'],cf['phone_number'],cf['birthdate'],cf['partner_name'],
-                              cf['relationship_status'],cf['previous_pregnancies'],cf['language']],
-        'Medical Information':[cf['condition'],cf['art_initiation'],cf['hiv_disclosed'],cf['due_date']],
-    }
     
-    return render(request,'contacts/contact_create.html',{'fieldsets':fieldsets})
+    return render(request,'contacts/contact_create.html',{'form':cf})
 
 # === Action views ===
 

@@ -6,19 +6,59 @@ from django import forms
 from django.conf import settings
 
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
+from parsley.decorators import parsleyfy
+
 
 #Local App Imports
 import contacts.models as cont
 import utils.forms as util
 
+
+@parsleyfy
 class ContactAdd(forms.ModelForm):
     
     phone_number = forms.CharField(label='Phone Number', widget=forms.TextInput(attrs={'required':'True','placeholder':'07xxxxxxx','pattern': '^07[0-9]{8}'}))
     
+    def __init__(self, *args, **kwargs):
+        super(ContactAdd, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.form_id = 'participant-details-form'
+        self.helper.label_class = 'col-sm-6'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.layout = Layout(
+            Fieldset(
+                'Study Information',
+                'study_id',
+                'anc_num',
+                'study_group',
+                'send_day',
+                'send_time',
+            ), Fieldset (
+                'Medical Information',
+                'condition',
+                'art_initiation',
+                'hiv_disclosed',
+                'due_date',
+            ), Fieldset (
+                'Client Information',
+                'nickname',
+                'phone_number',
+                'birthdate',
+                'partner_name',
+                'relationship_status',
+                'previous_pregnancies',
+                'language',
+            ), 
+            ButtonHolder(
+                Submit('submit', 'Enroll Participant')
+            )
+        )
+
     class Meta:
         model = cont.Contact
         exclude = ['status','child_hiv_status','facility']
-
 
         birth_BO = [{
                 'from': (settings.CURRENT_DATE - datetime.timedelta(days=14*365)).strftime("%m/%d/%Y"),

@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     
     'crispy_forms',
+    'parsley',
     
     'contacts',
     'utils',

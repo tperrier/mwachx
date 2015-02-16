@@ -1,61 +1,20 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
-{% load css_hack %}
+{% load crispy_forms_tags %}
 
 {% block title %}Participant{% endblock %}
 
 {% block content %}
-<script src='{% static "libs/validator/validator.min.js" %}'></script>
-    <div class="page-conent">
-        <form id='contact-create-form' action='' method='post' class='form-horizontal' data-toggle="validator" role="form">
-        <h1> Add Participant </h1>
+    <div class="page-content">
+        <h1> Enroll Participant </h1>
+        <form id='contact-create-form' action='' method='post' class='form-horizontal' role="form" novalidate data-parsley-validate>
             {% csrf_token %}
-            
-            {% for name,set in fieldsets.items %}
-                <fieldset><legend>{{name}}</legend>
-                <div class="row">
-                {% for field in set %}
-                    {% if field.errors %}
-                    <div class="form-group col-md-4 has-error">
-                    {% else %}
-                    <div class="form-group col-md-4">
-                    {% endif %}
-                        {{ field|addcss_label:"col-sm-6 control-label" }}
-                        <div class="col-sm-6">{{ field|addcss:"form-control" }}</div>
-                        <span class="help-block with-errors">{{ field.errors }}</span>
-                    </div>
-
-                    {% if forloop.counter|divisibleby:3 %}
-                    </div>
-                    <div class="row">
-                    {% endif %}
-
-                {% endfor %}
-                </div>
-                </fieldset>
-            {% endfor %}
-            <div class="text-center">
-            <input class='btn btn-primary' type='submit' value='Create'/>
-            </div>
+            {% crispy form %}
         </form>
     </div>
     
 {% endblock %}
 
 {% block js_onLoad %}
-{% comment %} <script> /*for syntax highlighting*/ {% endcomment %} 
-    $('#contact-create-form').validator().on('submit', function (e) {
-      if (e.isDefaultPrevented()) {
-        // handle the invalid form...
-        console.log("yikes!");
-        return false;
-      } else {
-        // everything looks good!
-        console.log("great!");
-        return true;
-      }
-    });
-    
     mw.makeDatepickers();
-{% comment %} </script> {% endcomment %} 
 {% endblock %}
