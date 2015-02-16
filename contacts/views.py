@@ -109,7 +109,8 @@ def contact(request,study_id):
     except cont.Contact.DoesNotExist as e:
         return redirect('/contact/')
     modify_form = forms.ContactModify(instance=contact)
-    return render(request,'contacts/contact.html',{'contact':contact,'modify_form':modify_form})
+    langs = cont.Language.objects.all()
+    return render(request,'contacts/contact.html',{'contact':contact,'modify_form':modify_form, 'langs': langs})
 
 
 @login_required()    

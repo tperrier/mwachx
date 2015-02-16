@@ -11089,6 +11089,12 @@ a[data-toggle='collapse'].collapsed:before {
 .visit-table tbody tr td {
   border: none;
 }
+.table-label {
+  text-align: right;
+}
+.table-btns {
+  margin-left: 20px;
+}
 .avatar-nurse {
   vertical-align: bottom;
   color: #00c49e;
@@ -11151,11 +11157,6 @@ a[data-toggle='collapse'].collapsed:before {
   border-bottom: solid 1px #31708f;
   padding-bottom: 0.5em;
   margin-bottom: 1em;
-}
-#messagesList .message .footer .col-md-4,
-#messagesList .message .footer .col-md-6 {
-  text-align: right;
-  vertical-align: middle;
 }
 .btn-language {
   background-color: lightgray;

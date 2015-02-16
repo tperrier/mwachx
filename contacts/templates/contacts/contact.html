@@ -45,41 +45,27 @@
                         <div class='footer'>
                             {% if not message.is_outgoing %}
                             <div class="row">
-                                <div class="col-md-4">Language:</div>
-                                <div class="col-md-8">
-                                    <div class="btn-group" data-toggle="buttons">
-                                    <label class="btn btn-language">
-                                        <input type="checkbox" autocomplete="off"> English
-                                      </label>
-                                      <label class="btn btn-language">
-                                        <input type="checkbox" autocomplete="off"> Swahili
-                                      </label>
-                                      <label class="btn btn-language">
-                                        <input type="checkbox" autocomplete="off"> Sheng
-                                      </label>
-                                      <label class="btn btn-language">
-                                        <input type="checkbox" autocomplete="off"> Luo
-                                      </label>
+                                <div class="col-md-6 table-btns">
+                                    <div class="btn-toolbar" role="toolbar" aria-label="...">
+                                        <div class="btn-group" data-toggle="buttons" id="lang{{message.id}}" >
+                                            {% for l in langs %}
+                                                <label onclick="mark_dirty()" class="btn btn-language btn-sm {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}"><input  name='{{l.name}}' type="checkbox" autocomplete="off" value="{{l.id}}"
+                                                {% if l.id in message.lang_ids %}checked{% endif %}
+                                                >{{l.name}}</label>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="btn-group" data-toggle="buttons">
+                                            <label class="btn btn-sm btn-language">
+                                                <input type="radio" autocomplete="off"> Related
+                                            </label>
+                                            <label class="btn btn-sm btn-language">
+                                                <input type="radio" autocomplete="off"> Unrelated
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">Related:</div>
-                                <div class="col-md-8">
-                                    <div class="btn-group" data-toggle="buttons">
-                                    <label class="btn btn-language">
-                                        <input type="radio" autocomplete="off"> Yes
-                                      </label>
-                                      <label class="btn btn-language">
-                                        <input type="radio" autocomplete="off"> No
-                                      </label>
-                                    </div>
-                                </div>
-                            </div>
-                        
-                            <div class="row">
-                                <div class="col-md-4">Topic:</div>
-                                <div class="col-md-8">
+                                <div class="col-md-1 table-label">Topic:</div>
+                                <div class="col-md-4">
                                     <select name='topic'>
                                         <option value='none'>None</option>
                                         <option value='adherence'>Adherence</option>
@@ -94,15 +80,11 @@
                                     </select>
                                 </div>
                             </div>
-
                             <div class="row">
-                                <div class="col-md-4"></div>
-                                <div class="col-md-8">
-
-                            <button class='btn btn-sm btn-success' data-toggle='modal' data-target='#sendModal' data-message-id='{{message.id}}'><i class="fa fa-reply"></i> Reply</button>
-
-                            {% if not message.is_viewed %}
-                            <a class='btn btn-sm btn-danger' href='{% url "contacts.views.message_dismiss" message.id%}'><i class="fa fa-times"></i> Dismiss</a> {% endif %}
+                                <div class="col-md-4 col-md-offset-7 table-label">
+                                    <button class='btn btn-sm btn-success' data-toggle='modal' data-target='#sendModal' data-message-id='{{message.id}}'><i class="fa fa-reply"></i> Reply</button>
+                                    {% if not message.is_viewed %}
+                                    <a class='btn btn-sm btn-danger' href='{% url "contacts.views.message_dismiss" message.id%}'><i class="fa fa-times"></i> Dismiss</a> {% endif %}
                                 </div>
                             </div>
                             {% endif %}
