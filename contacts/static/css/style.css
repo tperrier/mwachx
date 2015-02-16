@@ -11081,10 +11081,12 @@ a[data-toggle='collapse'].collapsed:before {
 .scroll-row {
   margin-right: 10px;
 }
-.details-table tbody tr td:first-child {
+.details-table tbody tr td {
+  vertical-align: middle;
+}
+.details-table tbody tr td:nth-child(2) {
   font-weight: bold;
   text-align: right;
-  width: 50%;
 }
 .visit-table tbody tr td {
   border: none;

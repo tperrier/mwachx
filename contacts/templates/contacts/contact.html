@@ -4,6 +4,7 @@
 {% include 'modals/send-message-modal.html' %}
 {% include 'modals/participant-details-modal.html' %}
 {% include 'modals/add-note-modal.html' %}
+{% include 'modals/add-new-visit-modal.html' %}
 
 <div class="page-content" id="participant-page">
     <div class="row">
@@ -156,6 +157,7 @@
                     <div class='details'>
                         <table class="details-table visit-table table table-condensed">
                             <tr>
+                                <td><div class="tooltip-icon" data-toggle="tooltip" data-title="{{contact.nickname}} came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.contacts' %} data-study-id={{contact.study_id}}><i class="fa fa-hospital-o fa-fw"></i></a></div></td>
                                 <td>Next Visit</td>
                                 <td>{{contact.visit_set.first.scheduled}}</td>
                             </tr>
@@ -222,6 +224,7 @@
         </div>
     </div>
 
+<script type="text/javascript" src='{% static "js/upcoming_visits.js" %}'></script>
     <script src='{% static "js/contact_messages.js" %}'></script>
 
     <script type="text/javascript">
@@ -254,3 +257,8 @@
     </script>
 
     {% endblock %}
+{% block js_onLoad %}
+{% comment %} <script> /*for syntax highlighting*/ {% endcomment %} 
+   mw.tooltips();
+{% comment %} </script> {% endcomment %} 
+{% endblock %}

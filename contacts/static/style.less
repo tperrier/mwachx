@@ -504,10 +504,12 @@ a[data-toggle='collapse'] {
 .scroll-row {
     margin-right: 10px;
 }
-.details-table tbody tr td:first-child {
-    font-weight: bold;
-    text-align: right;
-    width: 50%;
+.details-table tbody tr td {
+    vertical-align: middle;
+    &:nth-child(2) {
+        font-weight: bold;
+        text-align: right;
+    }
 }
 
 .visit-table tbody tr td {
