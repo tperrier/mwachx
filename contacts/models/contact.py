@@ -161,7 +161,11 @@ class Contact(TimeStampedModel):
         today = settings.CURRENT_DATE
         delta = today - self.birthdate
         return int((delta.days - delta.seconds/86400.0)/365.2425)
-        
+    
+    @property
+    def get_visits(self):
+        return self.visit_set.filter(~models.Q(skipped=False))
+
     def weeks(self,today=None):
         '''
         Returns the number weeks until EDD or since delivery

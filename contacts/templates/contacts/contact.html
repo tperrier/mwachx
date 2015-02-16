@@ -162,7 +162,7 @@
                         </table>
                         <h3>
                             <a data-toggle="collapse" href='#previous-visits-detail' class="collapsed">
-                                Previous Visits ({{contact.visit_set.count}})
+                                Previous Visits ({{contact.get_visits.count}})
                             </a>
                         </h3>
                         <div id='previous-visits-detail' class='extra collapse' data-heading='Previous Visits'>
@@ -171,7 +171,7 @@
                                     <th>Scheduled</th>
                                     <th>Arrived</th>
                                 </tr>
-                                {% for visit in contact.visit_set.all %}
+                                {% for visit in contact.get_visits %}
                                 <tr>
                                     <td>{{visit.scheduled}}</td>
                                     <td>{{visit.arrived}}</td>
