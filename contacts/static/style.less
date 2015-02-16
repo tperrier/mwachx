@@ -642,8 +642,14 @@ a[data-toggle='collapse'] {
     }
 }
 
-[contenteditable]:hover:not(:focus) {
-    outline: 2px solid @brand-highlight;
+.textblob {
+    padding: 5px;
+    &[contenteditable] {
+        outline: 1px dotted lighten(@brand-highlight, 10%);
+        &:hover:not(:focus) {
+            outline: 2px solid @brand-highlight;
+        }
+    }
 }
 .nurse-row{
     background-color: rgba(173, 255, 47, .2);

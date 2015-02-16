@@ -11194,7 +11194,13 @@ a[data-toggle='collapse'].collapsed:before {
 #translations-table tbody tr.dirty {
   background-color: #fcf8e3;
 }
-[contenteditable]:hover:not(:focus) {
+.textblob {
+  padding: 5px;
+}
+.textblob[contenteditable] {
+  outline: 1px dotted #c05dca;
+}
+.textblob[contenteditable]:hover:not(:focus) {
   outline: 2px solid #ac3cb8;
 }
 .nurse-row {

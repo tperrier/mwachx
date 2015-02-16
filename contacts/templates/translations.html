@@ -31,12 +31,12 @@
 	                        </div><br>
 
 	                    </td>
-	                    <td><div id="original{{message.id}}">{{message.text}}</div></td>
+	                    <td><div class="textblob" id="original{{message.id}}">{{message.text}}</div></td>
 	                    <td>
 	                    {% if message.translation %}
-		                    <div onkeydown="mark_dirty()" contenteditable="true" id="translated{{message.id}}">{{message.translation.text}}</div>
+		                    <div class="textblob" onkeydown="mark_dirty()" contenteditable="true" id="translated{{message.id}}">{{message.translation.text}}</div>
 	                    {% else %}
-	                    	<div onkeydown="mark_dirty()" contenteditable="true" id="translated{{message.id}}">{{message.text}}</div>
+	                    	<div class="textblob" onkeydown="mark_dirty()" contenteditable="true" id="translated{{message.id}}">{{message.text}}</div>
 	                    {% endif %}
 	                    </td>
 	                    <td>
