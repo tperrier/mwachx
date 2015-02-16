@@ -192,3 +192,14 @@ var mw = function(){
     
     return pub; // return public variables as namespace
 }()
+
+/*
+ * Global Onload Functions
+ */
+ 
+$(function(){
+    mw.tooltips();
+    $.ajaxSetup({
+	    beforeSend:mw.ajaxBeforeSend,
+    });
+});
