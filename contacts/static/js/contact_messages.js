@@ -13,6 +13,10 @@ $(function(){
             modal.find('#reply-message').show();
             modal.find('#reply-text').html(message.find('.content').html());
             modal.find('#metadata').html(message.find('.msg-metadata-row').html());
+
+            // FIX: Carry over the select
+            var val = message.find(':selected').val();
+            modal.find('option[value="' + val + '"]').attr('selected', true);
         }else {
             modal.find('#reply-message').hide();
         }
