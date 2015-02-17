@@ -9,7 +9,10 @@
                 </div>
                 <div class="modal-body message-send">
                     {% csrf_token %}
-                    <div id='reply-message' class='alert alert-success'></div>
+                    <div id='reply-message'>
+                        <div id='reply-text' class='alert alert-success'></div>
+                        <div id='metadata' class='row'>&nbsp;</div>
+                    </div>
                     <textarea class='form-control' name='message' rows='5' placeholder='Message to send....'></textarea>
                     <input type='hidden' name='study_id' value='{{contact.study_id}}' />
                     <input type='hidden' name='parent_id' value='' />

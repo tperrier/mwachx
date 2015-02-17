@@ -9643,6 +9643,9 @@ a[data-toggle='collapse'].collapsed:before {
 .msg-action-btn-grp .btn:first-child {
   border-bottom-left-radius: 0px;
 }
+#reply-message {
+  padding-bottom: 2em;
+}
 .onoffswitch {
   position: relative;
   width: 70px;

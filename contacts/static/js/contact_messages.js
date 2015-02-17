@@ -10,7 +10,9 @@ $(function(){
         console.log('Message: ',message_id);
         if(message_id) {
             modal.find('input[name="parent_id"]').val(message_id);
-            modal.find('#reply-message').show().html(message.find('.content').html());
+            modal.find('#reply-message').show();
+            modal.find('#reply-text').html(message.find('.content').html());
+            modal.find('#metadata').html(message.find('.msg-metadata-row').html());
         }else {
             modal.find('#reply-message').hide();
         }
