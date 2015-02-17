@@ -714,7 +714,7 @@ a[data-toggle='collapse'] {
 }
 // Thank you: https://proto.io/freebies/onoff/
 .onoffswitch {
-    position: relative; width: 70px;
+    position: relative; width: 80px;
     font-size:1.2em;
     -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
 }
@@ -745,15 +745,25 @@ a[data-toggle='collapse'] {
 }
 .onoffswitch-inner:after {
     content: "Original";
-    padding-right: 1em;
+    padding-right: 1.8em;
     background-color: #FFFFFF; color: #666666;
     text-align: right;
+}
+.onoffswitch-switch {
+    display: block; width: 1em; margin: 0px;
+    // background: #FFFFFF;
+    background-color: lighten(@brand-warning, 40%);
+    border: 1px solid @gray-light;
+    position: absolute; top: 0; bottom: 0; right: (80px - 1em);
+    -moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
+    -o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s; 
 }
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
     margin-left: 0;
 }
-.onoffswitch-checkbox:checked + .onoffswitch-label {
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
     right: 0px; 
+    background-color: lighten(@brand-warning, 30%);
 }
 
 .btn-language {
