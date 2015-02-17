@@ -141,7 +141,7 @@ MESSAGING_CONNECTION = 'contacts.Connection'
 MESSAGING_ADMIN = 'auth.User'
 
 from datetime import date
-CURRENT_DATE =  date(2014,7,16)
+CURRENT_DATE =  date(2014,8,1)
 
 try:
     from local_settings import *
