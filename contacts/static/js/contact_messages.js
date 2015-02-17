@@ -13,14 +13,16 @@ $(function(){
             $('textarea[name="translation"]').val($(this).val());
     });
     $('#sendModal').on('show.bs.modal',function(evt){
-        // TODO: do we need to clear the previous input here?
-
         var button = $(evt.relatedTarget); //button that triggered the modal
         var message_id = button.data('message-id');
         var message = button.closest('div.message');
         
         var modal = $(this);
-        console.log('Message: ',message_id);
+
+        // Clear previous entries?
+        // TODO: Should this only happen after a send?
+        modal.find('textarea[name="message"]').val('');
+        modal.find('textarea[name="translation"]').val('');
         if(message_id) {
             modal.find('input[name="parent_id"]').val(message_id);
             modal.find('#reply-message').show();

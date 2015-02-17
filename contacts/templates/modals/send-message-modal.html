@@ -15,10 +15,24 @@
                     </div>
 
                     <div class='row no-gutter outside-gutter'>
-                        <div class="col-md-6"><textarea class='form-control flush-bottom flush-right' name='message' rows='5' placeholder='Message to send....'></textarea></div>
-                        <div class="col-md-6"><textarea class='form-control flush-bottom flush-left' name='translation' rows='5' placeholder='Translation....'></textarea></div>
+                        <div class="col-md-6">
+                        <div class="panel panel-primary flush-bottom flush-right">
+                              <div class="panel-heading flush-right">Outgoing message:</div>
+                              <div class="panel-body">
+                                <textarea class='form-control' name='message' rows='5' placeholder='Message to send....'></textarea>
+                              </div>
+                        </div>
+                        </div>
+                        <div class="col-md-6">
+                        <div class="panel panel-default flush-bottom flush-left">
+                              <div class="panel-heading flush-left">Translated message:</div>
+                              <div class="panel-body">
+                                <textarea class='form-control' name='translation' rows='5' placeholder='Translation....'></textarea>
+                              </div>
+                        </div>
+                        </div>
                     </div>
-                    <div class="btn-group btn-group-justified" data-toggle="buttons" id="lang{{message.id}}" >
+                    <div class="btn-group btn-group-justified" data-toggle="buttons">
                         {% for l in langs %}<label class="btn btn-sm btn-language flush-top"><input name='{{l.name}}' type="checkbox" autocomplete="off" value="{{l.id}}">{{l.name}}</label>{% endfor %}
                     </div>
                     <input type='hidden' name='study_id' value='{{contact.study_id}}' />
