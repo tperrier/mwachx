@@ -70,6 +70,9 @@ class Message(TimeStampedModel):
     def get_real_text(self):
         return self.translation.text if self.is_translated() else self.text
 
+    def get_original_text(self):
+        return self.text
+        
     def is_translated(self):
         return self.translation.is_complete if self.translation else False
 

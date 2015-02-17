@@ -547,6 +547,10 @@ a[data-toggle='collapse'] {
     margin-left: 20px;
 }
 
+.input-mini {
+    height: 1.4em;
+    line-height: 1.4em;
+}
 // #participant-page .row {
 //     display: table;
 // }
@@ -575,7 +579,6 @@ a[data-toggle='collapse'] {
     width: 100%;
     height: 625px;
     .message {
-        border: solid 1px black;
         border-radius: 20px 0px;
         margin-bottom: 15px;
         padding: 0;
@@ -586,14 +589,16 @@ a[data-toggle='collapse'] {
             border-radius: 20px 0 0 0;
             background-color: darken(@panel-info-heading-bg, 12%);
             &:extend(.clearfix all);
+            display: flex;
+            align-items: center;
             span {
                 font-size: .75em;
                 padding: 0px 10px;
-                float: left;
+                flex: 1;
             }
             .date {
                 font-size: .75em;
-                float: right;
+                text-align: right;
             }
         }
 

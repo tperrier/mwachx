@@ -10,9 +10,9 @@
     <div class="row">
         <h1><i class="mw 
         {% if contact.status == 'post' %}mw-mwach-baby-phone{% else %}mw-mwach-phone{% endif %}
-        "></i> {{contact.nickname}} <small>{{contact.study_id_short}}</small></h1>
+        "></i> {{contact.nickname}} <small>{{contact.study_id_short}}</small> <small>{{contact.anc_num}}</small></h1>
     </div>
-    <div class="row participant-header">
+<!--    <div class="row participant-header">
         <div class="col-md-2" style="text-align: right;"><strong>ANC</strong>
         </div>
         <div class="col-md-2">{{contact.anc_num}}</div>
@@ -23,7 +23,7 @@
         </div>
         <div class="col-md-2">{{contact.created|date:"n N Y"}}</div>
     </div>
-
+-->
     <div class="row">
         <div class="col-md-8">
             <div class='btn-group btn-group-justified'>
@@ -42,9 +42,12 @@
                     {% else %}
                     <div class='col-md-9 col-md-offset-2 message {{message.html_class}}'>
                     {% endif %}
-                        <div class='top'><span><strong>{{message.sent_by}}</strong> ({{message.weeks}} wk)</span><span class="date">{{ message.created|date:"n N y H:i" }}</span>
+                        <div class='top'>
+                            <span><strong>{{message.sent_by}}</strong> ({{message.weeks}} wk)</span>
+                            {% if message.is_translated %}<span style="font-size: 1em"><input id="msg{{message.id}}"type="checkbox" name="translation-toggle" data-content-id="content{{message.id}}" data-content-translated="{{message.get_real_text}}" data-content-original="{{message.get_original_text}}" checked></span>{% endif %}
+                            <span class="date">{{ message.created|date:"n N y H:i" }}</span>
                         </div>
-                        <div class='content'><span class="badge">Original</span>{{ message.get_real_text }}</div>
+                        <div class='content' id="content{{message.id}}">{{ message.get_real_text }}</div>
                         <div class='footer'>
                             {% if not message.is_outgoing %}
                             <div class="row">
@@ -54,7 +57,7 @@
                                             {% for l in langs %}
                                                 <label onclick="mark_dirty()" class="btn btn-language btn-sm {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}"><input  name='{{l.name}}' type="checkbox" autocomplete="off" value="{{l.id}}"
                                                 {% if l.id in message.lang_ids %}checked{% endif %}
-                                                >{{l.name}}</label>
+                                                >{{l.short_name}}</label>
                                             {% endfor %}
                                         </div>
                                         <div class="btn-group" data-toggle="buttons">
@@ -69,7 +72,7 @@
                                 </div>
                                 <div class="col-md-1 table-label">Topic:</div>
                                 <div class="col-md-4">
-                                    <select name='topic'>
+                                    <select name='topic' class='select form-control input-mini'>
                                         <option value='none'>None</option>
                                         <option value='adherence'>Adherence</option>
                                         <option value='side-effects'>Side Effects</option>
@@ -255,6 +258,20 @@
         });
         setup('#messagesList');
     });
+    $("[name='translation-toggle']").bootstrapSwitch({
+        onText:'Translated',
+        offText:'Original',
+        // size: 'small'
+    });
+
+    $('input[name="translation-toggle"]').on('switchChange.bootstrapSwitch', function(event, state) {
+      if (state)
+        $("#"+$(this).data('content-id')).text($(this).data('content-translated'));
+      else
+        $("#"+$(this).data('content-id')).text($(this).data('content-original'));
+      // console.log($("#"+$(this).data('content-id')).text("hi"));
+    });
+
     </script>
 
     {% endblock %}
