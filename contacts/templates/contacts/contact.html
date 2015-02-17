@@ -25,14 +25,14 @@
     <div class="row">
         <div class="col-md-8">
             <div class='btn-group btn-group-justified'>
-                <a data-toggle='modal' data-target='#sendModal' class='action-item btn btn-success'><span class="action-item-icon"><i class="fa fa-comment"></i></span> <span class="action-item-text">Send Message</span></a>
-                <a class='action-item btn btn-highlight'><span class="action-item-icon"><i class="fa fa-mobile fa-lg"></i></span> <span class="action-item-text">Record Call</span></a>
+                <a data-toggle='modal' data-target='#sendModal' class='action-item btn btn-success'><span class="action-item-icon"><i class="mw mw-comment"></i></span> <span class="action-item-text">Send Message</span></a>
+                <a class='action-item btn btn-highlight'><span class="action-item-icon"><i class="mw mw-mobile-1"></i></span> <span class="action-item-text">Record Call</span></a>
             </div>
             <div class="infinitescroll" id="messagesList">
                 {% for message in contact.message_set.all %}
                 <div class="row skinny-row scroll-row">
                     {% if message.html_class == "client" %}
-                    <div class="col-md-1 avatar-participant fa-4x"><i class="mw mw-mwach-phone"></i></div>
+                    <div class="col-md-1 avatar-participant mw-4x"><i class="mw mw-mwach-phone"></i></div>
                     {% endif %}
 
                     {% if message.html_class == "client" %}
@@ -83,18 +83,18 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-4 col-md-offset-7 table-label">
-                                    <button class='btn btn-sm btn-success' data-toggle='modal' data-target='#sendModal' data-message-id='{{message.id}}'><i class="fa fa-reply"></i> Reply</button>
+                                    <button class='btn btn-sm btn-success' data-toggle='modal' data-target='#sendModal' data-message-id='{{message.id}}'><i class="mw mw-reply"></i> Reply</button>
                                     {% if not message.is_viewed %}
-                                    <a class='btn btn-sm btn-danger' href='{% url "contacts.views.message_dismiss" message.id%}'><i class="fa fa-times"></i> Dismiss</a> {% endif %}
+                                    <a class='btn btn-sm btn-danger' href='{% url "contacts.views.message_dismiss" message.id%}'><i class="mw mw-times"></i> Dismiss</a> {% endif %}
                                 </div>
                             </div>
                             {% endif %}
                         </div>
                     </div>
                     {% if message.html_class == "nurse" %}
-                    <div class="col-md-1 avatar-nurse fa-4x"><i class="fa fa-user-md"></i></div>
+                    <div class="col-md-1 avatar-nurse mw-4x"><i class="mw mw-user-md"></i></div>
                     {% elif message.html_class == "system" %}
-                    <div class="col-md-1 avatar-system fa-4x"><i class="fa fa-server"></i></div>
+                    <div class="col-md-1 avatar-system mw-4x"><i class="mw mw-server"></i></div>
                     {% else %}
                     {# spacing hack #}
                     <div></div>
@@ -107,7 +107,7 @@
         <div class="col-md-4">
             <div class='panel panel-info'>
                 <div class='panel-heading'>
-                    <h3 class='panel-title'>Participant Details <i id='context-edit' class='fa fa-cogs pull-right' data-toggle='modal' data-target='#contactDetailsModal'></i></h3>
+                    <h3 class='panel-title'>Participant Details <i id='context-edit' class='mw mw-cogs pull-right' data-toggle='modal' data-target='#contactDetailsModal'></i></h3>
                 </div>
                 <table class="details-table table table-condensed">
                     <tr>
@@ -157,7 +157,7 @@
                     <div class='details'>
                         <table class="details-table-offset visit-table table table-condensed">
                             <tr>
-                                <td><div class="tooltip-icon" data-toggle="tooltip" data-title="{{contact.nickname}} came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.contacts' %} data-study-id={{contact.study_id}}><i class="fa fa-hospital-o fa-fw"></i></a></div></td>
+                                <td><div class="tooltip-icon" data-toggle="tooltip" data-title="{{contact.nickname}} came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.contacts' %} data-study-id={{contact.study_id}}><i class="mw mw-hospital-o mw-fw"></i></a></div></td>
                                 <td>Next Visit</td>
                                 <td>{{contact.visit_set.first.scheduled}}</td>
                             </tr>
@@ -188,7 +188,7 @@
 
             <div class='panel panel-info'>
                 <div class='panel-heading'>
-                    <h3 class='panel-title'>Clinic Notes<i id='note-add' class='fa fa-plus-square pull-right' data-toggle='modal' data-target='#addNoteModal'></i></h3>
+                    <h3 class='panel-title'>Clinic Notes<i id='note-add' class='mw mw-plus-squared pull-right' data-toggle='modal' data-target='#addNoteModal'></i></h3>
                 </div>
                 <div class='panel-body'>
                     <div class='details'>

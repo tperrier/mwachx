@@ -8,7 +8,7 @@
     
      <div id='contacts-header'>
         <div id='contacts-search-group' class='col-md-3 input-group'>
-            <span id='contact-search-icon' class='input-group-addon'><i class='fa fa-search'></i></span>
+            <span id='contact-search-icon' class='input-group-addon'><i class='mw mw-search'></i></span>
             <input type='text' id='contact-search' class='form-control' placeholder='name, anc, or study ID'>
         </div>
         <!--- ToDo: Add fliters back in 
@@ -49,10 +49,10 @@
             <td>{{contact.messages_sent}}</td>
             <td>{{contact.messages_received}}</td>
             <td>
-            <div class="tooltip-icon" data-toggle="tooltip" data-title="{{contact.nickname}} came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.contacts' %} data-study-id={{contact.study_id}}><i class="fa fa-hospital-o fa-fw"></i></a></div>
+            <div class="tooltip-icon" data-toggle="tooltip" data-title="{{contact.nickname}} came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.contacts' %} data-study-id={{contact.study_id}}><i class="mw mw-hospital-o mw-fw"></i></a></div>
             </td>
             <td>
-            <div class="tooltip-icon" data-toggle="tooltip" data-title="{{contact.nickname}} called"><a class="btn btn-highlight" data-toggle='modal' data-target='#recordCallModal' data-study-id={{contact.study_id}}><i class="fa fa-mobile fa-fw"></i></a></div>
+            <div class="tooltip-icon" data-toggle="tooltip" data-title="{{contact.nickname}} called"><a class="btn btn-highlight" data-toggle='modal' data-target='#recordCallModal' data-study-id={{contact.study_id}}><i class="mw mw-mobile-1 mw-fw"></i></a></div>
             </td>
         </tr>
         </a>

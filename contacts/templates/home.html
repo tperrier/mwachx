@@ -11,7 +11,7 @@
     {% url 'contacts.views.visits' as u %}
     <a class='btn {% if status.visits != 0 %} btn-danger {% else %} btn-success {% endif %} action-item btn-xxl' href="{{u}}">
         <span class="action-item-icon">
-            <i class="fa fa-hospital-o"></i>
+            <i class="mw mw-hospital-o"></i>
         </span>
         <span class="action-item-text">{% if status.visits != 0 %} You have {% include 'icons/number.html' %} new visits to view {% else %} No new visits! {% endif %}</span>
     </a>
@@ -19,7 +19,7 @@
     {% url 'contacts.views.calls' as u %}
     <a class='btn {% if status.calls != 0 %} btn-danger {% else %} btn-success {% endif %} action-item btn-xxl' href="{{u}}">
         <span class="action-item-icon">
-            <i class="fa fa-mobile fa-lg"></i>
+            <i class="mw mw-mobile-1"></i>
         </span>
         <span class="action-item-text">{% if status.calls != 0 %} You have {% include 'icons/number.html' %} new calls to make {% else %} No new calls! {% endif %}</span>
     </a>
@@ -27,7 +27,7 @@
     {% url 'contacts.views.translations' as u %}
     <a class='btn {% if status.translations != 0 %} btn-danger {% else %} btn-success {% endif %} action-item btn-xxl' href="{{u}}">
         <span class="action-item-icon"> 
-            <i class="fa fa-language"></i>
+            <i class="mw mw-language"></i>
         </span>
         <span class="action-item-text">{% if status.translations != 0 %} You have {% include 'icons/number.html' %} new translations {% else %} No new translations! {% endif %}</span>
     </a>
@@ -46,7 +46,7 @@
             <span class="action-item-text">Find a participant</span>
         </a><a class='btn btn-info action-button action-item' href="{% url 'contacts.views.contacts' %}">
             <span class="action-item-icon"> 
-                <i class="fa fa-list"></i>
+                <i class="mw mw-list"></i>
             </span>
             <span class="action-item-text">Upcoming visits</span>
         </a>

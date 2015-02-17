@@ -18,19 +18,19 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li {% url 'contacts.views.home' as u %}{% if request.path == u %}class='active' {% endif %}>
-                        <a href='{{u}}'><i class='fa fa-home'></i> Home</a>
+                        <a href='{{u}}'><i class='mw mw-home'></i> Home</a>
                     </li>
                     <li {% url 'contacts.views.messages_new' as u %}{% if request.path == u %}class='active' {% endif %}>
-                        <a href='{{u}}'><i class='fa fa-comment'></i> Messages</a>
+                        <a href='{{u}}'><i class='mw mw-comment'></i> Messages</a>
                     </li>
                     <li {% url 'contacts.views.visits' as u %}{% if request.path == u %}class='active' {% endif %}>
-                        <a href='{{u}}'><i class='fa fa-hospital-o'></i> Visits</a>
+                        <a href='{{u}}'><i class='mw mw-hospital-o'></i> Visits</a>
                     </li>
                     <li {% url 'contacts.views.calls' as u %}{% if request.path == u %}class='active' {% endif %}>
-                        <a href='{{u}}'><i class='fa fa-mobile fa-lg'></i> Calls</a>
+                        <a href='{{u}}'><i class='mw mw-mobile-1'></i> Calls</a>
                     </li>
                     <li {% url 'contacts.views.translations' as u %}{% if request.path == u %}class='active' {% endif %}>
-                        <a href='{{u}}'><i class='fa fa-language'></i> Translations</a>
+                        <a href='{{u}}'><i class='mw mw-language'></i> Translations</a>
                     </li>
                     
                      <li {% if 'contact' in request.path %}class='active' {% endif %}>

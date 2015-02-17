@@ -1,12 +1,15 @@
 @font-face {
-    font-family: 'mwach';
-    src: url('fonts/mwach.eot?wt1vht');
-    src: url('fonts/mwach.eot?#iefixwt1vht') format('embedded-opentype'), url('fonts/mwach.woff?wt1vht') format('woff'), url('fonts/mwach.ttf?wt1vht') format('truetype'), url('fonts/mwach.svg?wt1vht#mwach') format('svg');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'mwachx';
+  src: url('fonts/mwachx.eot?13650801');
+  src: url('fonts/mwachx.eot?13650801#iefix') format('embedded-opentype'),
+       url('fonts/mwachx.woff?13650801') format('woff'),
+       url('fonts/mwachx.ttf?13650801') format('truetype'),
+       url('fonts/mwachx.svg?13650801#mwachx') format('svg');
+  font-weight: normal;
+  font-style: normal;
 }
 .mw {
-    font-family: 'mwach';
+    font-family: 'mwachx';
     speak: none;
     font-style: normal;
     font-weight: normal;
@@ -18,22 +21,32 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
-.mw-mwach-phone-add:before {
-    content: "\e604";
-}
-.mw-mwach-d:before {
-    content: "\e600";
-}
-.mw-mwach-phone-d:before {
-    content: "\e601";
-}
-.mw-mwach-phone:before {
-    content: "\e602";
-}
-.mw-mwach:before {
-    content: "\e603";
-}
-
+.mw-home:before { content: '\e800'; } /* '' */
+.mw-comment-empty:before { content: '\e801'; } /* '' */
+.mw-comment:before { content: '\e802'; } /* '' */
+.mw-hospital-o:before,.mw-hospital:before { content: '\e803'; } /* '' */
+.mw-mobile:before { content: '\e804'; } /* '' */
+.mw-mobile-1:before { content: '\e805'; } /* '' */
+.mw-language:before { content: '\e806'; } /* '' */
+.mw-user-md:before { content: '\e807'; } /* '' */
+.mw-book:before { content: '\e808'; } /* '' */
+.mw-eye-off:before { content: '\e809'; } /* '' */
+.mw-list:before { content: '\e80a'; } /* '' */
+.mw-cancel:before, .mw-times:before { content: '\e80b'; } /* '' */
+.mw-server:before { content: '\e80c'; } /* '' */
+.mw-cogs:before { content: '\e80d'; } /* '' */
+.mw-plus-squared:before { content: '\e80e'; } /* '' */
+.mw-var-chevron-circle-down:before, .mw-angle-circled-down:before { content: '\e80f'; } /* '' */
+.mw-var-chevron-circle-left:before, .mw-angle-circled-left:before { content: '\e810'; } /* '' */
+.mw-var-chevron-circle-right:before, .mw-angle-circled-right:before { content: '\e811'; } /* '' */
+.mw-var-chevron-circle-up:before, .mw-angle-circled-up:before { content: '\e812'; } /* '' */
+.mw-search:before { content: '\e813'; } /* '' */
+.mw-cancel-circled:before { content: '\e814'; } /* '' */
+.mw-mwach-baby-phone:before { content: '\e815'; } /* '' */
+.mw-mwach-phone-add:before { content: '\e816'; } /* '' */
+.mw-mwach-phone-d:before { content: '\e817'; } /* '' */
+.mw-mwach-phone:before { content: '\e818'; } /* '' */
+.mw-reply:before { content: '\e81c'; } /* '' */
 .mw-huge {
     font-size: 20em;
     display: block;

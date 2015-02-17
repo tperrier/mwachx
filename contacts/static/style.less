@@ -1,6 +1,7 @@
 @import "libs/bootstrap-src/bootstrap.less";
 @import "libs/bootstrap-switch-src/bootstrap-switch.less";
-@import "libs/font-awesome-src/font-awesome.less";
+// @import "libs/font-awesome-src/font-awesome.less";
+@import "mwachx.less";
 @import "libs/fuelux-src/fuelux.less";
 // Colors
 @dark-base: rgb(47, 72, 95);
@@ -297,11 +298,11 @@ a[data-toggle='collapse'] {
     text-decoration: none;
     color: black;
     &:before {
-        font-family: "FontAwesome";
-        content: @fa-var-chevron-circle-down;
+        font-family: "mwachx";
+        content: @mw-var-chevron-circle-down;
     }
     &.collapsed:before {
-        content: @fa-var-chevron-circle-right;
+        content: @mw-var-chevron-circle-right;
     }
 }
 #contacts-table {
@@ -450,12 +451,12 @@ a[data-toggle='collapse'] {
     }
 }
 .accordion-toggle .btn:before {
-    font-family: "FontAwesome";
-    content: @fa-var-chevron-down;
+    font-family: "mwachx";
+    content: @mw-var-chevron-down;
 }
 .accordion-toggle.collapsed {
     .btn:before {
-        content: @fa-var-chevron-right;
+        content: @mw-var-chevron-right;
     }
     border-bottom: none;
 }
