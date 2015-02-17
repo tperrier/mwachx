@@ -30,6 +30,9 @@ $(function(){
             // FIX: Carry over the select
             var val = message.find(':selected').val();
             modal.find('option[value="' + val + '"]').attr('selected', true);
+
+            // Have to refresh tooltips now that they are here too.
+            mw.tooltips();
         }else {
             modal.find('#reply-message').hide();
         }
