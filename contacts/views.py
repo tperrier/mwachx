@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 from jsonview.decorators import json_view
 from crispy_forms.utils import render_crispy_form
@@ -262,6 +263,13 @@ def visit_dismiss(request,visit_id,days):
         'reminder_last_seen': today,
         })
     return HttpResponse()
+    
+@staff_member_required
+def staff_facility_change(request,facility_id):
+    facility = cont.Facility.objects.get(pk=facility_id)
+    request.user.practitioner.facility = facility
+    request.user.practitioner.save()
+    return HttpResponse('/') #redirect URL
 
 # === Old Views ===
 def dashboard(request):

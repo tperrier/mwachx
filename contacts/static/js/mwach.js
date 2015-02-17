@@ -190,6 +190,13 @@ var mw = function(){
         });
     }
     
+    pub.staff_facility_select = function(evt){
+        var facility_id = $(this).val();
+        var url = 'staff/facility_change/'+facility_id+'/';
+        console.log(url);
+        $.get(url).done(function(response){window.location = response;});
+    }
+    
     return pub; // return public variables as namespace
 }()
 
@@ -202,4 +209,7 @@ $(function(){
     $.ajaxSetup({
 	    beforeSend:mw.ajaxBeforeSend,
     });
+    
+    $('#id_staff_facility').on('change',mw.staff_facility_select);
+    
 });
