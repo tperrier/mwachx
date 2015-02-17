@@ -9559,6 +9559,7 @@ a[data-toggle='collapse'].collapsed:before {
 .input-mini {
   height: 1.4em;
   line-height: 1.4em;
+  padding: 0px;
 }
 .avatar-nurse {
   vertical-align: bottom;
