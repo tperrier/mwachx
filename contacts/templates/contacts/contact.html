@@ -95,12 +95,13 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-4 col-md-offset-7 table-label">
-                                    <button class='btn btn-sm btn-success' data-toggle='modal' data-target='#sendModal' data-message-id='{{message.id}}'><i class="mw mw-reply"></i> Reply</button>
-                                    {% if not message.is_viewed %}
-                                    <a class='btn btn-sm btn-danger' href='{% url "contacts.views.message_dismiss" message.id%}'><i class="mw mw-times"></i> Dismiss</a> {% endif %}
-                                </div>
+                            <div class="col-full">
+                            <div class="btn-group btn-group-justified msg-action-btn-grp">
+                                <a data-toggle="modal" data-target="#sendModal" data-message-id='{{message.id}}' class="btn btn-sm btn-success"></span> <i class="mw mw-reply"></i> Reply</a>
+                                {% if not message.is_viewed %}
+                                <a class="btn btn-sm btn-danger" old-href='{% url "contacts.views.message_dismiss" message.id%}'><i class="mw mw-times"></i> Dismiss</a>
+                                 {% endif %}
+                            </div>
                             </div>
                             {% endif %}
                         </div>

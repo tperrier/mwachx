@@ -9630,6 +9630,19 @@ a[data-toggle='collapse'].collapsed:before {
   border-bottom: solid 1px #31708f;
   margin-bottom: 1em;
 }
+.msg-action-btn-grp {
+  padding-top: 0.5em;
+}
+.msg-action-btn-grp .btn {
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+}
+.msg-action-btn-grp .btn:last-child {
+  border-bottom-right-radius: 20px;
+}
+.msg-action-btn-grp .btn:first-child {
+  border-bottom-left-radius: 0px;
+}
 .onoffswitch {
   position: relative;
   width: 70px;
