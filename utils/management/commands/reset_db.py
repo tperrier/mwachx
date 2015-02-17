@@ -149,10 +149,10 @@ def create_facilities():
     
 def create_users():
     #create admin user
-    oscard = User.objects.create_superuser('oscard',email='o@o.org',password='ender')
+    oscard = User.objects.create_superuser('admin',email='o@o.org',password='mwachx')
     cont.Practitioner.objects.create(facility=cont.Facility.objects.get(pk=1),user=oscard)
     #create study nurse users
     facility_list = ['bondo','ahero','mathare']
     for f in facility_list:
-        user = User.objects.create_user('n_{}'.format(f),password='ender')
+        user = User.objects.create_user('n_{}'.format(f),password='mwachx')
         cont.Practitioner.objects.create(facility=cont.Facility.objects.get(name=f),user=user)
