@@ -13,12 +13,20 @@
                         <div id='reply-text' class='alert alert-success'></div>
                         <div id='metadata' class='row'>&nbsp;</div>
                     </div>
-                    <textarea class='form-control' name='message' rows='5' placeholder='Message to send....'></textarea>
+
+                    <div class='row no-gutter outside-gutter'>
+                        <div class="col-md-6"><textarea class='form-control flush-bottom flush-right' name='message' rows='5' placeholder='Message to send....'></textarea></div>
+                        <div class="col-md-6"><textarea class='form-control flush-bottom flush-left' name='translation' rows='5' placeholder='Translation....'></textarea></div>
+                    </div>
+                    <div class="btn-group btn-group-justified" data-toggle="buttons" id="lang{{message.id}}" >
+                        {% for l in langs %}<label class="btn btn-sm btn-language flush-top"><input name='{{l.name}}' type="checkbox" autocomplete="off" value="{{l.id}}">{{l.name}}</label>{% endfor %}
+                    </div>
                     <input type='hidden' name='study_id' value='{{contact.study_id}}' />
                     <input type='hidden' name='parent_id' value='' />
                 </div>
                 <div class="modal-footer">
                     <input class='btn btn-primary' type='submit' value='Send' />
+                    <input class='btn btn-default' type='submit' value='Send &amp; translation complete' />
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </form>

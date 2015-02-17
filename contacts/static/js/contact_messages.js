@@ -1,7 +1,20 @@
 // On DOM Load
 $(function(){
-
+    $('#sendModal').find('textarea[name="message"]').on('keydown', function() {
+        var msg = $(this).val();
+        var translation = $('textarea[name="translation"]').val() || "";
+        if( msg.localeCompare(translation) == 0)
+            $(this).data('copy',true);
+        else 
+            $(this).data('copy',false);
+    });
+    $('#sendModal').find('textarea[name="message"]').bind('input propertychange', function() {
+        if( $(this).data('copy') )
+            $('textarea[name="translation"]').val($(this).val());
+    });
     $('#sendModal').on('show.bs.modal',function(evt){
+        // TODO: do we need to clear the previous input here?
+
         var button = $(evt.relatedTarget); //button that triggered the modal
         var message_id = button.data('message-id');
         var message = button.closest('div.message');
