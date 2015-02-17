@@ -16,8 +16,8 @@
                 {% for message in new_message_list %}
                 <tr class="link-row">
                     <td>
-                        <a href='{% url "contacts.views.contact" message.contact.study_id %}' class="btn btn-info" data-toggle="tooltip" data-title="View {{message.contact.nickname}}'s page">
-                        <i class="mw mw-mwach-phone mw-2x"></i>
+                        <a href='{% url "contacts.views.contact" message.contact.study_id %}' class="btn {% if message.contact.status == 'post' %}btn-primary{% else %}btn-info{% endif %}" data-toggle="tooltip" data-title="View {{message.contact.nickname}}'s page">
+                        <i class="mw {% if message.contact.status == 'post' %}mw-mwach-baby-phone{% else %}mw-mwach-phone{% endif %} mw-2x"></i>
                         </a>
                     </td>
                     <td>{{message.created|date:"D"}}</td>

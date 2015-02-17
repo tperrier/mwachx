@@ -8,7 +8,9 @@
 
 <div class="page-content" id="participant-page">
     <div class="row">
-        <h1><i class="mw mw-mwach-phone"></i> {{contact.nickname}} <small>{{contact.study_id_short}}</small></h1>
+        <h1><i class="mw 
+        {% if contact.status == 'post' %}mw-mwach-baby-phone{% else %}mw-mwach-phone{% endif %}
+        "></i> {{contact.nickname}} <small>{{contact.study_id_short}}</small></h1>
     </div>
     <div class="row participant-header">
         <div class="col-md-2" style="text-align: right;"><strong>ANC</strong>
@@ -32,7 +34,7 @@
                 {% for message in contact.message_set.all %}
                 <div class="row skinny-row scroll-row">
                     {% if message.html_class == "client" %}
-                    <div class="col-md-1 avatar-participant mw-4x"><i class="mw mw-mwach-phone"></i></div>
+                    <div class="col-md-1 avatar-participant mw-4x"><i class="mw {% if contact.status == 'post' %}mw-mwach-baby-phone{% else %}mw-mwach-phone{% endif %}"></i></div>
                     {% endif %}
 
                     {% if message.html_class == "client" %}

@@ -64,6 +64,7 @@ def add_client(client,i):
         'due_date':get_due_date(),
         'last_msg_client':client['last_msg_client'],
         'facility':facility_list[i%3],
+        'status':'post' if random.random() < .25 else 'pregnant',
         }
     contact = cont.Contact.objects.create(**new_client)
     connection = cont.Connection.objects.create(identity=client['phone_number'],contact=contact,is_primary=True)
