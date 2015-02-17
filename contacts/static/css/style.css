@@ -9609,6 +9609,9 @@ a[data-toggle='collapse'].collapsed:before {
 #messagesList .message .top .header-item span {
   display: block;
 }
+#messagesList .message .top .header-item .btn-sm {
+  font-size: 0.9em;
+}
 #messagesList .message .top .badge {
   text-align: center;
 }
