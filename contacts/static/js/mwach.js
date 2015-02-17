@@ -85,10 +85,29 @@ var mw = function(){
     }
     
     pri.getDatepickerDate = function(d) {
-        var day = d.getDate(), month = d.getMonth();
+        var day = d.getDate(), month = d.getMonth()+1;
         if (day < 10){day = '0'+day;}
         if (month < 10){month = '0'+month;}
         return day + '-' + month + '-' + d.getFullYear();
+    }
+    
+    pri.parseDatepickerDate = function(date){
+        if (typeof(date) == 'string'){
+            date = date.split('-');
+            if(date.length == 3){
+                month = parseInt(date[1],10);
+                dt = new Date(date[2],month-1,date[0])
+                if (month === (dt.getMonth() + 1)){
+                    return dt;
+                }
+            }
+        }else {
+            dt = new Date(Date.parse(date));
+            if (!this.isInvalidDate(dt)) {
+                return dt;
+            }
+        }
+        return new Date(NaN);
     }
     
     //All the makrup for datepicker, we might want to move this to a separate file and only included it when needed.
@@ -182,11 +201,16 @@ var mw = function(){
             $this.html(pri.datepickerMarkup);
             //Add id and name to input field
             $this.find('input').attr({id:'id_'+id,name:id});
-            $this.datepicker({
+            
+            var settings = {
                 formatDate: pri.getDatepickerDate,
+                parseDate: pri.parseDatepickerDate,
                 allowPastDates:$this.data('allow-past-dates'),
                 restricted:$this.data('blackout'),
-            });
+            }
+            var date = $this.data('date')
+            if (date) { settings['date'] = new Date(date); }
+            $this.datepicker(settings);
         });
     }
     

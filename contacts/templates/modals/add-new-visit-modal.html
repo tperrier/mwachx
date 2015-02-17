@@ -60,6 +60,8 @@ $(function(){ // On DOM Load
 				// TODO: add some error handling here.
 			});
     });
+    
+    mw.makeDatepickers();
 });
 
 </script>
@@ -78,13 +80,15 @@ $(function(){ // On DOM Load
                     <div class="form-group">
                         <label class="col-sm-3 control-label" for="arrived">Date arrived:</label>
                         <div class="col-sm-9">
-                            <input type='date' name='arrived' class="form-control" value='{% with d=CURRENT_DATE %}{{d|date:"Y-m-d"}}{% endwith %}' />
+                            <!-- <input type='date' name='arrived' class="form-control" value='{% with d=CURRENT_DATE %}{{d|date:"Y-m-d"}}{% endwith %}' /> -->
+                            <div class='datepicker' data-allow-past-dates='true' data-date='{{CURRENT_DATE|date:"Y-m-d"}}' id='arrived'></div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label" for="next_visit">Date of next visit:</label>
                         <div class="col-sm-9">
-                            <input type='date' name='next_visit' class="form-control" min='{% with d=CURRENT_DATE %}{{d|date:"Y-m-d"}}{% endwith %}' value='{% with d=ONE_WEEK %}{{d|date:"Y-m-d"}}{% endwith %}' />
+                            <!-- <input type='date' name='next_visit' class="form-control" min='{% with d=CURRENT_DATE %}{{d|date:"Y-m-d"}}{% endwith %}' value='{% with d=ONE_WEEK %}{{d|date:"Y-m-d"}}{% endwith %}' /> -->
+                            <div class='datepicker' data-allow-past-dates='true' data-date='{{ONE_WEEK|date:"Y-m-d"}}' id='next_visit'></div>
                         </div>
                     </div>
                     <div class="form-group" id="visit_type_block">
