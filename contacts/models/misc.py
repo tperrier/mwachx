@@ -20,15 +20,22 @@ class PhoneCallQuerySet(BaseQuerySet):
 
 class PhoneCall(TimeStampedModel):
     
+    OUTCOME_CHOICES = (
+        ('no_ring','No Ring'),
+        ('no_answer','No Answer'),
+        ('answered','Answered'),
+    )
+    
     class Meta:
         ordering = ('-created',)
     
     objects = PhoneCallQuerySet.as_manager()
     
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
-    answered = models.BooleanField(default=False)
+    #answered = models.BooleanField(default=False)
+    outcome = models.CharField(max_length=10,choices=OUTCOME_CHOICES,default='answered')
     incomming = models.BooleanField(default=True)
-    comment = models.CharField(max_length=500,blank=True,null=True)
+    comment = models.CharField(max_length=300,blank=True,null=True)
     
 class Note(TimeStampedModel):
     
