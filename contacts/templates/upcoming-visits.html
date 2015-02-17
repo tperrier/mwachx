@@ -24,7 +24,7 @@
                 <tr class="link-row">
                     <td>
                         <a data-toggle="tooltip" data-placement="top" title="{{visit.contact.nickname}} did not visit today" class="btn dismiss-btn btn-danger" data-post-url='{% url "contacts.views.visit_dismiss" visit.id 1 %}'>
-                            <i class="mw mw-eye-slash mw-fw"></i>
+                            <i class="mw mw-eye-off mw-fw"></i>
                         </a> <div class="tooltip-icon" data-toggle="tooltip" data-title="{{visit.contact.nickname}} came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}} id="upcoming-{{visit.contact.study_id}}"><i class="mw mw-hospital-o mw-fw"></i></a></div>
                     </td>
                     <td>{{visit.contact.nickname}}</td>
