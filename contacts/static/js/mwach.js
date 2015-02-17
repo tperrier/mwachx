@@ -101,11 +101,10 @@ var mw = function(){
                     return dt;
                 }
             }
-        }else {
-            dt = new Date(Date.parse(date));
-            if (!this.isInvalidDate(dt)) {
-                return dt;
-            }
+        }
+        dt = new Date(Date.parse(date));
+        if (!this.isInvalidDate(dt)) {
+            return dt;
         }
         return new Date(NaN);
     }
@@ -216,7 +215,7 @@ var mw = function(){
     
     pub.staff_facility_select = function(evt){
         var facility_id = $(this).val();
-        var url = 'staff/facility_change/'+facility_id+'/';
+        var url = '/staff/facility_change/'+facility_id+'/';
         console.log(url);
         $.get(url).done(function(response){window.location = response;});
     }
