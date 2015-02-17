@@ -115,14 +115,14 @@ var mw = function(){
 		'<input class="form-control" id="myDatepickerInput" type="text"/>'+
 		'<div class="input-group-btn">'+
 			'<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">'+
-				'<span class="fa fa-calendar"></span>'+
+				'<span class="mw mw-calendar"></span>'+
 				'<span class="sr-only">Toggle Calendar</span>'+
 			'</button>'+
 			'<div class="dropdown-menu dropdown-menu-right datepicker-calendar-wrapper" role="menu">'+
 				'<div class="datepicker-calendar">'+
 					'<div class="datepicker-calendar-header">'+
-						'<button type="button" class="prev"><span class="fa fa-chevron-left"></span><span class="sr-only">Previous Month</span></button>'+
-						'<button type="button" class="next"><span class="fa fa-chevron-right"></span><span class="sr-only">Next Month</span></button>'+
+						'<button type="button" class="prev"><span class="mw mw-chevron-left"></span><span class="sr-only">Previous Month</span></button>'+
+						'<button type="button" class="next"><span class="mw mw-chevron-right"></span><span class="sr-only">Next Month</span></button>'+
 						'<button type="button" class="title">'+
 								'<span class="month">'+
 									'<span data-month="0">January</span>'+
@@ -181,7 +181,7 @@ var mw = function(){
 						'<ul></ul>'+
 					'</div>'+
 					'<div class="datepicker-wheels-footer clearfix">'+
-						'<button type="button" class="btn datepicker-wheels-back"><span class="fa fa-arrow-left"></span><span class="sr-only">Return to Calendar</span></button>'+
+						'<button type="button" class="btn datepicker-wheels-back"><span class="mw mw-chevron-left"></span><span class="sr-only">Return to Calendar</span></button>'+
 						'<button type="button" class="btn datepicker-wheels-select">Select <span class="sr-only">Month and Year</span></button>'+
 					'</div>'+
 				'</div>'+

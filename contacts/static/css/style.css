@@ -6266,7 +6266,9 @@ button.close {
 .panel-body:before,
 .panel-body:after,
 .modal-footer:before,
-.modal-footer:after {
+.modal-footer:after,
+#messagesList .message .top:before,
+#messagesList .message .top:after {
   content: " ";
   display: table;
 }
@@ -6284,7 +6286,8 @@ button.close {
 .navbar-collapse:after,
 .pager:after,
 .panel-body:after,
-.modal-footer:after {
+.modal-footer:after,
+#messagesList .message .top:after {
   clear: both;
 }
 .center-block {
@@ -6877,22 +6880,26 @@ button.close {
 }
 /* '' */
 .mw-angle-left:before,
-.mw-var-chevron-left:before {
+.mw-var-chevron-left:before,
+.mw-chevron-left:before {
   content: '\e819';
 }
 /* '' */
 .mw-angle-right:before,
-.mw-var-chevron-right:before {
+.mw-var-chevron-right:before,
+.mw-chevron-right:before {
   content: '\e81a';
 }
 /* '' */
 .mw-angle-down:before,
-.mw-var-chevron-down:before {
+.mw-var-chevron-down:before,
+.mw-chevron-down:before {
   content: '\e81d';
 }
 /* '' */
 .mw-angle-up:before,
-.mw-var-chevron-up:before {
+.mw-var-chevron-up:before,
+.mw-chevron-up:before {
   content: '\e81b';
 }
 /* '' */
@@ -6900,6 +6907,10 @@ button.close {
   content: '\e81c';
 }
 /* '' */
+.mw-calendar:before {
+  content: '\e81e';
+}
+/* '' */
 .mw-huge {
   font-size: 20em;
   display: block;
@@ -6928,7 +6939,8 @@ button.close {
 .fuelux .navbar-collapse,
 .fuelux .pager,
 .fuelux .panel-body,
-.fuelux .modal-footer {
+.fuelux .modal-footer,
+.fuelux #messagesList .message .top {
   *zoom: 1;
 }
 .fuelux .clearfix:before,
@@ -6960,7 +6972,9 @@ button.close {
 .fuelux .panel-body:before,
 .fuelux .panel-body:after,
 .fuelux .modal-footer:before,
-.fuelux .modal-footer:after {
+.fuelux .modal-footer:after,
+.fuelux #messagesList .message .top:before,
+.fuelux #messagesList .message .top:after {
   display: table;
   content: "";
   line-height: 0;
@@ -6979,7 +6993,8 @@ button.close {
 .fuelux .navbar-collapse:after,
 .fuelux .pager:after,
 .fuelux .panel-body:after,
-.fuelux .modal-footer:after {
+.fuelux .modal-footer:after,
+.fuelux #messagesList .message .top:after {
   clear: both;
 }
 @font-face {
@@ -9539,25 +9554,39 @@ a[data-toggle='collapse'].collapsed:before {
   border: solid 1px black;
   border-radius: 20px 0px;
   margin-bottom: 15px;
-  padding: 10px;
+  padding: 0;
   background-color: #d9edf7;
   position: relative;
 }
-#messagesList .message.system,
-#messagesList .message.nurse {
-  border-radius: 0 20px;
-  background-color: #e0e0e0;
-}
-#messagesList .message.nurse {
-  background-color: #dff0d8;
+#messagesList .message .top {
+  border-radius: 20px 0 0 0;
+  background-color: #a6d5ec;
 }
 #messagesList .message .top span {
   font-size: .75em;
   padding: 0px 10px;
+  float: left;
 }
 #messagesList .message .top .date {
   font-size: .75em;
   float: right;
+}
+#messagesList .message.system,
+#messagesList .message.nurse {
+  border-radius: 0 20px;
+  background-color: #eeeeee;
+}
+#messagesList .message.system .top,
+#messagesList .message.nurse .top {
+  border-radius: 0 20px 0 0;
+  background-color: #d0d0d0;
+  padding-right: 0.5em;
+}
+#messagesList .message.nurse {
+  background-color: #dff0d8;
+}
+#messagesList .message.nurse .top {
+  background-color: #bbdfac;
 }
 #messagesList .message .icon {
   position: absolute;

@@ -578,25 +578,41 @@ a[data-toggle='collapse'] {
         border: solid 1px black;
         border-radius: 20px 0px;
         margin-bottom: 15px;
-        padding: 10px;
+        padding: 0;
         background-color: @panel-info-heading-bg;
         position: relative;
+
+        .top {
+            border-radius: 20px 0 0 0;
+            background-color: darken(@panel-info-heading-bg, 12%);
+            &:extend(.clearfix all);
+            span {
+                font-size: .75em;
+                padding: 0px 10px;
+                float: left;
+            }
+            .date {
+                font-size: .75em;
+                float: right;
+            }
+        }
+
         &.system, &.nurse {
             border-radius: 0 20px;
-            background-color: #E0E0E0
+            background-color: @gray-lighter;
+            .top {
+                border-radius: 0 20px 0 0;
+                background-color: darken(@gray-lighter, 12%);
+                padding-right: 0.5em;
+            }
         }
         &.nurse {
             background-color: @panel-success-heading-bg;
+            .top {
+                background-color: darken(@panel-success-heading-bg, 12%);
+            }
         }
 
-        .top span {
-            font-size: .75em;
-            padding: 0px 10px;
-        }
-        .top .date {
-            font-size: .75em;
-            float: right;
-        }
         .icon {
             position: absolute;
             left: -10px;

@@ -44,7 +44,7 @@
                     {% endif %}
                         <div class='top'><span><strong>{{message.sent_by}}</strong> ({{message.weeks}} wk)</span><span class="date">{{ message.created|date:"n N y H:i" }}</span>
                         </div>
-                        <div class='content'>{{ message.get_real_text }}</div>
+                        <div class='content'><span class="badge">Original</span>{{ message.get_real_text }}</div>
                         <div class='footer'>
                             {% if not message.is_outgoing %}
                             <div class="row">
