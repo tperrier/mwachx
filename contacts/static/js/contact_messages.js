@@ -27,11 +27,6 @@ $(function(){
             modal.find('input[name="parent_id"]').val(message_id);
             modal.find('#reply-message').show();
             modal.find('#reply-text').html(message.find('.content').html());
-            modal.find('#metadata').html(message.find('.msg-metadata-row').html());
-
-            // FIX: Carry over the select
-            var val = message.find(':selected').val();
-            modal.find('option[value="' + val + '"]').attr('selected', true);
 
             // Have to refresh tooltips now that they are here too.
             mw.tooltips();
