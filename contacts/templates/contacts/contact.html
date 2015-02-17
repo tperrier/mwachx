@@ -1,5 +1,7 @@
-{% extends 'base.html' %} {% load staticfiles %}  {% block title %}Participant: {{contact.nickname}}{% endblock %} {% block content %}
+{% extends 'base.html' %} {% load staticfiles %}  
+{% block title %}Participant: {{contact.nickname}}{% endblock %} 
 
+{% block content %}
 
 {% include 'modals/send-message-modal.html' %}
 {% include 'modals/participant-details-modal.html' %}
@@ -7,13 +9,15 @@
 {% include 'modals/add-new-visit-modal.html' %}
 
 <div class="page-content" id="participant-page">
-    <div class="row">
-        <h1><i class="mw 
-        {% if contact.status == 'post' %}mw-mwach-baby-phone{% else %}mw-mwach-phone{% endif %}
-        "></i> {{contact.nickname}} <small>{{contact.study_id_short}}</small> <small>{{contact.anc_num}}</small></h1>
-    </div>
+    <h1 id='participant-details'>
+        <span>
+        <i class="mw {% if contact.status == 'post' %}mw-mwach-baby-phone{% else %}mw-mwach-phone{% endif %}"></i> 
+        {{contact.nickname}}
+        </span> 
+        <small>{{contact.study_id_short}}</small> <small>{{contact.anc_num}}</small>    
+    </h1>
 <!--
-    Trevor dislikes the info bar    
+    Trevor dislikes the info bar
     <div class="row participant-header">
         <div class="col-md-2" style="text-align: right;"><strong>ANC</strong>
         </div>
@@ -38,9 +42,6 @@
                     {% if message.html_class == "client" %}
                     <!-- TODO: Get this to bo to the bottom of the row -->
                     <div class="col-md-1 avatar-participant mw-4x"><i class="mw {% if contact.status == 'post' %}mw-mwach-baby-phone{% else %}mw-mwach-phone{% endif %}"></i></div>
-                    {% endif %}
-
-                    {% if message.html_class == "client" %}
                     <div class='col-md-9 message {{message.html_class}}'>
                     {% else %}
                     <div class='col-md-9 col-md-offset-2 message {{message.html_class}}'>
