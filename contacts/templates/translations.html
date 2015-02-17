@@ -19,7 +19,7 @@
 	            <tbody class="rowlink" data-link='row'>
 	                {% for message in to_translate_list %}
 	                <tr class="link-row">
-	                	<td>{% if message.html_class == 'nurse' %}<i class="mw mw-user-md mw-3x avatar-nurse"></i>{% else %}<i class="mw mw-mwach-phone mw-3x avatar-participant"></i>{% endif %}</td>
+	                	<td>{% if message.html_class == 'nurse' %}<i class="mw mw-user-md mw-3x avatar-nurse"></i>{% else %}<i class="mw {% if message.contact.status == 'post' %}mw-mwach-baby-phone{% else %}mw-mwach-phone{% endif %} mw-3x avatar-participant"></i>{% endif %}</td>
 	                	<!-- TODO: Update "you" to the logged in name?? -->
 	                    <td><strong>{% if message.html_class == "client" %}{{message.contact.nickname}}{% else %}YOU{% endif %}</strong><br>
 	                        <div class="btn-group" data-toggle="buttons" id="lang{{message.id}}" >
