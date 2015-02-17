@@ -618,7 +618,7 @@ a[data-toggle='collapse'] {
         background-color: @panel-info-heading-bg;
         position: relative;
 
-        .top {
+        .msg-header {
             border-radius: 20px 0 0 0;
             background-color: darken(@panel-info-heading-bg, 12%);
             &:extend(.clearfix all);
@@ -651,7 +651,7 @@ a[data-toggle='collapse'] {
         &.system, &.nurse {
             border-radius: 0 20px;
             background-color: @gray-lighter;
-            .top {
+            .msg-header {
                 border-radius: 0 20px 0 0;
                 background-color: darken(@gray-lighter, 12%);
                 padding-right: 0.5em;
@@ -662,7 +662,7 @@ a[data-toggle='collapse'] {
         }
         &.nurse {
             background-color: @panel-success-heading-bg;
-            .top {
+            .msg-header {
                 background-color: darken(@panel-success-heading-bg, 12%);
             }
         }
@@ -681,12 +681,18 @@ a[data-toggle='collapse'] {
         }
 
 
-        &.client {
-            .content {
-                border-bottom: solid 1px @panel-info-text;
-                margin-bottom: 1em;
-            }
+        .msg-metadata-row {
+            border-top: solid 1px @panel-info-text;
+            margin-left: 0;
+            margin-right: 0;
+            padding-top: 1em;
         }
+        // &.client {
+        //     .content {
+        //         border-bottom: solid 1px @panel-info-text;
+        //         margin-bottom: 1em;
+        //     }
+        // }
         // .footer .col-md-4,
         // .footer .col-md-6 {
         //     text-align: right;
@@ -710,8 +716,12 @@ a[data-toggle='collapse'] {
     }
 }
 
-#reply-message {
-    padding-bottom: 2em;
+.checkbox-toggle {
+    input[type="checkbox"]{
+        opacity: 0;
+        position: absolute;
+        visibility: hidden;
+    }
 }
 // Thank you: https://proto.io/freebies/onoff/
 .onoffswitch {
@@ -768,7 +778,7 @@ a[data-toggle='collapse'] {
 }
 
 .btn-language {
-    background-color: lightgray;
+    background-color: @gray-lighter;
     border-color: gray;
     &:hover,
     &:focus,
@@ -776,6 +786,10 @@ a[data-toggle='collapse'] {
     &:active,
     &.active {
         background-color: @brand-primary;
+        color: white;
+    }
+    &:hover {
+        background-color: lighten(@brand-primary, 20%);
         color: white;
     }
 }

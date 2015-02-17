@@ -6267,8 +6267,8 @@ button.close {
 .panel-body:after,
 .modal-footer:before,
 .modal-footer:after,
-#messagesList .message .top:before,
-#messagesList .message .top:after {
+#messagesList .message .msg-header:before,
+#messagesList .message .msg-header:after {
   content: " ";
   display: table;
 }
@@ -6287,7 +6287,7 @@ button.close {
 .pager:after,
 .panel-body:after,
 .modal-footer:after,
-#messagesList .message .top:after {
+#messagesList .message .msg-header:after {
   clear: both;
 }
 .center-block {
@@ -6911,6 +6911,14 @@ button.close {
   content: '\e81e';
 }
 /* '' */
+.mw-language-1:before {
+  content: '\e81f';
+}
+/* '' */
+.mw-redo:before {
+  content: '\e820';
+}
+/* '' */
 .mw-huge {
   font-size: 20em;
   display: block;
@@ -6940,7 +6948,7 @@ button.close {
 .fuelux .pager,
 .fuelux .panel-body,
 .fuelux .modal-footer,
-.fuelux #messagesList .message .top {
+.fuelux #messagesList .message .msg-header {
   *zoom: 1;
 }
 .fuelux .clearfix:before,
@@ -6973,8 +6981,8 @@ button.close {
 .fuelux .panel-body:after,
 .fuelux .modal-footer:before,
 .fuelux .modal-footer:after,
-.fuelux #messagesList .message .top:before,
-.fuelux #messagesList .message .top:after {
+.fuelux #messagesList .message .msg-header:before,
+.fuelux #messagesList .message .msg-header:after {
   display: table;
   content: "";
   line-height: 0;
@@ -6994,7 +7002,7 @@ button.close {
 .fuelux .pager:after,
 .fuelux .panel-body:after,
 .fuelux .modal-footer:after,
-.fuelux #messagesList .message .top:after {
+.fuelux #messagesList .message .msg-header:after {
   clear: both;
 }
 @font-face {
@@ -9595,28 +9603,28 @@ a[data-toggle='collapse'].collapsed:before {
   background-color: #d9edf7;
   position: relative;
 }
-#messagesList .message .top {
+#messagesList .message .msg-header {
   border-radius: 20px 0 0 0;
   background-color: #a6d5ec;
   display: flex;
   align-items: center;
 }
-#messagesList .message .top .header-item {
+#messagesList .message .msg-header .header-item {
   display: flex;
   font-size: .75em;
   padding: 0px 10px;
   flex: 1;
 }
-#messagesList .message .top .header-item span {
+#messagesList .message .msg-header .header-item span {
   display: block;
 }
-#messagesList .message .top .header-item .btn-sm {
+#messagesList .message .msg-header .header-item .btn-sm {
   font-size: 0.9em;
 }
-#messagesList .message .top .badge {
+#messagesList .message .msg-header .badge {
   text-align: center;
 }
-#messagesList .message .top .date {
+#messagesList .message .msg-header .date {
   justify-content: flex-end;
 }
 #messagesList .message .content {
@@ -9627,8 +9635,8 @@ a[data-toggle='collapse'].collapsed:before {
   border-radius: 0 20px;
   background-color: #eeeeee;
 }
-#messagesList .message.system .top,
-#messagesList .message.nurse .top {
+#messagesList .message.system .msg-header,
+#messagesList .message.nurse .msg-header {
   border-radius: 0 20px 0 0;
   background-color: #d0d0d0;
   padding-right: 0.5em;
@@ -9640,7 +9648,7 @@ a[data-toggle='collapse'].collapsed:before {
 #messagesList .message.nurse {
   background-color: #dff0d8;
 }
-#messagesList .message.nurse .top {
+#messagesList .message.nurse .msg-header {
   background-color: #bbdfac;
 }
 #messagesList .message .icon {
@@ -9655,9 +9663,11 @@ a[data-toggle='collapse'].collapsed:before {
   text-align: center;
   padding-top: .2em;
 }
-#messagesList .message.client .content {
-  border-bottom: solid 1px #31708f;
-  margin-bottom: 1em;
+#messagesList .message .msg-metadata-row {
+  border-top: solid 1px #31708f;
+  margin-left: 0;
+  margin-right: 0;
+  padding-top: 1em;
 }
 .msg-action-btn-grp {
   padding-top: 0.5em;
@@ -9672,8 +9682,10 @@ a[data-toggle='collapse'].collapsed:before {
 .msg-action-btn-grp .btn:first-child {
   border-bottom-left-radius: 0px;
 }
-#reply-message {
-  padding-bottom: 2em;
+.checkbox-toggle input[type="checkbox"] {
+  opacity: 0;
+  position: absolute;
+  visibility: hidden;
 }
 .onoffswitch {
   position: relative;
@@ -9753,7 +9765,7 @@ a[data-toggle='collapse'].collapsed:before {
   background-color: #ffc691;
 }
 .btn-language {
-  background-color: lightgray;
+  background-color: #eeeeee;
   border-color: gray;
 }
 .btn-language:hover,
@@ -9762,6 +9774,10 @@ a[data-toggle='collapse'].collapsed:before {
 .btn-language:active,
 .btn-language.active {
   background-color: #406281;
+  color: white;
+}
+.btn-language:hover {
+  background-color: #6f95b8;
   color: white;
 }
 .btn-sm,

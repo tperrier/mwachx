@@ -27,9 +27,6 @@ $(function(){
             modal.find('input[name="parent_id"]').val(message_id);
             modal.find('#reply-message').show();
             modal.find('#reply-text').html(message.find('.content').html());
-
-            // Have to refresh tooltips now that they are here too.
-            mw.tooltips();
         }else {
             modal.find('#reply-message').hide();
         }

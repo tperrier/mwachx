@@ -45,19 +45,17 @@
                     {% else %}
                     <div class='col-md-9 col-md-offset-2 message {{message.html_class}}'>
                     {% endif %}
-                        <div class='top'>
+                        <div class='msg-header'>
                             <div class="header-item"><span><strong>{{message.sent_by}}</strong> ({{message.weeks}} wk)</span></div>
-                            {% if message.is_translated %}<div class="header-item">
-                                <div class="onoffswitch">
-                                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="translated{{message.id}}" data-content-id="content{{message.id}}" data-content-translated="{{message.get_real_text}}" data-content-original="{{message.get_original_text}}" checked>
-                                    <label class="onoffswitch-label" for="translated{{message.id}}">
-                                        <span class="onoffswitch-inner"></span>
-                                        <span class="onoffswitch-switch"></span>
-                                    </label>
+                            {% if message.is_translated %}
+                            <div class="header-item">
+                            <div class="checkbox-toggle" data-toggle="buttons-checkbox">
+                                    <input type="checkbox" name="onoffswitch" id="transToggle{{message.id}}" data-toggle="button" checked>
+                                    <label class="btn btn-language btn-sm active transLabel" for="transToggle{{message.id}}" data-content-id="content{{message.id}}" data-content-translated="{{message.get_real_text}}" data-content-original="{{message.get_original_text}}" data-toggle="tooltip" data-placement="top" title="Toggle between original message and translation"><i class="mw mw-language-1 mw-lg"></i></label>
                                 </div>
                             </div>
                             <div class="header-item">
-                                <button class='btn btn-sm btn-default'>Mark for re-translation</button>
+                                <button class='btn btn-sm btn-default' data-toggle="tooltip" data-placement="top" title="Mark for retranslation"><i class="mw mw-redo"></i></button>
                             </div>
                             {% endif %}
                             
@@ -65,7 +63,7 @@
                         </div>
                         <div class='content' id="content{{message.id}}">{{ message.get_real_text }}</div>
                         <div class='footer'>
-                            {% if not message.is_outgoing %}
+                            {% if not message.is_outgoing and not message.is_viewed %}
                             <div class="row msg-metadata-row">
                                 <div class="col-md-6 table-btns">
                                     <div class="btn-toolbar" role="toolbar" aria-label="...">
@@ -102,6 +100,8 @@
                                     </select>
                                 </div>
                             </div>
+                            {% endif %}
+                            {% if not message.is_outgoing %}
                             <div class="col-full">
                             <div class="btn-group btn-group-justified msg-action-btn-grp">
                                 <a data-toggle="modal" data-target="#sendModal" data-message-id='{{message.id}}' class="btn btn-sm btn-success"></span> <i class="mw mw-reply"></i> Reply</a>
@@ -276,12 +276,12 @@
         setup('#messagesList');
     });
 
-    $('input[name="onoffswitch"]').on('click', function() {
-      if ($(this).is(':checked'))
+    $('.transLabel').on('click', function() {
+      // Note: This is called pre-toggle so the active check is reversed
+      if(!$(this).hasClass('active'))
           $("#"+$(this).data('content-id')).text($(this).data('content-translated'));
       else
         $("#"+$(this).data('content-id')).text($(this).data('content-original'));
-      // console.log($("#"+$(this).data('content-id')).text("hi"));
     });
 
     </script>
