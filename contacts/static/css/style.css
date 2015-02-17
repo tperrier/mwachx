@@ -9551,6 +9551,9 @@ a[data-toggle='collapse'].collapsed:before {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
+.bootstrap-switch-container span {
+  white-space: nowrap;
+}
 #messagesList {
   border: 1px solid #ccc;
   border-bottom-left-radius: 4px;
@@ -9572,14 +9575,23 @@ a[data-toggle='collapse'].collapsed:before {
   display: flex;
   align-items: center;
 }
-#messagesList .message .top span {
+#messagesList .message .top .header-item {
+  display: flex;
   font-size: .75em;
   padding: 0px 10px;
   flex: 1;
 }
+#messagesList .message .top .header-item span {
+  display: block;
+}
+#messagesList .message .top .badge {
+  text-align: center;
+}
 #messagesList .message .top .date {
-  font-size: .75em;
-  text-align: right;
+  justify-content: flex-end;
+}
+#messagesList .message .content {
+  padding: 0 10px 0.3em 10px;
 }
 #messagesList .message.system,
 #messagesList .message.nurse {
@@ -9591,6 +9603,10 @@ a[data-toggle='collapse'].collapsed:before {
   border-radius: 0 20px 0 0;
   background-color: #d0d0d0;
   padding-right: 0.5em;
+}
+#messagesList .message.system .content,
+#messagesList .message.nurse .content {
+  padding-left: 15px;
 }
 #messagesList .message.nurse {
   background-color: #dff0d8;
@@ -9610,13 +9626,70 @@ a[data-toggle='collapse'].collapsed:before {
   text-align: center;
   padding-top: .2em;
 }
-#messagesList .message .content {
-  padding: 0 10px;
-}
 #messagesList .message.client .content {
   border-bottom: solid 1px #31708f;
-  padding-bottom: 0.5em;
   margin-bottom: 1em;
+}
+.onoffswitch {
+  position: relative;
+  width: 70px;
+  font-size: 1.2em;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+.onoffswitch-checkbox {
+  display: none;
+}
+.onoffswitch-label {
+  display: block;
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 3px;
+  font-weight: normal;
+  margin: 0;
+}
+.onoffswitch-inner {
+  display: block;
+  width: 200%;
+  margin-left: -100%;
+  -moz-transition: margin 0.3s ease-in 0s;
+  -webkit-transition: margin 0.3s ease-in 0s;
+  -o-transition: margin 0.3s ease-in 0s;
+  transition: margin 0.3s ease-in 0s;
+}
+.onoffswitch-inner:before,
+.onoffswitch-inner:after {
+  display: block;
+  float: left;
+  width: 50%;
+  height: 1.5em;
+  padding: 0;
+  line-height: 1.5em;
+  font-size: 1em;
+  color: white;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.onoffswitch-inner:before {
+  content: "Translated";
+  padding-left: 5px;
+  background-color: #406281;
+  color: #FFFFFF;
+}
+.onoffswitch-inner:after {
+  content: "Original";
+  padding-right: 1em;
+  background-color: #FFFFFF;
+  color: #666666;
+  text-align: right;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+  margin-left: 0;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label {
+  right: 0px;
 }
 .btn-language {
   background-color: lightgray;

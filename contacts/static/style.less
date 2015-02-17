@@ -576,6 +576,8 @@ a[data-toggle='collapse'] {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
+.bootstrap-switch-container span { white-space: nowrap; }
+
 #messagesList {
     border: 1px solid #ccc;
     border-bottom-left-radius: 4px;
@@ -596,15 +598,25 @@ a[data-toggle='collapse'] {
             &:extend(.clearfix all);
             display: flex;
             align-items: center;
-            span {
+            .header-item {
+                display: flex;
                 font-size: .75em;
                 padding: 0px 10px;
                 flex: 1;
+                span {
+                    display: block;
+                }
+            }
+            .badge {
+                text-align: center;
             }
             .date {
-                font-size: .75em;
-                text-align: right;
+                justify-content: flex-end;
             }
+        }
+
+        .content {
+            padding: 0 10px 0.3em 10px;
         }
 
         &.system, &.nurse {
@@ -614,6 +626,9 @@ a[data-toggle='collapse'] {
                 border-radius: 0 20px 0 0;
                 background-color: darken(@gray-lighter, 12%);
                 padding-right: 0.5em;
+            }
+            .content {
+                padding-left: 15px;
             }
         }
         &.nurse {
@@ -635,14 +650,11 @@ a[data-toggle='collapse'] {
             text-align: center;
             padding-top: .2em;
         }
-        .content {
-            padding: 0 10px;
-        }
+
 
         &.client {
             .content {
                 border-bottom: solid 1px @panel-info-text;
-                padding-bottom: 0.5em;
                 margin-bottom: 1em;
             }
         }
@@ -652,6 +664,50 @@ a[data-toggle='collapse'] {
         //     vertical-align: middle;
         // }
     }
+}
+
+// Thank you: https://proto.io/freebies/onoff/
+.onoffswitch {
+    position: relative; width: 70px;
+    font-size:1.2em;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.onoffswitch-checkbox {
+    display: none;
+}
+.onoffswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    // border: 2px solid #666666; 
+    border-radius: 3px;
+    font-weight: normal;
+    margin:0;
+}
+.onoffswitch-inner {
+    display: block; width: 200%; margin-left: -100%;
+    -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
+    -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
+}
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+    display: block; float: left; width: 50%; height: 1.5em; padding: 0; line-height: 1.5em;
+    font-size: 1em; color: white;
+    -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+}
+.onoffswitch-inner:before {
+    content: "Translated";
+    padding-left: 5px;
+    background-color: @brand-primary; color: #FFFFFF;
+}
+.onoffswitch-inner:after {
+    content: "Original";
+    padding-right: 1em;
+    background-color: #FFFFFF; color: #666666;
+    text-align: right;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label {
+    right: 0px; 
 }
 
 .btn-language {

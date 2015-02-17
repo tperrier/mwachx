@@ -43,9 +43,18 @@
                     <div class='col-md-9 col-md-offset-2 message {{message.html_class}}'>
                     {% endif %}
                         <div class='top'>
-                            <span><strong>{{message.sent_by}}</strong> ({{message.weeks}} wk)</span>
-                            {% if message.is_translated %}<span style="font-size: 1em"><input id="msg{{message.id}}"type="checkbox" name="translation-toggle" data-content-id="content{{message.id}}" data-content-translated="{{message.get_real_text}}" data-content-original="{{message.get_original_text}}" checked></span>{% endif %}
-                            <span class="date">{{ message.created|date:"n N y H:i" }}</span>
+                            <div class="header-item"><span><strong>{{message.sent_by}}</strong> ({{message.weeks}} wk)</span></div>
+                            {% if message.is_translated %}<div class="header-item">
+                                <div class="onoffswitch">
+                                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="translated{{message.id}}" data-content-id="content{{message.id}}" data-content-translated="{{message.get_real_text}}" data-content-original="{{message.get_original_text}}" checked>
+                                    <label class="onoffswitch-label" for="translated{{message.id}}">
+                                        <span class="onoffswitch-inner"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="header-item date"><span>{{ message.created|date:"n N y H:i" }}</span></div>
                         </div>
                         <div class='content' id="content{{message.id}}">{{ message.get_real_text }}</div>
                         <div class='footer'>
@@ -258,15 +267,10 @@
         });
         setup('#messagesList');
     });
-    $("[name='translation-toggle']").bootstrapSwitch({
-        onText:'Translated',
-        offText:'Original',
-        // size: 'small'
-    });
 
-    $('input[name="translation-toggle"]').on('switchChange.bootstrapSwitch', function(event, state) {
-      if (state)
-        $("#"+$(this).data('content-id')).text($(this).data('content-translated'));
+    $('input[name="onoffswitch"]').on('click', function() {
+      if ($(this).is(':checked'))
+          $("#"+$(this).data('content-id')).text($(this).data('content-translated'));
       else
         $("#"+$(this).data('content-id')).text($(this).data('content-original'));
       // console.log($("#"+$(this).data('content-id')).text("hi"));
