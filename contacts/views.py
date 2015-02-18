@@ -41,6 +41,21 @@ logging.config.dictConfig(LOGGING)
 
 # === Views for main action buttons ===
 
+# TODO: No CSRF protection yet. (let's use PUT and the REST plugin)
+@json_view
+def message_update(request,message_id=None):
+    msg = get_object_or_404(cont.Message, pk=message_id)
+    if not request.POST:
+        return HttpResponseBadRequest()
+    
+    if 'is_translated' in request.POST.keys(): msg.is_translated = (request.POST['is_translated'].lower() in ('true'))
+    y = msg.is_translated
+    msg.save()
+    msg = get_object_or_404(cont.Message, pk=message_id)
+    x = msg.is_translated
+    return {'success': x, 'pre': y}
+
+# TODO: No CSRF protection yet. (let's use PUT and the REST plugin)
 @json_view
 def update_participant_details(request,pk=None):
     obj = get_object_or_404(cont.Contact, pk=pk)

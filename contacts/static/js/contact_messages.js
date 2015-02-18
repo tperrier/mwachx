@@ -32,6 +32,34 @@ $(function(){
         }
         
     });
+
+    $('.transLabel').click(function() {
+      // Note: This is called pre-toggle so the active check is reversed
+      if(!$(this).hasClass('active'))
+        $("#"+$(this).data('content-id')).text($(this).data('content-translated'));
+      else
+        $("#"+$(this).data('content-id')).text($(this).data('content-original'));
+    });
+
+    $('.btn-redo').click(function() {
+      var message = $(this).closest('div.message');
+      var tinfo = message.find('.translation-info');
+      var orig_txt = message.find('.transLabel').data('content-original');
+      $.ajax({
+        url:  "/message/update/" + $(this).data('msg-id'),
+        type: "POST",
+        data: {'is_translated':false},
+        success: function(data){
+          // Get rid of translation toggle buttons and reset the msg
+          // to the original un-translated text)
+          tinfo.html(mw.untranslated_block);
+          message.find('.content').html(orig_txt);
+        },
+        error: function() {
+            // TODO: some error handling req'd
+        }
+      })
+    });
 });
 
 

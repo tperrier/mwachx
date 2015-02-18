@@ -50,7 +50,7 @@ class Message(TimeStampedModel):
     is_translated = models.BooleanField(default=False)
     translate_skipped = models.BooleanField(default=False)
 
-    topic = models.CharField(max_length=50,help_text='The topic of this message')
+    topic = models.CharField(max_length=50,help_text='The topic of this message',default=None,blank=True,null=True)
     
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
