@@ -9,6 +9,7 @@ import contacts.models as cont
 from django.core.management import ManagementUtility
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.db import transaction 
 
 class Command(BaseCommand):
     
@@ -25,8 +26,10 @@ class Command(BaseCommand):
         utility = ManagementUtility(['initial_import.py','migrate'])
         utility.execute()
         
-        #Add new fake data
+        #Turn off Autocommit 
+        transaction.set_autocommit(False)
         
+        #Add new fake data
         create_languages()
         create_facilities()
         create_users()
@@ -47,6 +50,8 @@ class Command(BaseCommand):
         last_visits = cont.Visit.objects.all().values('contact_id').order_by().annotate(Max('id'))
         cont.Visit.objects.filter(id__in=[d['id__max'] for d in last_visits]).update(arrived=None,skipped=None)
         
+        #commit data
+        transaction.commit()
         
 ###################
 # Utility Functions
@@ -137,16 +142,20 @@ def get_due_date():
     return datetime.date.today() + datetime.timedelta(days=random.randint(0,100))
 
 def create_languages():
-    cont.Language.objects.create(**{"short_name":"E", "name": 'English'})
-    cont.Language.objects.create(**{"short_name":"S", "name": 'Swahili'})
-    cont.Language.objects.create(**{"short_name":"H", "name": 'Sheng'})
-    cont.Language.objects.create(**{"short_name":"L", "name": 'Luo'})
+    cont.Language.objects.bulk_create([
+        cont.Language(**{"short_name":"E", "name": 'English'}),
+        cont.Language(**{"short_name":"S", "name": 'Swahili'}),
+        cont.Language(**{"short_name":"H", "name": 'Sheng'}),
+        cont.Language(**{"short_name":"L", "name": 'Luo'}),
+    ])
     
 def create_facilities():
-    cont.Facility.objects.create(name='bondo')
-    cont.Facility.objects.create(name='ahero')
-    cont.Facility.objects.create(name='mathare')
-    cont.Facility.objects.create(name='kisumu_east')
+    cont.Facility.objects.bulk_create([
+        cont.Facility(name='bondo'),
+        cont.Facility(name='ahero'),
+        cont.Facility(name='mathare'),
+        cont.Facility(name='kisumu_east'),
+    ])
     
 def create_users():
     #create admin user
