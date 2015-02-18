@@ -184,24 +184,10 @@ def _record_translation(message_id, txt, langs, is_skipped=False):
     lang_objs = cont.Language.objects.filter(id__in=langs)
     _msg.language_set = lang_objs
 
-    if(_msg.translation):
-        _msg.translation.text = txt
-        _msg.translation.is_complete = True
-        _msg.translation.is_skipped = is_skipped
-        _msg.translation.save()
-    else:
-        new_translation = {
-            'text':txt,
-            'is_complete':True,
-            'is_skipped':is_skipped,
-            'parent': cont.Message.objects.get(id=message_id),
-        }
-        _trans = cont.Translation.objects.create(**new_translation)
-        _msg.translation = _trans
-    
-    _msg.save()
-    return
-    
+    _msg.translated_text = txt
+    _msg.translate_complete = True
+    _msg.translate_skipped = is_skipped
+    _msg.save()    
 
 @require_POST
 def save_translation(request, message_id):

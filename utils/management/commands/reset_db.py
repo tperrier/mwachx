@@ -105,14 +105,9 @@ def add_message(message,contact,connection,translate=False):
     mylang.messages.add(_message)
     mylang.save()
 
-    if translate:
-        new_translation = {
-            'text':message['content'],
-            'is_complete':True,
-            'parent': _message,
-        }
-        _trans = cont.Translation.objects.create(**new_translation)
-        _message.translation = _trans
+    if translate and not system:
+        _message.translated_text = "(translated)" + message['content']
+        _message.translate_complete = True
         _message.save()
     
 def add_visit(visit,contact):
