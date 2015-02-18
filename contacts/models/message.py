@@ -45,11 +45,13 @@ class Message(TimeStampedModel):
     # ToDo:Link To Automated Message
     parent = models.ForeignKey('contacts.Message',related_name='replies',blank=True,null=True)
     
-    # translation = models.OneToOneField('contacts.Translation',blank=True,null=True)
+    # translation
     translated_text = models.CharField(max_length=1000,help_text='Text of the translated message',default=None,blank=True,null=True)
     is_translated = models.BooleanField(default=False)
     translate_skipped = models.BooleanField(default=False)
 
+    topic = models.CharField(max_length=50,help_text='The topic of this message')
+    
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
     contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
