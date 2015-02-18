@@ -183,10 +183,12 @@ class Contact(TimeStampedModel):
         '''
         if today is None:
             today = utils.today()
-        if self.is_pregnant:
+        if self.was_pregnant(today):
             days = (self.due_date - today).days
             weeks =  days/7
             return 40 - weeks
+        else: #post-partum 
+            return (today-self.due_date).days/7 #ToDO: Change this to delivered date when we start using that
         
     def weeks_display(self):
         return 'EGA: %i wks'%self.weeks()
