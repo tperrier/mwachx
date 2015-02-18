@@ -64,24 +64,24 @@
                                     <div class="btn-toolbar" role="toolbar" aria-label="...">
                                         <div class="btn-group" data-toggle="buttons" id="lang{{message.id}}" >
                                             {% for l in langs %}
-                                                <label class="btn btn-language btn-sm {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}"><input  name='{{l.name}}' type="checkbox" autocomplete="off" value="{{l.id}}"
+                                                <label class="btn btn-language btn-sm meta-language {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}"><input  name='{{l.name}}' type="checkbox" autocomplete="off" value="{{l.id}}"
                                                 {% if l.id in message.lang_ids %}checked{% endif %}
                                                 >{{l.short_name}}</label>
                                             {% endfor %}
                                         </div>
                                         <div class="btn-group" data-toggle="buttons">
-                                            <label class="btn btn-sm btn-language">
-                                                <input type="radio" autocomplete="off"> Related
+                                            <label class="btn btn-sm btn-language meta-related" data-value="related">
+                                                <input type="radio" name="related-toggle" data-toggle="button" autocomplete="off"> Related
                                             </label>
-                                            <label class="btn btn-sm btn-language">
-                                                <input type="radio" autocomplete="off"> Unrelated
+                                            <label class="btn btn-sm btn-language meta-related" data-value="unrelated">
+                                                <input type="radio" name="related-toggle" data-toggle="button" autocomplete="off"> Unrelated
                                             </label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-1 table-label">Topic:</div>
                                 <div class="col-md-4">
-                                    <select name='topic' class='select form-control input-mini'>
+                                    <select name='topic' class='select form-control input-mini meta-topic'>
                                         <option value='none'>None</option>
                                         <option value='adherence'>Adherence</option>
                                         <option value='side-effects'>Side Effects</option>
@@ -99,9 +99,9 @@
                             {% if not message.is_outgoing %}
                             <div class="col-full">
                             <div class="btn-group btn-group-justified msg-action-btn-grp">
-                                <a data-toggle="modal" data-target="#sendModal" data-message-id='{{message.id}}' class="btn btn-sm btn-success"></span> <i class="mw mw-reply"></i> Reply</a>
+                                <a data-toggle="modal" data-target="#sendModal" data-message-id='{{message.id}}' class="btn btn-sm btn-success btn-reply"></span> <i class="mw mw-reply"></i> Reply</a>
                                 {% if not message.is_viewed %}
-                                <a class="btn btn-sm btn-danger" old-href='{% url "contacts.views.message_dismiss" message.id%}'><i class="mw mw-times"></i> Dismiss</a>
+                                <a class="btn btn-sm btn-danger btn-dismiss" old-href='{% url "contacts.views.message_dismiss" message.id%}'><i class="mw mw-times"></i> Dismiss</a>
                                  {% endif %}
                             </div>
                             </div>

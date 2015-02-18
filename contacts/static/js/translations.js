@@ -1,9 +1,3 @@
-window.onbeforeunload = function() {
-	// Check the dirty bit
-	if ($('.dirty').length > 0 ) {
-		return "You have unsaved translation changes. Please click 'Done' or 'Not required' for any highlighted rows before you continue. If you choose to leave, your changes will not be saved.";
-	}
-}
 // On DOM Load
 $(function(){
 	$(".btn-language").click(function(){
@@ -94,4 +88,6 @@ function mark_dirty (e) {
     if (targ.nodeType == 3) targ = targ.parentNode; // defeat Safari bug
 
     $(targ).closest('tr').addClass("dirty");
+
+    mw.set_dirty_msg("You have unsaved translation changes. Please click 'Done' or 'Not required' for any highlighted rows before you continue. If you choose to leave, your changes will not be saved.");
 }

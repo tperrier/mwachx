@@ -61,6 +61,50 @@ $(function(){
       })
     });
 
+    $('.btn-reply').click(function() {
+        // TODO
+        // Check that at least one language is selected
+        // Check that at least related or unrelated is selected
+        // Check that a topic is selected
+        // AJAX send the message
+        // Modify UI to remove meta-data bits and dismiss button
+    });
+
+    $('.btn-dismiss').click(function() {
+        // TODO
+        // Check that at least one language is selected
+        // Check that at least related or unrelated is selected
+        // Check that a topic is selected
+        // AJAX dismiss
+        // Modify UI to remove meta-data bits and dismiss button
+    });
+
+    $('.meta-language').click(function() {
+        // One of the language buttons was toggled. Should save the languages
+        // Dirty until save
+        // mw.set_dirty(true);
+        // Clear on success
+        // mw.set_dirty(false);
+    });
+
+    $('.meta-related').click(function() {
+        // TODO: related/unrelated were toggled in some way.
+        // Dirty until save
+        // mw.set_dirty(true);
+        // Clear on success
+        // mw.set_dirty(false);
+        console.log($(this).data('value'));
+    });
+
+    $('.meta-topic').change(function() {
+        // TODO: changed the topic
+        // Dirty until save
+        // mw.set_dirty(true);
+        // Clear on success
+        // mw.set_dirty(false);
+        console.log($(this).val());
+    });
+
 
     $('#save-details-btn').click(function() {
         form_id = "#participant-details-form";

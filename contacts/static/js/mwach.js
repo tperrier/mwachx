@@ -4,10 +4,35 @@
  * Call functions like mw.delete_row(evt)
  */
 
+window.onbeforeunload = function() {
+	// Check the dirty bit
+	if (mw.is_dirty()) {
+		return mw.get_dirty_msg();
+	}
+}
+
 var mw = function(){
     
-    var pub = {}, pri = {}; // objects for public and private variables 
+    var pub = {}, pri = {
+    	dirty_bit: false,
+    	dirty_msg: "You have unsaved changes!",
+    	}; // objects for public and private variables 
     
+
+    pub.is_dirty = function() {
+    	return pri.dirty_bit;
+    }
+    pub.set_dirty = function(b) {
+    	pri.dirty_bit = b;
+    }
+    pub.get_dirty_msg = function() {
+    	return pri.dirty_msg;
+    }
+    pub.set_dirty_msg = function(m) {
+    	pri.dirty_bit = true;
+    	pri.dirty_msg = m;
+    }
+
     pub.delete_row = function(e){
         // Thanks to: 
         // http://blog.slaks.net/2010/12/animating-table-rows-with-jquery.html
