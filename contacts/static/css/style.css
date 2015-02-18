@@ -9569,11 +9569,6 @@ a[data-toggle='collapse'].collapsed:before {
   line-height: 1.4em;
   padding: 0px;
 }
-#participant-details {
-  margin: -5px -40px 10px -40px;
-  border-bottom: 2px solid #406281;
-  padding-bottom: 5px;
-}
 #participant-details span {
   color: #406281;
 }

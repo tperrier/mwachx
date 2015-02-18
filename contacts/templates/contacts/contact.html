@@ -9,6 +9,7 @@
 {% include 'modals/add-new-visit-modal.html' %}
 
 <div class="page-content" id="participant-page">
+<div class="row">
     <h1 id='participant-details'>
         <span>
         <i class="mw {% if contact.status == 'post' %}mw-mwach-baby-phone{% else %}mw-mwach-phone{% endif %}"></i> 
@@ -16,6 +17,7 @@
         </span> 
         <small>{{contact.study_id_short}}</small> <small>{{contact.anc_num}}</small>    
     </h1>
+</div>
 <!--
     Trevor dislikes the info bar
     <div class="row participant-header">
