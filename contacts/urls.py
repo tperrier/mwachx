@@ -22,6 +22,7 @@ urlpatterns = patterns('',
     url(r'^message/dismiss/(?P<message_id>\d*)/?$',views.message_dismiss),
     
     url(r'^staff/facility_change/(?P<facility_id>\d)/$',views.staff_facility_change), #If we have more than 9 facilities we'd need to change this
+    url(r'^staff/date/(?P<direction>back|forward)/(?P<delta>\d{1,365})/$',views.change_current_date),
 
     url(r'^participant/update/(?P<pk>\d+)/$', views.update_participant_details),
     

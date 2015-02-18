@@ -48,7 +48,9 @@
                         </select>
                         {% endif %}
                     {% endif %}
-                    <span class="label label-warning">{% with d=CURRENT_DATE %}{{d|date:"Y-m-d"}}{% endwith %}</span>
+                    <a class='date-delta btn btn-sm btn-warning' data-direction='back' data-delta='1'><</a>
+                    <span class="label label-warning">{{CURRENT_DATE|date:"Y-m-d"}}</span>
+                    <a class='date-delta btn btn-sm btn-warning' data-direction='forward' data-delta='1'>></a>
                 </h3>
 
             </div>

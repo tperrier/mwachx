@@ -194,7 +194,7 @@ var mw = function(){
     pub.makeDatepickers = function(parent){
         $parent = parent || $('body');
         $parent.find ('.datepicker').each(function(){
-            $this = $(this);
+            var $this = $(this);
             var id = $this.attr('id');
             //Add datepicker markup 
             $this.html(pri.datepickerMarkup);
@@ -216,6 +216,13 @@ var mw = function(){
     pub.staff_facility_select = function(evt){
         var facility_id = $(this).val();
         var url = '/staff/facility_change/'+facility_id+'/';
+        $.get(url).done(function(response){window.location = response;});
+    }
+    
+    pub.date_delta = function(evt){
+        var $this = $(this);
+        var direction = $this.data('direction'), delta = $this.data('delta');
+        var url = '/staff/date/'+direction+'/'+delta+'/';
         console.log(url);
         $.get(url).done(function(response){window.location = response;});
     }
@@ -234,5 +241,6 @@ $(function(){
     });
     
     $('#id_staff_facility').on('change',mw.staff_facility_select);
+    $('.date-delta').on('click',mw.date_delta);
     
 });

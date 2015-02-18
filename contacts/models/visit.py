@@ -9,6 +9,7 @@ import datetime
 
 #Local Imports
 from utils.models import TimeStampedModel,BaseQuerySet
+import utils
 
 class VisitQuerySet(BaseQuerySet):
     
@@ -24,7 +25,7 @@ class VisitQuerySet(BaseQuerySet):
         return self.filter(arrived=None,skipped=None)
     
     def visit_range(self,start,end=None,reminder_start=None,reminder_end=None):
-        today = settings.CURRENT_DATE
+        today = utils.today()
         start = today - datetime.timedelta(**start)
         reminder_start = today - datetime.timedelta(**reminder_start)
         if end is not None:
@@ -79,8 +80,7 @@ class Visit(TimeStampedModel):
     
     @property
     def days_overdue(self):
-        today = settings.CURRENT_DATE
-        return (today-self.scheduled).days
+        return (utils.today()-self.scheduled).days
 
     @staticmethod
     def new_visit(contact,scheduled,visit_type,reminder_last_seen=None,parent=None,arrived=None,skipped=None,comment=None,):

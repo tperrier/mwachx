@@ -12,17 +12,16 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 from jsonview.decorators import json_view
 from crispy_forms.utils import render_crispy_form
+from constance import config
 
 #Python Imports
-import datetime,collections
+import datetime,collections,sys
+import logging, logging.config
 import code
 
 #Local Imports
 import models as cont
-import forms
-
-import logging, logging.config
-import sys
+import forms, utils
 
 LOGGING = {
     'version': 1,
@@ -249,7 +248,6 @@ def visit_schedule(request):
     return HttpResponse()
 
 def visit_dismiss(request,visit_id,days):
-    today = settings.CURRENT_DATE
     visit = cont.Visit.objects.get(pk=visit_id)
     visit.skipped=True
     visit.comment='skipped_via_web for ' + str(days) + ' days.'
@@ -260,7 +258,7 @@ def visit_dismiss(request,visit_id,days):
         'parent': visit.parent if visit.parent else visit,
         'scheduled': visit.scheduled,
         'contact': visit.contact,
-        'reminder_last_seen': today,
+        'reminder_last_seen': utils.today(),
         })
     return HttpResponse()
     
@@ -270,6 +268,15 @@ def staff_facility_change(request,facility_id):
     request.user.practitioner.facility = facility
     request.user.practitioner.save()
     return HttpResponse('/') #redirect URL
+    
+@login_required()
+def change_current_date(request,direction,delta):
+    
+    delta = int(delta) * (-1 if direction == 'back' else 1)
+    td = datetime.timedelta(days=delta)
+    config.CURRENT_DATE = utils.today() + td
+    return HttpResponse('/') #redirect URL
+    
 
 # === Old Views ===
 def dashboard(request):

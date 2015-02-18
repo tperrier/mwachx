@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 #Local Imports
 from utils.models import TimeStampedModel, BaseQuerySet
 from contacts.models import Message
+import utils
 
 class ContactQuerySet(BaseQuerySet):
     
@@ -159,7 +160,7 @@ class Contact(TimeStampedModel):
         '''
         #ToDo: we need to add a delivery_date field to contact and use that here
         if today is None:
-            today = settings.CURRENT_DATE
+            today = settings.utils.today()
         return today < self.due_date 
         
     @property
@@ -168,7 +169,7 @@ class Contact(TimeStampedModel):
     
     @property
     def age(self):
-        today = settings.CURRENT_DATE
+        today = utils.today()
         delta = today - self.birthdate
         return int((delta.days - delta.seconds/86400.0)/365.2425)
     
@@ -181,7 +182,7 @@ class Contact(TimeStampedModel):
         Returns the number weeks until EDD or since delivery
         '''
         if today is None:
-            today = settings.CURRENT_DATE
+            today = utils.today()
         if self.is_pregnant:
             days = (self.due_date - today).days
             weeks =  days/7

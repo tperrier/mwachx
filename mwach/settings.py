@@ -155,9 +155,6 @@ MESSAGING_CONTACT = 'contacts.Contact'
 MESSAGING_CONNECTION = 'contacts.Connection'
 MESSAGING_ADMIN = 'auth.User'
 
-from datetime import date
-CURRENT_DATE =  date(2014,8,1)
-
 try:
     from local_settings import *
 except ImportError as e:
