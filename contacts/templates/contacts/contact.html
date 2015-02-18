@@ -29,7 +29,7 @@
                 <div class="row skinny-row scroll-row">
                     {% if message.html_class == "client" %}
                     <!-- TODO: Get this to bo to the bottom of the row -->
-                    <div class="col-md-1 avatar-participant mw-4x"><i class="mw {% if contact.status == 'post' %}mw-mwach-baby-phone{% else %}mw-mwach-phone{% endif %}"></i></div>
+                    <div class="col-md-1 avatar-participant mw-4x"><i class="mw {% if message.is_pregnant %}mw-mwach-phone{% else %}mw-mwach-baby-phone{% endif %}"></i></div>
                     <div class='col-md-9 message {{message.html_class}}'>
                     {% else %}
                     <div class='col-md-9 col-md-offset-2 message {{message.html_class}}'>
@@ -106,9 +106,6 @@
                     <div class="col-md-1 avatar-nurse mw-4x"><i class="mw mw-user-md"></i></div>
                     {% elif message.html_class == "system" %}
                     <div class="col-md-1 avatar-system mw-4x"><i class="mw mw-server"></i></div>
-                    {% else %}
-                    {# spacing hack #}
-                    <div></div>
                     {% endif %}
                 </div>
                 {% endfor %}
