@@ -38,14 +38,20 @@
                             <div class="header-item"><span><strong>{{message.sent_by}}</strong> ({{message.weeks}} wk)</span></div>
                             {% if message.is_translated %}
                             <div class="header-item">
-                            <div class="checkbox-toggle" data-toggle="buttons-checkbox">
-                                    <input type="checkbox" name="onoffswitch" id="transToggle{{message.id}}" data-toggle="button" checked>
-                                    <label class="btn btn-language btn-sm active transLabel" for="transToggle{{message.id}}" data-content-id="content{{message.id}}" data-content-translated="{{message.get_real_text}}" data-content-original="{{message.get_original_text}}" data-toggle="tooltip" data-placement="top" title="Toggle between original message and translation"><i class="mw mw-language-1 mw-lg"></i></label>
-                                </div>
+                                    {% if not message.translation_skipped %}
+                                    <div class="checkbox-toggle" data-toggle="buttons-checkbox">
+                                        <input type="checkbox" name="onoffswitch" id="transToggle{{message.id}}" data-toggle="button" checked>
+                                        <label class="btn btn-language btn-sm active transLabel" for="transToggle{{message.id}}" data-content-id="content{{message.id}}" data-content-translated="{{message.get_real_text}}" data-content-original="{{message.get_original_text}}" data-toggle="tooltip" data-placement="top" title="Toggle between original message and translation"><i class="mw mw-language-1 mw-lg"></i></label>
+                                    </div>
+                                    {% else %}
+                                    <span>(Translation skipped)</span>
+                                    {% endif %}
+                                    <button class='btn btn-sm btn-default btn-redo' data-toggle="tooltip" data-placement="top" title="Mark for retranslation">
+                                        <i class="mw mw-redo"></i>
+                                    </button>
                             </div>
-                            <div class="header-item">
-                                <button class='btn btn-sm btn-default' data-toggle="tooltip" data-placement="top" title="Mark for retranslation"><i class="mw mw-redo"></i></button>
-                            </div>
+                            {% elif message.is_translation_pending %}
+                            <span class="badge-warning">Untranslated</span>
                             {% endif %}
                             
                             <div class="header-item date"><span>{{ message.created|date:"n N y H:i" }}</span></div>

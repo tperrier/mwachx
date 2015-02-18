@@ -14,7 +14,7 @@ class MessageQuerySet(BaseQuerySet):
         return self.filter(is_viewed=False)
         
     def to_translate(self):
-        return self.filter(is_system=False,translate_complete=False,translate_skipped=False)
+        return self.filter(is_system=False,is_translated=False,translate_skipped=False)
         
     def for_user(self,user):
         try:
@@ -47,7 +47,7 @@ class Message(TimeStampedModel):
     
     # translation = models.OneToOneField('contacts.Translation',blank=True,null=True)
     translated_text = models.CharField(max_length=1000,help_text='Text of the translated message',default=None,blank=True,null=True)
-    translate_complete = models.BooleanField(default=False)
+    is_translated = models.BooleanField(default=False)
     translate_skipped = models.BooleanField(default=False)
 
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
@@ -55,13 +55,16 @@ class Message(TimeStampedModel):
     contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
     
     def get_real_text(self):
-        return self.translated_text if self.is_translated() else self.text
+        return self.translated_text if self.is_translated else self.text
 
     def get_original_text(self):
         return self.text
         
-    def is_translated(self):
-        return self.translate_complete
+    def translation_skipped(self):
+        return self.translate_skipped
+
+    def is_translation_pending(self):
+        return (not self.is_translated) and (not self.is_system)
 
     def lang_ids(self):
         return [l.id for l in self.language_set.all()]

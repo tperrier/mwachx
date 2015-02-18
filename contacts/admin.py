@@ -20,7 +20,7 @@ class ContactAdmin(admin.ModelAdmin):
 class MessageAdmin(admin.ModelAdmin):
     
     list_display = ('study_id','is_viewed','is_system','is_outgoing','contact_name',
-        'translated_text','translate_complete','translate_skipped','identity','text','created')
+        'translated_text','is_translated','translate_skipped','identity','text','created')
     date_hierarchy = 'created'
     list_filter = ('is_viewed','is_system','is_outgoing')
     search_fields = ('^contact__study_id','^contact__first_name','^contact__last_name')

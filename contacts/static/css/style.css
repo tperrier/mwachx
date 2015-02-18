@@ -4770,7 +4770,8 @@ a.label:focus {
 .label-danger[href]:focus {
   background-color: #e01104;
 }
-.badge {
+.badge,
+.badge-warning {
   display: inline-block;
   min-width: 10px;
   padding: 3px 7px;
@@ -9443,7 +9444,8 @@ a[data-toggle='collapse'].collapsed:before {
 #visits-table tbody tr td:first-child {
   width: 175px;
 }
-.badge {
+.badge,
+.badge-warning {
   font-size: inherit;
 }
 .btn-xxl {
@@ -9563,6 +9565,12 @@ a[data-toggle='collapse'].collapsed:before {
 }
 .table-btns {
   margin-left: 20px;
+}
+.btn-redo {
+  margin-left: 1em;
+}
+.badge-warning {
+  background-color: #f77700;
 }
 .input-mini {
   height: 1.4em;

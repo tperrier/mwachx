@@ -185,7 +185,7 @@ def _record_translation(message_id, txt, langs, is_skipped=False):
     _msg.language_set = lang_objs
 
     _msg.translated_text = txt
-    _msg.translate_complete = True
+    _msg.is_translated = True
     _msg.translate_skipped = is_skipped
     _msg.save()    
 
