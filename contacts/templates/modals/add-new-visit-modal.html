@@ -1,40 +1,5 @@
 <!-- Javascript for modal load and save -->
 <script type='text/javascript'>
-
-var save_visit = function(e) {
-	// Ensure we selected type
-	if( !$('input:radio[name=visit_type]:checked').val()) {
-		$("#visit_type_block").addClass('has-error');
-		return;
-	}
-
-	e = e || window.event;
-	var targ = e.target || e.srcElement;
-	if (targ.nodeType == 3) targ = targ.parentNode; // defeat Safari bug
-	url = $(targ).data('post-url');
-
-	$('#visitScheduleModal').find('button').attr('disabled', true);
-
-	$.post(url,{
-		arrived: $("input[name=arrived]").val(),
-		next_visit: $("input[name=next_visit]").val(),
-		visit_type: $('input:radio[name=visit_type]:checked').val(),
-		study_id: $("input[name=study_id]").val(),
-	})
-	.done(function() {
-		console.log('success');
-		$('#visitScheduleModal').find('button').attr('disabled', false);
-		$('#visitScheduleModal').modal('toggle');
-		id = $('#visitScheduleModal').find("#save_button").data('row-id');
-		mw.delete_row($("#" + id));
-	})
-	.fail(function() {
-		console.log('error');
-		// TODO: Add some error handling here. What is the right approach?
-		// Should we tell the user? Try again? Right now the modal will just stay open.
-	});
-}
-
 $(function(){ // On DOM Load
     $('#visitScheduleModal').on('show.bs.modal',function(evt){
         var button = $(evt.relatedTarget); //button that triggered the modal
@@ -61,6 +26,37 @@ $(function(){ // On DOM Load
 			});
     });
     
+    $("#save_button").click(function(){
+        // Ensure we selected type
+        if( !$('input:radio[name=visit_type]:checked').val()) {
+            $("#visit_type_block").addClass('has-error');
+            return;
+        }
+
+        url = $(this).data('post-url');
+
+        $('#visitScheduleModal').find('button').attr('disabled', true);
+
+        $.post(url,{
+            arrived: $("input[name=arrived]").val(),
+            next_visit: $("input[name=next_visit]").val(),
+            visit_type: $('input:radio[name=visit_type]:checked').val(),
+            study_id: $("input[name=study_id]").val(),
+        })
+        .done(function() {
+            console.log('success');
+            $('#visitScheduleModal').find('button').attr('disabled', false);
+            $('#visitScheduleModal').modal('toggle');
+            id = $('#visitScheduleModal').find("#save_button").data('row-id');
+            mw.delete_row($("#" + id));
+        })
+        .fail(function() {
+            console.log('error');
+            // TODO: Add some error handling here. What is the right approach?
+            // Should we tell the user? Try again? Right now the modal will just stay open.
+        });
+    });
+
     mw.makeDatepickers();
 });
 
@@ -107,7 +103,7 @@ $(function(){ // On DOM Load
                     <input type='hidden' name='src' value='' />
                 </div>
                 <div class="modal-footer">
-                    <button id="save_button" class='btn btn-primary' onclick="save_visit()" data-post-url='{% url "contacts.views.visit_schedule" %}'>Save</button>
+                    <button id="save_button" class='btn btn-primary' data-post-url='{% url "contacts.views.visit_schedule" %}'>Save</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </div>

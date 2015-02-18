@@ -60,6 +60,38 @@ $(function(){
         }
       })
     });
+
+
+    $('#save-details-btn').click(function() {
+        form_id = "#participant-details-form";
+        modal = "#contactDetailsModal";
+
+        $(modal).find('button').attr('disabled', true);
+
+        $.ajax({
+            url: "/participant/update/" + $(modal).data('participant-id') + "/",
+            type: "POST",
+            data: $(form_id).serialize(),
+            success: function(data) {
+                if (!(data['success'])) {
+                    // Here we replace the form if there's an error
+                    $(form_id).replaceWith(data['form_html']);
+                    $(modal).find('button').attr('disabled', false);
+                }
+                else {
+                    // Close the modal
+                    $(modal).find('button').attr('disabled', false);
+                    $(modal).modal('toggle');
+                    refresh_participant_details($(form_id));
+                }   
+            },
+            error: function () {
+                // TODO: Need to do some AJAXiness here
+                $(form_id).find('.error-message').show()
+                $(modal).find('button').attr('disabled', false);    
+            }
+        });
+    });
 });
 
 
@@ -71,33 +103,3 @@ function refresh_participant_details(obj) {
     });
 }
 
-function save_participant_details(e) {
-    form_id = "#participant-details-form";
-    modal = "#contactDetailsModal";
-
-    $(modal).find('button').attr('disabled', true);
-
-    $.ajax({
-        url: "/participant/update/" + $(modal).data('participant-id') + "/",
-        type: "POST",
-        data: $(form_id).serialize(),
-        success: function(data) {
-            if (!(data['success'])) {
-                // Here we replace the form if there's an error
-                $(form_id).replaceWith(data['form_html']);
-                $(modal).find('button').attr('disabled', false);
-            }
-            else {
-                // Close the modal
-                $(modal).find('button').attr('disabled', false);
-                $(modal).modal('toggle');
-                refresh_participant_details($(form_id));
-            }   
-        },
-        error: function () {
-            // TODO: Need to do some AJAXiness here
-            $(form_id).find('.error-message').show()
-            $(modal).find('button').attr('disabled', false);    
-        }
-    });
-}

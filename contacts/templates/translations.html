@@ -24,7 +24,7 @@
 	                    <td><strong>{% if message.html_class == "client" %}{{message.contact.nickname}}{% else %}YOU{% endif %}</strong><br>
 	                        <div class="btn-group" data-toggle="buttons" id="lang{{message.id}}" >
 	                        	{% for l in langs %}
-									<label onclick="mark_dirty()" class="btn btn-language btn-sm {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}"><input  name='{{l.name}}' type="checkbox" autocomplete="off" value="{{l.id}}"
+									<label class="btn btn-language btn-sm {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}"><input  name='{{l.name}}' type="checkbox" autocomplete="off" value="{{l.id}}"
 	                        		{% if l.id in message.lang_ids %}checked{% endif %}
 									>{{l.short_name}}</label>
 								{% endfor %}
@@ -40,8 +40,8 @@
 	                    {% endif %}
 	                    </td>
 	                    <td>
-		                    <button class="btn btn-info" onclick="save_translation()" data-count='{{message.id}}'>Translated</button>
-		                    <button class="btn btn-danger" onclick="not_required()" data-count='{{message.id}}'>Not required</button>
+		                    <button class="btn btn-info btn-translated" data-count='{{message.id}}'>Translated</button>
+		                    <button class="btn btn-danger btn-not-required" data-count='{{message.id}}'>Not required</button>
 		                    <h4 id="languageError{{message.id}}" class="text-danger" style="display: none;">Select at least one language</h4>
 		                    <h4 id="transError{{message.id}}" class="text-danger" style="display: none;">Translation must be same as original.</h4>
 		                    <h4 id="transSameError{{message.id}}" class="text-danger" style="display: none;">Translation must be different than original.</h4>

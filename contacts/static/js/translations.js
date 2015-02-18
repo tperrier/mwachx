@@ -4,6 +4,19 @@ window.onbeforeunload = function() {
 		return "You have unsaved translation changes. Please click 'Done' or 'Not required' for any highlighted rows before you continue. If you choose to leave, your changes will not be saved.";
 	}
 }
+// On DOM Load
+$(function(){
+	$(".btn-language").click(function(){
+		mark_dirty(this);
+	});
+	$(".btn-translated").click(function(){
+		save_translation(this);
+	});
+	$(".btn-not-required").click(function(){
+		not_required(this);
+	});
+
+});
 
 function has_lang(myid) {
 	return $("#lang" + myid).find('input:checked').length > 0;

@@ -64,7 +64,7 @@
                                     <div class="btn-toolbar" role="toolbar" aria-label="...">
                                         <div class="btn-group" data-toggle="buttons" id="lang{{message.id}}" >
                                             {% for l in langs %}
-                                                <label onclick="mark_dirty()" class="btn btn-language btn-sm {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}"><input  name='{{l.name}}' type="checkbox" autocomplete="off" value="{{l.id}}"
+                                                <label class="btn btn-language btn-sm {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}"><input  name='{{l.name}}' type="checkbox" autocomplete="off" value="{{l.id}}"
                                                 {% if l.id in message.lang_ids %}checked{% endif %}
                                                 >{{l.short_name}}</label>
                                             {% endfor %}
