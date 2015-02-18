@@ -49,6 +49,11 @@ INSTALLED_APPS = (
     'crispy_forms',
     'parsley',
     
+    #constane setup
+    'constance',
+    'constance.backends.database',
+    
+    #mWaChx setup
     'contacts',
     'utils',
     'http_transport',
@@ -75,6 +80,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.i18n',
     'django.core.context_processors.static',
+    
+    'constance.context_processors.config',
+    
     'utils.context_processors.openshift',
     'utils.context_processors.current_date',
     'utils.context_processors.brand_status',
@@ -131,6 +139,13 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
+
+#CONSTANCE SETUP
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+
+CONSTANCE_CONFIG = {
+    'CURRENT_DATE':('2014-8-1','Current Date for training')
+}
 
 #############
 # Custom Settings
