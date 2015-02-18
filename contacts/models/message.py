@@ -115,6 +115,9 @@ class Message(TimeStampedModel):
     
     def weeks(self):
         return self.contact.weeks(today=self.created.date())
+        
+    def is_pregnant(self):
+        return self.contact.was_pregnant(today=self.created.date())
     
     @staticmethod
     def receive(number,message):

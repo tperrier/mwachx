@@ -127,6 +127,7 @@ class Contact(TimeStampedModel):
     hiv_disclosed = models.NullBooleanField(default=None)
     child_hiv_status = models.CharField(max_length=20,choices=CHILD_STATUS_CHOICES,default='unknown')
     due_date = models.DateField(verbose_name='Expected Delivery')
+    delivery_date = models.DateField(verbose_name='Delivery Date',blank=True,null=True)
     
     #State attributes to be edited by the system
     last_msg_client = models.DateField(blank=True,null=True,help_text='Date of last client message received')
@@ -151,6 +152,15 @@ class Contact(TimeStampedModel):
     @property 
     def is_pregnant(self):
         return self.status == 'pregnant' or self.status == 'over'
+        
+    def was_pregnant(self,today=None):
+        '''
+        Returns true if the contact was pregnant at date today
+        '''
+        #ToDo: we need to add a delivery_date field to contact and use that here
+        if today is None:
+            today = settings.CURRENT_DATE
+        return today < self.due_date 
         
     @property
     def is_active(self):
