@@ -8,3 +8,6 @@ def today():
     elif isinstance(config.CURRENT_DATE,datetime.date):
         return config.CURRENT_DATE
     return datetime.date(*[int(i) for i in config.CURRENT_DATE.split('-')])
+
+def parse_date(datestr):
+ 	return datetime.datetime.strptime(datestr,'%d-%m-%Y').date()

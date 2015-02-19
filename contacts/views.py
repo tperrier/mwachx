@@ -234,12 +234,12 @@ def visit_schedule(request):
 
     # Mark Parent arrival time.
     if parent_visit:
-        parent_visit.arrived = request.POST['arrived']
+        parent_visit.arrived = utils.parse_date(request.POST['arrived'])
         parent_visit.save()
         
     cont.Visit.new_visit( 
         cont.Contact.objects.get(study_id=study_id),
-        request.POST['next_visit'],
+        utils.parse_date(request.POST['next_visit']),
         request.POST['visit_type'],
         parent=parent_visit
     )
