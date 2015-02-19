@@ -25,11 +25,7 @@ function save_translation(e) {
 }
 
 function _ajax_that_row(e, same) {
-	e = e || window.event;
-    var targ = e.target || e.srcElement;
-    if (targ.nodeType == 3) targ = targ.parentNode; // defeat Safari bug
-
-    myid = $(targ).data('count');
+    myid = $(e).data('count');
 
     if( !has_lang(myid) ) {
     	$('#languageError' + myid).css('display','block');
@@ -70,8 +66,8 @@ function _ajax_that_row(e, same) {
 		})
 		.done(function() {
 		    console.log( "success" );
-		    clear_dirty(targ);
-		    mw.delete_row(targ);
+		    clear_dirty(e);
+		    mw.delete_row(e);
 		})
 		.fail(function() {
 			console.log( "error" );
