@@ -19,10 +19,10 @@ class ContactAdmin(admin.ModelAdmin):
 @admin.register(cont.Message)
 class MessageAdmin(admin.ModelAdmin):
     
-    list_display = ('study_id','is_viewed','is_system','is_outgoing','contact_name',
-        'translated_text','is_translated','translate_skipped','identity','text','created')
+    list_display = ('study_id','is_viewed','is_system','is_outgoing','contact_name','text','languages_str',
+        'translated_text','is_translated','translate_skipped','identity','created')
     date_hierarchy = 'created'
-    list_filter = ('is_viewed','is_system','is_outgoing')
+    list_filter = ('is_viewed','is_system','is_outgoing','is_translated')
     search_fields = ('^contact__study_id','^contact__first_name','^contact__last_name')
     
 @admin.register(cont.Connection)

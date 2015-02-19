@@ -26,7 +26,10 @@ class Language(TimeStampedModel):
     short_name = models.CharField(max_length=1)
     name = models.CharField(max_length=20)
 
-    messages = models.ManyToManyField("Message",blank=True, null=True)
+    messages = models.ManyToManyField("Message",related_name='languages',blank=True, null=True)
+
+    def __str__(self):
+        return self.short_name
 
 class Message(TimeStampedModel):
     class Meta:
@@ -110,6 +113,9 @@ class Message(TimeStampedModel):
         
     def is_pregnant(self):
         return self.contact.was_pregnant(today=self.created.date())
+
+    def languages_str(self):
+        return ','.join([str(l) for l in self.languages.all()])
     
     @staticmethod
     def receive(number,message):

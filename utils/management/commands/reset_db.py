@@ -37,14 +37,19 @@ class Command(BaseCommand):
         JSON_DATA_FILE =  os.path.join(settings.PROJECT_ROOT,'tools','small.json')
         IMPORT_COUNT = 15
         clients = json.load(open(JSON_DATA_FILE))
-        clients = random.sample(clients.values(),IMPORT_COUNT)
+        clients = clients.values()[:IMPORT_COUNT]
 
         for i,c in enumerate(clients):
             print add_client(c,i)
 
-        #Make the last message for each contact is_viewed=False
+        #Mark the last message for each contact is_viewed=False
         last_messages = cont.Message.objects.filter(is_outgoing=False).values('contact_id').order_by().annotate(Max('id'))
         cont.Message.objects.exclude(id__in=[d['id__max'] for d in last_messages]).update(is_viewed=True)
+        #Move the last message to the front of the message que
+        for msg in cont.Message.objects.filter(id__in=[d['id__max'] for d in last_messages]):
+            before_msg = msg.contact.message_set.all()[random.randint(1,3)]
+            msg.created = before_msg.created + datetime.timedelta(seconds=600)
+            msg.save()
 
         # Make last visit arrived = None.
         last_visits = cont.Visit.objects.all().values('contact_id').order_by().annotate(Max('id'))
@@ -99,16 +104,14 @@ def add_message(message,contact,connection,translate=False):
     }
     _message = cont.Message.objects.create(**new_message)
     _message.created = message['date']
-    _message.save()
-
-    mylang = cont.Language.objects.get(id=random.randint(1,4))
-    mylang.messages.add(_message)
-    mylang.save()
 
     if translate and not system:
         _message.translated_text = "(translated)" + message['content']
         _message.is_translated = True
-        _message.save()
+        _lang = cont.Language.objects.get(id=random.randint(1,4))
+        _message.languages.add(_lang)
+    
+    _message.save()
     
 def add_visit(visit,contact):
     if visit['scheduled_date']:
