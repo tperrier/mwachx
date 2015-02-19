@@ -76,14 +76,11 @@ function _ajax_that_row(e, same) {
 
 function clear_dirty(e) {
 	$(e).closest('tr').removeClass('dirty');
+	mw.set_dirty(false);
 }
 
 function mark_dirty (e) {
-	e = e || window.event;
-    var targ = e.target || e.srcElement;
-    if (targ.nodeType == 3) targ = targ.parentNode; // defeat Safari bug
-
-    $(targ).closest('tr').addClass("dirty");
+    $(e).closest('tr').addClass("dirty");
 
     mw.set_dirty_msg("You have unsaved translation changes. Please click 'Done' or 'Not required' for any highlighted rows before you continue. If you choose to leave, your changes will not be saved.");
 }
