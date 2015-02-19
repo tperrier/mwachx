@@ -48,7 +48,7 @@ $(function(){
       $.ajax({
         url:  "/message/update/" + $(this).data('msg-id'),
         type: "POST",
-        data: {'is_translated':false, 'is_skipped':false},
+        data: {'is_translated':false, 'translate_skipped':false},
         success: function(data){
           // Get rid of translation toggle buttons and reset the msg
           // to the original un-translated text)

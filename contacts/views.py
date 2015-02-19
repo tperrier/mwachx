@@ -49,7 +49,7 @@ def message_update(request,message_id=None):
         return HttpResponseBadRequest()
     
     if 'is_translated' in request.POST.keys(): msg.is_translated = (request.POST['is_translated'].lower() in ('true'))
-    if 'is_skipped' in request.POST.keys(): msg.is_skipped = (request.POST['is_skipped'].lower() in ('true'))
+    if 'translate_skipped' in request.POST.keys(): msg.translate_skipped = (request.POST['translate_skipped'].lower() in ('true'))
     y = msg.is_translated
     msg.save()
     msg = get_object_or_404(cont.Message, pk=message_id)
