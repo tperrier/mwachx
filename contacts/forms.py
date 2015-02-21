@@ -75,6 +75,7 @@ class ContactAdd(forms.ModelForm):
                 'partner_name',
                 'relationship_status',
                 'previous_pregnancies',
+                'phone_shared',
                 'language',
             ), 
             ButtonHolder(

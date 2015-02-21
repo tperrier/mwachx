@@ -58,16 +58,19 @@ class Contact(TimeStampedModel):
     
     CONDITION_CHOICES = (
         ('normal','Normal'),
-        ('adolescent','Adolescent'),
+        ('art','Starting ART'),
         ('first','First Time Mother'),
+        ('adolescent','Adolescent'),
         ('cesarean','Previous Cesarean'),
-        ('art','Starting Art'),
     )
     
     FAMILY_PLANNING_CHOICES = (
         ('none','None'),
         ('iud','IUD'),
         ('pill','Pills'),
+        ('depot','Depot'),
+        ('implant','Implant'),
+
     )
     
     RELATIONSHIP_CHOICES = (
@@ -116,18 +119,19 @@ class Contact(TimeStampedModel):
     nickname = models.CharField(max_length=50)
     birthdate = models.DateField(verbose_name='DOB')
     partner_name = models.CharField(max_length=100,blank=True,null=True,verbose_name='Partner Name')
-    relationship_status = models.CharField(max_length=30,choices=RELATIONSHIP_CHOICES,default='married',verbose_name='Relationship Status')
+    relationship_status = models.CharField(max_length=30,choices=RELATIONSHIP_CHOICES,default='married',verbose_name='Relationship Status') 
     previous_pregnancies = models.IntegerField(default=0)
+    phone_shared = models.NullBooleanField(default=None,verbose_name='Phone Shared')
     
     #Medical Information
     status = models.CharField(max_length=20,choices=STATUS_CHOICES, default='pregnant')
     language = models.CharField(max_length=25,choices=LANGUAGE_CHOICES,default='english')
     condition = models.CharField(max_length=40,choices=CONDITION_CHOICES,default='normal')
-    family_planning = models.CharField(max_length=50,blank=True,null=True,choices=FAMILY_PLANNING_CHOICES,default='none')
+    family_planning = models.CharField(max_length=50,blank=True,null=True,choices=FAMILY_PLANNING_CHOICES,default='none',verbose_name='Family Planning')
     art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART initiation',verbose_name='ART Initiantion')
-    hiv_disclosed = models.NullBooleanField(default=None)
-    child_hiv_status = models.CharField(max_length=20,choices=CHILD_STATUS_CHOICES,default='unknown')
-    due_date = models.DateField(verbose_name='Expected Delivery')
+    hiv_disclosed = models.NullBooleanField(default=None,verbose_name='HIV Disclosed')
+    child_hiv_status = models.CharField(max_length=20,choices=CHILD_STATUS_CHOICES,default='unknown',verbose_name='Child HIV Status')
+    due_date = models.DateField(verbose_name='Estimated Delivery')
     delivery_date = models.DateField(verbose_name='Delivery Date',blank=True,null=True)
     
     #State attributes to be edited by the system
