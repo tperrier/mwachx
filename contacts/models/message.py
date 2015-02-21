@@ -71,6 +71,9 @@ class Message(TimeStampedModel):
     def is_translation_pending(self):
         return (not self.is_translated) and (not self.is_system)
 
+    def is_pending(self):
+        return not self.is_viewed and not self.is_outgoing
+
     def lang_ids(self):
         return [l.id for l in self.language_set.all()]
 

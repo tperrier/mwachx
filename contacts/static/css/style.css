@@ -9666,6 +9666,9 @@ a[data-toggle='collapse'].collapsed:before {
 #messagesList .message.nurse .msg-header {
   background-color: #bbdfac;
 }
+#messagesList .message.pending {
+  border: 3px solid #247fad;
+}
 #messagesList .message .icon {
   position: absolute;
   left: -10px;

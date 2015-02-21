@@ -30,7 +30,7 @@
                     {% if message.html_class == "client" %}
                     <!-- TODO: Get this to bo to the bottom of the row -->
                     <div class="col-md-1 avatar-participant mw-4x"><i class="mw {% if message.is_pregnant %}mw-mwach-phone{% else %}mw-mwach-baby-phone{% endif %}"></i></div>
-                    <div class='col-md-9 message {{message.html_class}}'>
+                    <div class='col-md-9 message {{message.html_class}} {% if message.is_pending %}pending{% endif %}'>
                     {% else %}
                     <div class='col-md-9 col-md-offset-2 message {{message.html_class}}'>
                     {% endif %}
@@ -58,7 +58,7 @@
                         </div>
                         <div class='content' id="content{{message.id}}">{{ message.get_real_text }}</div>
                         <div class='footer'>
-                            {% if not message.is_outgoing and not message.is_viewed %}
+                            {% if message.is_pending %}
                             <div class="row msg-metadata-row">
                                 <div class="col-md-6 table-btns">
                                     <div class="btn-toolbar" role="toolbar" aria-label="...">
