@@ -79,16 +79,7 @@ $(function(){
         // Modify UI to remove meta-data bits and dismiss button
     });
 
-    $('.meta-language').click(function() {
-        // One of the language buttons was toggled. Should save the languages
-        // Dirty until save
-        // mw.set_dirty(true);
-        // Clear on success
-        // mw.set_dirty(false);
-    });
-
     $('.meta-topic').change(metadata_changed);
-
     $('.msg-metadata-form input').change(metadata_changed);
 
 
@@ -127,9 +118,14 @@ $(function(){
 function metadata_changed() {
     $this  = $(this);
     var metadata_row = $this.closest('.msg-metadata-row');
-    var val = null;
+    var val = "";
     if($this.attr('type') == 'radio')
         val = $this.data('value');
+    else if($this.attr('type') == 'checkbox') {
+        $this.closest('.btn-group').find('input[type="checkbox"]:checked').each(function() {
+            val = val + " " + this.value;
+        });
+    }
     else
         val = $this.val();
     // set data attribute on .msg-metadata-row
