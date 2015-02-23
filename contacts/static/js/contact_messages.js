@@ -108,12 +108,12 @@ $(function(){
     $('.msg-metadata-form input').change(function(){
         $this  = $(this);
         var toolbar = $this.closest('.btn-toolbar');
-        //set data attribute on .btn-toolbar
+        // set data attribute on .btn-toolbar
         toolbar.data($this.attr('name'),1);
-        console.log('Data:',toolbar.data('language'),toolbar.data('related-toggle'))
         if(toolbar.data('language') == 1 && toolbar.data('related-toggle')==1) {
-            //both a language and related have been set so activate reply/dismiss buttons
-            $this.closest('.message').find('.deactive').toggleClass('deactive');
+            // both a language and related have been set so activate reply/dismiss buttons
+            // since they are radio buttons, no way to unset
+            $this.closest('.message').find('.footer').find('.btn').removeAttr('disabled');
         }
     });
 

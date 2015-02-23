@@ -719,23 +719,24 @@ a[data-toggle='collapse'] {
     }
 }
 
+// HACK to get around render but for pointer
+// SEE: http://stackoverflow.com/questions/17877535/css-pointer-events-and-cursor-style
+// And: https://github.com/twbs/bootstrap/issues/15235
+.btn {
+    &.disabled > *,
+    &[disabled] > *,
+    fieldset[disabled] & > * {
+        pointer-events: none; // Future-proof disabling of clicks
+    }
+    &.disabled,
+    &[disabled],
+    fieldset[disabled] & {
+        cursor: @cursor-disabled;
+        pointer-events: auto; 
+    }
+}
 .msg-action-btn-grp {
     padding-top:0.5em;
-
-    &.deactive {
-        .btn {
-            cursor:not-allowed;
-        }
-
-        .btn-success, .btn-success:hover{
-            background-color:lighten(@brand-success,30);
-        }
-
-        .btn-danger, .btn-dager:hover{
-            background-color:lighten(@brand-danger,30);
-        }
-    }
-
     .btn {
         border-top-right-radius: 0px;
         border-top-left-radius: 0px;

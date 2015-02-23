@@ -9687,19 +9687,19 @@ a[data-toggle='collapse'].collapsed:before {
   margin-right: 0;
   padding-top: 1em;
 }
+.btn.disabled > *,
+.btn[disabled] > *,
+fieldset[disabled] .btn > * {
+  pointer-events: none;
+}
+.btn.disabled,
+.btn[disabled],
+fieldset[disabled] .btn {
+  cursor: not-allowed;
+  pointer-events: auto;
+}
 .msg-action-btn-grp {
   padding-top: 0.5em;
-}
-.msg-action-btn-grp.deactive .btn {
-  cursor: not-allowed;
-}
-.msg-action-btn-grp.deactive .btn-success,
-.msg-action-btn-grp.deactive .btn-success:hover {
-  background-color: #5effe0;
-}
-.msg-action-btn-grp.deactive .btn-danger,
-.msg-action-btn-grp.deactive .btn-dager:hover {
-  background-color: #feb7b2;
 }
 .msg-action-btn-grp .btn {
   border-top-right-radius: 0px;
