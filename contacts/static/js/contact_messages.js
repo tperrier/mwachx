@@ -87,35 +87,9 @@ $(function(){
         // mw.set_dirty(false);
     });
 
-    $('.meta-related').click(function() {
-        // TODO: related/unrelated were toggled in some way.
-        // Dirty until save
-        // mw.set_dirty(true);
-        // Clear on success
-        // mw.set_dirty(false);
-        console.log($(this).data('value'));
-    });
+    $('.meta-topic').change(metadata_changed);
 
-    $('.meta-topic').change(function() {
-        // TODO: changed the topic
-        // Dirty until save
-        // mw.set_dirty(true);
-        // Clear on success
-        // mw.set_dirty(false);
-        console.log($(this).val());
-    });
-
-    $('.msg-metadata-form input').change(function(){
-        $this  = $(this);
-        var toolbar = $this.closest('.btn-toolbar');
-        // set data attribute on .btn-toolbar
-        toolbar.data($this.attr('name'),1);
-        if(toolbar.data('language') == 1 && toolbar.data('related-toggle')==1) {
-            // both a language and related have been set so activate reply/dismiss buttons
-            // since they are radio buttons, no way to unset
-            $this.closest('.message').find('.footer').find('.btn').removeAttr('disabled');
-        }
-    });
+    $('.msg-metadata-form input').change(metadata_changed);
 
 
     $('#save-details-btn').click(function() {
@@ -150,6 +124,31 @@ $(function(){
     });
 });
 
+function metadata_changed() {
+    $this  = $(this);
+    var metadata_row = $this.closest('.msg-metadata-row');
+    var val = null;
+    if($this.attr('type') == 'radio')
+        val = $this.data('value');
+    else
+        val = $this.val();
+    // set data attribute on .msg-metadata-row
+    metadata_row.data($this.attr('name'),val);
+    if( metadata_row.data('language') && 
+        metadata_row.data('relatedToggle') && 
+        metadata_row.data('topic') && 
+        metadata_row.data('topic') != 'none') {
+        // both a language and related have been set so activate reply/dismiss buttons
+        // since they are radio buttons, no way to unset
+        $this.closest('.message').find('.msg-action-btn-grp').find('.btn').removeAttr('disabled');
+        $this.closest('.message').find('.msg-action-btn-grp').tooltip('disable');
+
+    } else {
+        $this.closest('.message').find('.msg-action-btn-grp').find('.btn').attr('disabled', 'disabled');
+        $this.closest('.message').find('.msg-action-btn-grp').tooltip('enable');
+    }
+
+}
 
 function refresh_participant_details(obj) {
     $(obj).find(":input").each(function() {
