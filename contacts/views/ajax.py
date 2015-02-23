@@ -10,7 +10,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
 from jsonview.decorators import json_view
-from crispy_forms.utils import render_crispy_form
 from constance import config
 
 #Python Imports
@@ -19,7 +18,7 @@ import code
 
 #Local Imports
 import contacts.models as cont
-import contacts.forms, utils
+import contacts.forms as forms, utils
 
 
 # === Action views ===

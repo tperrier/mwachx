@@ -17,7 +17,7 @@ import code
 
 #Local Imports
 import contacts.models as cont
-import contacts.forms, utils
+import contacts.forms as forms, utils
 # === Views for main action buttons ===
 
 @login_required()

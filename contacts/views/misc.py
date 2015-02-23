@@ -14,7 +14,7 @@ import datetime,collections,sys
 
 #Local Imports
 import contacts.models as cont
-import contacts.forms, utils
+import utils
 
     
 @staff_member_required
