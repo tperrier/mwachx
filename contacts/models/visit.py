@@ -60,11 +60,11 @@ class Visit(TimeStampedModel):
     
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
     parent = models.ForeignKey('self', related_name='children_set', null=True, blank=True, default=None)
-    reminder_last_seen = models.DateField(null=True)
+    reminder_last_seen = models.DateField(null=True,default=None)
     scheduled = models.DateField()
     arrived = models.DateField(blank=True,null=True,default=None)
     skipped = models.NullBooleanField(default=None)
-    comment = models.CharField(max_length=500,blank=True,null=True)
+    comment = models.CharField(max_length=500,blank=True,null=True,default=None)
     
     visit_type = models.CharField(max_length=25,choices=VISIT_TYPE_CHOICES,null=False,blank=False)
 
@@ -81,16 +81,3 @@ class Visit(TimeStampedModel):
     @property
     def days_overdue(self):
         return (utils.today()-self.scheduled).days
-
-    @staticmethod
-    def new_visit(contact,scheduled,visit_type,reminder_last_seen=None,parent=None,arrived=None,skipped=None,comment=None,):
-        Visit.objects.create(
-            contact=contact,
-            scheduled=scheduled,
-            visit_type=visit_type,
-            parent=parent,
-            reminder_last_seen=reminder_last_seen,
-            arrived=arrived,
-            skipped=skipped,
-            comment=comment,
-        )

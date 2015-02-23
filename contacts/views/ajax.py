@@ -134,12 +134,12 @@ def visit_schedule(request):
         parent_visit.arrived = utils.parse_date(request.POST['arrived'])
         parent_visit.save()
         
-    cont.Visit.new_visit( 
-        cont.Contact.objects.get(study_id=study_id),
-        utils.parse_date(request.POST['next_visit']),
-        request.POST['visit_type'],
-        parent=parent_visit
-    )
+    cont.Visit.objects.create(**{
+        'contact':cont.Contact.objects.get(study_id=study_id),
+        'scheduled':utils.parse_date(request.POST['next_visit']),
+        'visit_type':request.POST['visit_type'],
+        'parent':parent_visit,
+    })
     if 'src' in request.POST.keys():
         return redirect(request.POST['src'])
 
