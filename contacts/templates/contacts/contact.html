@@ -28,7 +28,6 @@
                 {% for message in contact.message_set.all %}
                 <div class="row skinny-row scroll-row">
                     {% if message.html_class == "client" %}
-                    <!-- TODO: Get this to bo to the bottom of the row -->
                     <div class="col-md-1 avatar-participant mw-4x"><i class="mw {% if message.is_pregnant %}mw-mwach-phone{% else %}mw-mwach-baby-phone{% endif %}"></i></div>
                     <div class='col-md-9 message {{message.html_class}} {% if message.is_pending %}pending{% endif %}'>
                     {% else %}
@@ -50,7 +49,7 @@
                                         <i class="mw mw-redo"></i>
                                     </button>
                             {% elif message.is_translation_pending %}
-                                {% include 'contact_blocks/untranslated.html' %}
+                                <span class='badge-warning'>Untranslated</span>
                             {% endif %}
                             </div>
                             
@@ -59,12 +58,13 @@
                         <div class='content' id="content{{message.id}}">{{ message.get_real_text }}</div>
                         <div class='footer'>
                             {% if message.is_pending %}
+                            <form class='msg-metadata-form'>
                             <div class="row msg-metadata-row">
                                 <div class="col-md-6 table-btns">
-                                    <div class="btn-toolbar" role="toolbar" aria-label="...">
+                                    <div class="btn-toolbar" role="toolbar">
                                         <div class="btn-group" data-toggle="buttons" id="lang{{message.id}}" >
                                             {% for l in langs %}
-                                                <label class="btn btn-language btn-sm meta-language {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}"><input  name='{{l.name}}' type="checkbox" autocomplete="off" value="{{l.id}}"
+                                                <label class="btn btn-language btn-sm meta-language {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}"><input  name='language' type="checkbox" autocomplete="off" value="{{l.id}}"
                                                 {% if l.id in message.lang_ids %}checked{% endif %}
                                                 >{{l.short_name}}</label>
                                             {% endfor %}
@@ -95,12 +95,13 @@
                                     </select>
                                 </div>
                             </div>
+                            </form>
                             {% endif %}
                             {% if not message.is_outgoing %}
                             <div class="col-full">
-                            <div class="btn-group btn-group-justified msg-action-btn-grp">
-                                <a data-toggle="modal" data-target="#sendModal" data-message-id='{{message.id}}' class="btn btn-sm btn-success btn-reply"></span> <i class="mw mw-reply"></i> Reply</a>
-                                {% if not message.is_viewed %}
+                            <div class="btn-group btn-group-justified msg-action-btn-grp deactive">
+                                <a data-id='reply_{{message.id}}' data-target="#sendModal" data-message-id='{{message.id}}' class="btn btn-sm btn-success btn-reply"></span> <i class="mw mw-reply"></i> Reply</a>
+                                {% if message.is_pending %}
                                 <a class="btn btn-sm btn-danger btn-dismiss" old-href='{% url "contacts.views.message_dismiss" message.id%}'><i class="mw mw-times"></i> Dismiss</a>
                                  {% endif %}
                             </div>
@@ -228,21 +229,6 @@
         </div>
     </div>
 
-
-
-
-
-    <div class='col-md-6 scroll col-full'>
-        <div id='message-list'>
-            
-        </div>
-    </div>
-
     <script src='{% static "js/contact_messages.js" %}'></script>
-
-    <script type="text/javascript">
-      // Save to the global namespace
-      mw.untranslated_block = "{% include 'contact_blocks/untranslated.html' %}";
-    </script>
 
     {% endblock %}

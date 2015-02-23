@@ -13,11 +13,11 @@ window.onbeforeunload = function() {
 
 var mw = function(){
     
-    var pub = {}, pri = {
-    	dirty_bit: false,
-    	dirty_msg: "You have unsaved changes!",
-    	}; // objects for public and private variables 
+    var pub = {}, pri = {}; // objects for public and private variables 
     
+    pri.dirty_bit = false;
+    pri.dirty_set = {};
+    pub.dirty_msg = 'You have unsaved changes!';
 
     pub.is_dirty = function() {
     	return pri.dirty_bit;
@@ -26,11 +26,11 @@ var mw = function(){
     	pri.dirty_bit = b;
     }
     pub.get_dirty_msg = function() {
-    	return pri.dirty_msg;
+    	return pub.dirty_msg;
     }
     pub.set_dirty_msg = function(m) {
-    	pri.dirty_bit = true;
-    	pri.dirty_msg = m;
+    	pub.dirty_bit = true;
+    	pub.dirty_msg = m;
     }
 
     pub.delete_row = function(e){

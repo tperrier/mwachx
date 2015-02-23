@@ -105,6 +105,18 @@ $(function(){
         console.log($(this).val());
     });
 
+    $('.msg-metadata-form input').change(function(){
+        $this  = $(this);
+        var toolbar = $this.closest('.btn-toolbar');
+        //set data attribute on .btn-toolbar
+        toolbar.data($this.attr('name'),1);
+        console.log('Data:',toolbar.data('language'),toolbar.data('related-toggle'))
+        if(toolbar.data('language') == 1 && toolbar.data('related-toggle')==1) {
+            //both a language and related have been set so activate reply/dismiss buttons
+            $this.closest('.message').find('.deactive').toggleClass('deactive');
+        }
+    });
+
 
     $('#save-details-btn').click(function() {
         form_id = "#participant-details-form";
@@ -146,4 +158,6 @@ function refresh_participant_details(obj) {
         $("#display_" + $(this).attr('id').substr(3)).text($(this).val());
     });
 }
+
+mw.untranslated_block = "<span class='badge-warning'>Untranslated</span>"
 

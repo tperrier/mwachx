@@ -722,6 +722,20 @@ a[data-toggle='collapse'] {
 .msg-action-btn-grp {
     padding-top:0.5em;
 
+    &.deactive {
+        .btn {
+            cursor:not-allowed;
+        }
+
+        .btn-success, .btn-success:hover{
+            background-color:lighten(@brand-success,30);
+        }
+
+        .btn-danger, .btn-dager:hover{
+            background-color:lighten(@brand-danger,30);
+        }
+    }
+
     .btn {
         border-top-right-radius: 0px;
         border-top-left-radius: 0px;
