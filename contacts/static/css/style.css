@@ -6920,6 +6920,14 @@ button.close {
   content: '\e820';
 }
 /* '' */
+.mw-baby-2:before {
+  content: '\e821';
+}
+/* '' */
+.mw-baby-1:before {
+  content: '\e822';
+}
+/* '' */
 .mw-huge {
   font-size: 20em;
   display: block;
@@ -9553,7 +9561,7 @@ a[data-toggle='collapse'].collapsed:before {
 .details-table-offset tbody tr td {
   vertical-align: middle;
 }
-.details-table-offset tbody tr td:nth-child(2) {
+.details-table-offset tbody tr td:nth-child(3) {
   font-weight: bold;
   text-align: right;
 }
