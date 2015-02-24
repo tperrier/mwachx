@@ -35,6 +35,8 @@ class Command(BaseCommand):
         create_users()
         
         JSON_DATA_FILE =  os.path.join(settings.PROJECT_ROOT,'tools','small.json')
+        if settings.ON_OPENSHIFT:
+            JSON_DATA_FILE = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'small.json')
         IMPORT_COUNT = 15
         clients = json.load(open(JSON_DATA_FILE))
         clients = clients.values()[:IMPORT_COUNT]
