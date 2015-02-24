@@ -105,6 +105,7 @@ $(function(){
     if (check_msg_metadata(e) > 0)
       return;
     modal = $("#sendModal");
+    
 
     // disable the buttons
     modal.find('input.btn').attr('disabled', true);
