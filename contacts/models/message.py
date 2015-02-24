@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 #Local Imports
 from utils.models import TimeStampedModel, BaseQuerySet
-import contacts.models as cont
+
 
 class MessageQuerySet(BaseQuerySet):
     
@@ -147,9 +147,11 @@ class Message(TimeStampedModel):
             translated_text=translation,
             is_translated=is_translated,
             translate_skipped=translate_skipped,
-            languages=cont.Language.objects.filter(id__in=languages),
             connection=contact.connection,
             contact=contact,
             is_viewed=True,
             parent=parent,
         )
+        lang_objs = Language.objects.filter(id__in=languages)
+        _msg.languages = lang_objs
+        _msg.save()

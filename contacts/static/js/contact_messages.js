@@ -63,35 +63,13 @@ $(function(){
     })
   });
 
-  $('.btn-reply').click(function() {
-    // TODO
-    // Check that at least one language is selected
-    // Check that at least related or unrelated is selected
-    // Check that a topic is selected
-    // AJAX send the message
-    // Modify UI to remove meta-data bits and dismiss button
-  });
-
   $('.btn-dismiss').click(function() {
-    // TODO
-    // Check that at least one language is selected
-    // Check that at least related or unrelated is selected
-    // Check that a topic is selected
-    // AJAX dismiss
-    // Modify UI to remove meta-data bits and dismiss button
-    $this = $(this);
-    form = $this.closest('.message').find('.msg-metadata-form');
+    form = $(this).closest('.message').find('.msg-metadata-form');
     form.submit();
-    
-    // In case we move to AJAX in the future...
-    // metadata_row = message.find('.msg-metadata-row');
-    // langs = metadata_row.data('language').replace(/^\s+|\s+$/g,"").split(' '); // trim and split (http://www.somacon.com/p355.php)
-    // related = metadata_row.data('relatedToggle');
-    // topic = metadata_row.data('topic');
   });
 
-  function check_lang_and_empty (e) {
-    err_cnt = 0;
+  function check_msg_metadata(e,same) {
+    var err_cnt = 0;
     if($(e).closest('.modal-content').find('.btn-group').find('input:checked').length == 0) {
       $(e).closest('.modal-content').find('#language-error').addClass('has-error');
       err_cnt = err_cnt + 1;
@@ -103,12 +81,9 @@ $(function(){
       err_cnt = err_cnt + 1;
     } else 
       $(e).closest('.modal-content').find('#empty-error').removeClass('has-error');
+    if( same == null )
+      return err_cnt;
 
-    return err_cnt;
-  }
-  
-  function check_lang_and_empty_and_trans (e,same) {
-    err_cnt = check_lang_and_empty(e);
     if( ($(e).closest('.modal-content').find('textarea[name="message"]').val() ==
         $(e).closest('.modal-content').find('textarea[name="translation"]').val()) ==
         same
@@ -122,67 +97,49 @@ $(function(){
     }
     return err_cnt;
   }
+
+  function send_message(e, same, is_translated, translate_skipped) {
+    same = typeof same !== 'undefined' ? same : null;
+    is_translated = typeof is_translated !== 'undefined' ? is_translated : null;
+    translate_skipped = typeof translate_skipped !== 'undefined' ? translate_skipped : null;
+    if (check_msg_metadata(e) > 0)
+      return;
+    modal = $("#sendModal");
+
+    // disable the buttons
+    modal.find('input.btn').attr('disabled', true);
+
+    // serialize both forms
+    msg_id = modal.find('input[name="parent_id"]').val();
+    var form_data = $("#send-form, form[data-message-id='" + msg_id + "']").serializeArray();
+    if(is_translated) form_data.push({name: "is_translated", value: is_translated});
+    if(translate_skipped) form_data.push({name: "translate_skipped", value: translate_skipped});
+
+    $.ajax({
+      url: "/contact/send/",
+      type: "POST",
+      data: form_data,
+      success: function(data) {
+        modal.find('input.btn').attr('disabled', false);
+        modal.modal('toggle');
+        // TODO: Refresh message list in a nicer manner!!
+        location.reload();
+      },
+      error: function(data) {
+        // TODO: Error handling.
+      }
+    });
+
+  }
   // Send buttons for messages
   $('#send_t_later').click(function() {
-    if (check_lang_and_empty(this) > 0)
-      return;
-    $("#sendModal").find('input.btn').attr('disabled', true);
-    $.ajax({
-      url: "/contact/send/",
-      type: "POST",
-      data: $("#send-form").serializeArray(),
-      success: function(data) {
-        $("#sendModal").find('input.btn').attr('disabled', false);
-        $("#sendModal").modal('toggle');
-        // TODO: Refresh message list!!
-      },
-      error: function(data) {
-        // TODO: Error handling.
-      }
-    });
+    send_message(this);
   });
   $('#send_no_t').click(function() {
-    if (check_lang_and_empty_and_trans(this,false) > 0)
-      return;
-    $("#sendModal").find('input.btn').attr('disabled', true);
-    var form_data = $("#send-form").serializeArray();
-    form_data.push({name: "is_translated", value: true});
-    form_data.push({name: "translate_skipped", value: true});
-    console.log(form_data);
-    $.ajax({
-      url: "/contact/send/",
-      type: "POST",
-      data: form_data,
-      success: function(data) {
-        $("#sendModal").find('input.btn').attr('disabled', false);
-        $("#sendModal").modal('toggle');
-        // TODO: Refresh message list!!
-      },
-      error: function(data) {
-        // TODO: Error handling.
-      }
-    });
+    send_message(this,false,true,true);
   });
   $('#send_t_complete').click(function() {
-    if (check_lang_and_empty_and_trans(this,true) > 0)
-      return;
-    $("#sendModal").find('input.btn').attr('disabled', true);
-    var form_data = $("#send-form").serializeArray();
-    form_data.push({name: "is_translated", value: true});
-    console.log(form_data);
-    $.ajax({
-      url: "/contact/send/",
-      type: "POST",
-      data: form_data,
-      success: function(data) {
-        $("#sendModal").find('input.btn').attr('disabled', false);
-        $("#sendModal").modal('toggle');
-        // TODO: Refresh message list!!
-      },
-      error: function(data) {
-        // TODO: Error handling.
-      }
-    });
+    send_message(this,false,true);
   });
 
   $('.meta-topic').change(metadata_changed);
@@ -236,7 +193,7 @@ function metadata_changed() {
     val = $this.val();
   // set data attribute on .msg-metadata-row
   metadata_row.data($this.attr('name'),val);
-  if( metadata_row.data('language') && 
+  if( metadata_row.data('parent-language') && 
     metadata_row.data('relatedToggle') && 
     metadata_row.data('topic') && 
     metadata_row.data('topic') != 'none') {

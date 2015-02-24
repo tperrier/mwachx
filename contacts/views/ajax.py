@@ -22,24 +22,6 @@ import contacts.models as cont
 import contacts.forms as forms, utils
 
 
-# TEMP
-import logging, logging.config
-
-LOGGING = {
-    'version': 1,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'stream': sys.stdout,
-        }
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO'
-    }
-}
-
-logging.config.dictConfig(LOGGING)
 # === Action views ===
 
 #TODO: No CSRF protection yet. (let's use PUT and the REST plugin)
@@ -90,11 +72,14 @@ def contact_send(request):
     translate_skipped = json.loads(request.POST["translate_skipped"]) if "translate_skipped" in request.POST.keys() else False
     #Mark Parent As Viewed If Unviewed
     if parent and parent.is_viewed == False:
+        parent.languages = cont.Language.objects.filter(id__in=request.POST.getlist("parent-language"))
+        parent.is_related = request.POST['relatedToggle']
+        parent.topic = request.POST['topic']
         parent.is_viewed = True
         parent.save()
     
     cont.Message.send(contact,message,translation,
-        languages=request.POST.getlist('language[]'),
+        languages=request.POST.getlist('language'),
         is_translated=is_translated,
         translate_skipped=translate_skipped,
         is_system=False,parent=parent)
@@ -104,7 +89,7 @@ def contact_send(request):
 @require_POST
 def message_dismiss(request,message_id):
     message = cont.Message.objects.get(pk=message_id)
-    langs = request.POST.getlist('language') # If posted from a form, don't use []'s
+    langs = request.POST.getlist('parent-language') # If posted from a form, don't use []'s
     lang_objs = cont.Language.objects.filter(id__in=langs)
     message.languages = lang_objs
     message.topic = request.POST['topic']
