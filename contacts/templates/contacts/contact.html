@@ -138,6 +138,18 @@
             <td id="display_anc_num">{{contact.anc_num}}</td>
           </tr>
           <tr>
+            <td>Phone number</td>
+            <td id="display_phone_number">+{{contact.phone_number}}</td>
+          </tr>
+          <tr>
+            <td>Status</td>
+            <td id="display_status">{{contact.get_status_display}}</td>
+          </tr>
+          <tr>
+            <td>{% if contact.status != 'post' %}Estimated {% endif %}Delivery Date</td>
+            <td id="display_phone_number">{% if contact.status != 'post' %}{{contact.due_date}}{% else %}{{contact.delivery_date}}{% endif %}</td>
+          </tr>
+          <tr>
             <td>Send Day</td>
             <td id="display_send_day">{{contact.get_send_day_display}}</td>
           </tr>
