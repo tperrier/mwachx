@@ -20,8 +20,7 @@ class Command(BaseCommand):
         #Delete old DB
         print 'Deleting old sqlite db....'
         if settings.ON_OPENSHIFT:
-            if not os.environ.has_key('OPENSHIFT_KEEP_DB'):
-                os.remove(os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'mwach.db'))
+            os.remove(os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'mwach.db'))
         else:
             os.remove(os.path.join(settings.PROJECT_PATH,'mwach.db'))
         
@@ -127,8 +126,7 @@ def add_visit(visit,contact):
             'arrived':visit['date'],
             'skipped':True if random.random() < .25 else False,
             'comment':visit['comments'],
-            'contact':contact,
-            'visit_type':'clinic' if random.random() < .5 else 'study',
+            'contact':contact
         }
         _visit = cont.Visit.objects.create(**new_visit)
         
