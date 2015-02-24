@@ -131,7 +131,7 @@ class Contact(TimeStampedModel):
     art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART initiation',verbose_name='ART Initiantion')
     hiv_disclosed = models.NullBooleanField(default=None,verbose_name='HIV Disclosed')
     child_hiv_status = models.CharField(max_length=20,choices=CHILD_STATUS_CHOICES,default='unknown',verbose_name='Child HIV Status')
-    due_date = models.DateField(verbose_name='Estimated Delivery')
+    due_date = models.DateField(verbose_name='Estimated Delivery Date')
     delivery_date = models.DateField(verbose_name='Delivery Date',blank=True,null=True)
     
     #State attributes to be edited by the system
