@@ -11,11 +11,11 @@ source "$OPENSHIFT_HOMEDIR/python/virtenv/bin/activate"
 echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py collectstatic --noinput'"
 python "${OPENSHIFT_REPO_DIR}manage.py" collectstatic --noinput
 
-if [ -z $OPENSHIFT_KEEP_DB ]; then
+if [ -z '$OPENSHIFT_KEEP_DB' ]; then
 	echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py migrate --noinput'"
 	python "${OPENSHIFT_REPO_DIR}manage.py" migrate --noinput
 
 	echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py reset_db'"
 	python "${OPENSHIFT_REPO_DIR}manage.py" reset_db
-if
+fi
 
