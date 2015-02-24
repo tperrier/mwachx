@@ -15,6 +15,7 @@ from constance import config
 #Python Imports
 import datetime,collections,sys
 import code
+import json
 
 #Local Imports
 import contacts.models as cont
@@ -75,11 +76,17 @@ def contact_send(request):
     return redirect('contacts.views.contact',study_id=request.POST['study_id'])
 
 @login_required()
+@require_POST
 def message_dismiss(request,message_id):
     message = cont.Message.objects.get(pk=message_id)
-    message.is_viewed=True
+    langs = request.POST.getlist('language') # Why does this not need the []??
+    lang_objs = cont.Language.objects.filter(id__in=langs)
+    message.languages = lang_objs
+    message.topic = request.POST['topic']
+    message.is_related = json.loads(request.POST['relatedToggle'])
+    message.is_viewed = True
     message.save()
-    return redirect('contacts.views.contact',study_id=message.contact.study_id)
+    return redirect('contacts.views.messages_new')
 
 @login_required()
 @require_POST
@@ -93,7 +100,7 @@ def add_note(request):
 def _record_translation(message_id, txt, langs, is_skipped=False):
     _msg = cont.Message.objects.get(id=message_id)
     lang_objs = cont.Language.objects.filter(id__in=langs)
-    _msg.language_set = lang_objs
+    _msg.languages = lang_objs
 
     _msg.translated_text = txt
     _msg.is_translated = True

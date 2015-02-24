@@ -44,6 +44,7 @@ class Message(TimeStampedModel):
     is_outgoing = models.BooleanField(default=True)
     is_system = models.BooleanField(default=True)
     is_viewed = models.BooleanField(default=False)
+    is_related = models.NullBooleanField(default=None,blank=True,null=True)
     
     # ToDo:Link To Automated Message
     parent = models.ForeignKey('contacts.Message',related_name='replies',blank=True,null=True)
@@ -75,7 +76,7 @@ class Message(TimeStampedModel):
         return not self.is_viewed and not self.is_outgoing
 
     def lang_ids(self):
-        return [l.id for l in self.language_set.all()]
+        return [l.id for l in self.languages.all()]
 
     def html_class(self):
         '''

@@ -58,7 +58,8 @@
             <div class='content' id="content{{message.id}}">{{ message.get_real_text }}</div>
             <div class='footer'>
               {% if message.is_pending %}
-              <form class='msg-metadata-form'>
+              <form class='msg-metadata-form' method="post" action="/message/dismiss/{{message.id}}/">
+              {% csrf_token %}
               <div class="row msg-metadata-row">
                 <div class="col-md-6 table-btns">
                   <div class="btn-toolbar" role="toolbar">
@@ -71,10 +72,10 @@
                     </div>
                     <div class="btn-group" data-toggle="buttons">
                       <label class="btn btn-sm btn-language meta-related">
-                        <input type="radio" name="relatedToggle" data-value="related" data-toggle="button" autocomplete="off"> Related
+                        <input type="radio" name="relatedToggle" data-value="related" data-toggle="button" autocomplete="off" value="true"> Related
                       </label>
                       <label class="btn btn-sm btn-language meta-related">
-                        <input type="radio" name="relatedToggle" data-value="unrelated" data-toggle="button" autocomplete="off"> Unrelated
+                        <input type="radio" name="relatedToggle" data-value="unrelated" data-toggle="button" autocomplete="off" value="false"> Unrelated
                       </label>
                     </div>
                   </div>

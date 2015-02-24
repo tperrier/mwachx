@@ -24,7 +24,7 @@
 	                    <td><strong>{% if message.html_class == "client" %}{{message.contact.nickname}}{% else %}YOU{% endif %}</strong><br>
 	                        <div class="btn-group" data-toggle="buttons" id="lang{{message.id}}" >
 	                        	{% for l in langs %}
-									<label class="btn btn-language btn-sm {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}"><input  name='{{l.name}}' type="checkbox" autocomplete="off" value="{{l.id}}"
+									<label class="btn btn-language btn-sm {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}" data-expert="{{message.lang_ids}}"><input  name='{{l.name}}' type="checkbox" autocomplete="off" value="{{l.id}}"
 	                        		{% if l.id in message.lang_ids %}checked{% endif %}
 									>{{l.short_name}}</label>
 								{% endfor %}
