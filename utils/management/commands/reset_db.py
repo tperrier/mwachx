@@ -16,10 +16,13 @@ class Command(BaseCommand):
     help = 'Delete old sqlite file, migrate new models, and load fake data'
     
     def handle(self,*args,**options):
-        
+
         #Delete old DB
         print 'Deleting old sqlite db....'
-        os.remove(os.path.join(settings.PROJECT_PATH,'mwach.db'))
+        if settings.ON_OPENSHIFT:
+            os.remove(os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'mwach.db'))
+        else:
+            os.remove(os.path.join(settings.PROJECT_PATH,'mwach.db'))
         
         #Migrate new models
         print 'Migrating new db....'
