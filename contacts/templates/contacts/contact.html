@@ -100,7 +100,7 @@
               {% if not message.is_outgoing %}
               <div class="col-full">
               <div class="btn-group btn-group-justified msg-action-btn-grp" {% if message.is_pending %}class="tooltip-icon" data-toggle="tooltip" data-title="You must select a language, whether the message is related and a topic before you can continue."{% endif %}>
-                <a data-id='reply_{{message.id}}' data-target="#sendModal" data-message-id='{{message.id}}' class="btn btn-sm btn-success btn-reply" {% if message.is_pending %}disabled="disabled"{% endif %}><i class="mw mw-reply"></i> Reply</a>
+                <a data-id='reply_{{message.id}}' data-toggle='modal' data-target="#sendModal" data-message-id='{{message.id}}' class="btn btn-sm btn-success btn-reply" {% if message.is_pending %}disabled="disabled"{% endif %}><i class="mw mw-reply"></i> Reply</a>
                 {% if message.is_pending %}
                 <a class="btn btn-sm btn-danger btn-dismiss" old-href='{% url "contacts.views.message_dismiss" message.id%}' disabled="disabled"><i class="mw mw-times"></i> Dismiss</a>
                  {% endif %}
