@@ -7,4 +7,4 @@ django-crispy-forms>=1.4.0
 django-jsonview>=0.4.3
 django-parsley>=0.5
 django-constance>=1.0.1
-django-pickledfield>=0.3.1
+django-picklefield>=0.3.1
