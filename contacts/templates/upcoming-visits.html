@@ -1,93 +1,95 @@
 {% extends 'base.html' %} {% load staticfiles %}{% block title %}Upcoming visits{% endblock %} {% block content %} 
 {% include 'modals/add-new-visit-modal.html' %}
 <div class='col-full'>
-    <div class="page-content visit-list">
-        {% if visits.upcoming|length == 0 and visits.bookcheck|length == 0 %} {% url 'contacts.views.home' as u %}
-        <div class="row"><h1>Great job!</h1></div>
-        {% endif %}
-        <div class="row"><h3>Today's visits <i class="mw mw-hospital-o pull-right"></i></h3> </div>
-        {% if visits.upcoming|length > 0 %}
-        <div class="row"><table id="visits-table" class="table table-striped table-hover table-condensed">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Study Group</th>
-                    <th>ANC</th>
-                    <th>Orig. Scheduled Visit</th>
-                    <th>Days Overdue</th>
-                </tr>
-            </thead>
-            <tbody>
+  <div class="page-content visit-list">
+    {% if visits.upcoming|length == 0 and visits.bookcheck|length == 0 %} {% url 'contacts.views.home' as u %}
+    <div class="row"><h1>Great job!</h1></div>
+    {% endif %}
+    <div class="row"><h3>Today's visits <i class="mw mw-hospital-o pull-right"></i></h3> </div>
+    {% if visits.upcoming|length > 0 %}
+    <div class="row"><table id="visits-table" class="table table-hover table-striped table-condensed">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Study Group</th>
+          <th>ANC</th>
+          <th>Orig. Scheduled Visit</th>
+          <th>Days Overdue</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for visit in visits.upcoming %}
+        <tr class="{% if visit.visit_type == 'clinic' %}clinic-visit{% else %}study-visit{% endif %}">
+          <td>
+            <a data-toggle="tooltip" data-placement="top" title="{{visit.contact.nickname}} did not visit today" class="btn dismiss-btn btn-danger" data-post-url='{% url "contacts.views.visit_dismiss" visit.id 1 %}'>
+              <i class="mw mw-eye-off mw-fw"></i>
+            </a> <div class="tooltip-icon" data-toggle="tooltip" data-title="{{visit.contact.nickname}} came for a {% if visit.visit_type == 'clinic' %}clinic{% else %}study{% endif %} visit"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}} id="upcoming-{{visit.contact.study_id}}"><i class="mw mw-2x mw-hospital-o mw-fw"></i></a></div>
+          </td>
+          <td>{{visit.contact.nickname}}</td>
+          <td>{% if visit.visit_type == 'clinic' %}<i class="mw mw-2x mw-hospital-o mw-fw"></i>{% else %}<i class="mw mw-2x mw-mwach-phone mw-warning mw-fw"></i>{% endif %}</td>
+          <td>{{visit.contact.study_group}}</td>
+          <td>{{visit.contact.anc_num}}</td>
+          <td>{{visit.scheduled}}</td>
+          <td>{{visit.days_overdue}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+    {% else %}
+    <div class="row"><h2>No more visits for today.</h2></div>
+    {% endif %}
+  </div>
 
-                {% for visit in visits.upcoming %}
-                <tr class="link-row">
-                    <td>
-                        <a data-toggle="tooltip" data-placement="top" title="{{visit.contact.nickname}} did not visit today" class="btn dismiss-btn btn-danger" data-post-url='{% url "contacts.views.visit_dismiss" visit.id 1 %}'>
-                            <i class="mw mw-eye-off mw-fw"></i>
-                        </a> <div class="tooltip-icon" data-toggle="tooltip" data-title="{{visit.contact.nickname}} came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}} id="upcoming-{{visit.contact.study_id}}"><i class="mw mw-hospital-o mw-fw"></i></a></div>
-                    </td>
-                    <td>{{visit.contact.nickname}}</td>
-                    <td>{{visit.contact.study_group}}</td>
-                    <td>{{visit.contact.anc_num}}</td>
-                    <td>{{visit.scheduled}}</td>
-                    <td>{{visit.days_overdue}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table></div>
-        {% else %}
-        <div class="row"><h2>No more visits for today.</h2></div>
-        {% endif %}
-    </div>
+  <div class="page-content visit-list">
+    <div class="row"><h3>Today's book checks <i class="mw mw-book pull-right"></i></h3></div>
+    {% if visits.bookcheck|length > 0 %}
+    <div class="row"><table id="visits-table" class="table table-hover table-striped table-condensed">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Study Group</th>
+          <th>ANC</th>
+          <th>Orig. Scheduled Visit</th>
+          <th>Days Overdue</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for visit in visits.bookcheck %}
+        <tr class="{% if visit.visit_type == 'clinic' %}clinic-visit{% else %}study-visit{% endif %}">
+          <td>
+            <a data-toggle="tooltip" data-placement="top" title="{{visit.contact.nickname}} has no visit in book" class="btn btn-danger btn-stack dismiss-btn" data-post-url='{% url "contacts.views.visit_dismiss" visit.id 7 %}'>
+            <span class="mw-stack fa-sm mw-fw">
+              <i class="mw mw-book mw-stack-2x "></i>  
+              {# <i class="fa mw-stack-2x x-out">X</i> #}
+            </span> </a> <div class="tooltip-icon" data-toggle="tooltip" data-placement="top" title="{{visit.contact.nickname}} came for a {% if visit.visit_type == 'clinic' %}clinic{% else %}study{% endif %} visit"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}} id="bookcheck-{{visit.contact.study_id}}" ><i class="mw mw-2x mw-hospital-o mw-fw"></i></a></div>
+          </td>
+          <td>{{visit.contact.nickname}}</td>
+          <td>{% if visit.visit_type == 'clinic' %}<i class="mw mw-2x mw-hospital-o mw-fw"></i>{% else %}<i class="mw mw-2x mw-mwach-phone mw-warning mw-fw"></i>{% endif %}</td>
+          <td>{{visit.contact.study_group}}</td>
+          <td>{{visit.contact.anc_num}}</td>
+          <td>{{visit.scheduled}}</td>
+          <td>{{visit.days_overdue}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+    {% else %}
+    <div class="row"><h2>No more bookchecks for today.</h2></div>
+    {% endif %}
 
-    <div class="page-content visit-list">
-        <div class="row"><h3>Today's book checks <i class="mw mw-book pull-right"></i></h3></div>
-        {% if visits.bookcheck|length > 0 %}
-        <div class="row"><table id="visits-table" class="table table-striped table-hover table-condensed">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Study Group</th>
-                    <th>ANC</th>
-                    <th>Orig. Scheduled Visit</th>
-                    <th>Days Overdue</th>
-                </tr>
-            </thead>
-            <tbody>
-
-                {% for visit in visits.bookcheck %}
-                <tr class="link-row">
-                    <td>
-<a data-toggle="tooltip" data-placement="top" title="{{visit.contact.nickname}} has no visit in book" class="btn btn-danger btn-stack dismiss-btn" data-post-url='{% url "contacts.views.visit_dismiss" visit.id 7 %}'>
-                        <span class="mw-stack fa-sm mw-fw">
-                          <i class="mw mw-book mw-stack-2x "></i>  
-                          {# <i class="fa mw-stack-2x x-out">X</i> #}
-                        </span> </a> <div class="tooltip-icon" data-toggle="tooltip" data-placement="top" title="{{visit.contact.nickname}} came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}} id="bookcheck-{{visit.contact.study_id}}" ><i class="mw mw-hospital-o mw-fw"></i></a></div>
-                    </td>
-                    <td>{{visit.contact.nickname}}</td>
-                    <td>{{visit.contact.study_group}}</td>
-                    <td>{{visit.contact.anc_num}}</td>
-                    <td>{{visit.scheduled}}</td>
-                    <td>{{visit.days_overdue}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table></div>
-        {% else %}
-        <div class="row"><h2>No more bookchecks for today.</h2></div>
-        {% endif %}
-
-        {% if visits.upcoming|length == 0 and visits.bookcheck|length == 0 %} {% url 'contacts.views.home' as u %}
-        <div class="row"><a class='btn btn-success action-item btn-lg visit-btn' href="{{u}}">
-            <span class="action-item-icon">
-                <i class="mw mw-home"></i>
-            </span>
-            <span class="action-item-text">Return home to see more tasks.</span>
-        </a></div>
-        {% endif %}
-    </div>
+    {% if visits.upcoming|length == 0 and visits.bookcheck|length == 0 %} {% url 'contacts.views.home' as u %}
+    <div class="row"><a class='btn btn-success action-item btn-lg visit-btn' href="{{u}}">
+      <span class="action-item-icon">
+        <i class="mw mw-home"></i>
+      </span>
+      <span class="action-item-text">Return home to see more tasks.</span>
+    </a></div>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}
 

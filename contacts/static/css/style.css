@@ -6774,6 +6774,9 @@ button.close {
 .mw-stack-2x {
   font-size: 2em;
 }
+.mw-warning {
+  color: #f77700;
+}
 .mw-home:before {
   content: '\e800';
 }

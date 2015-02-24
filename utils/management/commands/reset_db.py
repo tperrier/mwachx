@@ -123,7 +123,8 @@ def add_visit(visit,contact):
             'arrived':visit['date'],
             'skipped':True if random.random() < .25 else False,
             'comment':visit['comments'],
-            'contact':contact
+            'contact':contact,
+            'visit_type':'clinic' if random.random() < .5 else 'study',
         }
         _visit = cont.Visit.objects.create(**new_visit)
         
