@@ -79,7 +79,7 @@ def contact_send(request):
 @require_POST
 def message_dismiss(request,message_id):
     message = cont.Message.objects.get(pk=message_id)
-    langs = request.POST.getlist('language') # Why does this not need the []??
+    langs = request.POST.getlist('language') # If posted from a form, don't use []'s
     lang_objs = cont.Language.objects.filter(id__in=langs)
     message.languages = lang_objs
     message.topic = request.POST['topic']
@@ -112,7 +112,7 @@ def save_translation(request, message_id):
     _record_translation( 
         message_id,
         request.POST['translation'],
-        request.POST.getlist('languages[]'),
+        request.POST.getlist('languages[]'), # if posted from jquery, need the []'s. See: http://stackoverflow.com/questions/11190070/django-getlist
         is_skipped=False)
 
     # done, so return an http 200
