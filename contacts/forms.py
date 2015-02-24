@@ -99,8 +99,8 @@ class ContactModify(forms.ModelForm):
     
     class Meta:
         model = cont.Contact
-        fields = ['status','family_planning','art_initiation','child_hiv_status',
-                'hiv_disclosed','relationship_status','partner_name']
+        fields = ['status','send_day','send_time','art_initiation',
+                'hiv_disclosed']
 
     def __init__(self, *args, **kwargs):
         super(ContactModify, self).__init__(*args, **kwargs)
@@ -109,3 +109,10 @@ class ContactModify(forms.ModelForm):
         self.helper.form_id = 'participant-details-form'
         self.helper.label_class = 'col-lg-4'
         self.helper.field_class = 'col-lg-7'
+
+        art_BO = [{
+            'from': today().strftime("%Y-%m-%d"),
+            'to': (datetime.datetime(2100,1,1)).strftime("%Y-%m-%d"),
+        }]
+        self.fields['art_initiation'].widget = util.FuelDatePicker('art_initiation', allow_past=True, blackout=art_BO)
+

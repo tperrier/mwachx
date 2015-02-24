@@ -7302,6 +7302,7 @@ button.close {
 .fuelux .datepicker-calendar-header .next,
 .fuelux .datepicker-calendar-header .prev {
   background: #666669;
+  color: white;
   background-clip: padding-box;
   border-radius: 30px;
   cursor: pointer;
