@@ -126,40 +126,32 @@
         </div>
         <table class="details-table table table-condensed">
           <tr>
-            <td>Partner Name</td>
-            <td id="display_partner_name">{{contact.partner_name}}</td>
+            <td>Nickname</td>
+            <td id="display_nickname">{{contact.nickname}}</td>
           </tr>
           <tr>
-            <td>Age</td>
-            <td id="display_age">{{contact.age}}</td>
+            <td>Study ID</td>
+            <td id="display_study_id_short">{{contact.study_id_short}}</td>
           </tr>
           <tr>
-            <td>Phone Number</td>
-            <td id="display_phone_number">{{contact.phone_number}}</td>
+            <td>ANC Number</td>
+            <td id="display_anc_num">{{contact.anc_num}}</td>
           </tr>
           <tr>
-            <td>Relationship Status</td>
-            <td id="display_relationship_status">{{contact.relationship_status}}</td>
+            <td>Send Day</td>
+            <td id="display_send_day">{{contact.get_send_day_display}}</td>
           </tr>
           <tr>
-            <td>Previous Pregnancies</td>
-            <td id="display_previous_pregnancies">{{contact.previous_pregnancies}}</td>
+            <td>Send Time</td>
+            <td id="display_send_time">{{contact.get_send_time_display}}</td>
           </tr>
           <tr>
             <td>SMS Track</td>
-            <td id="display_condition">{{contact.condition}}</td>
-          </tr>
-          <tr>
-            <td>Family Planning</td>
-            <td id="display_family_planning">{{contact.family_planning}}</td>
+            <td id="display_condition">{{contact.get_condition_display}}</td>
           </tr>
           <tr>
             <td>ART Initiation</td>
             <td id="display_art_initiation">{{contact.art_initiation}}</td>
-          </tr>
-          <tr>
-            <td>Due Date</td>
-            <td id="display_due_date">{{contact.due_date}}</td>
           </tr>
         </table>
       </div>
