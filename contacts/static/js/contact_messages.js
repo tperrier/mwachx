@@ -23,6 +23,8 @@ $(function(){
     // TODO: Should this only happen after a send?
     modal.find('textarea[name="message"]').val('');
     modal.find('textarea[name="translation"]').val('');
+    modal.find('input[type="checkbox"]').prop('checked',false);
+    modal.find('.btn-language').removeClass('active');
     if(message_id) {
       modal.find('input[name="parent_id"]').val(message_id);
       modal.find('#reply-message').show();
@@ -86,8 +88,101 @@ $(function(){
     // langs = metadata_row.data('language').replace(/^\s+|\s+$/g,"").split(' '); // trim and split (http://www.somacon.com/p355.php)
     // related = metadata_row.data('relatedToggle');
     // topic = metadata_row.data('topic');
+  });
 
-    
+  function check_lang_and_empty (e) {
+    err_cnt = 0;
+    if($(e).closest('.modal-content').find('.btn-group').find('input:checked').length == 0) {
+      $(e).closest('.modal-content').find('#language-error').addClass('has-error');
+      err_cnt = err_cnt + 1;
+    } else 
+      $(e).closest('.modal-content').find('#language-error').removeClass('has-error');
+
+    if($(e).closest('.modal-content').find('textarea[name="message"]').val().length == 0) {
+      $(e).closest('.modal-content').find('#empty-error').addClass('has-error');
+      err_cnt = err_cnt + 1;
+    } else 
+      $(e).closest('.modal-content').find('#empty-error').removeClass('has-error');
+
+    return err_cnt;
+  }
+  
+  function check_lang_and_empty_and_trans (e,same) {
+    err_cnt = check_lang_and_empty(e);
+    if( ($(e).closest('.modal-content').find('textarea[name="message"]').val() ==
+        $(e).closest('.modal-content').find('textarea[name="translation"]').val()) ==
+        same
+      ){
+      $(e).closest('.modal-content').find('#same-error-'+String(!same)).removeClass('has-error');
+      $(e).closest('.modal-content').find('#same-error-'+String(same)).addClass('has-error');
+      err_cnt = err_cnt + 1;
+    } else{
+      $(e).closest('.modal-content').find('#same-error-'+String(same)).removeClass('has-error');
+      $(e).closest('.modal-content').find('#same-error-'+String(!same)).removeClass('has-error');
+    }
+    return err_cnt;
+  }
+  // Send buttons for messages
+  $('#send_t_later').click(function() {
+    if (check_lang_and_empty(this) > 0)
+      return;
+    $("#sendModal").find('input.btn').attr('disabled', true);
+    $.ajax({
+      url: "/contact/send/",
+      type: "POST",
+      data: $("#send-form").serializeArray(),
+      success: function(data) {
+        $("#sendModal").find('input.btn').attr('disabled', false);
+        $("#sendModal").modal('toggle');
+        // TODO: Refresh message list!!
+      },
+      error: function(data) {
+        // TODO: Error handling.
+      }
+    });
+  });
+  $('#send_no_t').click(function() {
+    if (check_lang_and_empty_and_trans(this,false) > 0)
+      return;
+    $("#sendModal").find('input.btn').attr('disabled', true);
+    var form_data = $("#send-form").serializeArray();
+    form_data.push({name: "is_translated", value: true});
+    form_data.push({name: "translate_skipped", value: true});
+    console.log(form_data);
+    $.ajax({
+      url: "/contact/send/",
+      type: "POST",
+      data: form_data,
+      success: function(data) {
+        $("#sendModal").find('input.btn').attr('disabled', false);
+        $("#sendModal").modal('toggle');
+        // TODO: Refresh message list!!
+      },
+      error: function(data) {
+        // TODO: Error handling.
+      }
+    });
+  });
+  $('#send_t_complete').click(function() {
+    if (check_lang_and_empty_and_trans(this,true) > 0)
+      return;
+    $("#sendModal").find('input.btn').attr('disabled', true);
+    var form_data = $("#send-form").serializeArray();
+    form_data.push({name: "is_translated", value: true});
+    console.log(form_data);
+    $.ajax({
+      url: "/contact/send/",
+      type: "POST",
+      data: form_data,
+      success: function(data) {
+        $("#sendModal").find('input.btn').attr('disabled', false);
+        $("#sendModal").modal('toggle');
+        // TODO: Refresh message list!!
+      },
+      error: function(data) {
+        // TODO: Error handling.
+      }
+    });
   });
 
   $('.meta-topic').change(metadata_changed);

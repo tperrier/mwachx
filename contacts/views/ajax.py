@@ -22,6 +22,24 @@ import contacts.models as cont
 import contacts.forms as forms, utils
 
 
+# TEMP
+import logging, logging.config
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+        }
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO'
+    }
+}
+
+logging.config.dictConfig(LOGGING)
 # === Action views ===
 
 #TODO: No CSRF protection yet. (let's use PUT and the REST plugin)
@@ -64,15 +82,22 @@ def messages_new(request):
 def contact_send(request):
     contact = cont.Contact.objects.get(study_id=request.POST['study_id'])
     message = request.POST['message']
+    translation = request.POST['translation']
     parent_id = request.POST.get('parent_id',-1)
     parent = cont.Message.objects.get_or_none(pk=parent_id if parent_id else -1)
     
+    is_translated = json.loads(request.POST["is_translated"]) if "is_translated" in request.POST.keys() else False
+    translate_skipped = json.loads(request.POST["translate_skipped"]) if "translate_skipped" in request.POST.keys() else False
     #Mark Parent As Viewed If Unviewed
     if parent and parent.is_viewed == False:
         parent.is_viewed = True
         parent.save()
-        
-    cont.Message.send(contact,message,is_system=False,parent=parent)
+    
+    cont.Message.send(contact,message,translation,
+        languages=request.POST.getlist('language[]'),
+        is_translated=is_translated,
+        translate_skipped=translate_skipped,
+        is_system=False,parent=parent)
     return redirect('contacts.views.contact',study_id=request.POST['study_id'])
 
 @login_required()
