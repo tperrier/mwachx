@@ -8,7 +8,7 @@ import forms
 from contacts.models import Message
 
 
-@csrf_exmpt
+@csrf_exempt
 def receive(request):
 	
 	if request.method == 'POST':
