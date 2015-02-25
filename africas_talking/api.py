@@ -5,7 +5,7 @@ from django.conf import settings
 import requests
 
 #Local Imports
-from utils import AfricasTalkingException
+from at_utils import AfricasTalkingException
 
 #Import Afica's Talking Settings
 SETTINGS = getattr(settings,'AFRICAS_TALKING',None)
@@ -24,9 +24,9 @@ SHORTCODE = SETTINGS.get('SHORTCODE',None)
 
 SMS_API_URL = 'http://api.africastalking.com/version1/messaging'
 
-HEADERS = headers = {'Accept': 'application/json','apikey':API_KEY}
+HEADERS = {'Accept': 'application/json','apikey':API_KEY}
 
-PARAMS = {'username':USERNAME}
+PARAMS = {'username':USERNAME,'bulkSMSMode':0}
 if SHORTCODE:
     PARAMS['from'] = SHORTCODE
 

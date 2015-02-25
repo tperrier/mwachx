@@ -5,9 +5,10 @@ from django.db.models import Q
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
+from constance import config
+
 #Local Imports
 from utils.models import TimeStampedModel, BaseQuerySet
-
 
 class MessageQuerySet(BaseQuerySet):
     
@@ -60,6 +61,12 @@ class Message(TimeStampedModel):
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
     contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
+
+    #Africa's Talking Data
+    #ToDo: make this a data field once we know the format
+    time_received = models.CharField(max_length=50,default=None,blank=True,null=True)
+    external_id = models.CharField(max_length=50,default=None,blank=True,null=True)
+    external_linkId = models.CharField(max_length=50,default=None,blank=True,null=True)
     
     def get_real_text(self):
         return self.translated_text if self.is_translated else self.text
@@ -123,24 +130,37 @@ class Message(TimeStampedModel):
         return ','.join([str(l) for l in self.languages.all()])
     
     @staticmethod
-    def receive(number,message):
+    def receive(CONSTANCEnumber,message,time_received,external_id,external_linkId):
         '''
         Main hook for receiving messages
             * number: the phone number of the incoming message
             * message: the text of the incoming message
         '''
+        from contacts.models import Connection
         #Get incoming connection
-        connection,created = Connection.get_or_create(identity=number)
+        connection,created = Connection.objects.get_or_create(identity=number)
+        contact = None if created else connection.contact
         Message.objects.create(
             is_system=False,
             is_outgoing=False,
             text=message,
             connection=connection,
-            contact=connection.contact
+            contact=contact,
+            time_received=time_received,
+            external_id=external_id,
+            external_linkId=external_linkId
         )
         
     @staticmethod
-    def send(contact,message,translation,is_translated=False,translate_skipped=False,is_system=True,parent=None,languages=[]):
+    def send(contact,message,translation,is_translated=False,translate_skipped=False,is_system=True,parent=None,languages=None):
+        
+        if config.AFRICAS_TALKING_SEND:
+            import africas_talking
+            try:
+                africas_talking.send(contact.connection.identity,message)
+            except africas_talking.AfricasTalkingException as e:
+                pass
+
         _msg = Message.objects.create(
             is_system=is_system,
             text=message,
@@ -152,6 +172,7 @@ class Message(TimeStampedModel):
             is_viewed=True,
             parent=parent,
         )
-        lang_objs = Language.objects.filter(id__in=languages)
-        _msg.languages = lang_objs
-        _msg.save()
+        if languages:
+            lang_objs = Language.objects.filter(id__in=languages)
+            _msg.languages = lang_objs
+            _msg.save()

@@ -3,5 +3,5 @@ import views
 
 urlpatterns = patterns('',
     # Examples:
-    #~ url(r'^$',views.send_message),
+    url(r'receive$',views.receive),
 )

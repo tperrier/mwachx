@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-import contacts,http_transport,africas_talking_transport
+import contacts,http_transport,africas_talking
 
 urlpatterns = patterns('',
     # Examples:
@@ -8,9 +8,8 @@ urlpatterns = patterns('',
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^message_test/',include(http_transport.urls)),
-    url(r'^africas_talking/',include(africas_talking_transport.urls)),
+    url(r'^africas_talking/',include(africas_talking.urls)),
     
-     url(r'^accounts/login/$', 'django.contrib.auth.views.login',
-       {'template_name': 'login.html'}),
+     url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout'),
 )

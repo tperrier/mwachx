@@ -57,7 +57,7 @@ INSTALLED_APPS = (
     'contacts',
     'utils',
     'http_transport',
-    'africas_talking_transport',
+    'africas_talking',
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'

@@ -1,4 +1,7 @@
 #!/usr/bin/python
+#Python Imports
+from hashlib import sha256
+
 #Django Imports
 from django.db import models
 from django.conf import settings
@@ -199,6 +202,13 @@ class Contact(TimeStampedModel):
         
     def study_id_short(self):
         return '%04i'%self.study_id
+
+    def generate_key(self):
+        key_length = 5.0
+        chars = "ABCDEFGHIJKLMNOP"
+        string = (sha256('%i%s%i%s'%(self.id,self.nickname,self.anc_num,self.birthdate))).hexdigest()
+        setp = int(math.ceil(len(string)/key_length))
+        return ''.join([chars[int(x,16)] for x in string[::step]])
     
     @property
     def pending(self):

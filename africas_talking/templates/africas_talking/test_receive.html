@@ -1,0 +1,19 @@
+<html>
+
+	<head>
+		<title>Test Receive Message</title>
+	</head>
+
+	<body>
+		<h1>Test Receive Message</h1>
+		<form action='{% url "africas_talking.views.receive" %}' method='post'>
+			{% csrf_token %}
+			<table>
+			{{form}}
+			</table>
+			<input type='submit' value='Send'/>
+		</form>
+
+	</body>
+
+</html>
