@@ -1,11 +1,14 @@
 #Django Imports
 from django.views.generic.edit import FormView
 from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
 
 #Local Imports
 import forms
 from contacts.models import Message
 
+
+@csrf_exmpt
 def receive(request):
 	
 	if request.method == 'POST':
