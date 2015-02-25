@@ -144,7 +144,8 @@ STATICFILES_FINDERS = (
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_CONFIG = {
-    'CURRENT_DATE':('2014-8-1','Current Date for training')
+    'CURRENT_DATE':('2014-8-1','Current Date for training'),
+    'AFRICAS_TALKING_SEND':False,
 }
 
 #############
