@@ -145,7 +145,7 @@ CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_CONFIG = {
     'CURRENT_DATE':('2014-8-1','Current Date for training'),
-    'AFRICAS_TALKING_SEND':(False,"Africa's Talking Send"),
+    'AFRICAS_TALKING_SEND':(True,"Africa's Talking Send"),
 }
 
 ################

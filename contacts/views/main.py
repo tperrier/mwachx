@@ -95,7 +95,7 @@ def contact_add(request):
             #Important: save before making foreign keys
             contact.save()
             
-            phone_number = '254%s'%cf.cleaned_data['phone_number'][1:]
+            phone_number = '+254%s'%cf.cleaned_data['phone_number'][1:]
             cont.Connection.objects.create(identity=phone_number,contact=contact,is_primary=True)
 
             #Send Welcome Message
