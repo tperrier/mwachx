@@ -130,7 +130,7 @@ class Message(TimeStampedModel):
         return ','.join([str(l) for l in self.languages.all()])
     
     @staticmethod
-    def receive(CONSTANCEnumber,message,time_received,external_id,external_linkId):
+    def receive(number,message,time_received,external_id,external_linkId):
         '''
         Main hook for receiving messages
             * number: the phone number of the incoming message
