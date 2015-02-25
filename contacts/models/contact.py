@@ -61,11 +61,11 @@ class Contact(TimeStampedModel):
     )
     
     CONDITION_CHOICES = (
-        ('normal','Normal'),
         ('art','Starting ART'),
         ('first','First Time Mother'),
         ('adolescent','Adolescent'),
         ('cesarean','Previous Cesarean'),
+        ('normal','Normal'),
     )
     
     FAMILY_PLANNING_CHOICES = (
@@ -94,9 +94,9 @@ class Contact(TimeStampedModel):
     )
     
     TIME_CHOICES = (
-        (8,'Morning'),
-        (13,'Afternoon'),
-        (19,'Evening'),
+        (8,'Morning (8 AM)'),
+        (13,'Afternoon (1 PM)'),
+        (19,'Evening (7 PM)'),
     )
     
     CHILD_STATUS_CHOICES = (
@@ -132,7 +132,7 @@ class Contact(TimeStampedModel):
     language = models.CharField(max_length=25,choices=LANGUAGE_CHOICES,default='english')
     condition = models.CharField(max_length=40,choices=CONDITION_CHOICES,default='normal')
     family_planning = models.CharField(max_length=50,blank=True,null=True,choices=FAMILY_PLANNING_CHOICES,default='none',verbose_name='Family Planning')
-    art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART initiation',verbose_name='ART Initiantion')
+    art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART Initiation',verbose_name='ART Initiantion')
     hiv_disclosed = models.NullBooleanField(default=None,verbose_name='HIV Disclosed')
     child_hiv_status = models.CharField(max_length=20,choices=CHILD_STATUS_CHOICES,default='unknown',verbose_name='Child HIV Status')
     due_date = models.DateField(verbose_name='Estimated Delivery Date')

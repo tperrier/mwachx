@@ -3,6 +3,7 @@
 *.pyc
 *~
 *.json
+*.log
 ignore/
 node_modules/
 contacts/static/css/maps/

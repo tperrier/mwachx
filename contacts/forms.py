@@ -21,7 +21,8 @@ def tmp(t):
 @parsleyfy
 class ContactAdd(forms.ModelForm):
     
-    phone_number = forms.CharField(label='Phone Number', widget=forms.TextInput(attrs={'required':'True','placeholder':'07xxxxxxx','pattern': '^07[0-9]{8}'}))
+    phone_number = forms.CharField(label='Phone Number', 
+        widget=forms.TextInput(attrs={'required':'True','placeholder':'07xxxxxxx','pattern': '^07[0-9]{8}'}))
     
     def __init__(self, *args, **kwargs):
         super(ContactAdd, self).__init__(*args, **kwargs)

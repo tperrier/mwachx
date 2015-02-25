@@ -148,6 +148,29 @@ CONSTANCE_CONFIG = {
     'AFRICAS_TALKING_SEND':(False,"Africa's Talking Send"),
 }
 
+################
+# Logging
+################
+LOGGING_DIR = os.envron['OPENSHIFT_DATA_DIR'] if ON_OPENSHIFT else PROJECT_PATH
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'mwach_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGGING_DIR,'mwach.log'),
+        },
+    },
+    'loggers': {
+        'africas_talking': {
+            'handlers':['mwach_file'],
+            'level':'DEBUG',
+            'propagate':True,
+        }
+    },
+}
+
 #############
 # Custom Settings
 #############
