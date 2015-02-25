@@ -92,13 +92,15 @@ def contact_add(request):
                 pass
                 
             contact.facility = facility
+            #Important: save before making foreign keys
+            contact.save()
+            
             phone_number = '254%s'%cf.cleaned_data['phone_number'][1:]
             cont.Connection.objects.create(identity=phone_number,contact=contact,is_primary=True)
-            contact.save()
 
             #Send Welcome Message
             message = 'Welcome to the mWaCh X Study. Please send your five letter confirmation code'
-            cont.Message.send(contact,message,translate_skipped=True)
+            cont.Message.send(contact,message,'',translate_skipped=True)
             
             return redirect('contacts.views.contact',study_id=contact.study_id)
         else:
