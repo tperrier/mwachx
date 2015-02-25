@@ -92,8 +92,8 @@ def contact_add(request):
                 pass
                 
             contact.facility = facility
-            
-            cont.Connection.objects.create(identity=cf.cleaned_data['phone_number'],contact=contact,is_primary=True)
+            phone_number = '254%s'%cf.cleaned_data['phone_number'][1:]
+            cont.Connection.objects.create(identity=phone_number,contact=contact,is_primary=True)
             contact.save()
 
             #Send Welcome Message
