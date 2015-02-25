@@ -151,7 +151,7 @@ CONSTANCE_CONFIG = {
 ################
 # Logging
 ################
-LOGGING_DIR = os.envron['OPENSHIFT_DATA_DIR'] if ON_OPENSHIFT else PROJECT_PATH
+LOGGING_DIR = os.environ['OPENSHIFT_DATA_DIR'] if ON_OPENSHIFT else PROJECT_PATH
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
