@@ -22,7 +22,7 @@ SMS_API_URL = 'http://api.africastalking.com/version1/messaging'
 
 HEADERS = {'Accept': 'application/json','apikey':API_KEY}
 
-PARAMS = {'username':USERNAME,'bulkSMSMode':0}
+PARAMS = {'username':USERNAME,'bulkSMSMode':1}
 if SHORTCODE:
     PARAMS['from'] = SHORTCODE
 
@@ -57,6 +57,6 @@ def send(to,message):
     #Return single or list of UUIDs
     recipients = data['SMSMessageData']['Recipients']
     if len(recipients) == 1:
-        return recipients['messageId']
+        return recipients[0]['messageId']
     return [r['messageId'] for r in recipients]
 
