@@ -205,11 +205,9 @@ class Contact(TimeStampedModel):
         return '%04i'%self.study_id
 
     def validation_key(self):
-        key_length = 5.0
-        chars = "ABCDEFGHIJKLMNOP"
-        string = (sha256('%i%s%i%s'%(self.id,self.nickname,self.anc_num,self.birthdate))).hexdigest()
-        step = int(math.ceil(len(string)/key_length))
-        return ''.join([chars[int(x,16)] for x in string[::step]])
+        sha = sha256('%i%s%i%s'%(self.id,self.nickname,self.anc_num,self.birthdate)).hexdigest()[:5]
+        key = ''.join([str(int(i,16)) for i in sha])
+        return key[:5]
     
     @property
     def pending(self):
