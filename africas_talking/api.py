@@ -13,12 +13,8 @@ if SETTINGS is None:
     raise AfricasTalkingException('No var AFRICAS_TALKING in settings')
 
 API_KEY = SETTINGS.get('API_KEY',None)
-if API_KEY is None:
-    raise AfricasTalkingException('AFRICAS_TALKING var has not set API_KEY')
 
 USERNAME = SETTINGS.get('USERNAME',None)
-if USERNAME is None:
-    raise AfricasTalkingException('AFRICAS_TALKING var has not set a USERNAME')
 
 SHORTCODE = SETTINGS.get('SHORTCODE',None)
 
@@ -31,6 +27,12 @@ if SHORTCODE:
     PARAMS['from'] = SHORTCODE
 
 def send(to,message):
+    
+    if API_KEY is None:
+        raise AfricasTalkingException('AFRICAS_TALKING var has not set API_KEY')
+    if USERNAME is None:
+        raise AfricasTalkingException('AFRICAS_TALKING var has not set a USERNAME')
+
     params = dict({'to':to,'message':message}.items()+PARAMS.items())
     
     post = requests.post(SMS_API_URL,data=params,headers=HEADERS)
