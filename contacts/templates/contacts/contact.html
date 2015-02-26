@@ -245,5 +245,7 @@
   </div>
 
   <script src='{% static "js/contact_messages.js" %}'></script>
-
+  <script type="text/javascript">
+    mw.untranslated_block = "<a href='" + "{% url 'contacts.views.translations' %}" + "'><span class='badge-warning'>Untranslated</span></a>";
+  </script>
   {% endblock %}
