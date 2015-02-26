@@ -53,7 +53,7 @@
               {% endif %}
               </div>
               
-              <div class="header-item date"><span>{{ message.created|date:"n N y H:i" }}</span></div>
+              <div class="header-item date"><span>{{ message.created|date:"d N y H:i" }}</span></div>
             </div>
             <div class='content' id="content{{message.id}}">{{ message.get_real_text }}</div>
             <div class='footer'>
