@@ -43,7 +43,7 @@ class VisitQuerySet(BaseQuerySet):
     def for_user(self,user):
         try:
             return self.filter(contact__facility=user.practitioner.facility)
-        except ObjectDoesNotExist:
+        except (ObjectDoesNotExist, AttributeError) as e:
             return self
 
 class Visit(TimeStampedModel):
