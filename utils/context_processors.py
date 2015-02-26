@@ -16,10 +16,11 @@ def current_date(context):
 def brand_status(context):
 	# do we have work to do?
 	nonzero = 0
-	if contacts.models.Visit.objects.get_bookcheck().count() + contacts.models.Visit.objects.get_upcoming_visits().count() > 0: nonzero = nonzero + 1
-	if contacts.models.Message.objects.filter(is_viewed=False).count() > 0: nonzero = nonzero + 1
+	visits = contacts.models.Visit.objects.for_user(context.user)
+	if visits.get_bookcheck().count() + visits.get_upcoming_visits().count() > 0: nonzero = nonzero + 1
+	if contacts.models.Message.objects.for_user(context.user).filter(is_viewed=False).count() > 0: nonzero = nonzero + 1
 	if 0 > 0: nonzero = nonzero + 1
-	if 0 > 0: nonzero = nonzero + 1
+	if contacts.models.Message.objects.for_user(context.user).to_translate().count() > 0: nonzero = nonzero + 1
 
 	if nonzero > 0:
 		# if nonzero == 1:
