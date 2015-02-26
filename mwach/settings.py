@@ -160,6 +160,12 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOGGING_DIR,'mwach.log'),
+            'formatter':'basic',
+        },
+    },
+     'formatters': {
+        'basic': {
+           'format': '%(asctime)s %(name)-20s %(levelname)-8s %(message)s',
         },
     },
     'loggers': {

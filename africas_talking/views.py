@@ -18,8 +18,7 @@ logger = logging.getLogger(__name__)
 @csrf_exempt
 def receive(request):
 	
-	logger.debug('Africas Talking Receive: %s\n%s',request.method,request.POST)
-	print logger
+	logger.debug('receive(): %s\n%s\n%s',request.method,request.META,request.POST)
 
 	if request.method == 'POST':
 		form = forms.AfricasTalkingForm(request.POST)
