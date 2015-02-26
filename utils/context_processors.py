@@ -14,6 +14,9 @@ def current_date(context):
 	}
 
 def brand_status(context):
+	if str(context.user) == "AnonymousUser":
+		return {'BRAND_STATUS': "brand-status-success"}
+
 	# do we have work to do?
 	nonzero = 0
 	visits = contacts.models.Visit.objects.for_user(context.user)
