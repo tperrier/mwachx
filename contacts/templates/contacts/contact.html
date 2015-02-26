@@ -49,7 +49,7 @@
                     <i class="mw mw-redo"></i>
                   </button>
               {% elif message.is_translation_pending %}
-                <span class='badge-warning'>Untranslated</span>
+                <a href="{% url 'contacts.views.translations' %}"><span class='badge-warning'>Untranslated</span></a>
               {% endif %}
               </div>
               
