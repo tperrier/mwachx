@@ -216,5 +216,5 @@ function refresh_participant_details(obj) {
   });
 }
 
-mw.untranslated_block = "<span class='badge-warning'>Untranslated</span>"
+mw.untranslated_block = "<a href='" + "{% url 'contacts.views.translations' %}" + "'><span class='badge-warning'>Untranslated</span></a>";
 
