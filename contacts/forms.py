@@ -63,22 +63,22 @@ class ContactAdd(forms.ModelForm):
                 'send_day',
                 'send_time',
             ), Fieldset (
+                'Client Information',
+                'nickname',
+                'phone_number',
+                'birthdate',
+                'relationship_status',
+                'partner_name',
+                'previous_pregnancies',
+                'phone_shared',
+                'language',
+            ), Fieldset (
                 'Medical Information',
                 'condition',
                 'art_initiation',
                 'hiv_disclosed',
                 'due_date',
-            ), Fieldset (
-                'Client Information',
-                'nickname',
-                'phone_number',
-                'birthdate',
-                'partner_name',
-                'relationship_status',
-                'previous_pregnancies',
-                'phone_shared',
-                'language',
-            ), 
+            ),
             ButtonHolder(
                 Submit('submit', 'Enroll Participant')
             )
