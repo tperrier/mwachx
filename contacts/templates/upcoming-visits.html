@@ -28,7 +28,7 @@
             </a> <div class="tooltip-icon" data-toggle="tooltip" data-title="{{visit.contact.nickname}} came for a {% if visit.visit_type == 'clinic' %}clinic{% else %}study{% endif %} visit"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}} id="upcoming-{{visit.contact.study_id}}"><i class="mw mw-2x mw-hospital-o mw-fw"></i></a></div>
           </td>
           <td>{{visit.contact.nickname}}</td>
-          <td>{% if visit.visit_type == 'clinic' %}<i class="mw mw-2x mw-hospital-o mw-fw"></i>{% else %}<i class="mw mw-2x mw-mwach-phone mw-warning mw-fw"></i>{% endif %}</td>
+          <td>{% if visit.visit_type == 'clinic' %}<i class="mw mw-2x mw-hospital-o mw-fw" data-toggle="tooltip" data-title="Clinic visit"></i>{% else %}<i class="mw mw-2x mw-mwach-phone mw-warning mw-fw" data-toggle="tooltip" data-title="Study visit"></i>{% endif %}</td>
           <td>{{visit.contact.study_group}}</td>
           <td>{{visit.contact.anc_num}}</td>
           <td>{{visit.scheduled}}</td>
@@ -68,7 +68,7 @@
             </span> </a> <div class="tooltip-icon" data-toggle="tooltip" data-placement="top" title="{{visit.contact.nickname}} came for a {% if visit.visit_type == 'clinic' %}clinic{% else %}study{% endif %} visit"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.visits' %} data-study-id={{visit.contact.study_id}} id="bookcheck-{{visit.contact.study_id}}" ><i class="mw mw-2x mw-hospital-o mw-fw"></i></a></div>
           </td>
           <td>{{visit.contact.nickname}}</td>
-          <td>{% if visit.visit_type == 'clinic' %}<i class="mw mw-2x mw-hospital-o mw-fw"></i>{% else %}<i class="mw mw-2x mw-mwach-phone mw-warning mw-fw"></i>{% endif %}</td>
+          <td>{% if visit.visit_type == 'clinic' %}<i class="mw mw-2x mw-hospital-o mw-fw" data-toggle="tooltip" data-title="Clinic visit"></i>{% else %}<i class="mw mw-2x mw-mwach-phone mw-warning mw-fw" data-toggle="tooltip" data-title="Study visit"></i>{% endif %}</td>
           <td>{{visit.contact.study_group}}</td>
           <td>{{visit.contact.anc_num}}</td>
           <td>{{visit.scheduled}}</td>
