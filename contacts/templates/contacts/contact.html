@@ -106,7 +106,7 @@
           {% if message.html_class == "nurse" %}
           <div class="col-md-1 avatar-nurse mw-4x"><i class="mw mw-user-md"></i></div>
           {% elif message.html_class == "system" %}
-          <div class="col-md-1 avatar-system mw-4x"><i class="mw mw-server"></i></div>
+          <div class="col-md-1 avatar-system mw-4x"><i class="mw mw-monitor-bdr"></i></div>
           {% endif %}
         </div>
         {% endfor %}
@@ -187,7 +187,7 @@
             <table class="details-table-offset visit-table table table-condensed">
               <tr>
                 <td><div class="tooltip-icon" data-toggle="tooltip" data-title="{{contact.nickname}} came to clinic"><a class="btn btn-info" data-toggle='modal' data-target='#visitScheduleModal' data-src={% url 'contacts.views.contacts' %} data-study-id={{contact.study_id}}><i class="mw mw-hospital-o mw-2x  mw-fw"></i></a></div></td>
-                <td><div class="tooltip-icon" data-toggle="tooltip" data-title="{{contact.nickname}} gave birth"><a class="btn btn-info" %} data-study-id={{contact.study_id}}><i class="mw mw-baby-2 mw-2x mw-fw"></i></a></div></td>
+                <td><div class="tooltip-icon" data-toggle="tooltip" data-title="{{contact.nickname}} gave birth"><a class="btn btn-info" %} data-study-id={{contact.study_id}}><i class="mw mw-baby-noun mw-2x mw-fw"></i></a></div></td>
                 <td>Next Visit</td>
                 <td>{{contact.visit_set.first.scheduled}}</td>
               </tr>

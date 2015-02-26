@@ -6931,6 +6931,14 @@ button.close {
   content: '\e822';
 }
 /* '' */
+.mw-baby-noun:before {
+  content: '\e823';
+}
+/* '' */
+.mw-monitor-bdr:before {
+  content: '\e824';
+}
+/* '' */
 .mw-huge {
   font-size: 20em;
   display: block;
