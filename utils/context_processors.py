@@ -10,7 +10,8 @@ def openshift(context):
 def current_date(context):
 	return {
 		'CURRENT_DATE': utils.today(),
-		'ONE_WEEK': utils.today() + datetime.timedelta(weeks=1)
+		'ONE_WEEK': utils.today() + datetime.timedelta(weeks=1),
+		'FOUR_WEEKS': utils.today() + datetime.timedelta(weeks=4)
 	}
 
 def brand_status(context):
