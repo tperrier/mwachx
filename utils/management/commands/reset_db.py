@@ -82,7 +82,7 @@ def add_client(client,i):
         'status':'post' if random.random() < .25 else 'pregnant',
         }
     contact = cont.Contact.objects.create(**new_client)
-    connection = cont.Connection.objects.create(identity='+'+client['phone_number'],contact=contact,is_primary=True)
+    connection = cont.Connection.objects.create(identity='+2500'+client['phone_number'][:8],contact=contact,is_primary=True)
     
     message_count = len(client['messages'])
     for i,m in enumerate(client['messages']):
