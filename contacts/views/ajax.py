@@ -72,7 +72,6 @@ def contact_send(request):
     translate_skipped = json.loads(request.POST["translate_skipped"]) if "translate_skipped" in request.POST.keys() else False
     #Mark Parent As Viewed If Unviewed
     if parent and parent.is_viewed == False:
-        parent.languages = cont.Language.objects.filter(id__in=request.POST.getlist("parent-language"))
         parent.is_related = request.POST['relatedToggle']
         parent.topic = request.POST['topic']
         parent.is_viewed = True

@@ -63,13 +63,6 @@
               <div class="row msg-metadata-row">
                 <div class="col-md-6 table-btns">
                   <div class="btn-toolbar" role="toolbar">
-                    <div class="btn-group" data-toggle="buttons" id="lang{{message.id}}" >
-                      {% for l in langs %}
-                        <label class="btn btn-language btn-sm meta-language {% if l.id in message.lang_ids %}active{% endif %}" data-toggle="tooltip" data-placement="top" title="{{l.name}}"><input  name='parent-language' type="checkbox" autocomplete="off" value="{{l.id}}"
-                        {% if l.id in message.lang_ids %}checked{% endif %}
-                        >{{l.short_name}}</label>
-                      {% endfor %}
-                    </div>
                     <div class="btn-group" data-toggle="buttons">
                       <label class="btn btn-sm btn-language meta-related">
                         <input type="radio" name="relatedToggle" data-value="related" data-toggle="button" autocomplete="off" value="true"> Related

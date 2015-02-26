@@ -24,7 +24,6 @@ $(function(){
     modal.find('textarea[name="message"]').val('');
     modal.find('textarea[name="translation"]').val('');
     modal.find('input[type="checkbox"]').prop('checked',false);
-    modal.find('.btn-language').removeClass('active');
     if(message_id) {
       modal.find('input[name="parent_id"]').val(message_id);
       modal.find('#reply-message').show();
@@ -194,11 +193,10 @@ function metadata_changed() {
     val = $this.val();
   // set data attribute on .msg-metadata-row
   metadata_row.data($this.attr('name'),val);
-  if( metadata_row.data('parent-language') && 
-    metadata_row.data('relatedToggle') && 
+  if( metadata_row.data('relatedToggle') && 
     metadata_row.data('topic') && 
     metadata_row.data('topic') != 'none') {
-    // both a language and related have been set so activate reply/dismiss buttons
+    // both a topic and related have been set so activate reply/dismiss buttons
     // since they are radio buttons, no way to unset
     $this.closest('.message').find('.msg-action-btn-grp').find('.btn').removeAttr('disabled');
     $this.closest('.message').find('.msg-action-btn-grp').tooltip('disable');
