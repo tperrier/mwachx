@@ -7,6 +7,7 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'api/v0.1/participant', api.ParticipantViewSet, 'Participant')
+router.register(r'api/v0.1/message',     api.MessageViewSet,     'Message')
 
 
 urlpatterns = patterns('',
