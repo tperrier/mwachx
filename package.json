@@ -1,0 +1,26 @@
+{
+  "name": "mwachx",
+  "version": "0.0.0",
+  "description": "Mobile WaCHx",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "gulp": "~3.8.11",
+    "gulp-less": "~3.0.1",
+    "gulp-sourcemaps": "~1.5.0",
+    "gulp-livereload": "~3.8.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tperrier/mwachx.git"
+  },
+  "author": "Trevor Perrier",
+  "license": "Apache 2",
+  "bugs": {
+    "url": "https://github.com/tperrier/mwachx/issues"
+  },
+  "homepage": "https://github.com/tperrier/mwachx"
+}

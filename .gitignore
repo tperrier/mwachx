@@ -3,6 +3,7 @@
 *.pyc
 *~
 *.json
+!package.json
 *.log
 ignore/
 node_modules/
