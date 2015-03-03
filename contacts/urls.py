@@ -6,7 +6,7 @@ from views import api
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r'api/v0.1/participant', api.ParticipantViewSet)
+router.register(r'api/v0.1/participant', api.ParticipantViewSet, 'Participant')
 
 
 urlpatterns = patterns('',
