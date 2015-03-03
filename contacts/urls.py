@@ -30,4 +30,9 @@ urlpatterns = patterns('',
     # TODO: this is not a RESTful API. We can do better.
     url(r'^translation/notrequired/(?P<message_id>\d*)/?$','contacts.views.translation_not_required'),
     url(r'^translation/save/(?P<message_id>\d*)/?$','contacts.views.save_translation'),
+
+
+
+    # DRF API viewer
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 )

@@ -49,6 +49,9 @@ INSTALLED_APPS = (
     'crispy_forms',
     'parsley',
     
+
+    'rest_framework',
+    
     #constane setup
     'constance',
     'constance.backends.database',

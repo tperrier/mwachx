@@ -8,3 +8,6 @@ django-jsonview>=0.4.3
 django-parsley>=0.5
 django-constance>=1.0.1
 django-picklefield>=0.3.1
+djangorestframework>=3.0.5
+markdown>=2.6
+django-filter>=0.9.2
