@@ -9,6 +9,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
     serializer_class = ParticipantSerializer
+    lookup_field = 'study_id'
 
     def get_queryset(self):
     	# Only return the participants for this user's facility
