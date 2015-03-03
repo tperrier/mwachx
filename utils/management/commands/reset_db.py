@@ -20,9 +20,15 @@ class Command(BaseCommand):
         #Delete old DB
         print 'Deleting old sqlite db....'
         if settings.ON_OPENSHIFT:
-            os.remove(os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'mwach.db'))
+            try:
+                os.remove(os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'mwach.db'))
+            except OSError:
+                pass
         else:
-            os.remove(os.path.join(settings.PROJECT_PATH,'mwach.db'))
+            try:
+                os.remove(os.path.join(settings.PROJECT_PATH,'mwach.db'))
+            except OSError:
+                pass
         
         #Migrate new models
         print 'Migrating new db....'
