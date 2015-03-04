@@ -8,13 +8,14 @@
   angular.module('mwachx')
     .factory('Participant', function($resource) {
       return $resource(
-        '/api/v0.1/participant/:study_id/', 
-        { study_id:'@id' });  // I *think* we need this?
+        '/api/v0.1/participant/:study_id/');
     })
     .factory('Message', function($resource) {
       return $resource(
-        '/api/v0.1/message/:study_id/', 
-        { study_id:'@id' });  // I *think* we need this?
+        '/api/v0.1/message/:msg_id/', 
+        { 
+          study_id: '@study_id'
+        });  // I *think* we need this?
     });
 
 })();
