@@ -7,5 +7,5 @@ import contacts.models as cont
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = cont.Message
-		fields = ('text','is_outgoing',)
+		fields = ('text','is_translated','is_system','is_outgoing',)
 

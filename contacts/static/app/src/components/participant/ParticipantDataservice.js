@@ -9,7 +9,12 @@
     .factory('Participant', function($resource) {
       return $resource(
         '/api/v0.1/participant/:study_id/', 
-        { study_id:'@id' });  // I *think* we need this.
+        { study_id:'@id' });  // I *think* we need this?
+    })
+    .factory('Message', function($resource) {
+      return $resource(
+        '/api/v0.1/message/:study_id/', 
+        { study_id:'@id' });  // I *think* we need this?
     });
 
 })();

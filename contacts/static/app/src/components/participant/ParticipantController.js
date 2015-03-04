@@ -8,7 +8,8 @@
    */
   angular.module('mwachx')
     .controller('ParticipantController', 
-      function ParticipantController($scope, $location, $routeParams, Participant) {
+      function ParticipantController($scope, $location, $routeParams, 
+        Message, Participant) {
 
         $scope.participant      = [];
         $scope.fullResponse     = {};
@@ -21,6 +22,12 @@
         Participant.get( {study_id:$routeParams.study_id},
           function(response) {
             $scope.participant = response;
+        });
+
+        // Fetch messages for this participant
+        Message.query( {study_id:$routeParams.study_id},
+          function(response) {
+            $scope.messages = response;
         });
 
       });
