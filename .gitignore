@@ -4,8 +4,10 @@
 *~
 *.json
 !package.json
+!bower.json
 *.log
 ignore/
 node_modules/
 contacts/static/css/maps/
 local_settings.py
+bower_components/

@@ -1,0 +1,26 @@
+{
+  "name": "mwachx",
+  "version": "0.0.0",
+  "homepage": "https://github.com/tperrier/mwachx",
+  "authors": [
+    "Trevor Perrier <tperrier@cs.washington.ed>",
+    "Brian DeRenzi <bderenzi@cs.washington.ed>"
+  ],
+  "license": "Apache 2",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "contacts/static/app/assets/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.2",
+    "angular": "~1.3.14",
+    "angular-bootstrap": "~0.12.1",
+    "angular-resource": "~1.3.14",
+    "angular-route": "~1.3.14"
+  }
+}
