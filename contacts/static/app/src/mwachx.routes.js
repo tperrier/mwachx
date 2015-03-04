@@ -12,7 +12,7 @@
             templateUrl: routePrefix + 'src/components/participant/participantListPartial.html',
             controller:  'ParticipantListController'
           }).
-          when('/:studyId', {
+          when('/:study_id', {
             templateUrl: routePrefix + 'src/components/participant/participantPartial.html',
             controller:  'ParticipantController'
           }).

@@ -9,9 +9,7 @@
     .factory('Participant', function($resource) {
       return $resource(
         '/api/v0.1/participant/:study_id/', 
-        {
-          study_id:'@study_id' // I *think* we need this.
-        });
+        { study_id:'@id' });  // I *think* we need this.
     });
 
 })();
