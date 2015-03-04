@@ -1,17 +1,49 @@
-<div style="padding: 40px 15px;">
-  <h1>
-    Hi {{participant.nickname}}
+<div class="page-content" id="participant-page">
+  <h1 id="participant-details">
+    <span>
+      <i class="mw" ng-class="message.status == 'post' ? 'mw-mwach-baby-phone' : 'mw-mwach-phone'" ></i>
+      {{participant.nickname}}
+    </span>
+    <small>{{participant.study_id}}</small>
+    <small>{{participant.anc_num}}</small>
   </h1>
 
-  <table class="table table-striped table-hover">
-    <thead>
-      <tr>
-        <th>Text</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr ng-repeat="message in messages">
-        <td>{{message.text}}</td>
-      </tr>
-    </table>
+  <div class="row">
+    <div class="col-md-8">
+      <div class="btn-group btn-group-justified" id="msg-list-btn-group">
+      <!-- TODO: make a directive for these style buttons -->
+        <a data-toggle="modal" data-target="#sendModal" class="action-item btn btn-success">
+          <span class="action-item-icon"><i class="mw mw-comment"></i></span> 
+          <span class="action-item-text">Send Message</span>
+        </a>
+        <a class="action-item btn btn-highlight">
+          <span class="action-item-icon"><i class="mw mw-mobile-1"></i></span> 
+          <span class="action-item-text">Record Call</span>
+        </a>
+      </div>
+      <!-- TODO: I want to get rid of fuelux and jquery and all the nonsense in this version. Need to sort out the overflow scrolling bits -->
+      <div style="overflow-y:auto" id="messagesList">
+        <!-- TODO: make this a directive to hide the nastiness-->
+        <div class="row skinny-row scroll-row" ng-repeat="message in messages | orderBy:'created':true" ng-switch on="message.sender">
+
+          <div ng-if="!message.is_outgoing" class="col-md-1 avatar-participant mw-4x">
+            <i class="mw mw-mwach-phone"></i>
+          </div>
+
+          <!-- Original -->
+            <!-- <div class="col-md-9 message" ng-class="{'col-md-offset-2':message.is_outgoing, 'nurse':message.is_nurse, 'system':message.is_system, 'client':!message.is_outgoing }"> -->
+          <!-- TODO: The code below 'fixes' spacing with outgoing messages, but this should be sorted out with margins and things -->
+          <div class="message" ng-class="{'col-md-offset-2':message.is_outgoing, 'nurse':message.is_nurse, 'system':message.is_system, 'client':!message.is_outgoing, 'col-md-9':!message.is_outgong, 'col-md-8':message.is_outgoing }">
+            <div class="content">
+              {{message.text}}
+            </div>
+          </div>
+
+          <div ng-if="message.is_outgoing" class="col-md-1 mw-4x" ng-class="message.is_system ? 'avatar-system' : 'avatar-nurse'">
+            <i class="mw" ng-class="message.is_system ? 'mw-monitor-bdr' : 'mw-user-md'"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
