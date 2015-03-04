@@ -14,12 +14,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="p in participants | filter:query">
-          <td>{{p.study_id}}</td>
-          <td>{{p.anc_num}}</td>
-          <td>{{p.nickname}}</td>
-          <td>{{p.study_group}}</td>
-          <td>{{p.status}}</td>
+        <tr ng-repeat="participant in participants | filter:query" style="cursor:pointer" ng-click="loadParticipant();">
+          <td>{{participant.study_id}}</td>
+          <td>{{participant.anc_num}}</td>
+          <td>{{participant.nickname}}</td>
+          <td>{{participant.study_group}}</td>
+          <td>{{participant.status}}</td>
         </tr>
     </table>
 </div>

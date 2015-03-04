@@ -11,9 +11,6 @@
         '/api/v0.1/participant/:study_id/', 
         {
           study_id:'@study_id' // I *think* we need this.
-        }, 
-        { 
-          query: {isArray:false} // DRF returns an object with some meta data and the array under 'results'
         });
     });
 

@@ -20,6 +20,8 @@ gulp.task('watch', function() {
     gulp.watch('**/templates/**/*.html').on('change', livereload.changed);
     gulp.watch('**views.py').on('change', livereload.changed);
     gulp.watch('**admin.py').on('change', livereload.changed);
+    gulp.watch('**/*.js').on('change', livereload.changed);
+    gulp.watch('**/*.html').on('change', livereload.changed);
 });
 
 gulp.task('default', ['less', 'watch'], function() {

@@ -9,9 +9,12 @@
       function($routeProvider) {
         $routeProvider.
           when('/', {
+            templateUrl: routePrefix + 'src/components/participant/participantListPartial.html',
+            controller:  'ParticipantListController'
+          }).
+          when('/:studyId', {
             templateUrl: routePrefix + 'src/components/participant/participantPartial.html',
-            navIndex: '0',
-            controller: 'ParticipantController'
+            controller:  'ParticipantController'
           }).
           otherwise({
             redirectTo: '/'
