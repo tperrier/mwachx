@@ -1,18 +1,19 @@
 from django.conf.urls import patterns, include, url
-import views
-
-from views import api
 
 from rest_framework import routers
 
+import views
+from views import api
+# from views import angular_views
+
 router = routers.DefaultRouter()
-router.register(r'api/v0.1/participant', api.ParticipantViewSet, 'Participant')
-router.register(r'api/v0.1/message',     api.MessageViewSet,     'Message')
+router.register(r'v0.1/participant', api.ParticipantViewSet, 'Participant')
+router.register(r'v0.1/message',     api.MessageViewSet,     'Message')
 
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'contacts.views.home'),
+    url(r'^$', 'contacts.views.home'),
     # url(r'^message/new/?$', 'contacts.views.messages_new'),
     # url(r'^visit/$', 'contacts.views.visits'),
     # url(r'^visit/dismiss/(?P<visit_id>\d*)/(?P<days>\d*)/?$','contacts.views.visit_dismiss'),
@@ -42,5 +43,8 @@ urlpatterns = patterns('',
 
     # DRF API viewer
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^', include(router.urls)),
+    url(r'^api/', include(router.urls)),
+
+    # Angular app
+    url(r'^participant/$', 'contacts.views.participant_view'),
 )
