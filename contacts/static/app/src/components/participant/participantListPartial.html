@@ -1,7 +1,19 @@
 <div style="padding: 40px 15px;">
-  <h1>
-    <input type="text" ng-model="query" placeholder="Search by any field" aria-label="Filter" style="width:100%"/>
-  </h1>
+  <div class="row">
+    <div class="col-md-9 col-sm-8">
+    <h1>
+      <input type="text" ng-model="query" placeholder="Search by any field" aria-label="Filter" style="width:100%"/>
+    </h1>
+    </div>
+    <div class="col-md-3 col-sm-4"> 
+      <!-- TODO: make a directive for these style buttons -->
+      <!-- TODO: Clean up the CSS again... -->
+      <a class='btn btn-info action-item' data-toggle="modal" data-target="#sendModal" style="margin: 20px 0; width: 100%;">
+        <span class="action-item-icon"><i class="mw mw-mwach-phone-add"></i></span> 
+        <span class="action-item-text">Enroll Participant</span>
+      </a>
+    </div>
+  </div>
 
   <table class="table table-striped table-hover">
       <thead>
