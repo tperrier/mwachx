@@ -22,28 +22,24 @@
         </a>
       </div>
       <!-- TODO: I want to get rid of fuelux and jquery and all the nonsense in this version. Need to sort out the overflow scrolling bits -->
-      <div style="overflow-y:auto" id="messagesList">
+      <div id="messagesList">
         <!-- TODO: make this a directive to hide the nastiness-->
-        <div ng-repeat="message in messages | orderBy:'created':true" ng-switch on="message.sender">
+        <div ng-repeat="message in messages | orderBy:'created':true" ng-switch on="message.sender" class="clearfix">
 
-          <div ng-style="{visibility: message.is_outgoing && 'hidden' || 'visible'}" class="avatar-participant mw-4x" style="display:inline-block; padding-right:15px;">
-            <i class="mw mw-mwach-phone "></i>
-          </div><div ng-if="message.is_outgoing" class="avatar-participant mw-4x" style="display:inline-block; visibility:hidden;">
+          <div ng-if="!message.is_outgoing" class="avatar-participant mw-4x pull-left">
             <i class="mw mw-mwach-phone "></i>
           </div>
 
-          <!-- Original -->
-            <div class="message" style="width:65%; display:inline-block;" ng-class="{'nurse':message.is_nurse, 'system':message.is_system, 'client':!message.is_outgoing}">
-          <!-- TODO: The code below 'fixes' spacing with outgoing messages, but this should be sorted out with margins and things -->
-          <!-- <div class="message" ng-class="{'col-md-offset-3':message.is_outgoing, 'nurse':message.is_nurse, 'system':message.is_system, 'client':!message.is_outgoing, 'col-md-9':!message.is_outgong, 'col-md-8':message.is_outgoing }"> -->
+          <div ng-if="message.is_outgoing" class="mw-4x pull-right" ng-class="message.is_system ? 'avatar-system' : 'avatar-nurse'">
+            <i class="mw" ng-class="message.is_system ? 'mw-monitor-bdr' : 'mw-user-md'"></i>
+          </div>
+
+          <div class="message" ng-class="{'nurse':message.is_nurse, 'system':message.is_system, 'client':!message.is_outgoing, 'pull-right':message.is_outgoing, 'pull-left':!message.is_outgoing}">
             <div class="content">
               {{message.text}}
             </div>
           </div>
 
-          <div ng-if="message.is_outgoing" class="mw-4x" ng-class="message.is_system ? 'avatar-system' : 'avatar-nurse'" style="display:inline-block; padding-left:15px;">
-            <i class="mw" ng-class="message.is_system ? 'mw-monitor-bdr' : 'mw-user-md'"></i>
-          </div>
         </div>
       </div>
     </div>
