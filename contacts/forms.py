@@ -6,7 +6,6 @@ from django.conf import settings
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
-from parsley.decorators import parsleyfy
 
 
 #Local App Imports
@@ -14,11 +13,7 @@ import contacts.models as cont
 import utils.forms as util
 from utils import today
 
-def tmp(t):
-    print 'temp'
-    return t
 
-@parsleyfy
 class ContactAdd(forms.ModelForm):
     
     phone_number = forms.CharField(label='Phone Number', 
@@ -83,6 +78,17 @@ class ContactAdd(forms.ModelForm):
                 Submit('submit', 'Enroll Participant')
             )
         )
+
+
+        # thank you: http://stackoverflow.com/questions/24663564/django-add-attribute-to-every-field-by-default
+        for field in self:                                                    
+
+          # field.field.widget.attrs.update({'ng-focus': ''})                 
+
+          field.field.widget.attrs.update({                             
+              'ng-model': 'newParticipant.{0}'.format(field.name),
+              # 'get-error-elements': '',                                 
+          }) 
 
     class Meta:
         model = cont.Contact

@@ -12,7 +12,11 @@
             templateUrl: routePrefix + 'src/components/participant/participantListPartial.html',
             controller:  'ParticipantListController'
           }).
-          when('/:study_id', {
+          when('/new/', {
+            templateUrl: routePrefix + 'src/components/participant/participantNewPartial.html',
+            controller:  'ParticipantNewController'
+          })
+          .when('/:study_id', {
             templateUrl: routePrefix + 'src/components/participant/participantPartial.html',
             controller:  'ParticipantController'
           }).

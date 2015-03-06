@@ -47,4 +47,7 @@ urlpatterns = patterns('',
 
     # Angular app
     url(r'^participant/$', 'contacts.views.participant_view'),
+
+    # crispy-form partial
+    url(r'^crispy-forms/participant/new/?$','contacts.views.generate_add_participant_form'),
 )
