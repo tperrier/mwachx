@@ -6,22 +6,28 @@
   // Should this be in the mwachxApp module instead since it is shared?
   angular.module('mwachx')
     .directive('mwActionBtn', function() {
-      function link(scope, element, attrs) {
-        element.addClass('btn action-item');
-        if(scope.urgency)
-          element.addClass('btn-' + scope.urgency);
-      };
-
+      
       return {
         restrict:     'E',
         transclude:   true,
+        replace:      true,
         scope: {
           iconClass:  '=mwIcon',
           urgency:    '=mwStyle',
         },
-        templateUrl:  routePrefix + '/src/shared/mwActionBtn.html',
-        link:         link,
+        templateUrl:  getTemplate,
+      };
+
+      function isAnchor(attr) {
+        return angular.isDefined(attr.href) || angular.isDefined(attr.ngHref);
       }
+      
+      function getTemplate(element, attr) {
+        return isAnchor(attr) ?
+               routePrefix + '/src/shared/mwActionBtnAnchor.html':
+               routePrefix + '/src/shared/mwActionBtnLabel.html';
+      }
+
     });
 
 })();
