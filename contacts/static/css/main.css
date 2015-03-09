@@ -6650,5 +6650,46 @@ fieldset[disabled] .btn-highlight.active {
 .buttonHolder {
   text-align: center;
 }
+.participant-details {
+  margin-left: -1em;
+}
+.participant-details span {
+  color: #406281;
+}
+.avatar.pull-right {
+  padding: 0 0 0 15px;
+}
+.avatar.pull-left {
+  padding: 0 15px 0 0;
+}
+.avatar.nurse {
+  color: #00c49e;
+}
+.avatar.system {
+  color: #777777;
+}
+.avatar.participant {
+  color: #406281;
+}
+.message {
+  width: 70%;
+  margin: 0.5em 0 0.5em 0;
+  padding: 0 10px 0.3em 10px;
+}
+.message.pull-right {
+  border-radius: 0 20px;
+}
+.message.pull-left {
+  border-radius: 20px 0;
+}
+.message.nurse {
+  background-color: #dff0d8;
+}
+.message.system {
+  background-color: #eeeeee;
+}
+.message.participant {
+  background-color: #d9edf7;
+}
 
 /*# sourceMappingURL=maps/main.css.map */

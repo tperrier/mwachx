@@ -1,0 +1,53 @@
+.participant-details {
+  margin-left: -1em;
+
+  span {
+    color: @brand-primary;
+  }
+}
+
+
+// Icons labeling the sender
+.avatar {
+  &.pull-right{
+    padding: 0 0 0 15px;
+  }
+  &.pull-left {
+    padding: 0 15px 0 0;
+  }
+
+  &.nurse {
+    color: @brand-success;
+  }
+  &.system {
+    color: @gray-light;
+  }
+  &.participant {
+    color: @brand-primary;
+  }
+}
+
+// The actual message
+.message {
+  width:    70%;
+  margin:   0.5em 0 0.5em 0;
+  padding:  0 10px 0.3em 10px;
+
+  &.pull-right{
+    border-radius: 0 20px;
+  }
+  &.pull-left {
+    border-radius: 20px 0;
+  }
+
+  // Colors
+  &.nurse {
+    background-color: @state-success-bg;
+  }
+  &.system {
+    background-color: @gray-lighter;
+  }
+  &.participant {
+    background-color: @state-info-bg;
+  }
+}

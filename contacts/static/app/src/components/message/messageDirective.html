@@ -1,0 +1,7 @@
+<div class="avatar mw-4x" ng-class="{'nurse pull-right':message.is_nurse, 'system pull-right':message.is_system, 'participant pull-left':!message.is_outgoing}">
+  <i class="mw" ng-class="{'mw-user-md':message.is_nurse, 'mw-monitor-bdr':message.is_system, 'mw-mwach-phone':!message.is_outgoing}"></i>
+</div>
+
+<div class="message" ng-class="{'nurse':message.is_nurse, 'system':message.is_system, 'participant':!message.is_outgoing, 'pull-right':message.is_outgoing, 'pull-left':!message.is_outgoing}">
+    {{message.text}}
+</div>
