@@ -5,7 +5,7 @@ from django import forms
 from django.conf import settings
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
+from crispy_forms.layout import Layout, Fieldset, Div, ButtonHolder, Submit
 
 
 #Local App Imports
@@ -52,30 +52,52 @@ class ContactAdd(forms.ModelForm):
         self.helper.layout = Layout(
             Fieldset(
                 'Study Information',
-                'study_id',
-                'anc_num',
-                'study_group',
-                'send_day',
-                'send_time',
+                Div(
+                    Div('study_id', css_class="col-md-4"),
+                    Div('anc_num', css_class="col-md-4"),
+                    Div('study_group', css_class="col-md-4"),
+                    css_class="row"
+                ),
+                Div(
+                    Div('send_day', css_class="col-md-4"),
+                    Div('send_time', css_class="col-md-4"),
+                    css_class="row"
+                ),
             ), Fieldset (
                 'Client Information',
-                'nickname',
-                'phone_number',
-                'birthdate',
-                'relationship_status',
-                'partner_name',
-                'previous_pregnancies',
-                'phone_shared',
-                'language',
+                Div(
+                    Div('nickname', css_class="col-md-4"),
+                    Div('phone_number', css_class="col-md-4"),
+                    Div('birthdate', css_class="col-md-4"),
+                    css_class="row"
+                ),
+                Div(
+                    Div('relationship_status', css_class="col-md-4"),
+                    Div('partner_name', css_class="col-md-4"),
+                    Div('previous_pregnancies', css_class="col-md-4"),
+                    css_class="row"
+                ),
+                Div(
+                    Div('phone_shared', css_class="col-md-4"),
+                    Div('language', css_class="col-md-4"),
+                    css_class="row"
+                ),
             ), Fieldset (
                 'Medical Information',
-                'condition',
-                'art_initiation',
-                'hiv_disclosed',
-                'due_date',
+                Div(
+                    Div('condition', css_class="col-md-4"),
+                    Div('art_initiation', css_class="col-md-4"),
+                    Div('hiv_disclosed', css_class="col-md-4"),
+                    css_class="row"
+                ),
+                Div(
+                    Div('due_date', css_class="col-md-4"),
+                    css_class="row"
+                )
             ),
             ButtonHolder(
-                Submit('submit', 'Enroll Participant')
+                Submit('submit', 'Enroll Participant'),
+                css_class="row"
             )
         )
 

@@ -6647,5 +6647,8 @@ fieldset[disabled] .btn-highlight.active {
 .action-btn.btn-info > span {
   background-color: #1d7ab9;
 }
+.buttonHolder {
+  text-align: center;
+}
 
 /*# sourceMappingURL=maps/main.css.map */
