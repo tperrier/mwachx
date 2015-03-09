@@ -5,7 +5,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var livereload = require('gulp-livereload');
 
 gulp.task('less', function() {
-    gulp.src('./contacts/static/style.less')
+    gulp.src('contacts/static/app/assets/less/main.less')
         .pipe(sourcemaps.init())
         .pipe(less())
         .pipe(sourcemaps.write('./maps'))

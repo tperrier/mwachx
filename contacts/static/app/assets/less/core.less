@@ -1,0 +1,60 @@
+// New button
+.btn-highlight {
+  .button-variant(@btn-highlight-color; @btn-highlight-bg; @btn-highlight-border);
+}
+
+// Action button
+// TODO: the color bits at the bottom could be redone with a mixin like the 
+// button-variant above.
+.action-btn{
+  padding: 0px;
+  display: table;
+  border-bottom: solid 0.5em;
+
+  span, label {
+    vertical-align: middle;
+    display: table-cell;
+    text-align: left;
+  }
+
+  label {
+    padding-left: 15px;
+    cursor: pointer;
+  }
+
+  & > span {
+      width: 1.5em;
+      text-align: center;
+      font-size: 2em;
+      white-space: nowrap;
+  }
+
+  &.btn-danger {
+    border-color: darken(@btn-danger-border, 12%);
+    & > span {
+      background-color: darken(@btn-danger-bg, 10%);
+    }
+  }
+
+  &.btn-highlight {
+    border-color: darken(@btn-highlight-border, 12%);
+    & > span {
+      background-color: darken(@btn-highlight-bg, 10%);
+    }
+  }
+
+  &.btn-success {
+    border-color: darken(@btn-success-border, 12%);
+    & > span {
+      background-color: darken(@btn-success-bg, 10%);
+    }
+  }
+
+  &.btn-info {
+    border-color: darken(@btn-info-border, 12%);
+    & > span {
+      background-color: darken(@btn-info-bg, 10%);
+    }
+  }
+
+}
