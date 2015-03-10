@@ -1,0 +1,14 @@
+.message-variant(@background) {
+  background-color: @background;
+
+  .msg-header {
+    background-color: darken(@background, 12%);
+    border-top-right-radius: inherit;
+    border-top-left-radius: inherit;
+    padding: 0 @msg-side-padding 0 @msg-side-padding;
+    font-size: 0.75em;
+
+    // This will be 'ignored' by the floats since they are not block elements
+    text-align: center;
+  }
+}

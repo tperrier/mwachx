@@ -6,9 +6,10 @@
   angular.module('mwachx')
     .directive('mwMessage', function() {
       return {
-        restrict:     'E',
+        restrict:         'E',
         scope: {
-          'message':  '=',
+          'message':      '=',
+          'participant':  '=',
         },
         templateUrl:  routePrefix + 'src/components/message/messageDirective.html',
       };

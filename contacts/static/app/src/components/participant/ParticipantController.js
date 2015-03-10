@@ -30,6 +30,9 @@
             
             $scope.messages = response;
             for (var i = $scope.messages.length - 1; i >= 0; i--) {
+              
+              $scope.messages[i].show_translation = $scope.messages[i].is_translated;
+
               if ($scope.messages[i].is_system == false && $scope.messages[i].is_outgoing == true) {
                 $scope.messages[i].is_nurse = true;
               } else {

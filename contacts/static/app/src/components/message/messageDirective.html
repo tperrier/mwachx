@@ -3,5 +3,32 @@
 </div>
 
 <div class="message" ng-class="{'nurse':message.is_nurse, 'system':message.is_system, 'participant':!message.is_outgoing, 'pull-right':message.is_outgoing, 'pull-left':!message.is_outgoing}">
-    {{message.text}}
+  
+  <div class="msg-header clearfix">
+    <strong class="pull-left">
+      {{message.is_nurse ? "Nurse" : message.is_system ? "System" : participant.nickname}}
+    </strong>
+    <div class="pull-right">{{message.created | date:'d MMM yy H:mm'}}</div>
+
+    <div ng-if="!message.is_system" class="center-block">
+      
+      <a href="#/" ng-if="!message.is_translated">
+        <span class="badge-warning">Untranslated</span>
+      </a>
+
+      {{message.is_translated && message.translation_skipped ? '(Translation skipped)' : ''}}
+      
+      <!-- toggle buttons to a shared directive? -->
+      <label ng-if="message.is_translated && !message.translation_skipped" class="btn btn-xs mw-toggle-btn" ng-class="{'active': message.show_translation}" ng-click="message.show_translation = !message.show_translation">
+        <i class="mw mw-language"></i>
+      </label>
+
+      <button ng-if="message.is_translated" class="btn btn-xs btn-default">
+        <i class="mw mw-redo"></i>
+      </button>
+
+    </div>
+  </div>
+
+  <div class="msg-content">{{message.show_translation ? message.translated_text : message.text}}</div>
 </div>

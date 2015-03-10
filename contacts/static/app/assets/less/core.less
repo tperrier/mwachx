@@ -3,6 +3,25 @@
   .button-variant(@btn-highlight-color; @btn-highlight-bg; @btn-highlight-border);
 }
 
+.mw-toggle-btn {
+  .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
+
+  &.active {
+    background-color: @brand-primary;
+    color: white;
+
+    &:hover,
+    &:active {
+      background-color: darken(@brand-primary, 10%);
+    }
+  }
+}
+
+// New badge
+.badge-warning:extend(.badge) {
+  background-color: @brand-warning;
+}
+
 // Action button
 // TODO: the color bits at the bottom could be redone with a mixin like the 
 // button-variant above.

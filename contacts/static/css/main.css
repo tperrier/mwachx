@@ -4768,7 +4768,8 @@ a.label:focus {
 .label-danger[href]:focus {
   background-color: #e01104;
 }
-.badge {
+.badge,
+.badge-warning {
   display: inline-block;
   min-width: 10px;
   padding: 3px 7px;
@@ -6602,6 +6603,62 @@ fieldset[disabled] .btn-highlight.active {
   color: #ac3cb8;
   background-color: #ffffff;
 }
+.mw-toggle-btn {
+  color: #333333;
+  background-color: #ffffff;
+  border-color: #cccccc;
+}
+.mw-toggle-btn:hover,
+.mw-toggle-btn:focus,
+.mw-toggle-btn.focus,
+.mw-toggle-btn:active,
+.mw-toggle-btn.active,
+.open > .dropdown-toggle.mw-toggle-btn {
+  color: #333333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+.mw-toggle-btn:active,
+.mw-toggle-btn.active,
+.open > .dropdown-toggle.mw-toggle-btn {
+  background-image: none;
+}
+.mw-toggle-btn.disabled,
+.mw-toggle-btn[disabled],
+fieldset[disabled] .mw-toggle-btn,
+.mw-toggle-btn.disabled:hover,
+.mw-toggle-btn[disabled]:hover,
+fieldset[disabled] .mw-toggle-btn:hover,
+.mw-toggle-btn.disabled:focus,
+.mw-toggle-btn[disabled]:focus,
+fieldset[disabled] .mw-toggle-btn:focus,
+.mw-toggle-btn.disabled.focus,
+.mw-toggle-btn[disabled].focus,
+fieldset[disabled] .mw-toggle-btn.focus,
+.mw-toggle-btn.disabled:active,
+.mw-toggle-btn[disabled]:active,
+fieldset[disabled] .mw-toggle-btn:active,
+.mw-toggle-btn.disabled.active,
+.mw-toggle-btn[disabled].active,
+fieldset[disabled] .mw-toggle-btn.active {
+  background-color: #ffffff;
+  border-color: #cccccc;
+}
+.mw-toggle-btn .badge {
+  color: #ffffff;
+  background-color: #333333;
+}
+.mw-toggle-btn.active {
+  background-color: #406281;
+  color: white;
+}
+.mw-toggle-btn.active:hover,
+.mw-toggle-btn.active:active {
+  background-color: #2f485f;
+}
+.badge-warning {
+  background-color: #f77700;
+}
 .action-btn {
   padding: 0px;
   display: table;
@@ -6674,7 +6731,6 @@ fieldset[disabled] .btn-highlight.active {
 .message {
   width: 70%;
   margin: 0.5em 0 0.5em 0;
-  padding: 0 10px 0.3em 10px;
 }
 .message.pull-right {
   border-radius: 0 20px;
@@ -6682,14 +6738,41 @@ fieldset[disabled] .btn-highlight.active {
 .message.pull-left {
   border-radius: 20px 0;
 }
+.message .msg-content {
+  padding: 0 15px 0.3em 15px;
+}
 .message.nurse {
   background-color: #dff0d8;
+}
+.message.nurse .msg-header {
+  background-color: #bbdfac;
+  border-top-right-radius: inherit;
+  border-top-left-radius: inherit;
+  padding: 0 15px 0 15px;
+  font-size: 0.75em;
+  text-align: center;
 }
 .message.system {
   background-color: #eeeeee;
 }
+.message.system .msg-header {
+  background-color: #d0d0d0;
+  border-top-right-radius: inherit;
+  border-top-left-radius: inherit;
+  padding: 0 15px 0 15px;
+  font-size: 0.75em;
+  text-align: center;
+}
 .message.participant {
   background-color: #d9edf7;
+}
+.message.participant .msg-header {
+  background-color: #a6d5ec;
+  border-top-right-radius: inherit;
+  border-top-left-radius: inherit;
+  padding: 0 15px 0 15px;
+  font-size: 0.75em;
+  text-align: center;
 }
 
 /*# sourceMappingURL=maps/main.css.map */
