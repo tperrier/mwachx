@@ -16,6 +16,7 @@
 
         $scope.messages         = [];
 
+
         $scope.detailsList      = [ 
          {'label': 'Nickname',               'value': 'nickname',},
          {'label': 'Study ID',               'value': 'study_id',},
@@ -33,7 +34,13 @@
          {'label': 'Confirmation Code',      'value': 'validation_key',},
         ];
             
-          
+        //
+        // Private Methods
+        //
+
+        var isDisabled = function(i) {
+          return (this.is_pending && (typeof this.related === 'undefined' || this.topic === 'none'));
+        }
         // Methods
         
         // Fetch this participant
@@ -56,6 +63,8 @@
             for (var i = $scope.messages.length - 1; i >= 0; i--) {
               
               $scope.messages[i].show_translation = $scope.messages[i].is_translated;
+              $scope.messages[i].isDisabled = isDisabled;
+              $scope.messages[i].topic = 'none';
 
               if ($scope.messages[i].is_system == false && $scope.messages[i].is_outgoing == true) {
                 $scope.messages[i].is_nurse = true;

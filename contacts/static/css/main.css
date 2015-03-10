@@ -6764,6 +6764,9 @@ fieldset[disabled] .mw-toggle-btn.active {
 .message.nurse .btn-group .btn:last-child {
   border-bottom-right-radius: inherit;
 }
+.message.nurse .metadata {
+  padding: 1em;
+}
 .message.system {
   background-color: #eeeeee;
 }
@@ -6781,6 +6784,9 @@ fieldset[disabled] .mw-toggle-btn.active {
 .message.system .btn-group .btn:last-child {
   border-bottom-right-radius: inherit;
 }
+.message.system .metadata {
+  padding: 1em;
+}
 .message.participant {
   background-color: #d9edf7;
 }
@@ -6797,6 +6803,14 @@ fieldset[disabled] .mw-toggle-btn.active {
 }
 .message.participant .btn-group .btn:last-child {
   border-bottom-right-radius: inherit;
+}
+.message.participant .metadata {
+  padding: 1em;
+}
+.input-mini {
+  height: 1.4em;
+  line-height: 1.4em;
+  padding: 0px;
 }
 .details-table tbody tr td:first-child {
   font-weight: bold;
