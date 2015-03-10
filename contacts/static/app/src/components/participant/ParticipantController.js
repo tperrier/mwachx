@@ -15,13 +15,37 @@
         $scope.fullResponse     = {};
 
         $scope.messages         = [];
-        
+
+        $scope.detailsList      = [ 
+         {'label': 'Nickname',               'value': 'nickname',},
+         {'label': 'Study ID',               'value': 'study_id',},
+         {'label': 'ANC Number',             'value': 'anc_num',},
+         {'label': 'Phone number',           'value': 'phone_number',},
+         {'label': 'Status',                 'value': 'status',},
+         {'label': 'Estimated Delivery Date','value': 'phone_number',},
+         {'label': 'Send Day',               'value': 'send_day',},
+         {'label': 'Send Time',              'value': 'send_time',},
+         {'label': 'SMS Track',              'value': 'condition',},
+         {'label': 'ART Initiation',         'value': 'art_initiation',},
+         {'label': 'Previous pregnancies',   'value': 'previous_pregnancies',},
+         {'label': 'Family Planning',        'value': 'family_planning',},
+         {'label': 'HIV Disclosure',         'value': 'hiv_disclosed',},
+         {'label': 'Confirmation Code',      'value': 'validation_key',},
+        ];
+            
+          
         // Methods
         
         // Fetch this participant
         Participant.get( {study_id:$routeParams.study_id},
           function(response) {
             $scope.participant = response;
+
+            $scope.participant.hiv_disclosed = 
+              (String($scope.participant.hiv_disclosed) === 'null') ?
+                'Unknown' :
+                ($scope.participant.hiv_disclosed) ?
+                  'Yes' : 'No';
         });
 
         // Fetch messages for this participant

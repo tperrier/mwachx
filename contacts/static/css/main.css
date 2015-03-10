@@ -6558,6 +6558,15 @@ button.close {
   font-size: 2em;
   margin-bottom: 1em;
 }
+.pregant {
+  color: #406281;
+}
+.postpartum {
+  color: #009175;
+}
+.adverse-event {
+  color: #fb291c;
+}
 .btn-highlight {
   color: #ffffff;
   background-color: #ac3cb8;
@@ -6710,9 +6719,6 @@ fieldset[disabled] .mw-toggle-btn.active {
 .participant-details {
   margin-left: -1em;
 }
-.participant-details span {
-  color: #406281;
-}
 .avatar.pull-right {
   padding: 0 0 0 15px;
 }
@@ -6773,6 +6779,17 @@ fieldset[disabled] .mw-toggle-btn.active {
   padding: 0 15px 0 15px;
   font-size: 0.75em;
   text-align: center;
+}
+.details-table tbody tr td:first-child {
+  font-weight: bold;
+  text-align: right;
+}
+.details-table-offset tbody tr td {
+  vertical-align: middle;
+}
+.details-table-offset tbody tr td:nth-child(3) {
+  font-weight: bold;
+  text-align: right;
 }
 
 /*# sourceMappingURL=maps/main.css.map */

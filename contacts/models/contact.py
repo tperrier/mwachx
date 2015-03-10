@@ -151,7 +151,7 @@ class Contact(TimeStampedModel):
     def connection(self):
         from contacts.models import Connection
         return Connection.objects.get(contact=self,is_primary=True)
-        
+    
     @property
     def phone_number(self):
         return self.connection.identity

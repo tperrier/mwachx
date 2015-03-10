@@ -19,11 +19,16 @@
       {{message.is_translated && message.translation_skipped ? '(Translation skipped)' : ''}}
       
       <!-- toggle buttons to a shared directive? -->
-      <label ng-if="message.is_translated && !message.translation_skipped" class="btn btn-xs mw-toggle-btn" ng-class="{'active': message.show_translation}" ng-click="message.show_translation = !message.show_translation" tooltip="Toggle between original text and translation">
-        <i class="mw mw-language"></i>
+      <label 
+        ng-if="message.is_translated && !message.translation_skipped" 
+        class="btn btn-xs mw-toggle-btn" 
+        ng-class="{'active': message.show_translation}" 
+        ng-click="message.show_translation = !message.show_translation" 
+        tooltip="Toggle between original text and translation">
+          <i class="mw mw-language"></i>
       </label>
 
-      <button ng-if="message.is_translated" class="btn btn-xs btn-default">
+      <button ng-if="message.is_translated" class="btn btn-xs btn-default" tooltip="Retranslate message">
         <i class="mw mw-redo"></i>
       </button>
 

@@ -1,9 +1,10 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 #Local Imports
 import contacts.models as cont
-from contacts.serializers.participants import ParticipantSerializer
+from contacts.serializers.participants import ParticipantSerializer, ParticipantDetailSerializer
 from contacts.serializers.messages import MessageSerializer
 
 import logging, logging.config
@@ -35,6 +36,13 @@ class ParticipantViewSet(viewsets.ModelViewSet):
     	# Only return the participants for this user's facility
     	return cont.Contact.objects.for_user(self.request.user).all()
 
+    def retrieve(self, request, study_id=None):
+        # Use the detailed serializer for individual GETs
+        queryset = self.get_queryset()
+        user = get_object_or_404(queryset, study_id=study_id)
+        serializer = ParticipantDetailSerializer(user)
+        return Response(serializer.data)
+
 
 class MessageViewSet(viewsets.ModelViewSet):
     """
@@ -55,5 +63,5 @@ class MessageViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def get_queryset(self):
-        # Only return the participants for this user's facility
+        # Only return the messages for this user's facility
         return cont.Contact.objects.for_user(self.request.user).all()

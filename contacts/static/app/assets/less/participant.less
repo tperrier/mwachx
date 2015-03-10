@@ -1,9 +1,5 @@
 .participant-details {
   margin-left: -1em;
-
-  span {
-    color: @brand-primary;
-  }
 }
 
 
@@ -52,5 +48,22 @@
   }
   &.participant {
     .message-variant(@state-info-bg);
+  }
+}
+
+
+//
+// Side panels
+//
+.details-table tbody tr td:first-child {
+  font-weight: bold;
+  text-align: right;
+}
+
+.details-table-offset tbody tr td {
+  vertical-align: middle;
+  &:nth-child(3) {
+    font-weight: bold;
+    text-align: right;
   }
 }
