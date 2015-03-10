@@ -5,11 +5,12 @@ import dateutil.parser
 #Django Imports
 from django.contrib.auth.models import User
 from django.db.models import Max
-import contacts.models as cont
 from django.core.management import ManagementUtility
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.db import transaction 
+
+import contacts.models as cont
 
 class Command(BaseCommand):
     
