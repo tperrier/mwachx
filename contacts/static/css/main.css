@@ -6716,8 +6716,8 @@ fieldset[disabled] .mw-toggle-btn.active {
 .buttonHolder {
   text-align: center;
 }
-.participant-details {
-  margin-left: -1em;
+.participant-messages {
+  margin-left: calc(21px);
 }
 .avatar.pull-right {
   padding: 0 0 0 15px;

@@ -1,6 +1,6 @@
 <div style="padding: 0px 40px;">
 
-  <h1 class="participant-details">
+  <h1>
     <span ng-class="participant.status == 'post' ? 'postpartum' : 'pregnant'">
       <i class="mw" ng-class="participant.status == 'post' ? 'mw-mwach-baby-phone' : 'mw-mwach-phone'" ></i>
       {{participant.nickname}}
@@ -9,7 +9,7 @@
     <small>{{participant.anc_num}}</small>
   </h1>
 
-  <div class="row">
+  <div class="row participant-messages">
     <div class="col-md-8">
 
       <div class="btn-group btn-group-justified" id="msg-list-btn-group">
