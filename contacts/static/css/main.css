@@ -6758,6 +6758,12 @@ fieldset[disabled] .mw-toggle-btn.active {
   font-size: 0.75em;
   text-align: center;
 }
+.message.nurse .btn-group {
+  border-bottom-right-radius: inherit;
+}
+.message.nurse .btn-group .btn:last-child {
+  border-bottom-right-radius: inherit;
+}
 .message.system {
   background-color: #eeeeee;
 }
@@ -6769,6 +6775,12 @@ fieldset[disabled] .mw-toggle-btn.active {
   font-size: 0.75em;
   text-align: center;
 }
+.message.system .btn-group {
+  border-bottom-right-radius: inherit;
+}
+.message.system .btn-group .btn:last-child {
+  border-bottom-right-radius: inherit;
+}
 .message.participant {
   background-color: #d9edf7;
 }
@@ -6779,6 +6791,12 @@ fieldset[disabled] .mw-toggle-btn.active {
   padding: 0 15px 0 15px;
   font-size: 0.75em;
   text-align: center;
+}
+.message.participant .btn-group {
+  border-bottom-right-radius: inherit;
+}
+.message.participant .btn-group .btn:last-child {
+  border-bottom-right-radius: inherit;
 }
 .details-table tbody tr td:first-child {
   font-weight: bold;

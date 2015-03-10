@@ -36,4 +36,13 @@
   </div>
 
   <div class="msg-content">{{message.show_translation ? message.translated_text : message.text}}</div>
+
+  <div ng-if="!message.is_outgoing" class="btn-group btn-group-justified">
+    <a class="btn btn-xs btn-success">
+      <i class="mw mw-reply"></i> Reply
+    </a>
+    <a ng-if="message.is_pending" class="btn btn-xs btn-danger">
+      <i class="mw mw-times"></i> Dismiss
+    </a>
+  </div>
 </div>
