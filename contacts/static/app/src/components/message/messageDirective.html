@@ -20,7 +20,7 @@
 
       <!-- toggle buttons to a shared directive? -->
       <span ng-if="message.is_translated && !message.translation_skipped">
-        {{message.show_translation ? 'Displaying tranlated' : 'Displaying original&nbsp;&nbsp;'}}
+        {{message.show_translation ? 'Displaying translated' : 'Displaying original&nbsp;&nbsp;&nbsp;'}}
       </span>
       <label 
         ng-if="message.is_translated && !message.translation_skipped" 
@@ -86,8 +86,11 @@
     ng-class="message.is_pending ? 'btn-group-sm' : 'btn-group-xs'" 
     tooltip="You must select whether the message is related or unrelated and a topic before you can continue." 
     tooltip-enable="message.isDisabled()">
-      <a class="btn btn-success" ng-class="{'disabled': message.isDisabled()}">
-        <i class="mw mw-reply"></i> Reply
+      <a 
+        class="btn btn-success" 
+        ng-class="{'disabled': message.isDisabled()}" 
+        ng-click="openSendMsg((message.show_translation ? message.translated_text : message.text))">
+          <i class="mw mw-reply"></i> Reply
       </a>
       <a ng-if="message.is_pending" class="btn btn-danger" ng-class="{'disabled': message.isDisabled()}">
         <i class="mw mw-times"></i> Dismiss

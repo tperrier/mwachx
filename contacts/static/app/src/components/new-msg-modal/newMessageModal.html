@@ -1,0 +1,47 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="cancel()" aria-label="Close">
+    <span aria-hidden="true">×</span>
+  </button>
+  <h3 class="modal-title">Send Message:</h3>
+</div>
+
+<div class="modal-body">
+
+  <div ng-if="params.origMsg" class="alert alert-success">{{params.origMsg}}</div>
+
+  <div class="row no-gutter outside-gutter">
+    <div class="col-md-6">
+    <div class="panel panel-primary flush-bottom flush-right">
+        <div class="panel-heading flush-right">Outgoing message:</div>
+        <div class="panel-body">
+        <textarea class="form-control" name="message" rows="5" placeholder="Message to send...."></textarea>
+        </div>
+    </div>
+    </div>
+    <div class="col-md-6">
+    <div class="panel panel-default flush-bottom flush-left">
+        <div class="panel-heading flush-left">Translated message:</div>
+        <div class="panel-body">
+        <textarea class="form-control" name="translation" rows="5" placeholder="Translation...."></textarea>
+        </div>
+    </div>
+    </div>
+  </div>
+
+  <div class="btn-group btn-group-justified" data-toggle="buttons">
+    <label
+      class="btn btn-sm mw-toggle-btn flush-top"
+      ng-repeat="l in languageOptions"
+      ng-click="languages.has($index) ? languages.delete($index) : languages.add($index)"
+      ng-class="{'active':languages.has($index)}">
+      {{l}}
+    </label>
+  </div>
+
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-primary" ng-click="ok()">Send translate later</button>
+  <button class="btn btn-default" ng-click="ok()">Send no translation</button>
+  <button class="btn btn-default" ng-click="ok()">Send translation complete</button>
+</div>

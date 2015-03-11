@@ -6558,6 +6558,35 @@ button.close {
   font-size: 2em;
   margin-bottom: 1em;
 }
+.no-gutter [class*="col-"] {
+  padding-left: 0;
+  padding-right: 0;
+}
+.outside-gutter > div:first-child {
+  padding-left: 15px;
+}
+.outside-gutter > div:last-child {
+  padding-right: 15px;
+}
+.flush-right {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.flush-left {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.flush-bottom {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.flush-top {
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+}
 .pregnant {
   color: #406281;
 }

@@ -8,9 +8,11 @@
    */
   angular.module('mwachx')
     .controller('ParticipantController', 
-      function ParticipantController($scope, $location, $routeParams, 
+      function ParticipantController($scope, $modal, $location, $routeParams, $log, $rootScope,
         Message, Participant) {
 
+
+        $scope.openSendMsg      = openSendMsg;
         $scope.participant      = [];
         $scope.fullResponse     = {};
 
@@ -35,12 +37,45 @@
         ];
             
         //
+        // Public Methods
+        //
+
+        function openSendMsg(origMsg) {
+          
+          var routePrefix = '/static/app/src/components/new-msg-modal/';
+          var modalScope = $rootScope.$new();
+          modalScope.params = {origMsg: origMsg};
+
+          var modalInstance = $modal.open({
+            templateUrl: routePrefix + 'newMessageModal.html',
+            controller: 'NewMessageController',
+            size: 'lg',
+            scope: modalScope,
+            resolve: {
+              items: function () {
+                return $scope.items;
+              }
+            }
+          });
+
+          modalInstance.result.then(
+            function () {
+              // Ok button?
+              $log.warn('ok button used');
+            }, 
+            function () {
+              $log.info('Send msg modal dismissed (canceled) at: ' + new Date());
+          });
+        };
+
+        //
         // Private Methods
         //
 
         var isDisabled = function(i) {
           return (this.is_pending && (typeof this.related === 'undefined' || this.topic === 'none'));
         }
+
         // Methods
         
         // Fetch this participant
