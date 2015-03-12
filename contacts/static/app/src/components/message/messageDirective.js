@@ -6,12 +6,13 @@
   angular.module('mwachx')
     .directive('mwMessage', function() {
       return {
-        restrict:         'E',
+        restrict:             'E',
         scope: {
-          'message':      '=',
-          'participant':  '=',
+          'message':          '=',
+          'participant':      '=',
+          'openSendModalFn':  '&', // This is a reference to a method from the parent controller
         },
-        templateUrl:  routePrefix + 'src/components/message/messageDirective.html',
+        templateUrl:           routePrefix + 'src/components/message/messageDirective.html',
       };
     });
 

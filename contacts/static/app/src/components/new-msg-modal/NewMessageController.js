@@ -9,7 +9,7 @@
    */
   angular.module('mwachx')
     .controller('NewMessageController', 
-      function ParticipantController($scope, $modalInstance, $log) {
+      function NewMessageController($scope, $modalInstance, $log) {
 
         // Vars
         // TODO: should these be fetched so we DRY?

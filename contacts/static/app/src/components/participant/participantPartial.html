@@ -16,7 +16,7 @@
         <mw-action-btn 
           mw-icon="'mw-comment'" 
           mw-style="'success'" 
-          ng-click="openSendMsg()">
+          ng-click="openSendModal()">
           Send Msg
         </mw-action-btn>
         <mw-action-btn mw-icon="'mw-mobile-1'" mw-style="'highlight'">Record Call</mw-action-btn>
@@ -24,7 +24,12 @@
 
       <!-- TODO: I want to get rid of fuelux and jquery and all the nonsense in this version. Need to sort out the overflow scrolling bits -->
       <div>
-        <mw-message message="msg" participant="participant" ng-repeat="msg in messages | orderBy:'created':true" class="clearfix">
+        <mw-message 
+          message="msg" 
+          participant="participant" 
+          open-send-modal-fn="openSendModal"
+          ng-repeat="msg in messages | orderBy:'created':true" 
+          class="clearfix">
         </mw-message>
       </div>
 

@@ -12,7 +12,7 @@
         Message, Participant) {
 
 
-        $scope.openSendMsg      = openSendMsg;
+        $scope.openSendModal    = openSendModal;
         $scope.participant      = [];
         $scope.fullResponse     = {};
 
@@ -39,11 +39,10 @@
         //
         // Public Methods
         //
-
-        function openSendMsg(origMsg) {
+        function openSendModal(origMsg) {
           
-          var routePrefix = '/static/app/src/components/new-msg-modal/';
-          var modalScope = $rootScope.$new();
+          var routePrefix   = '/static/app/src/components/new-msg-modal/';
+          var modalScope    = $rootScope.$new();
           modalScope.params = {origMsg: origMsg};
 
           var modalInstance = $modal.open({
@@ -66,6 +65,7 @@
             function () {
               $log.info('Send msg modal dismissed (canceled) at: ' + new Date());
           });
+
         };
 
         //

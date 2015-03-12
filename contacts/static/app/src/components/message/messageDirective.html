@@ -89,7 +89,7 @@
       <a 
         class="btn btn-success" 
         ng-class="{'disabled': message.isDisabled()}" 
-        ng-click="openSendMsg((message.show_translation ? message.translated_text : message.text))">
+        ng-click="openSendModalFn()(message.show_translation ? message.translated_text : message.text)">
           <i class="mw mw-reply"></i> Reply
       </a>
       <a ng-if="message.is_pending" class="btn btn-danger" ng-class="{'disabled': message.isDisabled()}">
