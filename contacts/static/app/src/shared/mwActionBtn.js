@@ -14,6 +14,8 @@
         scope: {
           iconClass:  '=mwIcon',
           urgency:    '=mwStyle',
+          spanClass:  '=mwStackClass',
+          insideIcon: '=mwStackInside',
         },
         templateUrl:  getTemplate,
       };

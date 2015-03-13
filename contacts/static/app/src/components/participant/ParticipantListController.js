@@ -12,9 +12,6 @@
       $scope.participants     = [];
       $scope.fullResponse     = {};
       
-      // Methods
-      $scope.loadParticipant  = loadParticipant;
-      
       // Fetch all of the participants
       Participant.get(function(response) {
         // Full response has the "next" url for example.
@@ -22,12 +19,6 @@
         $scope.fullResponse = response;
         $scope.participants = response.results;
       });
-
-
-      function loadParticipant() {
-        var id = this.participant.study_id;
-        $location.path('/' + id);
-      }
 
     });
 

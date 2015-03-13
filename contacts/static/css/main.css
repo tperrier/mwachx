@@ -6596,6 +6596,9 @@ button.close {
 .adverse-event {
   color: #fb291c;
 }
+.btn-xxl {
+  font-size: 3em;
+}
 .btn-highlight {
   color: #ffffff;
   background-color: #ac3cb8;
@@ -6717,6 +6720,20 @@ fieldset[disabled] .mw-toggle-btn.active {
   text-align: center;
   font-size: 2em;
   white-space: nowrap;
+}
+.action-btn > span > span.custom-stack {
+  position: relative;
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  top: 0.2em;
+  font-size: 0.5em;
+  vertical-align: baseline;
+}
+.action-btn > span > span.custom-stack strong {
+  font-weight: bold;
+  font-size: 0.7em;
 }
 .action-btn.btn-danger {
   border-color: #bd0e03;

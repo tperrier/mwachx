@@ -8,7 +8,7 @@
    */
   angular.module('mwachx')
     .controller('ParticipantController', 
-      function ParticipantController($scope, $modal, $location, $routeParams, $log, $rootScope,
+      function ParticipantController($scope, $modal, $location, $stateParams, $log, $rootScope,
         Message, Participant) {
 
 
@@ -79,7 +79,7 @@
         // Methods
         
         // Fetch this participant
-        Participant.get( {study_id:$routeParams.study_id},
+        Participant.get( {study_id:$stateParams.study_id},
           function(response) {
             $scope.participant = response;
 
@@ -91,7 +91,7 @@
         });
 
         // Fetch messages for this participant
-        Message.query( {study_id:$routeParams.study_id},
+        Message.query( {study_id:$stateParams.study_id},
           function(response) {
             
             $scope.messages = response;

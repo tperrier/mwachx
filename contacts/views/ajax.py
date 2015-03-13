@@ -29,8 +29,8 @@ import contacts.forms as forms, utils
 @csrf_protect
 @ensure_csrf_cookie
 @login_required()
-def participant_view(request):
-    return render(request, 'app/participant.html')
+def angular_view(request):
+    return render(request, 'app/index.html')
 
 
 

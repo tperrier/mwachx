@@ -1,4 +1,10 @@
 <label class="btn action-btn" ng-class="'btn-{{urgency}}'">
-	<span><i class="mw" ng-class="iconClass"></i></span> 
+  <span ng-switch="spanClass || '_undefined_'">
+  	<span ng-switch-default ng-class="spanClass">
+      <i class="mw" ng-class="iconClass"></i>
+      <strong ng-if="insideIcon" class="mw mw-stack-1x">{{insideIcon}}</strong>
+    </span>
+    <i ng-switch-when="_undefined_" class="mw" ng-class="iconClass"></i>
+  </span> 
 	<label ng-transclude></label>
 </label>
