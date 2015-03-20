@@ -9,7 +9,7 @@ echo "---> ACTION HOOK: deploy <---"
 source "$OPENSHIFT_HOMEDIR/python/virtenv/bin/activate"
 
 if [ -f "${OPENSHIFT_DATA_DIR}local_settings.py" ]; then
-	echo "Copping '${OPENSHIFT_DATA_DIR}local_settings.py' to '${OPENSHIFT_REPO_DIR}mwach/local_settings.py'"
+    echo "Copping '${OPENSHIFT_DATA_DIR}local_settings.py' to '${OPENSHIFT_REPO_DIR}mwach/local_settings.py'"
 	cp "${OPENSHIFT_DATA_DIR}local_settings.py" "${OPENSHIFT_REPO_DIR}mwach/local_settings.py"
 fi
 
