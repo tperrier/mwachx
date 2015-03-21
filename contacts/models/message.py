@@ -157,9 +157,9 @@ class Message(TimeStampedModel):
         if config.AFRICAS_TALKING_SEND:
             import africas_talking
             try:
-                africas_talking.send(contact.connection.identity,message)
+                at_id = africas_talking.send(contact.connection.identity,message)
             except africas_talking.AfricasTalkingException as e:
-                pass
+                at_id = 'error'
 
         _msg = Message.objects.create(
             is_system=is_system,
@@ -171,7 +171,9 @@ class Message(TimeStampedModel):
             contact=contact,
             is_viewed=True,
             parent=parent,
+            external_id=at_id
         )
+        
         if languages:
             lang_objs = Language.objects.filter(id__in=languages)
             _msg.languages = lang_objs

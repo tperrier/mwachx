@@ -40,7 +40,6 @@ def send(to,message):
     post.raise_for_status()
     
     data = post.json()
-    print data
     '''
     Example of JSON Response
     {u'SMSMessageData': 
@@ -57,6 +56,9 @@ def send(to,message):
     #Return single or list of UUIDs
     recipients = data['SMSMessageData']['Recipients']
     if len(recipients) == 1:
-        return recipients[0]['messageId']
+        msgID = recipients[0]['messageId']
+        if msgID == 'None':
+            return 'invalid'
+        return msgID
     return [r['messageId'] for r in recipients]
 
