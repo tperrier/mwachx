@@ -40,7 +40,7 @@ def send(to,message):
     post.raise_for_status()
     
     data = post.json()
-    
+    print data
     '''
     Example of JSON Response
     {u'SMSMessageData': 

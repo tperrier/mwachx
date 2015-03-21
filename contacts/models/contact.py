@@ -206,6 +206,9 @@ class Contact(TimeStampedModel):
         sha = sha256('%i%s%i%s'%(self.id,self.nickname,self.anc_num,self.birthdate)).hexdigest()[:5]
         key = ''.join([str(int(i,16)) for i in sha])
         return key[:5]
+
+    def choice_label(self):
+        return '%s (%s)'%(self.nickname,self.facility)
     
     @property
     def pending(self):

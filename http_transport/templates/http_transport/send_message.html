@@ -1,18 +1,31 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 
-{% block title %}Contact{% endblock %}
+{% block title %}Send Message{% endblock %}
 
 {% block content %}
-        {% if contact %}
-            <div>
-                Message sent to <a href='/contact/{{contact.study_id}}'>{{contact.nickname}}</a>
+        <div class='col-md-1'></div>
+        <div class='col-md-5'>
+            {% if contact and not system %}
+                <div>Message sent as <a href='/contact/{{contact.study_id}}'>{{contact.nickname}}</a></div>
+            {% endif %}
+            <h1> Send Message As Participant </h1>
+            <form id='participant-send-form' action='' method='post' class='form'>
+                {% csrf_token %}
+                {{ participant_form.as_p }}
+                <input type='submit' name='participant-send' value='Send'/>
+            </form>
             </div>
-        {% endif %}
-        <form id='#contact-create-form' action='' method='post' class='form'>
-        <h1> Send Message </h1>
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type='submit' value='Send'/>
-        </form>
+            <div class='col-md-5'>
+                {% if system %}
+                    <div>System message sent to <a href='/contact/{{contact.study_id}}'>{{contact.nickname}}</a></div>
+                {% endif %}
+                <h1>Send System Message</h1>
+                <form id='system-send-form' action='' method='post' class='from'>
+                {% csrf_token %}
+                {{ system_form.as_p}}
+                <input type='submit' name='system-send' value='Send'/>
+                </form>
+            </div>
+        </div>
 {% endblock %}
