@@ -42,9 +42,10 @@
                      <a class='btn btn-warning' href='/accounts/logout/?next=/'>Logout: {{user.username}}</a>
                         {% if user.is_staff %}
                         <select id='id_staff_facility' name='staff_facility'>
-                            <option value='1'{% if user.practitioner.facility.name == 'bondo' %} selected{% endif %}>Bondo</option>
-                            <option value='2'{% if user.practitioner.facility.name == 'ahero' %} selected{% endif %}>Ahero</option>
-                            <option value='3'{% if user.practitioner.facility.name == 'mathare' %} selected{% endif %}>Mathare</option>
+                            <option value='bondo'{% if user.practitioner.facility.name == 'bondo' %} selected{% endif %}>Bondo</option>
+                            <option value='ahero'{% if user.practitioner.facility.name == 'ahero' %} selected{% endif %}>Ahero</option>
+                            <option value='mathare'{% if user.practitioner.facility.name == 'mathare' %} selected{% endif %}>Mathare</option>
+                            <option value='demo'{% if user.practitioner.facility.name == 'demo' %} selected{% endif %}>Demo</option>
                         </select>
                         {% endif %}
                     {% endif %}
