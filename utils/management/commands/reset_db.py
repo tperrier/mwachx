@@ -18,8 +18,10 @@ class Command(BaseCommand):
     help = 'Delete old sqlite file, migrate new models, and load fake data'
 
     option_list = BaseCommand.option_list + (
-            make_option('--add-participants',action='store_true',dest='participants',
-                default=False,help='Flag to add participants on reset'),
+            make_option('-P','--add-participants',type=int,dest='participants',
+                default=0,help='Number of participants to add. Default = 0'),
+            make_option('-J','--jennifer',default=False,action='store_true',
+                help='Add a fake account for Jennifer to each facility'),
         )
     
     def handle(self,*args,**options):
@@ -47,8 +49,8 @@ class Command(BaseCommand):
         create_facilities()
         create_users()
 
-        if options['participants']:
-            load_old_participants()
+        if options['participants'] > 0:
+            load_old_participants(options['participants'])
         
         #commit data
         transaction.commit()
@@ -134,13 +136,13 @@ def add_note(note,contact):
 def get_due_date():
     return datetime.date.today() + datetime.timedelta(days=random.randint(0,100))
 
-def load_old_participants():
-        print 'Load Participants'
+def load_old_participants(n):
+        print 'Loading %i Participants'%n
         JSON_DATA_FILE =  os.path.join(settings.PROJECT_ROOT,'tools','small.json')
         if settings.ON_OPENSHIFT:
             JSON_DATA_FILE = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'small.json')
-        IMPORT_COUNT = 15
         clients = json.load(open(JSON_DATA_FILE))
+        IMPORT_COUNT = min(n,len(clients))
         clients = clients.values()[:IMPORT_COUNT]
 
         for i,c in enumerate(clients):
