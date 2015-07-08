@@ -42,7 +42,11 @@ class Command(BaseCommand):
 
         demo = create_facility()
 
-        clients,messages = load_excel('ignore/demo_messages.xlsx')
+        excel_file = 'ignore/demo_messages.xlsx'
+        if settings.ON_OPENSHIFT:
+            excel_file = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'demo_messages.xlsx')
+
+        clients,messages = load_excel(excel_file)
 
         # Returns {nickname => contact}
         contacts = create_participants(demo,clients)
