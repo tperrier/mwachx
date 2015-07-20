@@ -97,8 +97,6 @@ WSGI_APPLICATION = 'wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 SQLITE_DB_FOLDER = os.environ['OPENSHIFT_DATA_DIR'] if ON_OPENSHIFT else PROJECT_PATH
 
-SQLITE_DB_FOLDER = os.environ['OPENSHIFT_DATA_DIR'] if ON_OPENSHIFT else PROJECT_PATH
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -144,8 +142,8 @@ STATICFILES_FINDERS = (
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_CONFIG = {
-    'CURRENT_DATE':('2014-8-1','Current Date for training'),
-    'AFRICAS_TALKING_SEND':(True,"Africa's Talking Send"),
+    'CURRENT_DATE':('2015-07-21','Current Date for training'),
+    'AFRICAS_TALKING_SEND':(False,"Africa's Talking Send"),
 }
 
 ################
