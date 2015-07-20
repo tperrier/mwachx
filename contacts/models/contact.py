@@ -19,7 +19,7 @@ class ContactQuerySet(BaseQuerySet):
         try:
             return self.filter(facility=user.practitioner.facility)
         except ObjectDoesNotExist:
-            return self
+            return self.none()
         
     
     def pregnant(self):

@@ -22,7 +22,7 @@ class MessageQuerySet(BaseQuerySet):
         try:
             return self.filter(contact__facility=user.practitioner.facility)
         except (ObjectDoesNotExist, AttributeError) as e:
-            return self
+            return self.none()
 
 class Language(TimeStampedModel):
     short_name = models.CharField(max_length=1)
