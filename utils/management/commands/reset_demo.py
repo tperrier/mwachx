@@ -17,20 +17,19 @@ class Command(BaseCommand):
     
     help = 'Delete and reset messages, contacts and visits for the Demo Site'
 
-    '''
     option_list = BaseCommand.option_list + (
-            make_option('-P','--add-participants',type=int,dest='participants',
-                default=0,help='Number of participants to add. Default = 0'),
-            make_option('-J','--jennifer',default=False,action='store_true',
-                help='Add a fake account for Jennifer to each facility'),
-        )
-    '''
+        make_option('-d','--dry-run',default=False,action='store_true',
+            help='Do not make changes in database. Default: False'),
+    )
 
     def handle(self,*args,**options):
 
-        
-        try:
+        if options['dry_run']:
+            print 'Dry Run: No database changes'
+        else:
+            print 'Live Run: Changing database'
 
+        try:
             # Make sure demo facility exists 
             demo = cont.Facility.objects.get(name='demo')
             print 'Demo Facility Exists....Deleting'
@@ -40,7 +39,8 @@ class Command(BaseCommand):
         except cont.Facility.DoesNotExist:
             print 'Demo Facility Does Not Exist'
 
-        demo = create_facility()
+        if not options['dry_run']:
+            demo = create_facility()
 
         excel_file = 'ignore/demo_messages.xlsx'
         if settings.ON_OPENSHIFT:
@@ -48,9 +48,10 @@ class Command(BaseCommand):
 
         clients,messages = load_excel(excel_file)
 
-        # Returns {nickname => contact}
-        contacts = create_participants(demo,clients)
-        create_messages(contacts,messages)
+        if not options['dry_run']:
+            # Returns {nickname => contact}
+            contacts = create_participants(demo,clients)
+            create_messages(contacts,messages)
         
 ######################################################################
 # Utility Functions
@@ -78,10 +79,11 @@ def make_client(row):
 
 def make_message(row):
     date,time,sender,client,message = get_values(row[:5])
+    print date,time,sender,client
     is_system = sender.startswith('S')
     is_outgoing = not sender.startswith('C')
     created = datetime.datetime.combine(make_date(date),time)
-    return Message(make_date(date),is_system,is_outgoing,client,message)
+    return Message(created,is_system,is_outgoing,client,message)
 
 def load_excel(file_name):
     wb = xl.load_workbook(file_name)
