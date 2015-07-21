@@ -13,8 +13,8 @@ source "$OPENSHIFT_HOMEDIR/python/virtenv/bin/activate"
 	#cp "${OPENSHIFT_DATA_DIR}local_settings.py" "${OPENSHIFT_REPO_DIR}mwach/local_settings.py"
 #fi
 
-#echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py collectstatic --noinput'"
-#python "${OPENSHIFT_REPO_DIR}manage.py" collectstatic --noinput
+echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py collectstatic --noinput'"
+python "${OPENSHIFT_REPO_DIR}manage.py" collectstatic --noinput
 
 # if [ -z "$OPENSHIFT_KEEP_DB" ]; then
 # 	echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py migrate --noinput'"
