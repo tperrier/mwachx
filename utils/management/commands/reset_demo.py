@@ -10,6 +10,9 @@ from django.core.management import ManagementUtility
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.db import transaction 
+from django.contrib.auth.models import User
+
+from constance import config
 
 import contacts.models as cont
 
@@ -41,6 +44,13 @@ class Command(BaseCommand):
 
         if not options['dry_run']:
             demo = create_facility()
+            admin_user = User.objects.get(username='admin')
+            try:
+                admin_practitioner = cont.Practitioner.objects.get(user=admin_user)
+                print 'Admin Practitioner Exists'
+            except cont.Practitioner.DoesNotExist as e:
+                print 'Admin Practitioner Does Not Exist....Creating'
+                cont.Practitioner.objects.create(user=User.objects.first(),facility=demo)
 
         excel_file = 'ignore/demo_messages.xlsx'
         if settings.ON_OPENSHIFT:
@@ -52,6 +62,7 @@ class Command(BaseCommand):
             # Returns {nickname => contact}
             contacts = create_participants(demo,clients)
             create_messages(contacts,messages)
+            config.CURRENT_DATE = '2015-07-20'
         
 ######################################################################
 # Utility Functions
@@ -59,7 +70,7 @@ class Command(BaseCommand):
 
 ### ****** Named Tuples ****** ###
 # Headers: nickname, due_date, last_msg_client, status
-Client = collections.namedtuple('Client',('nickname','due_date','last_msg_client','status'))
+Client = collections.namedtuple('Client',('nickname','due_date','last_msg_client','status','visit'))
 #Headers: Dates,  Time, Sender,  Name Client, Message
 Message = collections.namedtuple('Message',('created','is_system','is_outgoing','client','message'))
 
@@ -68,14 +79,16 @@ def get_values(row):
     return [cell.value for cell in row]
 
 def make_date(date_str):
-    return datetime.datetime.strptime(date_str+'-2015','%d-%b-%Y').date()
+    if date_str is not None:
+        return datetime.datetime.strptime(date_str+'-2015','%d-%b-%Y').date()
 
 def make_time(time_str):
-    return datetime.datetime.strptime(time_str,'%I:%M %p').time()
+    if time_str is not None:
+        return datetime.datetime.strptime(time_str,'%I:%M %p').time()
 
 def make_client(row):
-    nickname,due_date,last_msg_client,status = get_values(row[:4])
-    return Client(nickname,make_date(due_date),make_date(last_msg_client),status)
+    nickname,due_date,last_msg_client,status,visit = get_values(row[:5])
+    return Client(nickname,make_date(due_date),make_date(last_msg_client),status,make_date(visit))
 
 def make_message(row):
     date,time,sender,client,message = get_values(row[:5])
@@ -114,8 +127,12 @@ def create_message(contact,message):
         'is_outgoing':message.is_outgoing,
         'is_system':message.is_system,
         'contact':contact,
-        'connection':contact.connection
+        'connection':contact.connection,
+        'translated_text':message.message,
+        'translate_skipped':True,
     }
+    if message.created < datetime.datetime(2015,7,1):
+        new_message['is_viewed'] = True
     _message = cont.Message.objects.create(**new_message)
     _message.created = message.created
     _message.save()
@@ -138,4 +155,6 @@ def create_contact(facility,client):
         identity='+2500111{}'.format(new_client['anc_num']),
         contact=contact,
         is_primary=True)
+    if client.visit:
+        cont.Visit.objects.create(contact=contact,scheduled=client.visit,reminder_last_seen=client.visit)
     return contact
