@@ -29,7 +29,7 @@ def home(request):
     visit_count = visits.get_bookcheck().count() + visits.get_upcoming_visits().count()
 
     status =  {
-        "messages": messages.filter(is_viewed=False).count(),
+        "messages": messages.pending().count(),
         "visits": visit_count,
         "calls": 0,
         "translations": messages.to_translate().count(),
@@ -59,8 +59,8 @@ def translations(request):
 def contacts(request):
     contacts = cont.Contact.objects.for_user(request.user).extra(
         select={
-            'messages_sent':'select count(*) from contacts_message where contacts_message.contact_id = contacts_contact.id and contacts_message.is_outgoing = 0',
-            'messages_received':'select count(*) from contacts_message where contacts_message.contact_id = contacts_contact.id and contacts_message.is_outgoing = 1',
+            'messages_sent':'select count(*) from contacts_message where contacts_message.contact_id = contacts_contact.id and contacts_message.is_outgoing = 0 and contacts_message.created < "{}"'.format(config.CURRENT_DATE),
+            'messages_received':'select count(*) from contacts_message where contacts_message.contact_id = contacts_contact.id and contacts_message.is_outgoing = 1 and contacts_message.created < "{}"'.format(config.CURRENT_DATE),
         }
     )
     return render(request,'contacts/contacts.html',{'contacts':contacts})

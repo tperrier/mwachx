@@ -10,10 +10,15 @@ from constance import config
 #Local Imports
 from utils.models import TimeStampedModel, BaseQuerySet
 
+class MessageDateMananger(models.Manager):
+
+    def get_queryset(self):
+        return MessageQuerySet(self.model,using=self._db).filter(created__lte=config.CURRENT_DATE)
+
 class MessageQuerySet(BaseQuerySet):
     
     def pending(self):
-        return self.filter(is_viewed=False)
+        return self.filter(is_viewed=False,is_outgoing=False)
         
     def to_translate(self):
         return self.filter(is_system=False,is_translated=False,translate_skipped=False)
@@ -40,7 +45,7 @@ class Message(TimeStampedModel):
     text = models.CharField(max_length=1000,help_text='Text of the SMS message')
 
     #Set Custom Manager
-    objects = MessageQuerySet.as_manager()
+    objects = MessageDateMananger.from_queryset(MessageQuerySet)()
     
     #Boolean Flags on Message
     is_outgoing = models.BooleanField(default=True)

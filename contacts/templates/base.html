@@ -32,22 +32,16 @@
                     <li {% url 'contacts.views.translations' as u %}{% if request.path == u %}class='active' {% endif %}>
                         <a href='{{u}}'><i class='mw mw-language'></i> Translations</a>
                     </li>
-                    
                      <li {% if 'contact' in request.path %}class='active' {% endif %}>
                         <a href='/contact'><i class="mw mw-mwach-phone"></i> Participants</a>
+                    </li>
+                    <li {% if 'demo' in request.path %}class='active' {% endif %}>
+                        <a href='/dashboard/demo/'><i class='mw mw-eye-off'></i> Demo</a>
                     </li>
                 </ul>
                 <h3 class='pull-right'>
                     {% if not user.is_anonymous %}
                      <a class='btn btn-warning' href='/accounts/logout/?next=/'>Logout: {{user.username}}</a>
-                        {% if user.is_staff %}
-                        <select id='id_staff_facility' name='staff_facility'>
-                            <option value='bondo'{% if user.practitioner.facility.name == 'bondo' %} selected{% endif %}>Bondo</option>
-                            <option value='ahero'{% if user.practitioner.facility.name == 'ahero' %} selected{% endif %}>Ahero</option>
-                            <option value='mathare'{% if user.practitioner.facility.name == 'mathare' %} selected{% endif %}>Mathare</option>
-                            <option value='demo'{% if user.practitioner.facility.name == 'demo' %} selected{% endif %}>Demo</option>
-                        </select>
-                        {% endif %}
                     {% endif %}
                     <a class='date-delta btn btn-sm btn-warning' data-direction='back' data-delta='1'><</a>
                     <span class="label label-warning">{{CURRENT_DATE|date:"Y-m-d"}}</span>

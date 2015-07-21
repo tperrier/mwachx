@@ -1,0 +1,42 @@
+{% extends 'base.html' %} {% load staticfiles %}{% block title %}Demo Dashboard{% endblock %} {% block content %}
+  <br/>
+
+  <div class='alert alert-info' style='text-align:center'><h2> Current Date: {{CURRENT_DATE}}</h2></div>
+
+
+<div class='btn-group btn-group-justified action-btn-group' role="group">
+
+	{% if CURRENT_DATE|date:"Y-m-d" >= "2015-07-22" %}
+    <a class='btn btn-info action-button action-item' href="{% url 'contacts.views.demo_dashboard' %}?action=rest">
+    {% else %} 
+    <a class='btn btn-success action-button action-item' href="#">
+    {% endif %}
+       <span class="action-item-text">Reset Demo</span>
+    </a>
+    
+    {% if CURRENT_DATE|date:"Y-m-d" != "2015-07-22" %}
+    <a class='btn btn-info action-button action-item' href="{% url 'contacts.views.demo_dashboard' %}?action=2015-07-22">
+    {% else %} 
+    <a class='btn btn-success action-button action-item' href="#">
+    {% endif %}
+    	<span class="action-item-text">Preset 1: July 22</span>
+    </a>
+
+    {% if CURRENT_DATE|date:"Y-m-d" != "2015-07-24" %}
+    <a class='btn btn-info action-button action-item' href="{% url 'contacts.views.demo_dashboard' %}?action=2015-07-24">
+    {% else %} 
+    <a class='btn btn-success action-button action-item' href="#">
+    {% endif %}
+        <span class="action-item-text">Preset 2: July 24</span>
+    </a>
+
+    {% if CURRENT_DATE|date:"Y-m-d" != "2015-07-29" %}
+    <a class='btn btn-info action-button action-item' href="{% url 'contacts.views.demo_dashboard' %}?action=2015-07-29">
+    {% else %} 
+    <a class='btn btn-success action-button action-item' href="#">
+    {% endif %}
+       <span class="action-item-text">Preset 3: July 29</span>
+     </a>
+
+</div>
+{% endblock %}

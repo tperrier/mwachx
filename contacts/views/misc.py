@@ -6,6 +6,7 @@ from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.core import management
 
 from constance import config
 
@@ -36,5 +37,13 @@ def change_current_date(request,direction,delta):
     td = datetime.timedelta(days=delta)
     config.CURRENT_DATE = utils.today() + td
     return HttpResponse('/') #redirect URL
-    
 
+def demo_dashboard(request):
+
+    action = request.GET.get('action',None)
+    if action == 'rest':
+        management.call_command('reset_demo')
+    elif action != None:
+        new_date = datetime.datetime.strptime(action,'%Y-%m-%d').date()
+        config.CURRENT_DATE = new_date
+    return render(request,'demo_dashboard.html')
