@@ -9,18 +9,18 @@ echo "---> ACTION HOOK: deploy <---"
 source "$OPENSHIFT_HOMEDIR/python/virtenv/bin/activate"
 
 if [ -f "${OPENSHIFT_DATA_DIR}local_settings.py" ]; then
-	echo "Copping '${OPENSHIFT_DATA_DIR}local_settings.py' to '${OPENSHIFT_REPO_DIR}mwach/local_settings.py'"
+    echo "Copying '${OPENSHIFT_DATA_DIR}local_settings.py' to '${OPENSHIFT_REPO_DIR}mwach/local_settings.py'"
 	cp "${OPENSHIFT_DATA_DIR}local_settings.py" "${OPENSHIFT_REPO_DIR}mwach/local_settings.py"
 fi
 
 echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py collectstatic --noinput'"
 python "${OPENSHIFT_REPO_DIR}manage.py" collectstatic --noinput
 
-if [ -z "$OPENSHIFT_KEEP_DB" ]; then
-	echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py migrate --noinput'"
-	python "${OPENSHIFT_REPO_DIR}manage.py" migrate --noinput
+# if [ -z "$OPENSHIFT_KEEP_DB" ]; then
+# 	echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py migrate --noinput'"
+# 	python "${OPENSHIFT_REPO_DIR}manage.py" migrate --noinput
 
-	echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py reset_db'"
-	python "${OPENSHIFT_REPO_DIR}manage.py" reset_db
-fi
+#   echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py reset_db'"
+#   python "${OPENSHIFT_REPO_DIR}manage.py" reset_db
+# fi
 

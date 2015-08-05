@@ -73,7 +73,8 @@ def update_participant_details(request,pk=None):
 
 @login_required()    
 def messages_new(request):
-    return render(request, 'messages_new.html',{'new_message_list':cont.Message.objects.for_user(request.user).pending()})
+    new_msg_list = cont.Message.objects.for_user(request.user).pending()
+    return render(request, 'messages_new.html',{'new_message_list':new_msg_list})
 
 # ==== Contact Page Action Views ===
 @login_required()

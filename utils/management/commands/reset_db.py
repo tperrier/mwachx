@@ -1,38 +1,44 @@
 #!/usr/bin/python
 import json,datetime,sys,os,code,random
 import dateutil.parser
+from optparse import make_option
 
 #Django Imports
 from django.contrib.auth.models import User
 from django.db.models import Max
-import contacts.models as cont
 from django.core.management import ManagementUtility
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.db import transaction 
 
+import contacts.models as cont
+
 class Command(BaseCommand):
     
     help = 'Delete old sqlite file, migrate new models, and load fake data'
+
+    option_list = BaseCommand.option_list + (
+            make_option('-P','--add-participants',type=int,dest='participants',
+                default=0,help='Number of participants to add. Default = 0'),
+            make_option('-J','--jennifer',default=False,action='store_true',
+                help='Add a fake account for Jennifer to each facility'),
+        )
     
     def handle(self,*args,**options):
 
         #Delete old DB
         print 'Deleting old sqlite db....'
-        if settings.ON_OPENSHIFT:
-            try:
+        try:
+            if settings.ON_OPENSHIFT:
                 os.remove(os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'mwach.db'))
-            except OSError:
-                pass
-        else:
-            try:
+            else:
                 os.remove(os.path.join(settings.PROJECT_PATH,'mwach.db'))
-            except OSError:
-                pass
+        except OSError:
+            pass
         
         #Migrate new models
         print 'Migrating new db....'
-        utility = ManagementUtility(['initial_import.py','migrate'])
+        utility = ManagementUtility(['reset_db.py','migrate'])
         utility.execute()
         
         #Turn off Autocommit 
@@ -42,29 +48,9 @@ class Command(BaseCommand):
         create_languages()
         create_facilities()
         create_users()
-        
-        JSON_DATA_FILE =  os.path.join(settings.PROJECT_ROOT,'tools','small.json')
-        if settings.ON_OPENSHIFT:
-            JSON_DATA_FILE = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'small.json')
-        IMPORT_COUNT = 15
-        clients = json.load(open(JSON_DATA_FILE))
-        clients = clients.values()[:IMPORT_COUNT]
 
-        for i,c in enumerate(clients):
-            print add_client(c,i)
-
-        #Mark the last message for each contact is_viewed=False
-        last_messages = cont.Message.objects.filter(is_outgoing=False).values('contact_id').order_by().annotate(Max('id'))
-        cont.Message.objects.exclude(id__in=[d['id__max'] for d in last_messages]).update(is_viewed=True)
-        #Move the last message to the front of the message que
-        for msg in cont.Message.objects.filter(id__in=[d['id__max'] for d in last_messages]):
-            before_msg = msg.contact.message_set.all()[random.randint(1,3)]
-            msg.created = before_msg.created + datetime.timedelta(seconds=600)
-            msg.save()
-
-        # Make last visit arrived = None.
-        last_visits = cont.Visit.objects.all().values('contact_id').order_by().annotate(Max('id'))
-        cont.Visit.objects.filter(id__in=[d['id__max'] for d in last_visits]).update(arrived=None,skipped=None)
+        if options['participants'] > 0:
+            load_old_participants(options['participants'])
         
         #commit data
         transaction.commit()
@@ -142,7 +128,7 @@ def add_note(note,contact):
         'comment':note['content'],
     }
     
-    _note = cont.Note.objects.create(**new_note)    
+    _note = cont.Note.objects.create(**new_note)
     _note.created = note['date']
     _note.save()
     
@@ -150,7 +136,33 @@ def add_note(note,contact):
 def get_due_date():
     return datetime.date.today() + datetime.timedelta(days=random.randint(0,100))
 
+def load_old_participants(n):
+        print 'Loading %i Participants'%n
+        JSON_DATA_FILE =  os.path.join(settings.PROJECT_ROOT,'tools','small.json')
+        if settings.ON_OPENSHIFT:
+            JSON_DATA_FILE = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'small.json')
+        clients = json.load(open(JSON_DATA_FILE))
+        IMPORT_COUNT = min(n,len(clients))
+        clients = clients.values()[:IMPORT_COUNT]
+
+        for i,c in enumerate(clients):
+            print add_client(c,i)
+
+        #Mark the last message for each contact is_viewed=False
+        last_messages = cont.Message.objects.filter(is_outgoing=False).values('contact_id').order_by().annotate(Max('id'))
+        cont.Message.objects.exclude(id__in=[d['id__max'] for d in last_messages]).update(is_viewed=True)
+        #Move the last message to the front of the message que
+        for msg in cont.Message.objects.filter(id__in=[d['id__max'] for d in last_messages]):
+            before_msg = msg.contact.message_set.all()[random.randint(1,3)]
+            msg.created = before_msg.created + datetime.timedelta(seconds=600)
+            msg.save()
+
+        # Make last visit arrived = None.
+        last_visits = cont.Visit.objects.all().values('contact_id').order_by().annotate(Max('id'))
+        cont.Visit.objects.filter(id__in=[d['id__max'] for d in last_visits]).update(arrived=None,skipped=None)
+
 def create_languages():
+    print 'Creating Languages'
     cont.Language.objects.bulk_create([
         cont.Language(**{"short_name":"E", "name": 'English'}),
         cont.Language(**{"short_name":"S", "name": 'Swahili'}),
@@ -159,15 +171,16 @@ def create_languages():
     ])
     
 def create_facilities():
+    print 'Creating Facilities'
     cont.Facility.objects.bulk_create([
         cont.Facility(name='bondo'),
         cont.Facility(name='ahero'),
         cont.Facility(name='mathare'),
-        cont.Facility(name='kisumu_east'),
     ])
     
 def create_users():
     #create admin user
+    print 'Creating Users'
     oscard = User.objects.create_superuser('admin',email='o@o.org',password='mwachx')
     cont.Practitioner.objects.create(facility=cont.Facility.objects.get(pk=1),user=oscard)
     #create study nurse users

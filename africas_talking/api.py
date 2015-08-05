@@ -8,15 +8,13 @@ import requests
 from at_utils import AfricasTalkingException
 
 #Import Afica's Talking Settings
-SETTINGS = getattr(settings,'AFRICAS_TALKING',None)
-if SETTINGS is None:
-    raise AfricasTalkingException('No var AFRICAS_TALKING in settings')
+AFRICAS_TALKING_SETTINGS = getattr(settings,'AFRICAS_TALKING',{})
 
-API_KEY = SETTINGS.get('API_KEY',None)
+API_KEY = AFRICAS_TALKING_SETTINGS.get('API_KEY',None)
 
-USERNAME = SETTINGS.get('USERNAME',None)
+USERNAME = AFRICAS_TALKING_SETTINGS.get('USERNAME',None)
 
-SHORTCODE = SETTINGS.get('SHORTCODE',None)
+SHORTCODE = AFRICAS_TALKING_SETTINGS.get('SHORTCODE',None)
 
 SMS_API_URL = 'http://api.africastalking.com/version1/messaging'
 
@@ -40,7 +38,6 @@ def send(to,message):
     post.raise_for_status()
     
     data = post.json()
-    
     '''
     Example of JSON Response
     {u'SMSMessageData': 
@@ -57,6 +54,9 @@ def send(to,message):
     #Return single or list of UUIDs
     recipients = data['SMSMessageData']['Recipients']
     if len(recipients) == 1:
-        return recipients[0]['messageId']
+        msgID = recipients[0]['messageId']
+        if msgID == 'None':
+            return 'invalid'
+        return msgID
     return [r['messageId'] for r in recipients]
 

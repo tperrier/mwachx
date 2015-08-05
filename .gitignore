@@ -3,6 +3,7 @@
 *.pyc
 *~
 *.json
+*.xlsx
 !package.json
 !bower.json
 *.log

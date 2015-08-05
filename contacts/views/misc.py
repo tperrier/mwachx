@@ -18,8 +18,13 @@ import utils
 
     
 @staff_member_required
-def staff_facility_change(request,facility_id):
-    facility = cont.Facility.objects.get(pk=facility_id)
+def staff_facility_change(request,facility_name):
+    try:
+        facility = cont.Facility.objects.get(name=facility_name)
+    except cont.Facility.DoesNotExist as e:
+        # Did not find by name so return first facility
+        facility = cont.Facility.objects.all().first()
+    print facility
     request.user.practitioner.facility = facility
     request.user.practitioner.save()
     return HttpResponse('/') #redirect URL
