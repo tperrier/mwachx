@@ -9,21 +9,25 @@ from django.db.models import Max
 from django.core.management import ManagementUtility
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from django.db import transaction 
+from django.db import transaction
 
 import contacts.models as cont
 
+JSON_DATA_FILE =  os.path.join(settings.PROJECT_ROOT,'tools','small.json')
+if settings.ON_OPENSHIFT:
+    JSON_DATA_FILE = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'small.json')
+
 class Command(BaseCommand):
-    
+
     help = 'Delete old sqlite file, migrate new models, and load fake data'
 
     option_list = BaseCommand.option_list + (
             make_option('-P','--add-participants',type=int,dest='participants',
-                default=0,help='Number of participants to add. Default = 0'),
+                default=10,help='Number of participants to add. Default = 10'),
             make_option('-J','--jennifer',default=False,action='store_true',
                 help='Add a fake account for Jennifer to each facility'),
         )
-    
+
     def handle(self,*args,**options):
 
         #Delete old DB
@@ -35,15 +39,18 @@ class Command(BaseCommand):
                 os.remove(os.path.join(settings.PROJECT_PATH,'mwach.db'))
         except OSError:
             pass
-        
+
+        if not os.path.isfile(JSON_DATA_FILE):
+            sys.exit('JSON file %s Does Not Exist'%(JSON_DATA_FILE,))
+
         #Migrate new models
         print 'Migrating new db....'
         utility = ManagementUtility(['reset_db.py','migrate'])
         utility.execute()
-        
-        #Turn off Autocommit 
+
+        #Turn off Autocommit
         transaction.set_autocommit(False)
-        
+
         #Add new fake data
         create_languages()
         create_facilities()
@@ -51,10 +58,10 @@ class Command(BaseCommand):
 
         if options['participants'] > 0:
             load_old_participants(options['participants'])
-        
+
         #commit data
         transaction.commit()
-        
+
 ###################
 # Utility Functions
 ###################
@@ -75,7 +82,7 @@ def add_client(client,i):
         }
     contact = cont.Contact.objects.create(**new_client)
     connection = cont.Connection.objects.create(identity='+2500'+client['phone_number'][:8],contact=contact,is_primary=True)
-    
+
     message_count = len(client['messages'])
     for i,m in enumerate(client['messages']):
         #only make translations for last five messages
@@ -85,7 +92,7 @@ def add_client(client,i):
         add_visit(v,contact)
     for n in client['notes']:
         add_note(n,contact)
-            
+
     return new_client
 
 def add_message(message,contact,connection,translate=False):
@@ -107,9 +114,9 @@ def add_message(message,contact,connection,translate=False):
         _message.is_translated = True
         _lang = cont.Language.objects.get(id=random.randint(1,4))
         _message.languages.add(_lang)
-    
+
     _message.save()
-    
+
 def add_visit(visit,contact):
     if visit['scheduled_date']:
         new_visit = {
@@ -121,26 +128,23 @@ def add_visit(visit,contact):
             'contact':contact
         }
         _visit = cont.Visit.objects.create(**new_visit)
-        
+
 def add_note(note,contact):
     new_note = {
         'contact':contact,
         'comment':note['content'],
     }
-    
+
     _note = cont.Note.objects.create(**new_note)
     _note.created = note['date']
     _note.save()
-    
-    
+
+
 def get_due_date():
     return datetime.date.today() + datetime.timedelta(days=random.randint(0,100))
 
 def load_old_participants(n):
         print 'Loading %i Participants'%n
-        JSON_DATA_FILE =  os.path.join(settings.PROJECT_ROOT,'tools','small.json')
-        if settings.ON_OPENSHIFT:
-            JSON_DATA_FILE = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'small.json')
         clients = json.load(open(JSON_DATA_FILE))
         IMPORT_COUNT = min(n,len(clients))
         clients = clients.values()[:IMPORT_COUNT]
@@ -169,7 +173,7 @@ def create_languages():
         cont.Language(**{"short_name":"H", "name": 'Sheng'}),
         cont.Language(**{"short_name":"L", "name": 'Luo'}),
     ])
-    
+
 def create_facilities():
     print 'Creating Facilities'
     cont.Facility.objects.bulk_create([
@@ -177,7 +181,7 @@ def create_facilities():
         cont.Facility(name='ahero'),
         cont.Facility(name='mathare'),
     ])
-    
+
 def create_users():
     #create admin user
     print 'Creating Users'
