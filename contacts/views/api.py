@@ -1,30 +1,18 @@
+# Python Imports
+import sys
+
+# Rest Framework Imports
 from rest_framework import viewsets
 from rest_framework.response import Response
+
+# Django Imports
 from django.shortcuts import get_object_or_404
 
 #Local Imports
 import contacts.models as cont
-from contacts.serializers.participants import ParticipantSerializer, ParticipantDetailSerializer
+from contacts.serializers.participants import ParticipantSerializer, ParticipantListSerializer
 from contacts.serializers.messages import MessageSerializer
 
-import logging, logging.config
-import sys
-
-LOGGING = {
-    'version': 1,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'stream': sys.stdout,
-        }
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO'
-    }
-}
-
-logging.config.dictConfig(LOGGING)
 class ParticipantViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -36,12 +24,12 @@ class ParticipantViewSet(viewsets.ModelViewSet):
     	# Only return the participants for this user's facility
     	return cont.Contact.objects.for_user(self.request.user).all()
 
-    def retrieve(self, request, study_id=None):
-        # Use the detailed serializer for individual GETs
-        queryset = self.get_queryset()
-        user = get_object_or_404(queryset, study_id=study_id)
-        serializer = ParticipantDetailSerializer(user)
-        return Response(serializer.data)
+    def get_serializer_class(self):
+        # Return the correct serializer based on current action
+        if self.action == 'list':
+            return ParticipantListSerializer
+        else:
+            return ParticipantSerializer
 
 
 class MessageViewSet(viewsets.ModelViewSet):
