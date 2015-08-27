@@ -1,0 +1,99 @@
+<div class="avatar mw-4x" ng-class="{'nurse pull-right':message.is_nurse, 'system pull-right':message.is_system, 'participant pull-left':!message.is_outgoing}">
+  <i class="mw" ng-class="{'mw-user-md':message.is_nurse, 'mw-monitor-bdr':message.is_system, 'mw-mwach-phone':!message.is_outgoing}"></i>
+</div>
+
+<div class="message" ng-class="{'nurse':message.is_nurse, 'system':message.is_system, 'participant':!message.is_outgoing, 'pull-right':message.is_outgoing, 'pull-left':!message.is_outgoing}">
+  
+  <div class="msg-header clearfix">
+    <strong class="pull-left">
+      {{message.is_nurse ? "Nurse" : message.is_system ? "System" : participant.nickname}}
+    </strong>
+    <div class="pull-right">{{message.created | date:'d MMM yy H:mm'}}</div>
+
+    <div ng-if="!message.is_system" class="center-block">
+      
+      <a href="#/" ng-if="!message.is_translated">
+        <span class="badge-warning">Untranslated</span>
+      </a>
+
+      {{message.is_translated && message.translation_skipped ? '(Translation skipped)' : ''}}
+
+      <!-- toggle buttons to a shared directive? -->
+      <span ng-if="message.is_translated && !message.translation_skipped">
+        {{message.show_translation ? 'Displaying translated' : 'Displaying original&nbsp;&nbsp;&nbsp;'}}
+      </span>
+      <label 
+        ng-if="message.is_translated && !message.translation_skipped" 
+        class="btn btn-xs mw-toggle-btn" 
+        ng-class="{'active': message.show_translation}" 
+        ng-click="message.show_translation = !message.show_translation" 
+        tooltip="Toggle between original text and translation">
+          <i class="mw mw-language"></i>
+      </label>
+
+      <button ng-if="message.is_translated" class="btn btn-xs btn-default" tooltip="Retranslate message">
+        <i class="mw mw-redo"></i>
+      </button>
+
+    </div>
+  </div>
+
+  <div class="msg-content">{{message.show_translation ? message.translated_text : message.text}}</div>
+
+  <div ng-if="message.is_pending" class="row metadata">
+    <div class="col-sm-5 ">
+      <!-- TODO: Would be easy to make a radio button directive from this... -->
+      <div class="btn-group btn-group-justified btn-group-xs">
+        <label 
+          class="btn mw-toggle-btn" 
+          ng-class="{'active':message.related}" 
+          ng-click="message.related = true">
+            Related
+        </label>
+        <label 
+          class="btn mw-toggle-btn" 
+          ng-class="{'active':message.related == false}" 
+          ng-click="message.related = false">
+            Unrelated
+        </label>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-sm-offset-1">
+      <div class="col-xs-3">
+        Topic:
+      </div>
+      <div class="col-xs-9">
+        <select name='topic' class='select form-control input-mini' ng-model="message.topic">
+          <option value='none'>None</option>
+          <option value='adherence'>Adherence</option>
+          <option value='side-effects'>Side Effects</option>
+          <option value='visits'>Visits</option>
+          <option value='antenatal-concerns'>Antenatal Concerns</option>
+          <option value='delivery-concenrs'>Delivery Concerns</option>
+          <option value='family-planing'>Family Planing</option>
+          <option value='infant-health'>Infant Health</option>
+          <option value='sexual-behavior'>Sexual Behavior</option>
+          <option value='other'>Other</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div 
+    ng-if="!message.is_outgoing" 
+    class="btn-group btn-group-justified" 
+    ng-class="message.is_pending ? 'btn-group-sm' : 'btn-group-xs'" 
+    tooltip="You must select whether the message is related or unrelated and a topic before you can continue." 
+    tooltip-enable="message.isDisabled()">
+      <a 
+        class="btn btn-success" 
+        ng-class="{'disabled': message.isDisabled()}" 
+        ng-click="openSendModalFn()(message.show_translation ? message.translated_text : message.text)">
+          <i class="mw mw-reply"></i> Reply
+      </a>
+      <a ng-if="message.is_pending" class="btn btn-danger" ng-class="{'disabled': message.isDisabled()}">
+        <i class="mw mw-times"></i> Dismiss
+      </a>
+  </div>
+</div>
