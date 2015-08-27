@@ -7,14 +7,14 @@ from views import api
 # from views import angular_views
 
 router = routers.DefaultRouter()
-router.register(r'v0.1/participant', api.ParticipantViewSet, 'Participant')
-router.register(r'v0.1/message',     api.MessageViewSet,     'Message')
+router.register(r'participant', api.ParticipantViewSet,'participant')
+router.register(r'message',     api.MessageViewSet,'message')
 
 
 urlpatterns = patterns('',
     # DRF API viewer
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^api/', include(router.urls)),
+    url(r'^api/v0.1/', include(router.urls)),
 
     # Angular app
     url(r'^$', 'contacts.views.angular_view'),
@@ -37,7 +37,7 @@ urlpatterns = patterns('',
     url(r'^message/?$', 'contacts.views.messages'),
     url(r'^message/update/(?P<message_id>\d*)/?$','contacts.views.message_update'),
     url(r'^message/dismiss/(?P<message_id>\d*)/?$','contacts.views.message_dismiss'),
-    
+
     url(r'^staff/facility_change/(?P<facility_name>.*)/$','contacts.views.staff_facility_change'), #If we have more than 9 facilities we'd need to change this
     url(r'^staff/date/(?P<direction>back|forward)/(?P<delta>\d{1,365})/$','contacts.views.change_current_date'),
 

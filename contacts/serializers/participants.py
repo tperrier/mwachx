@@ -9,10 +9,11 @@ class ParticipantListSerializer(serializers.ModelSerializer):
 	# user = serializers.Field(source='user')
 	status = serializers.SerializerMethodField()
 	study_group = serializers.SerializerMethodField()
+	url = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
 
 	class Meta:
 		model = cont.Contact
-		fields = ('nickname','study_id','study_group', 'anc_num', 'status')
+		fields = ('nickname','study_id','study_group', 'anc_num', 'status','url')
 
 	def get_status(self, obj):
 		return obj.get_status_display()
