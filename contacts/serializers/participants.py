@@ -7,6 +7,7 @@ from rest_framework.response import Response
 #Local Imports
 import contacts.models as cont
 from messages import MessageSerializer
+from visits import VisitSerializer
 
 #############################################
 #  Serializer Definitions
@@ -42,7 +43,9 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	phone_number = serializers.SerializerMethodField()
 
 	messages_url = serializers.HyperlinkedIdentityField(view_name='participant-messages',lookup_field='study_id')
+	visits_url = serializers.HyperlinkedIdentityField(view_name='participant-visits',lookup_field='study_id')
 	messages = MessageSerializer(source='message_set.top',many=True)
+	visits = VisitSerializer(source='visit_set.top',many=True)
 
 	class Meta:
 		model = cont.Contact
@@ -91,7 +94,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 	        return ParticipantSerializer
 
 	@detail_route()
-	def messages(self,request, study_id=None, *args, **kwargs):
+	def messages(self, request, study_id=None, *args, **kwargs):
 		# Get Query Parameters
 		limit = request.query_params.get('limit',None)
 		max_id = request.query_params.get('max_id',None)
@@ -107,3 +110,9 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 		    contact_messages = contact_messages[:limit]
 		contact_messages = MessageSerializer(contact_messages,many=True,context={'request':request})
 		return Response(contact_messages.data)
+
+	@detail_route()
+	def visits(self, request, study_id=None, *args, **kwargs):
+		contact_visits = cont.Visit.objects.filter(contact__study_id=study_id)
+		contact_visits = VisitSerializer(contact_visits,many=True,context={'request':request})
+		return Response(contact_visits.data)
