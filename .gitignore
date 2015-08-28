@@ -9,6 +9,6 @@
 *.log
 ignore/
 node_modules/
-contacts/static/css/maps/
+mwach/static/css/
 local_settings.py
 bower_components/
