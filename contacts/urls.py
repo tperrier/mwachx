@@ -3,12 +3,8 @@ from django.conf.urls import patterns, include, url
 from rest_framework import routers
 
 import views
-from views import api
+from serializers import router
 # from views import angular_views
-
-router = routers.DefaultRouter()
-router.register(r'participant', api.ParticipantViewSet,'participant')
-router.register(r'message',     api.MessageViewSet,'message')
 
 
 urlpatterns = patterns('',

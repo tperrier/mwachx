@@ -11,18 +11,21 @@ from constance import config
 from utils.models import TimeStampedModel, BaseQuerySet
 
 class MessageQuerySet(BaseQuerySet):
-    
+
     def pending(self):
         return self.filter(is_viewed=False)
-        
+
     def to_translate(self):
         return self.filter(is_system=False,is_translated=False,translate_skipped=False)
-        
+
     def for_user(self,user):
         try:
             return self.filter(contact__facility=user.practitioner.facility)
         except (ObjectDoesNotExist, AttributeError) as e:
             return self.none()
+
+    def top(self):
+        return self[:2]
 
 class Language(TimeStampedModel):
     short_name = models.CharField(max_length=1)
@@ -36,28 +39,28 @@ class Language(TimeStampedModel):
 class Message(TimeStampedModel):
     class Meta:
         ordering = ('-created',)
-    
+
     text = models.CharField(max_length=1000,help_text='Text of the SMS message')
 
     #Set Custom Manager
     objects = MessageQuerySet.as_manager()
-    
+
     #Boolean Flags on Message
     is_outgoing = models.BooleanField(default=True)
     is_system = models.BooleanField(default=True)
     is_viewed = models.BooleanField(default=False)
     is_related = models.NullBooleanField(default=None,blank=True,null=True)
-    
+
     # ToDo:Link To Automated Message
     parent = models.ForeignKey('contacts.Message',related_name='replies',blank=True,null=True)
-    
+
     # translation
     translated_text = models.CharField(max_length=1000,help_text='Text of the translated message',default=None,blank=True,null=True)
     is_translated = models.BooleanField(default=False)
     translate_skipped = models.BooleanField(default=False)
 
     topic = models.CharField(max_length=50,help_text='The topic of this message',default=None,blank=True,null=True)
-    
+
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
     contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
@@ -67,13 +70,13 @@ class Message(TimeStampedModel):
     time_received = models.CharField(max_length=50,default=None,blank=True,null=True)
     external_id = models.CharField(max_length=50,default=None,blank=True,null=True)
     external_linkId = models.CharField(max_length=50,default=None,blank=True,null=True)
-    
+
     def get_real_text(self):
         return self.translated_text if self.is_translated else self.text
 
     def get_original_text(self):
         return self.text
-        
+
     def translation_skipped(self):
         return self.translate_skipped
 
@@ -93,42 +96,42 @@ class Message(TimeStampedModel):
         if self.is_outgoing:
             return 'system' if self.is_system else 'nurse'
         return 'client'
-    
+
     def sent_by(self):
         if self.is_outgoing:
             if self.is_system:
                 return 'System'
             return self.admin_user.username if self.admin_user else 'Nurse'
         return self.contact_name()
-    
+
     def study_id(self):
         if self.contact:
             return self.contact.study_id
         return None
     study_id.short_description = 'Study ID'
     study_id.admin_order_field = 'contact__study_id'
-    
+
     def contact_name(self):
         if self.contact:
             return str(self.contact.nickname)
         return None
     contact_name.short_description = 'Contact Name'
     contact_name.admin_order_field = 'contact__nickname'
-    
+
     def identity(self):
         return self.connection.identity
     identity.short_description = 'Identity'
     identity.admin_order_field = 'connection__identity'
-    
+
     def weeks(self):
         return self.contact.weeks(today=self.created.date())
-        
+
     def is_pregnant(self):
         return self.contact.was_pregnant(today=self.created.date())
 
     def languages_str(self):
         return ','.join([str(l) for l in self.languages.all()])
-    
+
     @staticmethod
     def receive(number,message,time_received,external_id,external_linkId):
         '''
@@ -150,10 +153,10 @@ class Message(TimeStampedModel):
             external_id=external_id,
             external_linkId=external_linkId
         )
-        
+
     @staticmethod
     def send(contact,message,translation,is_translated=False,translate_skipped=False,is_system=True,parent=None,languages=None):
-        
+
         if config.AFRICAS_TALKING_SEND:
             import africas_talking
             try:
@@ -173,7 +176,7 @@ class Message(TimeStampedModel):
             parent=parent,
             external_id=at_id
         )
-        
+
         if languages:
             lang_objs = Language.objects.filter(id__in=languages)
             _msg.languages = lang_objs
