@@ -3,12 +3,19 @@
 *.pyc
 *~
 *.json
+*.log
 *.xlsx
+
+# Node and Bower
+node_modules/
+bower_components/
 !package.json
 !bower.json
-*.log
-ignore/
-node_modules/
+
+# Ignore compiled code
 mwach/static/css/
+mwach/static/mwachx.js
+*.map
+
+ignore/
 local_settings.py
-bower_components/
