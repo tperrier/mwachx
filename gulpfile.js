@@ -4,6 +4,7 @@ var gulp = require('gulp');
 var sourcemaps = require('gulp-sourcemaps');
 var livereload = require('gulp-livereload');
 var concat = require('gulp-concat')
+var uglify = require('gulp-uglify')
 
 gulp.task('less', function() {
     gulp.src('./mwach/static/less/main.less')
@@ -19,6 +20,7 @@ gulp.task('js',function () {
   gulp.src(['./mwach/static/app/mwachx.module.js','mwach/static/app/**/*.js'])
     .pipe(sourcemaps.init())
       .pipe(concat('mwachx.js'))
+      // .pipe(uglify())
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('./mwach/static'))
 })
