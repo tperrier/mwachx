@@ -19,11 +19,11 @@ class ParticipantListSerializer(serializers.ModelSerializer):
 	status = serializers.SerializerMethodField()
 	study_group = serializers.SerializerMethodField()
 	phone_number = serializers.SerializerMethodField()
-	url = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
+	href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
 
 	class Meta:
 		model = cont.Contact
-		fields = ('nickname','study_id','study_group', 'anc_num', 'status','phone_number','url')
+		fields = ('nickname','study_id','study_group', 'anc_num', 'status','phone_number','href')
 
 	def get_status(self, obj):
 		return obj.get_status_display()
@@ -42,8 +42,10 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	validation_key = serializers.SerializerMethodField()
 	phone_number = serializers.SerializerMethodField()
 
+	href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
 	messages_url = serializers.HyperlinkedIdentityField(view_name='participant-messages',lookup_field='study_id')
 	visits_url = serializers.HyperlinkedIdentityField(view_name='participant-visits',lookup_field='study_id')
+
 	messages = MessageSerializer(source='message_set.top',many=True)
 	visits = VisitSerializer(source='visit_set.top',many=True)
 

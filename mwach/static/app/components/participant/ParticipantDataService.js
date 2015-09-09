@@ -20,9 +20,7 @@
     .factory('mWaChxApi',['Restangular',function(Restangular){
       var service = {};
 
-      service.participants = Restangular.withConfig(function(RestangularConfigurer) {
-        RestangularConfigurer.setRestangularFields({'id':'study_id'});
-      }).all('participant');
+      service.participants = Restangular.all('participant');
       service.facilities = Restangular.all('facilities');
       return service;
     }]);
