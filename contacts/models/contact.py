@@ -210,6 +210,10 @@ class Contact(TimeStampedModel):
     def choice_label(self):
         return '%s (%s)'%(self.nickname,self.facility)
 
+    def send_message(self,text,**kwargs):
+        new_message = Message.objects.create(text=text,contact=self,connection=self.connection,**kwargs)
+        return new_message
+
     @property
     def pending(self):
         return Message.objects.filter(contact=self,is_viewed=False).count()

@@ -1,6 +1,7 @@
 # Rest Framework Imports
 from rest_framework import serializers
 from rest_framework import viewsets
+from rest_framework import status
 from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
@@ -95,23 +96,30 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 	    else:
 	        return ParticipantSerializer
 
-	@detail_route()
+	@detail_route(methods=['post','get'])
 	def messages(self, request, study_id=None, *args, **kwargs):
-		# Get Query Parameters
-		limit = request.query_params.get('limit',None)
-		max_id = request.query_params.get('max_id',None)
-		min_id = request.query_params.get('min_id',None)
+		if request.method == 'GET':
+			# Get Query Parameters
+			limit = request.query_params.get('limit',None)
+			max_id = request.query_params.get('max_id',None)
+			min_id = request.query_params.get('min_id',None)
 
-		# Create Message List and Serializer
-		contact_messages = cont.Message.objects.filter(contact__study_id=study_id)
-		if max_id:
-		    contact_messages = contact_messages.filter(pk__lt=max_id)
-		if min_id:
-			contact_messages.filter(pk_gt=min_id)
-		if limit:
-		    contact_messages = contact_messages[:limit]
-		contact_messages = MessageSerializer(contact_messages,many=True,context={'request':request})
-		return Response(contact_messages.data)
+			# Create Message List and Serializer
+			contact_messages = cont.Message.objects.filter(contact__study_id=study_id)
+			if max_id:
+			    contact_messages = contact_messages.filter(pk__lt=max_id)
+			if min_id:
+				contact_messages.filter(pk_gt=min_id)
+			if limit:
+			    contact_messages = contact_messages[:limit]
+			contact_messages = MessageSerializer(contact_messages,many=True,context={'request':request})
+			return Response(contact_messages.data)
+		elif request.method == 'POST':
+			print request.data
+			participant = self.get_object()
+			new_message = participant.send_message(request.data['text'])
+			return Response(MessageSerializer(new_message,context={'request': request}).data)
+
 
 	@detail_route()
 	def visits(self, request, study_id=None, *args, **kwargs):
