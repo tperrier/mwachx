@@ -31,7 +31,9 @@ gulp.task('libs',function(){
     'mwach/static/bower_components/angular-ui-router/release/angular-ui-router.js',
     'mwach/static/bower_components/angular-resource/angular-resource.js',
     'mwach/static/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
-    'mwach/static/bower_components/angular-bootstrap-show-errors/src/showErrors.js'
+    'mwach/static/bower_components/angular-bootstrap-show-errors/src/showErrors.js',
+    'mwach/static/bower_components/lodash/lodash.js',
+    'mwach/static/bower_components/restangular/src/restangular.js'
   ])
    .pipe(sourcemaps.init())
     .pipe(concat('components.js'))
@@ -41,7 +43,10 @@ gulp.task('libs',function(){
 
 gulp.task('watch', function() {
 	livereload.listen();
+    // Recompile less -> css
     gulp.watch('**/*.less', ['less']);
+    // Recompile js
+    gulp.watch('mwach/static/app/**/*.js',['js']);
     /* Trigger a live reload on any Django template changes */
     gulp.watch('**/templates/**/*.html').on('change', livereload.changed);
     gulp.watch('**views.py').on('change', livereload.changed);
@@ -50,6 +55,6 @@ gulp.task('watch', function() {
     gulp.watch('**/*.html').on('change', livereload.changed);
 });
 
-gulp.task('default', ['less', 'watch'], function() {
+gulp.task('default', ['watch'], function() {
 	return
 });
