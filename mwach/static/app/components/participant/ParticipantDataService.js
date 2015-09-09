@@ -12,10 +12,19 @@
     })
     .factory('Message', function($resource) {
       return $resource(
-        '/api/v0.1/message/:msg_id/', 
-        { 
+        '/api/v0.1/message/:msg_id/',
+        {
           study_id: '@study_id'
         });  // I *think* we need this?
-    });
+    })
+    .factory('mWaChxApi',['Restangular',function(Restangular){
+      var service = {};
+
+      service.participants = Restangular.withConfig(function(RestangularConfigurer) {
+        RestangularConfigurer.setRestangularFields({'id':'study_id'});
+      }).all('participant');
+      service.facilities = Restangular.all('facilities');
+      return service;
+    }]);
 
 })();
