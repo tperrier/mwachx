@@ -7,19 +7,10 @@
    * @constructor
    */
   angular.module('mwachx')
-    .controller('ParticipantListController', function ($scope, $location, Participant) {
+    .controller('ParticipantListController', ['$scope','$location','mwachxAPI',
+      function ($scope, $location, mwachxAPI) {
 
-      $scope.participants     = [];
-      $scope.fullResponse     = {};
-
-      // Fetch all of the participants
-      Participant.query(function(response) {
-        // Full response has the "next" url for example.
-        // maybe useful: http://stackoverflow.com/questions/24611874/django-rest-pagination-with-angularjs
-        $scope.fullResponse = response;
-        $scope.participants = response;
-      });
-
-    });
+      $scope.participants     = mwachxAPI.participants.getList().$object;
+    }]);
 
 })();

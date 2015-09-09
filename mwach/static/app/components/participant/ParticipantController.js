@@ -7,17 +7,19 @@
    * @constructor
    */
   angular.module('mwachx')
-    .controller('ParticipantController',
+    .controller('ParticipantController',['$scope','$modal','$location','$stateParams','$log','$rootScope',
+      'mwachxAPI',
       function ParticipantController($scope, $modal, $location, $stateParams, $log, $rootScope,
-        Message, Participant) {
+        mwachxAPI) {
 
 
         $scope.openSendModal    = openSendModal;
         $scope.participant      = [];
-        $scope.fullResponse     = {};
-
         $scope.messages         = [];
-
+        mwachxAPI.participants.get($stateParams.study_id).then(function(participant){
+          $scope.participant = participant;
+          $scope.messages = participant.getList('messages').$object;
+        });
 
         $scope.detailsList      = [
          {'label': 'Nickname',               'value': 'nickname',},
@@ -76,40 +78,6 @@
           return (this.is_pending && (typeof this.related === 'undefined' || this.topic === 'none'));
         }
 
-        // Methods
-
-        // Fetch this participant
-        Participant.get( {study_id:$stateParams.study_id},
-          function(response) {
-            $scope.participant = response;
-
-            $scope.participant.hiv_disclosed =
-              (String($scope.participant.hiv_disclosed) === 'null') ?
-                'Unknown' :
-                ($scope.participant.hiv_disclosed) ?
-                  'Yes' : 'No';
-        });
-
-        // Fetch messages for this participant
-        Message.query( {study_id:$stateParams.study_id},
-          function(response) {
-
-            $scope.messages = response;
-            for (var i = $scope.messages.length - 1; i >= 0; i--) {
-
-              $scope.messages[i].show_translation = $scope.messages[i].is_translated;
-              $scope.messages[i].isDisabled = isDisabled;
-              $scope.messages[i].topic = 'none';
-
-              if ($scope.messages[i].is_system == false && $scope.messages[i].is_outgoing == true) {
-                $scope.messages[i].is_nurse = true;
-              } else {
-                $scope.messages[i].is_nurse = false;
-              }
-
-            };
-        });
-
-      });
+      }]);
 
 })();

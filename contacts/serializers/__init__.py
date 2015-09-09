@@ -9,7 +9,7 @@ import visits
 
 # Make Django Rest Framework Router
 router = routers.DefaultRouter()
-router.register(r'participant', participants.ParticipantViewSet,'participant')
-router.register(r'message', messages.MessageViewSet,'message')
+router.register(r'participants', participants.ParticipantViewSet,'participant')
+router.register(r'messages', messages.MessageViewSet,'message')
 router.register(r'facilities', misc.FacilityViewSet)
 router.register(r'visits', visits.VisitViewSet)
