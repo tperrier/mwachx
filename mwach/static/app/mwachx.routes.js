@@ -14,25 +14,50 @@
         $stateProvider
           .state('home', {
             url:          '/',
-            templateUrl:  routePrefix + 'components/home/homePartial.html',
+            templateUrl:  routePrefix + 'dashboard/home.html',
             controller:   'HomeController'
           })
 
           // Participant state and substates
-          .state('participant', {
+          .state('participant-list', {
             url:          '/participant',
-            templateUrl:  routePrefix + 'components/participant/participantListPartial.html',
+            templateUrl:  routePrefix + 'dashboard/participantList.html',
             controller:   'ParticipantListController'
           })
+
           .state('participant-new', {
             url:          '/participant/new',
-            templateUrl:  routePrefix + 'components/participant/participantNewPartial.html',
+            templateUrl:  routePrefix + 'dashboard/participantNew.html',
             controller:   'ParticipantNewController'
           })
-          .state('participantDetails', {
+          .state('participant-details', {
             url:          '/participant/:study_id',
-            templateUrl: routePrefix  + 'components/participant/participantPartial.html',
+            templateUrl: routePrefix  + 'participantDetail/participantDetail.html',
             controller:  'ParticipantController'
+          })
+
+          // Message state and substates
+          .state('messages-pending', {
+            url: '/messages/pending',
+            templateUrl: routePrefix + 'dashboard/pendingMessages.html'
+          })
+
+          // Visit state and substates
+          .state('visits-upcomming', {
+            url: '/visits/upcomming',
+            templateUrl: routePrefix + 'dashboard/visitsUpcomming.html'
+          })
+
+          // Calls state and substates
+          .state('calls',{
+            url: '/calls',
+            templateUrl: routePrefix + 'dashboard/calls.html'
+          })
+
+          // Translation state and substates
+          .state('translations', {
+            url: '/translations',
+            templateUrl: routePrefix + 'dashboard/translations.html'
           });
       }]);
 

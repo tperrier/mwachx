@@ -5,12 +5,12 @@
       <input type="text" ng-model="query" placeholder="Search by any field" aria-label="Filter" style="width:100%"/>
     </h1>
     </div>
-    <div class="col-md-3 col-sm-4"> 
+    <div class="col-md-3 col-sm-4">
       <!-- TODO: still need to get rid of the inline style -->
-      <mw-action-btn 
-        ui-sref='participantNew' 
-        mw-icon="'mw-mwach-phone-add'" 
-        mw-style="'info'" 
+      <mw-action-btn
+        ui-sref='participantNew'
+        mw-icon="'mw-mwach-phone-add'"
+        mw-style="'info'"
         style="margin: 20px 0; width: 100%;">
         Enroll Participant
       </mw-action-btn>
@@ -28,10 +28,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr 
-          ng-repeat="participant in participants | filter:query" 
-          style="cursor:pointer" 
-          ui-sref='participantDetails({study_id: participant.study_id})'>
+        <tr
+          ng-repeat="participant in participants | filter:query"
+          style="cursor:pointer"
+          ui-sref='participant-details({study_id: participant.study_id})'>
           <td>{{participant.study_id}}</td>
           <td>{{participant.anc_num}}</td>
           <td>{{participant.nickname}}</td>
