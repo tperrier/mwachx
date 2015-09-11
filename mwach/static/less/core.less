@@ -1,4 +1,18 @@
 // Layout
+html {
+  width: 100%;
+  height: 100%;
+}
+
+#main-view-content {
+  height:auto;
+  width:auto;
+  top:50px;
+  left:0px;
+  right:0px;
+  position:absolute;
+}
+
 .no-gutter [class*="col-"] {
   padding-left: 0;
   padding-right:0;
@@ -71,7 +85,7 @@
 }
 
 // Action button
-// TODO: the color bits at the bottom could be redone with a mixin like the 
+// TODO: the color bits at the bottom could be redone with a mixin like the
 // button-variant above.
 .action-btn{
   padding: 0px;
@@ -94,7 +108,7 @@
     text-align: center;
     font-size: 2em;
     white-space: nowrap;
-    
+
     & > span.custom-stack {
       position: relative;
       display: inline-block;

@@ -1,6 +1,35 @@
 // TODO: rename these colors and add other styles we need
 
-// Some specific bits for nav
-@dark: lighten(@dark-base, 10%);
-@darker: darken(@dark-base, 5%);
-@navtext: white;
+.navbar {
+    border-bottom: 5px solid @navbar-inverse-link-active-bg;
+    font-size: 1.2em;
+
+    &.navbar-inverse {
+      .navbar-brand i {
+          color: @navbar-inverse-link-active-color;
+          font-size: 1.5em;
+      }
+      .brand-status-success {
+        background-color: @brand-success;
+        &:hover, &:focus {
+            background-color: darken(@brand-success, 10%)
+        }
+      }
+     .brand-status-warning {
+        background-color: @brand-warning;
+        &:hover, &:focus {
+            background-color: darken(@brand-warning, 10%)
+        }
+      }
+     .brand-status-danger {
+        background-color: @brand-danger;
+        &:hover, &:focus {
+            background-color: darken(@brand-danger, 10%)
+        }
+      }
+    }
+
+    h3.pull-right {
+        margin:7px 0px 0px 0px;
+    }
+}
