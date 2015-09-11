@@ -5,9 +5,11 @@ var sourcemaps = require('gulp-sourcemaps');
 var livereload = require('gulp-livereload');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
+var plumber = require('gulp-plumber');
 
 gulp.task('less', function() {
     gulp.src('./mwach/static/less/main.less')
+        .pipe(plumber())
         .pipe(sourcemaps.init())
         .pipe(less())
         .pipe(sourcemaps.write('./maps'))
@@ -55,6 +57,6 @@ gulp.task('watch', function() {
     gulp.watch('**/*.html').on('change', livereload.changed);
 });
 
-gulp.task('default', ['watch'], function() {
+gulp.task('default', ['watch','less','js'], function() {
 	return
 });
