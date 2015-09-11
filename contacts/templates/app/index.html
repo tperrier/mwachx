@@ -30,7 +30,7 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="main-navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li {% url 'contacts.views.home' as u %}{% if request.path == u %}class='active' {% endif %}>
+                    <li ui-sref="home">
                         <a href='{{u}}'><i class='mw mw-home'></i> Home</a>
                     </li>
                     <li {% url 'contacts.views.messages_new' as u %}{% if request.path == u %}class='active' {% endif %}>

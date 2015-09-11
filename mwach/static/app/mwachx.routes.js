@@ -24,7 +24,7 @@
             templateUrl:  routePrefix + 'components/participant/participantListPartial.html',
             controller:   'ParticipantListController'
           })
-          .state('participantNew', {
+          .state('participant-new', {
             url:          '/participant/new',
             templateUrl:  routePrefix + 'components/participant/participantNewPartial.html',
             controller:   'ParticipantNewController'
