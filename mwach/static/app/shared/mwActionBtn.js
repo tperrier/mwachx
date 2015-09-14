@@ -12,24 +12,13 @@
         transclude:   true,
         replace:      true,
         scope: {
-          iconClass:  '=mwIcon',
-          urgency:    '=mwStyle',
-          spanClass:  '=mwStackClass',
-          insideIcon: '=mwStackInside',
+          iconClass:  '@mwIcon',
+          urgency:    '@mwStyle',
+          spanClass:  '@mwStackClass',
+          insideIcon: '@mwStackInside',
         },
-        templateUrl:  getTemplate,
+        templateUrl: routePrefix + 'shared/mwActionBtn.html',
       };
-
-      function isAnchor(attr) {
-        return angular.isDefined(attr.href) || angular.isDefined(attr.ngHref);
-      }
-
-      function getTemplate(element, attr) {
-        return isAnchor(attr) ?
-               routePrefix + 'shared/mwActionBtnAnchor.html':
-               routePrefix + 'shared/mwActionBtnLabel.html';
-      }
-
     });
 
 })();

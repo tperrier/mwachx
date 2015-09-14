@@ -12,7 +12,7 @@
           'participant':      '=',
           'openSendModalFn':  '&', // This is a reference to a method from the parent controller
         },
-        templateUrl:           routePrefix + 'components/message/messageDirective.html',
+        templateUrl:           routePrefix + 'participantDetail/messageDirective.html',
       };
     });
 
