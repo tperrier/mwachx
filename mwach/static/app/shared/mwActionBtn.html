@@ -1,8 +1,4 @@
-<a class="btn action-btn" ng-class="{
-    'btn-success':urgency=='0',
-    'btn-danger':urgency>0,
-    'btn-{{urgency}}':!(urgency >= 0)
-  }">
+<a class="btn action-btn" ng-class="get_class(urgency)">
   <span ng-switch="spanClass || '_undefined_'">
   	<span ng-switch-default ng-class="spanClass">
       <i class="mw" ng-class="iconClass"></i>

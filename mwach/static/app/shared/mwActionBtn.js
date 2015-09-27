@@ -22,20 +22,18 @@
           scope.get_count = function(urgency){
             return isNaN(parseInt(urgency))?'':urgency;
           };
+
           scope.get_class = function(urgency) {
-            var btn_class = 'btn-info';
-            if (urgency !== '') {
-              console.log(element,urgency,urgency==0);
-              if (isNaN(parseInt(urgency))) {
-                btn_class = 'btn-'+urgency;
-              } else if (urgency>0) {
-                btn_class = 'btn-danger';
-              } else if (urgency==0) {
-                btn_class = 'btn-success';
-              }
-              element.addClass(btn_class);
-              return btn_class;
+            var btn_class = 'btn-info', int_urgency = parseInt(urgency,10);
+            //console.log(element,urgency,urgency==undefined);
+            if (int_urgency>0) {
+              btn_class = 'btn-danger';
+            } else if (int_urgency===0) {
+              btn_class = 'btn-success';
+            } else if ( !(urgency === '' || urgency === undefined) ) {
+              btn_class = 'btn-'+urgency;
             }
+            return btn_class;
           };
         },
       };
