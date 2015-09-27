@@ -3,7 +3,7 @@ from django.conf.urls import patterns, include, url
 from rest_framework import routers
 
 import views
-from serializers import router
+from serializers import router,misc as serializers_misc
 # from views import angular_views
 
 
