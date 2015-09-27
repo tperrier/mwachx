@@ -20,8 +20,23 @@
         templateUrl: routePrefix + 'shared/mwActionBtn.html',
         link:function(scope,element,attrs){
           scope.get_count = function(urgency){
-            return isNaN(parseInt(urgency))?'':parseInt(urgency); 
-          }
+            return isNaN(parseInt(urgency))?'':urgency;
+          };
+          scope.get_class = function(urgency) {
+            var btn_class = 'btn-info';
+            if (urgency !== '') {
+              console.log(element,urgency,urgency==0);
+              if (isNaN(parseInt(urgency))) {
+                btn_class = 'btn-'+urgency;
+              } else if (urgency>0) {
+                btn_class = 'btn-danger';
+              } else if (urgency==0) {
+                btn_class = 'btn-success';
+              }
+              element.addClass(btn_class);
+              return btn_class;
+            }
+          };
         },
       };
     });
