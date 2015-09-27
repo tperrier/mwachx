@@ -7,9 +7,10 @@
    * @constructor
    */
   angular.module('mwachx')
-    .controller('HomeController', 
-      function HomeController($scope) {
+    .controller('HomeController',['$scope','mwachxAPI',
+      function ($scope,mwachxAPI) {
 
+        $scope.pending = mwachxAPI.pending.get().$object;
 
-      });
+      }]);
 })();

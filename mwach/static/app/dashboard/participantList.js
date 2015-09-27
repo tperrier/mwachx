@@ -10,7 +10,7 @@
     .controller('ParticipantListController', ['$scope','$location','mwachxAPI',
       function ($scope, $location, mwachxAPI) {
 
-      $scope.participants     = mwachxAPI.participants.getList().$object;
+      $scope.participants = mwachxAPI.participants.getList().$object;
     }]);
 
 })();

@@ -18,6 +18,11 @@
           insideIcon: '@mwStackInside',
         },
         templateUrl: routePrefix + 'shared/mwActionBtn.html',
+        link:function(scope,element,attrs){
+          scope.get_count = function(urgency){
+            return isNaN(parseInt(urgency))?'':parseInt(urgency); 
+          }
+        },
       };
     });
 

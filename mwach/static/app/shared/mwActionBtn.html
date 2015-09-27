@@ -1,4 +1,8 @@
-<a class="btn action-btn" ng-class="'btn-{{urgency}}'">
+<a class="btn action-btn" ng-class="{
+  'btn-info':urgency=='info',
+  'btn-success':urgency=='0',
+  'btn-danger':urgency>0
+}">
   <span ng-switch="spanClass || '_undefined_'">
   	<span ng-switch-default ng-class="spanClass">
       <i class="mw" ng-class="iconClass"></i>
@@ -6,5 +10,6 @@
     </span>
     <i ng-switch-when="_undefined_" class="mw" ng-class="iconClass"></i>
   </span>
+  {{get_count(urgency)}}
 	<label ng-transclude></label>
 </a>

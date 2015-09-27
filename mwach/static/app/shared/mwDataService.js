@@ -7,6 +7,7 @@ angular.module('mwachx')
 
     service.participants = Restangular.all('participants');
     service.facilities = Restangular.all('facilities');
+    service.pending = Restangular.one('pending');
 
     return service;
   }])
