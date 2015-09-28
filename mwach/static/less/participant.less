@@ -1,6 +1,32 @@
-.participant-messages {
-  // H1 font size minus row offset
-  margin-left: calc(36px - 15px);
+// *************************************
+// Main Content Layout
+// *************************************
+.participant-page {
+  padding:0px 60px;
+  .participant-messages {
+    // H1 font size minus row offset
+    margin-left: calc(36px - 15px);
+    .message-list {
+      overflow-y:auto;
+      height:625px;  
+    }
+
+}
+}
+// *************************************
+// Side Panel Layout
+// *************************************
+.details-table tbody tr td:first-child {
+  font-weight: bold;
+  text-align: right;
+}
+
+.details-table-offset tbody tr td {
+  vertical-align: middle;
+  &:nth-child(3) {
+    font-weight: bold;
+    text-align: right;
+  }
 }
 
 // Icons labeling the sender
@@ -54,21 +80,4 @@
   height: 1.4em;
   line-height: 1.4em;
   padding: 0px;
-}
-
-
-//
-// Side panels
-//
-.details-table tbody tr td:first-child {
-  font-weight: bold;
-  text-align: right;
-}
-
-.details-table-offset tbody tr td {
-  vertical-align: middle;
-  &:nth-child(3) {
-    font-weight: bold;
-    text-align: right;
-  }
 }

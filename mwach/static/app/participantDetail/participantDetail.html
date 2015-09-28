@@ -1,12 +1,12 @@
-<div style="padding: 0px 40px;">
+<div class='participant-page'>
 
   <h1>
     <span ng-class="participant.status == 'post' ? 'postpartum' : 'pregnant'">
       <i class="mw" ng-class="participant.status == 'post' ? 'mw-mwach-baby-phone' : 'mw-mwach-phone'" ></i>
       {{participant.nickname}}
     </span>
-    <small>{{participant.study_id}}</small>
-    <small>{{participant.anc_num}}</small>
+    <small>Study ID: {{participant.study_id}}</small>
+    <small>ANC #: {{participant.anc_num}}</small>
   </h1>
 
   <div class="row participant-messages">
@@ -23,7 +23,7 @@
       </div>
 
       <!-- TODO: I want to get rid of fuelux and jquery and all the nonsense in this version. Need to sort out the overflow scrolling bits -->
-      <div>
+      <div class="message-list">
         <mw-message
           message="msg"
           participant="participant"
