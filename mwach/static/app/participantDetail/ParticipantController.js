@@ -43,7 +43,7 @@
         //
         function openSendModal(origMsg) {
 
-          var routePrefix   = '/static/app/components/new-msg-modal/';
+          var routePrefix   = '/static/app/participantDetail/';
           var modalScope    = $rootScope.$new();
           modalScope.params = {origMsg: origMsg};
 
