@@ -13,8 +13,15 @@
     RestangularProvider.setBaseUrl('/api/v0.1/');
     RestangularProvider.setRequestSuffix("\/");
 	}])
+
 	.config(['showErrorsConfigProvider', function(showErrorsConfigProvider) {
-  showErrorsConfigProvider.trigger('keypress');
-}]);
+    showErrorsConfigProvider.trigger('keypress');
+  }])
+
+  .config(['datepickerConfig','datepickerPopupConfig',function(datepickerConfig,datepickerPopupConfig){
+    datepickerConfig.showWeeks = false;
+
+    datepickerPopupConfig.datepickerPopup = "yyyy-MM-dd";
+  }]);
 
 })();

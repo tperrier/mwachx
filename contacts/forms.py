@@ -5,7 +5,8 @@ from django import forms
 from django.conf import settings
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Div, ButtonHolder, Submit
+from crispy_forms.layout import Layout, Fieldset, Div, Submit
+from crispy_forms.bootstrap import FormActions
 
 
 #Local App Imports
@@ -15,21 +16,21 @@ from utils import today
 
 
 class ContactAdd(forms.ModelForm):
-    
-    phone_number = forms.CharField(label='Phone Number', 
+
+    phone_number = forms.CharField(label='Phone Number',
         widget=forms.TextInput(attrs={'required':'True','placeholder':'07xxxxxxx','pattern': '^07[0-9]{8}'}))
-    
+
     def __init__(self, *args, **kwargs):
         super(ContactAdd, self).__init__(*args, **kwargs)
-        
+
         #Moved this here so that current date can be calculated for each new form
-        
+
         birth_BO = [{
                 'from': (today() - datetime.timedelta(days=14*365)).strftime("%Y-%m-%d"),
                 'to': (datetime.datetime(2100,1,1)).strftime("%Y-%m-%d"),
             }]
         due_date_BO = [{
-                'from': (datetime.datetime(1970,1,1)).strftime("%Y-%m-%d"), 
+                'from': (datetime.datetime(1970,1,1)).strftime("%Y-%m-%d"),
                 'to': (today() + datetime.timedelta(weeks=4)).strftime("%Y-%m-%d"), # between 4 ....
             }, {
                 'from': (today() + datetime.timedelta(weeks=36)).strftime("%Y-%m-%d"), # ...and 36 weeks in the future
@@ -39,11 +40,11 @@ class ContactAdd(forms.ModelForm):
             'from': today().strftime("%Y-%m-%d"),
             'to': (datetime.datetime(2100,1,1)).strftime("%Y-%m-%d"),
         }]
-        self.fields['due_date'].widget = util.FuelDatePicker('due_date', allow_past=True, blackout=due_date_BO, attrs={'required':'True'}) # TODO: Remove the allow_past after testing
-        self.fields['birthdate'].widget = util.FuelDatePicker('birthdate', allow_past=True, blackout=birth_BO, attrs={'required':'True'})
-        self.fields['art_initiation'].widget = util.FuelDatePicker('art_initiation', allow_past=True, blackout=art_BO)
-        
-        
+        self.fields['due_date'].widget = util.AngularPopupDatePicker({'required':True})
+        self.fields['birthdate'].widget = util.AngularPopupDatePicker({'required':True,'datepicker-position-right':True})
+        self.fields['art_initiation'].widget = util.AngularPopupDatePicker()
+
+
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.form_id = 'participant-details-form'
@@ -95,7 +96,7 @@ class ContactAdd(forms.ModelForm):
                     css_class="row"
                 )
             ),
-            ButtonHolder(
+            FormActions(
                 Submit('submit', 'Enroll Participant'),
                 css_class="row"
             )
@@ -103,19 +104,19 @@ class ContactAdd(forms.ModelForm):
 
 
         # thank you: http://stackoverflow.com/questions/24663564/django-add-attribute-to-every-field-by-default
-        for field in self:                                                    
+        for field in self:
 
-          # field.field.widget.attrs.update({'ng-focus': ''})                 
+          # field.field.widget.attrs.update({'ng-focus': ''})
 
-          field.field.widget.attrs.update({                             
+          field.field.widget.attrs.update({
               'ng-model': 'newParticipant.{0}'.format(field.name),
-              # 'get-error-elements': '',                                 
-          }) 
+              # 'get-error-elements': '',
+          })
 
     class Meta:
         model = cont.Contact
         exclude = ['status','child_hiv_status','facility']
-        
+
         widgets = {
             # validation
             'study_id': forms.NumberInput(attrs={'min':'100','max':'9999','required':'True'}), # TODO: Update this to be dependent on facility of logged in user
@@ -126,7 +127,7 @@ class ContactAdd(forms.ModelForm):
         }
 
 class ContactModify(forms.ModelForm):
-    
+
     class Meta:
         model = cont.Contact
         fields = ['status','send_day','send_time','art_initiation',
@@ -145,4 +146,3 @@ class ContactModify(forms.ModelForm):
             'to': (datetime.datetime(2100,1,1)).strftime("%Y-%m-%d"),
         }]
         self.fields['art_initiation'].widget = util.FuelDatePicker('art_initiation', allow_past=True, blackout=art_BO)
-

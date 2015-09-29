@@ -7,10 +7,15 @@ html, body {
 #main-view-content {
   height:auto;
   width:auto;
-  top:50px;
+  top:60px;
   left:0px;
   right:0px;
   position:absolute;
+}
+
+/*http://stackoverflow.com/a/25193399/2708328 (I spent half a day on this one)*/
+input[datepicker-position-right] + ul {
+  margin: 2px -80px;
 }
 
 .no-gutter [class*="col-"] {

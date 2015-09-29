@@ -55,6 +55,8 @@ gulp.task('watch', function() {
     gulp.watch('**admin.py').on('change', livereload.changed);
     gulp.watch('**/*.js').on('change', livereload.changed);
     gulp.watch('**/*.html').on('change', livereload.changed);
+    /* Recompile libs */
+    gulp.watch('mwach/static/app/*.js',['libs']);
 });
 
 gulp.task('default', ['watch','less','js'], function() {

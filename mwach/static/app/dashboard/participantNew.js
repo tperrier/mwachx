@@ -1,15 +1,22 @@
 (function(){
   'use strict';
-  
+
   /**
-   * 
+   *
    * @param $scope
    * @constructor
    */
   angular.module('mwachx')
-    .controller('ParticipantNewController', function ParticipantNewController($scope, $location) {
-      // Nothing yet
+    .controller('ParticipantNewController', ['$scope','$location', function ($scope, $location) {
 
-    });
+      $scope.position = {left:-100};
+
+      $scope.status = {
+        birthdate:false,
+        art_initiation:false,
+        due_date:false,
+      };
+
+    }]);
 
 })();
