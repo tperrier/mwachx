@@ -57,6 +57,7 @@ class Visit(TimeStampedModel):
 
     class Meta:
         ordering = ('-scheduled',)
+        app_label = 'contacts'
 
     #Set Custom Manager
     objects = VisitQuerySet.as_manager()

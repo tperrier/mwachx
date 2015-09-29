@@ -38,6 +38,9 @@ class ContactQuerySet(BaseQuerySet):
 
 class Contact(TimeStampedModel):
 
+    class Meta:
+        app_label = 'contacts'
+
     STATUS_CHOICES = (
         ('pregnant','Pregnant'),
         ('over','Post-Date'),

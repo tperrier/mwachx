@@ -28,6 +28,10 @@ class MessageQuerySet(BaseQuerySet):
         return self[:2]
 
 class Language(TimeStampedModel):
+
+    class Meta:
+        app_label = 'contacts'
+
     short_name = models.CharField(max_length=1)
     name = models.CharField(max_length=20)
 
@@ -37,8 +41,10 @@ class Language(TimeStampedModel):
         return self.short_name
 
 class Message(TimeStampedModel):
+    
     class Meta:
         ordering = ('-created',)
+        app_label = 'contacts'
 
     text = models.CharField(max_length=1000,help_text='Text of the SMS message')
 
