@@ -59,7 +59,25 @@
           .state('translations', {
             url: '/translations',
             templateUrl: routePrefix + 'dashboard/translations.html'
+          })
+
+          // Testing state
+          .state('tests', {
+            url: '/test',
+            templateUrl: 'crispy-forms/participant/update',
+            controller:'TestController'
           });
+      }]);
+
+
+  // *************************************
+  // Basic Controller For Test Route
+  // *************************************
+
+  angular.module('mwachx')
+    .controller('TestController',['$scope',
+      function ($scope) {
+        $scope.status = {art_initiation:false}
       }]);
 
 })();

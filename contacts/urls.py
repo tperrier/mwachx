@@ -3,7 +3,7 @@ from django.conf.urls import patterns, include, url
 from rest_framework import routers
 
 import views
-from serializers import router,misc as serializers_misc
+from serializers import router
 # from views import angular_views
 
 
@@ -14,9 +14,8 @@ urlpatterns = patterns('',
 
     # Angular app
     url(r'^$', 'contacts.views.angular_view'),
-    # Examples:
-    # url(r'^$', 'contacts.views.dashboard'),
-    # url(r'^$', 'contacts.views.home'),
+
+    # All of these are old - they should be deleted
     url(r'^message/new/?$', 'contacts.views.messages_new'),
     url(r'^visit/$', 'contacts.views.visits'),
     # url(r'^visit/dismiss/(?P<visit_id>\d*)/?$','contacts.views.visit_dismiss'),
@@ -38,5 +37,6 @@ urlpatterns = patterns('',
     url(r'^staff/date/(?P<direction>back|forward)/(?P<delta>\d{1,365})/$','contacts.views.change_current_date'),
 
     # crispy-form partial
-    url(r'^crispy-forms/participant/new/?$','contacts.views.generate_add_participant_form'),
+    url(r'^crispy-forms/participant/new/?$','contacts.views.crispy.participant_add'),
+    url(r'^crispy-forms/participant/update/?$','contacts.views.crispy.participant_update'),
 )

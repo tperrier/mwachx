@@ -109,7 +109,7 @@ class ContactAdd(forms.ModelForm):
           # field.field.widget.attrs.update({'ng-focus': ''})
 
           field.field.widget.attrs.update({
-              'ng-model': 'newParticipant.{0}'.format(field.name),
+              'ng-model': 'participant.{0}'.format(field.name),
               # 'get-error-elements': '',
           })
 
@@ -126,7 +126,7 @@ class ContactAdd(forms.ModelForm):
             'nickname': forms.TextInput(attrs={'required':'True'}),
         }
 
-class ContactModify(forms.ModelForm):
+class ContactUpdate(forms.ModelForm):
 
     class Meta:
         model = cont.Contact
@@ -134,7 +134,7 @@ class ContactModify(forms.ModelForm):
                 'hiv_disclosed']
 
     def __init__(self, *args, **kwargs):
-        super(ContactModify, self).__init__(*args, **kwargs)
+        super(ContactUpdate, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.form_id = 'participant-details-form'
@@ -145,4 +145,11 @@ class ContactModify(forms.ModelForm):
             'from': today().strftime("%Y-%m-%d"),
             'to': (datetime.datetime(2100,1,1)).strftime("%Y-%m-%d"),
         }]
-        self.fields['art_initiation'].widget = util.FuelDatePicker('art_initiation', allow_past=True, blackout=art_BO)
+        self.fields['art_initiation'].widget = util.AngularPopupDatePicker()
+
+        # thank you: http://stackoverflow.com/questions/24663564/django-add-attribute-to-every-field-by-default
+        for field in self:
+
+          field.field.widget.attrs.update({
+              'ng-model': 'participant.{0}'.format(field.name),
+          })
