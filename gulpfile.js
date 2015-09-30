@@ -50,13 +50,10 @@ gulp.task('watch', function() {
     // Recompile js
     gulp.watch('mwach/static/app/**/*.js',['js']);
     /* Trigger a live reload on any Django template changes */
-    gulp.watch('**/templates/**/*.html').on('change', livereload.changed);
-    gulp.watch('**views.py').on('change', livereload.changed);
-    gulp.watch('**admin.py').on('change', livereload.changed);
-    gulp.watch('**/*.js').on('change', livereload.changed);
-    gulp.watch('**/*.html').on('change', livereload.changed);
+    gulp.watch(['**/templates/**/*.html','**views.py','**admin.py','**/*.js','**/*.html'])
+      .on('change', livereload.changed);
     /* Recompile libs */
-    gulp.watch('mwach/static/app/*.js',['libs']);
+    gulp.watch('mwach/static/app/mwachx.*.js',['libs']);
 });
 
 gulp.task('default', ['watch','less','js'], function() {
