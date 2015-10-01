@@ -40,28 +40,32 @@ class Command(BaseCommand):
         print 'Migrating new db....'
         utility = ManagementUtility(['reset_db.py','migrate'])
         utility.execute()
-        
-        #Turn off Autocommit 
-        transaction.set_autocommit(False)
-        
-        #Add new fake data
-        create_languages()
-        create_facilities()
-        create_users()
 
-        if options['participants'] > 0:
-            load_old_participants(options['participants'])
-        
+        #Turn off Autocommit
+        #transaction.set_autocommit(False)
+
+        with transaction.atomic():
+            #Add new fake data
+            create_languages()
+            create_facilities()
+            create_users()
+
+            if options['participants'] > 0:
+                load_old_participants(options['participants'])
+
+            if options['jennifer']:
+                add_jennifers()
+
         #commit data
-        transaction.commit()
-        
+        #transaction.commit()
+
 ###################
 # Utility Functions
 ###################
 
 study_groups = ['control','one-way','two-way']
-facility_list = cont.Facility.objects.exclude(name='kisumu_east')
 def add_client(client,i):
+    facility_list = cont.Facility.objects.all()
     new_client = {
         'study_id':i,
         'anc_num':client['anc_num'],
@@ -160,6 +164,26 @@ def load_old_participants(n):
         # Make last visit arrived = None.
         last_visits = cont.Visit.objects.all().values('contact_id').order_by().annotate(Max('id'))
         cont.Visit.objects.filter(id__in=[d['id__max'] for d in last_visits]).update(arrived=None,skipped=None)
+
+def add_jennifers():
+    print 'Loading Fake Jennifer Users'
+    for i,facility in enumerate(cont.Facility.objects.all()):
+        create_jennifer(i,facility)
+
+def create_jennifer(i,facility):
+    new_client = {
+        'study_id':1000+i,
+        'anc_num':'100{}'.format(i),
+        'nickname':'Jennifer',
+        'birthdate':'1900-01-01',
+        'study_group':random.choice(study_groups),
+        'due_date':get_due_date(),
+        'facility':facility,
+        'status':'pregnant',
+        }
+    contact = cont.Contact.objects.create(**new_client)
+    connection = cont.Connection.objects.create(identity='+00{}'.format(i),contact=contact,is_primary=True)
+
 
 def create_languages():
     print 'Creating Languages'
