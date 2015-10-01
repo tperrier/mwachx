@@ -1,21 +1,19 @@
 (function(){
   'use strict';
 
-  /**
-   * Main Controller for participants objects?
-   * @param $scope
-   * @constructor
-   */
+// *************************************
+// ParticipantController Main Controller for participants objects
+// *************************************
+
   angular.module('mwachx')
     .controller('ParticipantController',['$scope','$modal','$location','$stateParams','$log','$rootScope',
       'mwachxAPI',
       function ParticipantController($scope, $modal, $location, $stateParams, $log, $rootScope,
         mwachxAPI) {
 
-
-        $scope.openSendModal    = openSendModal;
         $scope.participant      = [];
         $scope.messages         = [];
+
         mwachxAPI.participants.get($stateParams.study_id).then(function(participant){
           $scope.participant = participant;
           $scope.messages = participant.getList('messages').$object;
@@ -41,9 +39,9 @@
         //
         // Public Methods
         //
-        function openSendModal(origMsg) {
+        var routePrefix   = '/static/app/participantDetail/';
+        $scope.openSendModal = function(origMsg) {
 
-          var routePrefix   = '/static/app/participantDetail/';
           var modalScope    = $rootScope.$new();
           modalScope.params = {origMsg: origMsg};
 
@@ -51,12 +49,7 @@
             templateUrl: routePrefix + 'newMessageModal.html',
             controller: 'NewMessageController',
             size: 'lg',
-            scope: modalScope,
-            resolve: {
-              items: function () {
-                return $scope.items;
-              }
-            }
+            scope: modalScope
           });
 
           modalInstance.result.then(
@@ -70,6 +63,15 @@
 
         };
 
+        $scope.openModifyModel = function() {
+
+            var modalInstance = $modal.open({
+              templateUrl: routePrefix + 'modifyParticipantModal.html',
+              size: 'lg',
+              controller: 'ModifyParticipantController',
+            });
+
+        }
         //
         // Private Methods
         //
@@ -79,5 +81,45 @@
         }
 
       }]);
+
+// *************************************
+// Modal Controllers
+// *************************************
+
+    angular.module('mwachx')
+      .controller('NewMessageController',
+        function NewMessageController($scope, $modalInstance, $log) {
+
+          // Vars
+          // TODO: should these be fetched so we DRY?
+          $scope.languageOptions  = ['English', 'Swahili', 'Sheng', 'Luo'];
+          $scope.languages        = new Set(); // Using some advanced stuff because we control our user's browser
+
+          // Methods for close and cancel
+          $scope.ok = function() {
+            $modalInstance.close(
+              // In here goes anything I want to pass back
+              );
+          };
+          $scope.cancel = function() {
+            $modalInstance.dismiss('cancel');
+          };
+      });
+
+    angular.module('mwachx').controller('ModifyParticipantController',
+      ['$scope','$modalInstance',
+        function ($scope,$modalInstance) {
+
+          // Methods for close and cancel
+          $scope.ok = function() {
+            $modalInstance.close(
+              // In here goes anything I want to pass back
+              );
+          };
+          $scope.cancel = function() {
+            $modalInstance.dismiss('cancel');
+          };
+        }]);
+
 
 })();

@@ -1,0 +1,13 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="cancel()" aria-label="Close">
+    <span aria-hidden="true">×</span>
+  </button>
+  <h3 class="modal-title">Modify Participant</h3>
+</div>
+
+<div class="modal-body" ng-include="'/crispy-forms/participant/update'"> </div>
+
+<div class="modal-footer">
+  <button class="btn btn-primary" ng-click="ok()">Change</button>
+  <button class="btn btn-default" ng-click="ok()">Cancle</button>
+</div>
