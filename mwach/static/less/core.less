@@ -159,3 +159,25 @@ input[datepicker-position-right] + ul {
   }
 
 }
+
+// *************************************
+// Angular Form Control
+// *************************************
+
+form.ng-scope {
+
+  input, select {
+
+    &.ng-pristine.ng-invalid {
+      border: 2px dashed red;
+    }
+
+    &.ng-dirty.ng-invalid {
+      border: 2px solid red;
+    }
+
+    &.ng-dirty.ng-valid {
+      border: 1px dashed green;
+    }
+  }
+}

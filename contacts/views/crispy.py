@@ -23,7 +23,7 @@ import utils
 @login_required()
 def participant_add(request):
     cf = forms.ContactAdd()
-    return render(request,'crispy/generic.html',{'form':cf,'form_name':'participant-create-form'})
+    return render(request,'crispy/generic.html',{'form':cf,'form_name':'participant-new-form'})
 
 @login_required()
 def participant_update(request):

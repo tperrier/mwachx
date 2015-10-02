@@ -123,6 +123,9 @@ class ContactAdd(forms.ModelForm):
             'anc_num': forms.NumberInput(attrs={'min':'1','max':'5000','required':'True'}), # TODO: Update this to be dependent on facility of logged in user
             'previous_pregnancies': forms.NumberInput(attrs={'min':'0','max':'15'}),
             'study_group': forms.Select(attrs={'required':'True'}),
+            'send_day': forms.Select(attrs={'required':'True'}),
+            'send_time': forms.Select(attrs={'required':'True'}),
+            'condition': forms.Select(attrs={'required':'True'}),
             'nickname': forms.TextInput(attrs={'required':'True'}),
         }
 
