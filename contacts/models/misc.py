@@ -20,7 +20,6 @@ class PhoneCallQuerySet(BaseQuerySet):
         except ObjectDoesNotExist:
             return self
 
-
 class PhoneCall(TimeStampedModel):
 
     class Meta:

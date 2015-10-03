@@ -23,7 +23,7 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
             make_option('-P','--add-participants',type=int,dest='participants',
-                default=0,help='Number of participants to add. Default = 10'),
+                default=0,help='Number of participants to add. Default = 0'),
             make_option('-J','--jennifer',default=False,action='store_true',
                 help='Add a fake account for Jennifer to each facility'),
         )
