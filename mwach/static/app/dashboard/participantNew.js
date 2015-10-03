@@ -7,8 +7,8 @@
    * @constructor
    */
   angular.module('mwachx')
-    .controller('ParticipantNewController', ['$scope','$location','mwachxAPI',
-      function ($scope, $location,mwachxAPI) {
+    .controller('ParticipantNewController', ['$scope','$location','mwachxAPI','mwachxUtils',
+      function ($scope, $location,mwachxAPI,mwachxUtils) {
 
       $scope.status = {
         birthdate:false,
@@ -18,7 +18,14 @@
 
       $scope.submit = function(){
         console.log('Submit',$scope.participant,$scope.participantNewForm);
-        mwachxAPI.participants.post($scope.participant)
+
+        // Clean Dates
+        $scope.participant.birthdate = mwachxUtils.convert_form_date($scope.participant.birthdate );
+        $scope.participant.due_date = mwachxUtils.convert_form_date($scope.participant.due_date );
+        $scope.participant.art_initiation = mwachxUtils.convert_form_date($scope.participant.art_initiation );
+
+        var response = mwachxAPI.participants.post($scope.participant);
+        console.log('Response',response)
       }
 
     }]);

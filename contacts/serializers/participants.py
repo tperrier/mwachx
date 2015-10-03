@@ -1,3 +1,6 @@
+# Python Imports
+import json
+
 # Rest Framework Imports
 from rest_framework import serializers
 from rest_framework import viewsets
@@ -7,6 +10,7 @@ from rest_framework.response import Response
 
 #Local Imports
 import contacts.models as cont
+import contacts.forms as forms
 from messages import MessageSerializer
 from visits import VisitSerializer
 
@@ -95,6 +99,54 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 	        return ParticipantListSerializer
 	    else:
 	        return ParticipantSerializer
+
+	########################################
+	# Overide Router POST, PUT, PATCH
+	########################################
+
+	def create(self, request, *args, **kwargs):
+		''' POST - create a new participant '''
+		cf = forms.ContactAdd(request.data)
+		if cf.is_valid():
+			#Create new contact but do not save in DB
+			contact = cf.save(commit=False)
+
+			#Set contacts facility to facility of current user
+			facility = cont.Facility.objects.get(pk=1) #default to first facility if none found
+			try:
+				facility = request.user.practitioner.facility
+			except cont.Practitioner.DoesNotExist:
+				pass
+
+			contact.facility = facility
+			#Important: save before making foreign keys
+			contact.save()
+
+			phone_number = '+254%s'%cf.cleaned_data['phone_number'][1:]
+			cont.Connection.objects.create(identity=phone_number,contact=contact,is_primary=True)
+
+			'''
+			#Send Welcome Message
+			message = 'Welcome to the mWaCh X Study. Please send your five letter confirmation code'
+			cont.Message.send(contact,message,'',translate_skipped=True)
+			'''
+
+			serialized_contact = ParticipantSerializer(contact,context={'request':request})
+			return Response(serialized_contact.data)
+
+		else:
+			return Response({'message':'post - create',
+					'errors':json.loads(cf.errors.as_json()),
+					'data':request.data,
+					'valid':cf.is_valid()})
+
+	def update(self, request, study_id=None, *args, **kwargs):
+		''' PUT - full update a new participant '''
+		return Response({'message':'put - update','data':request.data})
+
+	def partial_update(self, request, study_id=None, *args, **kwargs):
+		''' PATCH - partial update a participant '''
+		return Response({'message':'patch - partial update','data':request.data})
 
 	@detail_route(methods=['post','get'])
 	def messages(self, request, study_id=None, *args, **kwargs):

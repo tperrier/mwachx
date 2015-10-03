@@ -120,8 +120,8 @@ class Contact(TimeStampedModel):
     nickname = models.CharField(max_length=50)
     birthdate = models.DateField(verbose_name='DOB')
     partner_name = models.CharField(max_length=100,blank=True,null=True,verbose_name='Partner Name')
-    relationship_status = models.CharField(max_length=30,choices=RELATIONSHIP_CHOICES,default='married',verbose_name='Relationship Status')
-    previous_pregnancies = models.IntegerField(default=0)
+    relationship_status = models.CharField(max_length=30,choices=RELATIONSHIP_CHOICES,default='married',verbose_name='Relationship Status',blank=True,null=True)
+    previous_pregnancies = models.IntegerField(default=0,blank=True,null=True)
     phone_shared = models.NullBooleanField(default=None,verbose_name='Phone Shared')
 
     #Medical Information
