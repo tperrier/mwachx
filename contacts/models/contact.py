@@ -140,6 +140,9 @@ class Contact(TimeStampedModel):
     last_msg_system = models.DateField(blank=True,null=True,help_text='Date of last system message sent')
     is_validated = models.BooleanField(default=False)
 
+    class Meta:
+        app_label = 'contacts'
+
     def __str__ (self):
         return self.nickname
 
