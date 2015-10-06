@@ -56,6 +56,6 @@ gulp.task('watch', function() {
     gulp.watch('mwach/static/app/mwachx.*.js',['libs']);
 });
 
-gulp.task('default', ['watch','less','js'], function() {
+gulp.task('default', ['watch','less','js','libs'], function() {
 	return
 });
