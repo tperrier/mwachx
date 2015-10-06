@@ -35,13 +35,13 @@ class Language(TimeStampedModel):
     short_name = models.CharField(max_length=1)
     name = models.CharField(max_length=20)
 
-    messages = models.ManyToManyField("Message",related_name='languages',blank=True, null=True)
+    messages = models.ManyToManyField("Message",related_name='languages')
 
     def __str__(self):
         return self.short_name
 
 class Message(TimeStampedModel):
-    
+
     class Meta:
         ordering = ('-created',)
         app_label = 'contacts'

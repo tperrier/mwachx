@@ -40,7 +40,8 @@
           // Message state and substates
           .state('messages-pending', {
             url: '/messages/pending',
-            templateUrl: routePrefix + 'dashboard/pendingMessages.html'
+            templateUrl: routePrefix + 'dashboard/messages/pendingMessages.html',
+            controller: 'PendingMessageController'
           })
 
           // Visit state and substates
