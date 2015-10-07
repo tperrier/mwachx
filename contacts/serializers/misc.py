@@ -39,7 +39,7 @@ class PendingViewSet(viewsets.ViewSet):
     def list(self,request,format=None):
         pending = {
           'message_url':request.build_absolute_uri(reverse('pending-messages')),
-          'messages':cont.Message.objects.pending().count(),
+          'messages':cont.Message.objects.for_user(request.user).pending().count(),
           'visits':0,
           'calls':0,
           'translations':10,
@@ -48,6 +48,6 @@ class PendingViewSet(viewsets.ViewSet):
 
     @list_route()
     def messages(self,request):
-        messages = cont.Message.objects.pending()
+        messages = cont.Message.objects.for_user(request.user).pending()
     	messages_seri = MessageSerializer(messages,many=True,context={'request':request})
         return Response(messages_seri.data)
