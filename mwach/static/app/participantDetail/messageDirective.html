@@ -90,7 +90,7 @@
   </div>
 
   <div
-    ng-if="!message.is_outgoing"
+    ng-if="message.sent_by == 'participant'"
     class="btn-group btn-group-justified"
     ng-class="message.is_pending ? 'btn-group-sm' : 'btn-group-xs'"
     tooltip="You must select whether the message is related or unrelated and a topic before you can continue."
