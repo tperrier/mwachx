@@ -40,16 +40,19 @@
         // Public Methods
         //
         var routePrefix   = '/static/app/participantDetail/';
-        $scope.openSendModal = function(origMsg) {
-
-          var modalScope    = $rootScope.$new();
-          modalScope.params = {origMsg: origMsg};
+        $scope.openSendModal = function(msgId,msgText) {
 
           var modalInstance = $modal.open({
             templateUrl: routePrefix + 'newMessageModal.html',
             controller: 'NewMessageController',
             size: 'lg',
-            scope: modalScope
+            resolve: {
+              reply:function(){
+                if(msgId) {
+                  return {id:msgId,text:msgText}
+                }
+              }
+            }
           });
 
           modalInstance.result.then(
@@ -80,19 +83,22 @@
 // *************************************
 
 angular.module('mwachx')
-  .controller('NewMessageController',
-    function NewMessageController($scope, $modalInstance, $log) {
+  .controller('NewMessageController',['$scope','$modalInstance','$log','reply',
+    function ($scope, $modalInstance, $log, reply) {
       angular.extend($scope,{
         // TODO: should these be fetched so we DRY?
         languageOptions:['english', 'swahili', 'sheng', 'luo'],
         languages:{},
+        reply:reply,
 
         send:function(status) {
+          console.log('Send',$scope.reply);
           var message = {
             message:$scope.message,
             languages:pri.getLanguages(),
             translation:$scope.translation,
-            translation_status:status
+            translation_status:status,
+            reply: reply ? reply.id : null
           }
           $modalInstance.close( message );
         },
@@ -133,7 +139,7 @@ angular.module('mwachx')
 
     }
 
-});
+}]);
 
     angular.module('mwachx').controller('ModifyParticipantController',
       ['$scope','$modalInstance',
