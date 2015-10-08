@@ -106,9 +106,9 @@ class Message(TimeStampedModel):
     def sent_by(self):
         if self.is_outgoing:
             if self.is_system:
-                return 'System'
-            return self.admin_user.username if self.admin_user else 'Nurse'
-        return self.contact_name()
+                return 'system'
+            return 'nurse'
+        return 'participant'
 
     def study_id(self):
         if self.contact:

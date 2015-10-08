@@ -1,12 +1,21 @@
-<div class="avatar mw-4x" ng-class="{'nurse pull-right':message.is_nurse, 'system pull-right':message.is_system, 'participant pull-left':!message.is_outgoing}">
-  <i class="mw" ng-class="{'mw-user-md':message.is_nurse, 'mw-monitor-bdr':message.is_system, 'mw-mwach-phone':!message.is_outgoing}"></i>
+<div class="avatar mw-4x"
+     ng-class="{'nurse pull-right':message.sent_by == 'nurse',
+                'system pull-right':message.sent_by == 'system',
+                'participant pull-left':message.sent_by == 'participant'}">
+  <i class="mw"
+     ng-class="{'mw-user-md':message.sent_by == 'nurse',
+                'mw-monitor-bdr':message.sent_by == 'system',
+                'mw-mwach-phone':message.sent_by == 'participant'}"></i>
 </div>
 
-<div class="message" ng-class="{'nurse':message.is_nurse, 'system':message.is_system, 'participant':!message.is_outgoing, 'pull-right':message.is_outgoing, 'pull-left':!message.is_outgoing}">
+<div class="message"
+     ng-class="{'nurse pull-right':message.sent_by == 'nurse',
+                'system pull-right':message.sent_by == 'system',
+                'participant pull-left':message.sent_by == 'participant'}">
 
   <div class="msg-header clearfix">
     <strong class="pull-left">
-      {{message.is_nurse ? "Nurse" : message.is_system ? "System" : participant.nickname}}
+      {{message.is_outgoing ? message.sent_by : participant.nickname}}
     </strong>
     <div class="pull-right">{{message.created | date:'d MMM yy H:mm'}}</div>
 

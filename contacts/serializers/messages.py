@@ -39,7 +39,7 @@ class MessageSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = cont.Message
 		fields = ('id','href','text','contact','translated_text','is_translated','is_pending',
-					'is_system','is_outgoing','is_related','topic','created')
+					'sent_by','is_related','topic','created')
 
 #############################################
 #  ViewSet Definitions
