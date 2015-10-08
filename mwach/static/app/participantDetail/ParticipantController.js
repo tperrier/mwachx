@@ -72,14 +72,10 @@
             });
 
         }
-        //
-        // Private Methods
-        //
 
         var isDisabled = function(i) {
           return (this.is_pending && (typeof this.related === 'undefined' || this.topic === 'none'));
         }
-
       }]);
 
 // *************************************

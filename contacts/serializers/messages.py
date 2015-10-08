@@ -2,6 +2,7 @@
 from rest_framework import serializers
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.decorators import detail_route
 
 #Local Imports
 import contacts.models as cont
@@ -38,7 +39,7 @@ class MessageSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = cont.Message
 		fields = ('id','href','text','contact','translated_text','is_translated','is_pending',
-					'is_system','is_outgoing','created')
+					'is_system','is_outgoing','is_related','topic','created')
 
 #############################################
 #  ViewSet Definitions
@@ -50,3 +51,17 @@ class MessageViewSet(viewsets.ModelViewSet):
 	"""
 	serializer_class = MessageSerializer
 	queryset = cont.Message.objects.all()
+
+	@detail_route(methods=['put'])
+	def dismiss(self, request, pk, *args, **kwargs):
+		instance = self.get_object()
+
+		if request.data.get('is_related',None) is not None:
+			instance.is_related = request.data['is_related']
+		if request.data.get('topic','') != '':
+			instance.topic = request.data['topic']
+		instance.is_viewed = True
+		instance.save()
+
+		msg = MessageSerializer(instance,context={'request':request})
+		return Response({'this':'is','data':msg.data})

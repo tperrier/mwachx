@@ -10,8 +10,10 @@
 	  $resourceProvider.defaults.stripTrailingSlashes = false;
 	  $httpProvider.defaults.xsrfCookieName = 'csrftoken';
 	  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+
     RestangularProvider.setBaseUrl('/api/v0.1/');
     RestangularProvider.setRequestSuffix("\/");
+
 	}])
 
 	.config(['showErrorsConfigProvider', function(showErrorsConfigProvider) {

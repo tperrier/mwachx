@@ -16,6 +16,8 @@
         due_date:false,
       };
 
+      $scope.participant = {}; // name space for participant
+
       $scope.submit = function(){
         console.log('Submit',$scope.participant,$scope.participantNewForm);
 

@@ -3,7 +3,7 @@
 </div>
 
 <div class="message" ng-class="{'nurse':message.is_nurse, 'system':message.is_system, 'participant':!message.is_outgoing, 'pull-right':message.is_outgoing, 'pull-left':!message.is_outgoing}">
-  
+
   <div class="msg-header clearfix">
     <strong class="pull-left">
       {{message.is_nurse ? "Nurse" : message.is_system ? "System" : participant.nickname}}
@@ -11,7 +11,7 @@
     <div class="pull-right">{{message.created | date:'d MMM yy H:mm'}}</div>
 
     <div ng-if="!message.is_system" class="center-block">
-      
+
       <a href="#/" ng-if="!message.is_translated">
         <span class="badge-warning">Untranslated</span>
       </a>
@@ -22,11 +22,11 @@
       <span ng-if="message.is_translated && !message.translation_skipped">
         {{message.show_translation ? 'Displaying translated' : 'Displaying original&nbsp;&nbsp;&nbsp;'}}
       </span>
-      <label 
-        ng-if="message.is_translated && !message.translation_skipped" 
-        class="btn btn-xs mw-toggle-btn" 
-        ng-class="{'active': message.show_translation}" 
-        ng-click="message.show_translation = !message.show_translation" 
+      <label
+        ng-if="message.is_translated && !message.translation_skipped"
+        class="btn btn-xs mw-toggle-btn"
+        ng-class="{'active': message.show_translation}"
+        ng-click="message.show_translation = !message.show_translation"
         tooltip="Toggle between original text and translation">
           <i class="mw mw-language"></i>
       </label>
@@ -44,16 +44,16 @@
     <div class="col-sm-5 ">
       <!-- TODO: Would be easy to make a radio button directive from this... -->
       <div class="btn-group btn-group-justified btn-group-xs">
-        <label 
-          class="btn mw-toggle-btn" 
-          ng-class="{'active':message.related}" 
-          ng-click="message.related = true">
+        <label
+          class="btn mw-toggle-btn"
+          ng-class="{'active':message.is_related}"
+          ng-click="message.is_related = true">
             Related
         </label>
-        <label 
-          class="btn mw-toggle-btn" 
-          ng-class="{'active':message.related == false}" 
-          ng-click="message.related = false">
+        <label
+          class="btn mw-toggle-btn"
+          ng-class="{'active':message.is_related == false}"
+          ng-click="message.is_related = false">
             Unrelated
         </label>
       </div>
@@ -65,7 +65,7 @@
       </div>
       <div class="col-xs-9">
         <select name='topic' class='select form-control input-mini' ng-model="message.topic">
-          <option value='none'>None</option>
+          <option value=''>None</option>
           <option value='adherence'>Adherence</option>
           <option value='side-effects'>Side Effects</option>
           <option value='visits'>Visits</option>
@@ -80,19 +80,20 @@
     </div>
   </div>
 
-  <div 
-    ng-if="!message.is_outgoing" 
-    class="btn-group btn-group-justified" 
-    ng-class="message.is_pending ? 'btn-group-sm' : 'btn-group-xs'" 
-    tooltip="You must select whether the message is related or unrelated and a topic before you can continue." 
-    tooltip-enable="message.isDisabled()">
-      <a 
-        class="btn btn-success" 
-        ng-class="{'disabled': message.isDisabled()}" 
+  <div
+    ng-if="!message.is_outgoing"
+    class="btn-group btn-group-justified"
+    ng-class="message.is_pending ? 'btn-group-sm' : 'btn-group-xs'"
+    tooltip="You must select whether the message is related or unrelated and a topic before you can continue."
+    tooltip-enable="isDisabled()">
+      <a
+        class="btn btn-success"
+        ng-class="{'disabled': isDisabled()}"
         ng-click="openSendModalFn()(message.show_translation ? message.translated_text : message.text)">
           <i class="mw mw-reply"></i> Reply
       </a>
-      <a ng-if="message.is_pending" class="btn btn-danger" ng-class="{'disabled': message.isDisabled()}">
+      <a ng-if="message.is_pending" class="btn btn-danger"
+         ng-class="{'disabled': isDisabled()}" ng-click='dismiss()'>
         <i class="mw mw-times"></i> Dismiss
       </a>
   </div>
