@@ -14,25 +14,25 @@
                 'participant pull-left':message.sent_by == 'participant'}">
 
   <div class="msg-header clearfix">
-    <strong class="pull-left">
+    <strong class="pull-left capitalize">
       {{message.is_outgoing ? message.sent_by : participant.nickname}}
     </strong>
     <div class="pull-right">{{message.created | date:'d MMM yy H:mm'}}</div>
 
     <div ng-if="!message.is_system" class="center-block">
 
-      <a href="#/" ng-if="!message.is_translated">
-        <span class="badge-warning">Untranslated</span>
+      <a class='badge-warning' ng-if="message.translation_status == 'todo'">
+          Untranslated
       </a>
 
       {{message.is_translated && message.translation_skipped ? '(Translation skipped)' : ''}}
 
       <!-- toggle buttons to a shared directive? -->
-      <span ng-if="message.is_translated && !message.translation_skipped">
-        {{message.show_translation ? 'Displaying translated' : 'Displaying original&nbsp;&nbsp;&nbsp;'}}
+      <span ng-if="message.translation_status != 'todo'">
+        {{message.show_translation == 'done' ? 'Displaying translated' : 'Displaying original&nbsp;&nbsp;&nbsp;'}}
       </span>
       <label
-        ng-if="message.is_translated && !message.translation_skipped"
+        ng-if="message.translation_status == 'done'"
         class="btn btn-xs mw-toggle-btn"
         ng-class="{'active': message.show_translation}"
         ng-click="message.show_translation = !message.show_translation"
@@ -40,8 +40,8 @@
           <i class="mw mw-language"></i>
       </label>
 
-      <button ng-if="message.is_translated" class="btn btn-xs btn-default" tooltip="Retranslate message">
-        <i class="mw mw-redo"></i>
+      <button ng-if="message.translation_status != 'todo'" ng-click='retranslate()' class="btn btn-xs btn-default" tooltip="Mark for Retranslation">
+        <i class="mw mw-redo"></i> 
       </button>
 
     </div>
@@ -98,7 +98,7 @@
       <a
         class="btn btn-success"
         ng-class="{'disabled': isDisabled()}"
-        ng-click="openSendModalFn()(message.id,message.show_translation ? message.translated_text : message.text)">
+        ng-click="openSendModalFn()(message)">
           <i class="mw mw-reply"></i> Reply
       </a>
       <a ng-if="message.is_pending" class="btn btn-danger"

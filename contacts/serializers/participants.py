@@ -167,9 +167,29 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			contact_messages = MessageSerializer(contact_messages,many=True,context={'request':request})
 			return Response(contact_messages.data)
 		elif request.method == 'POST':
-			print request.data
+			print 'Participant Message Post: ',request.data
 			participant = self.get_object()
-			new_message = participant.send_message(request.data['text'])
+			message = {
+				'text':request.data['message'],
+				'languages':request.data['languages'],
+				'translation_status':request.data['translation_status'],
+				'is_system':False,
+				'is_viewed':False,
+				'admin_user':request.user
+			}
+			if message['translation_status'] == 'done':
+				message['translated_text'] = request.data['translated_text']
+
+			if request.data.has_key('reply'):
+				message['parent'] = cont.Message.objects.get(pk=request.data['reply']['id'])
+				print 'Reply To',message['parent']
+
+				if message['parent'].is_pending:
+					message['parent'].dismiss(**request.data['reply'])
+					print 'Dismiss',request.data['reply']
+
+			new_message = participant.send_message(**message)
+
 			return Response(MessageSerializer(new_message,context={'request': request}).data)
 
 

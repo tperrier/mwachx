@@ -38,7 +38,7 @@ class MessageSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = cont.Message
-		fields = ('id','href','text','contact','translated_text','is_translated','is_pending',
+		fields = ('id','href','text','contact','translated_text','translation_status','is_outgoing','is_pending',
 					'sent_by','is_related','topic','created')
 
 #############################################
@@ -54,14 +54,19 @@ class MessageViewSet(viewsets.ModelViewSet):
 
 	@detail_route(methods=['put'])
 	def dismiss(self, request, pk, *args, **kwargs):
-		instance = self.get_object()
 
-		if request.data.get('is_related',None) is not None:
-			instance.is_related = request.data['is_related']
-		if request.data.get('topic','') != '':
-			instance.topic = request.data['topic']
-		instance.is_viewed = True
+		instance = self.get_object()
+		instance.dismiss(**request.data)
+
+		msg = MessageSerializer(instance,context={'request':request})
+		return Response(msg.data)
+
+	@detail_route(methods=['put'])
+	def retranslate(self, request, pk, *args, **kwargs):
+
+		instance = self.get_object()
+		instance.translation_status = 'todo'
 		instance.save()
 
 		msg = MessageSerializer(instance,context={'request':request})
-		return Response({'this':'is','data':msg.data})
+		return Response(msg.data)

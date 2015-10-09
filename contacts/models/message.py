@@ -13,7 +13,7 @@ from utils.models import TimeStampedModel, BaseQuerySet
 class MessageQuerySet(BaseQuerySet):
 
     def pending(self):
-        return self.filter(is_viewed=False)
+        return self.filter(is_viewed=False,is_outgoing=False)
 
     def to_translate(self):
         return self.filter(is_system=False,is_translated=False,translate_skipped=False)
@@ -27,20 +27,14 @@ class MessageQuerySet(BaseQuerySet):
     def top(self):
         return self[:2]
 
-class Language(TimeStampedModel):
-
-    class Meta:
-        app_label = 'contacts'
-
-    short_name = models.CharField(max_length=1)
-    name = models.CharField(max_length=20)
-
-    messages = models.ManyToManyField("Message",related_name='languages')
-
-    def __str__(self):
-        return self.short_name
 
 class Message(TimeStampedModel):
+
+    STATUS_CHOICES = (
+        ('todo','Todo'),
+        ('none','None'),
+        ('done','Done')
+    )
 
     class Meta:
         ordering = ('-created',)
@@ -62,8 +56,10 @@ class Message(TimeStampedModel):
 
     # translation
     translated_text = models.CharField(max_length=1000,help_text='Text of the translated message',default=None,blank=True,null=True)
-    is_translated = models.BooleanField(default=False)
-    translate_skipped = models.BooleanField(default=False)
+    translation_status = models.CharField(max_length='5',help_text='Status of translation',choices=STATUS_CHOICES,default='todo')
+    languages = models.CharField(max_length=100,help_text='Semi colon seperated list of languages',default=None,blank=True,null=True)
+    # is_translated = models.BooleanField(default=False)
+    # translate_skipped = models.BooleanField(default=False)
 
     topic = models.CharField(max_length=50,help_text='The topic of this message',default='',blank=True)
 
@@ -92,16 +88,13 @@ class Message(TimeStampedModel):
     def is_pending(self):
         return not self.is_viewed and not self.is_outgoing
 
-    def lang_ids(self):
-        return [l.id for l in self.languages.all()]
-
-    def html_class(self):
-        '''
-        Determines how to display the message in a template
-        '''
-        if self.is_outgoing:
-            return 'system' if self.is_system else 'nurse'
-        return 'client'
+    # def html_class(self):
+    #     '''
+    #     Determines how to display the message in a template
+    #     '''
+    #     if self.is_outgoing:
+    #         return 'system' if self.is_system else 'nurse'
+    #     return 'client'
 
     def sent_by(self):
         if self.is_outgoing:
@@ -135,8 +128,13 @@ class Message(TimeStampedModel):
     def is_pregnant(self):
         return self.contact.was_pregnant(today=self.created.date())
 
-    def languages_str(self):
-        return ','.join([str(l) for l in self.languages.all()])
+    def dismiss(self,is_related=None,topic='',**kwargs):
+		if is_related is not None:
+			self.is_related = is_related
+		if topic != '':
+			self.topic = topic
+		self.is_viewed = True
+		self.save()
 
     @staticmethod
     def receive(number,message,time_received,external_id,external_linkId):
@@ -161,7 +159,7 @@ class Message(TimeStampedModel):
         )
 
     @staticmethod
-    def send(contact,message,translation,is_translated=False,translate_skipped=False,is_system=True,parent=None,languages=None):
+    def send(contact,message,translation,is_translated=False,translate_skipped=False,is_system=True,parent=None,languages=None,**kwargs):
 
         if config.AFRICAS_TALKING_SEND:
             import africas_talking

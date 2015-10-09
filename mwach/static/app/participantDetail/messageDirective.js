@@ -15,13 +15,26 @@
         templateUrl:           routePrefix + 'participantDetail/messageDirective.html',
         link: function($scope, element, attrs) {
           // console.log('Message',$scope.message);
+          if ($scope.message.translation_status == 'done') {
+            $scope.message.show_translation = true;
+          }
+
           $scope.isDisabled = function(){
             return  ($scope.message.is_pending &&
               ($scope.message.is_related === null || $scope.message.topic === ''));
           }
+
           $scope.dismiss = function() {
-            $scope.message.doPUT($scope.message,'dismiss');
-            $scope.message.is_pending = false;
+            $scope.message.doPUT($scope.message,'dismiss').then(function(result){
+              $scope.message.is_pending = false;
+            });
+          }
+
+          $scope.retranslate = function() {
+            console.log('retranslate');
+            $scope.message.doPUT($scope.message,'retranslate').then(function(result){
+              $scope.message.translation_status = 'todo';
+            });
           }
       }
     };

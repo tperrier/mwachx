@@ -40,7 +40,7 @@
         // Public Methods
         //
         var routePrefix   = '/static/app/participantDetail/';
-        $scope.openSendModal = function(msgId,msgText) {
+        $scope.openSendModal = function(msg) {
 
           var modalInstance = $modal.open({
             templateUrl: routePrefix + 'newMessageModal.html',
@@ -48,8 +48,8 @@
             size: 'lg',
             resolve: {
               reply:function(){
-                if(msgId) {
-                  return {id:msgId,text:msgText}
+                if(msg) {
+                  return msg;
                 }
               }
             }
@@ -57,8 +57,21 @@
 
           modalInstance.result.then(
             function (result) {
-              // Ok button?
-              $log.warn('ok button used',result,$scope.to_send);
+              $log.warn(result.type+' button used',result);
+              if (result.reply !== undefined) {
+                // filter out extra pramaters on reply
+                var oldReply = result.reply;
+                result.reply = {
+                  id:oldReply.id,
+                  is_related:oldReply.is_related,
+                  topic:oldReply.topic,
+                }
+              }
+              $scope.participant.post('messages/',result).then(function(result){
+                console.log('Post Message',result);
+                if( oldReply !== undefined) {oldReply.is_pending = false;}
+                $scope.messages.push(result);
+              });
             },
             function (reason) {
               $log.info('Send msg modal dismissed (canceled) at: ' + new Date(),reason);
@@ -96,9 +109,11 @@ angular.module('mwachx')
           var message = {
             message:$scope.message,
             languages:pri.getLanguages(),
-            translation:$scope.translation,
+            translated_text:$scope.translation,
             translation_status:status,
-            reply: reply ? reply.id : null
+          }
+          if (reply !== undefined ) {
+            message.reply = reply;
           }
           $modalInstance.close( message );
         },
