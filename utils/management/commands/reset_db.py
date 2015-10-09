@@ -26,6 +26,7 @@ class Command(BaseCommand):
                 default=0,help='Number of participants to add. Default = 0'),
             make_option('-J','--jennifer',default=False,action='store_true',
                 help='Add a fake account for Jennifer to each facility'),
+            make_option('-F','--facility',default=None,help='Force participants into one facility'),
         )
 
     def handle(self,*args,**options):
@@ -53,12 +54,11 @@ class Command(BaseCommand):
 
         with transaction.atomic():
             #Add new fake data
-            create_languages()
             create_facilities()
             create_users()
 
             if options['participants'] > 0:
-                load_old_participants(options['participants'])
+                load_old_participants(options)
 
             if options['jennifer']:
                 add_jennifers()
@@ -71,8 +71,12 @@ class Command(BaseCommand):
 ###################
 
 study_groups = ['control','one-way','two-way']
-def add_client(client,i):
-    facility_list = cont.Facility.objects.all()
+def add_client(client,i,facility=None):
+    if facility:
+        facility_list = cont.Facility.objects.filter(name=facility)
+    else:
+        facility_list = cont.Facility.objects.all()
+    mod = len(facility_list)
     new_client = {
         'study_id':i,
         'anc_num':client['anc_num'],
@@ -81,7 +85,7 @@ def add_client(client,i):
         'study_group':random.choice(study_groups),
         'due_date':get_due_date(),
         'last_msg_client':client['last_msg_client'],
-        'facility':facility_list[i%3],
+        'facility':facility_list[i%mod],
         'status':'post' if random.random() < .25 else 'pregnant',
         }
     contact = cont.Contact.objects.create(**new_client)
@@ -116,8 +120,7 @@ def add_message(message,contact,connection,translate=False):
     if translate and not system:
         _message.translated_text = "(translated)" + message['content']
         _message.is_translated = True
-        _lang = cont.Language.objects.get(id=random.randint(1,4))
-        _message.languages.add(_lang)
+        _message.lanagues = random.choice(('english','swahili','sheng','luo'))
 
     _message.save()
 
@@ -147,14 +150,15 @@ def add_note(note,contact):
 def get_due_date():
     return datetime.date.today() + datetime.timedelta(days=random.randint(0,100))
 
-def load_old_participants(n):
+def load_old_participants(options):
+        n = options['participants']
         print 'Loading %i Participants'%n
         clients = json.load(open(JSON_DATA_FILE))
         IMPORT_COUNT = min(n,len(clients))
         clients = clients.values()[:IMPORT_COUNT]
 
         for i,c in enumerate(clients):
-            print add_client(c,i)
+            print add_client(c,i,options['facility'])
 
         #Mark the last message for each contact is_viewed=False
         last_messages = cont.Message.objects.filter(is_outgoing=False).values('contact_id').order_by().annotate(Max('id'))
@@ -188,15 +192,6 @@ def create_jennifer(i,facility):
     contact = cont.Contact.objects.create(**new_client)
     connection = cont.Connection.objects.create(identity='+00{}'.format(i),contact=contact,is_primary=True)
 
-
-def create_languages():
-    print 'Creating Languages'
-    cont.Language.objects.bulk_create([
-        cont.Language(**{"short_name":"E", "name": 'English'}),
-        cont.Language(**{"short_name":"S", "name": 'Swahili'}),
-        cont.Language(**{"short_name":"H", "name": 'Sheng'}),
-        cont.Language(**{"short_name":"L", "name": 'Luo'}),
-    ])
 
 def create_facilities():
     print 'Creating Facilities'
