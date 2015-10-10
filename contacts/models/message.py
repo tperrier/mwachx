@@ -30,6 +30,9 @@ class MessageQuerySet(BaseQuerySet):
 
 class Message(TimeStampedModel):
 
+    #Set Custom Manager
+    objects = MessageQuerySet.as_manager()
+
     STATUS_CHOICES = (
         ('todo','Todo'),
         ('none','None'),
@@ -41,9 +44,6 @@ class Message(TimeStampedModel):
         app_label = 'contacts'
 
     text = models.CharField(max_length=1000,help_text='Text of the SMS message')
-
-    #Set Custom Manager
-    objects = MessageQuerySet.as_manager()
 
     #Boolean Flags on Message
     is_outgoing = models.BooleanField(default=True)
@@ -57,10 +57,9 @@ class Message(TimeStampedModel):
     # translation
     translated_text = models.CharField(max_length=1000,help_text='Text of the translated message',default=None,blank=True,null=True)
     translation_status = models.CharField(max_length='5',help_text='Status of translation',choices=STATUS_CHOICES,default='todo')
-    languages = models.CharField(max_length=100,help_text='Semi colon seperated list of languages',default=None,blank=True,null=True)
-    # is_translated = models.BooleanField(default=False)
-    # translate_skipped = models.BooleanField(default=False)
 
+    # Meta Data
+    languages = models.CharField(max_length=100,help_text='Semi colon seperated list of languages',default=None,blank=True,null=True)
     topic = models.CharField(max_length=50,help_text='The topic of this message',default='',blank=True)
 
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
@@ -73,28 +72,17 @@ class Message(TimeStampedModel):
     external_id = models.CharField(max_length=50,default=None,blank=True,null=True)
     external_linkId = models.CharField(max_length=50,default=None,blank=True,null=True)
 
-    def get_real_text(self):
-        return self.translated_text if self.is_translated else self.text
-
-    def get_original_text(self):
-        return self.text
+    def is_translated(self):
+        return self.translation_status == 'done'
 
     def translation_skipped(self):
-        return self.translate_skipped
+        return self.translation_status == 'none'
 
     def is_translation_pending(self):
         return (not self.is_translated) and (not self.is_system)
 
     def is_pending(self):
         return not self.is_viewed and not self.is_outgoing
-
-    # def html_class(self):
-    #     '''
-    #     Determines how to display the message in a template
-    #     '''
-    #     if self.is_outgoing:
-    #         return 'system' if self.is_system else 'nurse'
-    #     return 'client'
 
     def sent_by(self):
         if self.is_outgoing:
