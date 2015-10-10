@@ -16,6 +16,10 @@
 
 	}])
 
+  .config(['$uiViewScrollProvider',function($uiViewScrollProvider){
+    // $uiViewScrollProvider.useAnchorScroll();
+  }])
+
 	.config(['showErrorsConfigProvider', function(showErrorsConfigProvider) {
     showErrorsConfigProvider.trigger('keypress');
   }])
@@ -25,5 +29,14 @@
 
     datepickerPopupConfig.datepickerPopup = "yyyy-MM-dd";
   }]);
+
+// *************************************
+// mwachx MainController
+// *************************************
+
+  angular.module('mwachx').controller("MainController",
+    ['$scope','$anchorScroll','$timeout',function($scope,$anchorScroll,$timeout) {
+    }]);
+
 
 })();

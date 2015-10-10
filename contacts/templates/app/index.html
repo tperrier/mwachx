@@ -13,7 +13,7 @@
 
   </head>
 
-  <body ng-app="mwachx">
+  <body ng-app="mwachx" ng-controller="MainController">
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -71,7 +71,7 @@
         </div>
     </nav>
 
-    <div ui-view class="container-fluid" id="main-view-content"></div>
+    <div ui-view autoscroll class="container-fluid" id="main-view-content"></div>
 
   </body>
 </html>

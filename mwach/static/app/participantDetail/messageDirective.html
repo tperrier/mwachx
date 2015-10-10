@@ -21,7 +21,7 @@
 
     <div ng-if="!message.is_system" class="center-block">
 
-      <a ui-sref='translations' class='badge-warning' ng-if="message.translation_status == 'todo' && message.sent_by != 'system'">
+      <a ui-sref="translations({'#':'message{{message.id}}'})" class='badge-warning' ng-if="message.translation_status == 'todo' && message.sent_by != 'system'">
           Untranslated
       </a>
 

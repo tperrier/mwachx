@@ -4,7 +4,7 @@
   var routePrefix = '/static/app/dashboard/translations/';
 
   angular.module('mwachx')
-    .directive('mwTranslation', function() {
+    .directive('mwTranslation',[ function() {
 
       var pri = {
         getLanguages: function($scope) {
@@ -55,6 +55,6 @@
 
         }
       }
-    });
+    }]);
 
 }());

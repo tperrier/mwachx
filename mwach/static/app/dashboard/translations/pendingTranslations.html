@@ -14,9 +14,10 @@
           </tr>
       </thead>
       <tbody>
-        <tr mw-translation
+        <tr mw-translation id='message{{message.id}}'
           ng-repeat='message in pending'
-          message='message' pending='pending'>
+          message='message' pending='pending'
+          ng-class="{'current':current == 'message{{message.id}}'}" >
         </tr>
       </tbody>
     </table>
