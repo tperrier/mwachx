@@ -59,7 +59,8 @@
           // Translation state and substates
           .state('translations', {
             url: '/translations',
-            templateUrl: routePrefix + 'dashboard/translations.html'
+            templateUrl: routePrefix + 'dashboard/translations/pendingTranslations.html',
+            controller: 'PendingTranslationController'
           })
 
           // Testing state

@@ -119,7 +119,7 @@ def add_message(message,contact,connection,translate=False):
 
     if translate and not system:
         _message.translated_text = "(translated)" + message['content']
-        _message.is_translated = True
+        _message.translation_status = 'done'
         _message.lanagues = random.choice(('english','swahili','sheng','luo'))
 
     _message.save()

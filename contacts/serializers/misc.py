@@ -36,13 +36,14 @@ class FacilityViewSet(viewsets.ModelViewSet):
 
 class PendingViewSet(viewsets.ViewSet):
 
-    def list(self,request,format=None):
+    def list(self,request):
         pending = {
           'message_url':request.build_absolute_uri(reverse('pending-messages')),
           'messages':cont.Message.objects.for_user(request.user).pending().count(),
           'visits':0,
           'calls':0,
-          'translations':10,
+          'translations':cont.Message.objects.for_user(request.user).to_translate().count(),
+          'translations_url':request.build_absolute_uri(reverse('pending-translations')),
         }
         return Response(pending)
 
@@ -51,3 +52,9 @@ class PendingViewSet(viewsets.ViewSet):
         messages = cont.Message.objects.for_user(request.user).pending()
     	messages_seri = MessageSerializer(messages,many=True,context={'request':request})
         return Response(messages_seri.data)
+
+    @list_route()
+    def translations(self,request):
+        messages = cont.Message.objects.for_user(request.user).to_translate()
+        serialized_messages = MessageSerializer(messages,many=True,context={'request':request})
+        return Response(serialized_messages.data)

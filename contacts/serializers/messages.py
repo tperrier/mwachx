@@ -70,3 +70,17 @@ class MessageViewSet(viewsets.ModelViewSet):
 
 		msg = MessageSerializer(instance,context={'request':request})
 		return Response(msg.data)
+
+	@detail_route(methods=['put'])
+	def translate(self, request, pk, *args, **kwargs):
+
+		instance = self.get_object()
+		instance.translation_status = request.data['status']
+		instance.languages = request.data['languages']
+
+		if instance.translation_status == 'done':
+			instance.translated_text = request.data['text']
+		instance.save()
+
+		msg = MessageSerializer(instance,context={'request':request})
+		return Response(msg.data)

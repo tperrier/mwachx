@@ -21,7 +21,7 @@
 
     <div ng-if="!message.is_system" class="center-block">
 
-      <a class='badge-warning' ng-if="message.translation_status == 'todo'">
+      <a ui-sref='translations' class='badge-warning' ng-if="message.translation_status == 'todo' && message.sent_by != 'system'">
           Untranslated
       </a>
 
@@ -41,7 +41,7 @@
       </label>
 
       <button ng-if="message.translation_status != 'todo'" ng-click='retranslate()' class="btn btn-xs btn-default" tooltip="Mark for Retranslation">
-        <i class="mw mw-redo"></i> 
+        <i class="mw mw-redo"></i>
       </button>
 
     </div>

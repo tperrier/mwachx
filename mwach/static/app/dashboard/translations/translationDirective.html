@@ -1,0 +1,34 @@
+<td>
+  <i ng-if="message.sent_by == 'nurse'" class="mw mw-user-md mw-3x avatar-nurse "></i>
+  <i ng-if="message.sent_by != 'nurse'" class="mw mw-3x avatar-participant"
+     ng-class="{'mw-mwach-baby-phone': message.contact.status != 'Pregnant', 'mw-mwach-phone': message.contact.status == 'Pregnant'}"></i>
+</td>
+
+<td>
+  <strong>{{message.contact.nickname}}</strong>
+  <div class='btn-group'>
+    <label class="btn btn-language btn-sm mw-toggle-btn" btn-checkbox
+           ng-model="languages[language]"
+           ng-repeat=" (letter,language) in languageOptions "
+           tooltip="{{language}}"
+           tooltip-class='capitalize'
+    >
+    {{letter}}
+    </label>
+  </div>
+</td>
+
+<td> <div class="textblob">{{message.text}}</div></td>
+
+<td><div class="textblob" contenteditable ng-model="message.translated_text"></div></td>
+
+<td>
+    <button ng-class="{'disabled': isDisabled('translate')}" class="btn btn-info" tooltip-enable="isDisabled('translate')"
+            tooltip='You must select a language and edit the translation'
+            ng-click="translate('done')"
+    >Translated</button>
+    <button ng-class="{'disabled': isDisabled()}" class="btn btn-danger" tooltip-enable='isDisabled()'
+            tooltip='You must select a language the translation is ignored'
+            ng-click="translate('none')"
+    >No translation</button>
+</td>

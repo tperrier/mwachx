@@ -16,7 +16,7 @@ class MessageQuerySet(BaseQuerySet):
         return self.filter(is_viewed=False,is_outgoing=False)
 
     def to_translate(self):
-        return self.filter(is_system=False,is_translated=False,translate_skipped=False)
+        return self.filter(is_system=False,translation_status='todo')
 
     def for_user(self,user):
         try:
