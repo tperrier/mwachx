@@ -25,10 +25,10 @@
 <td>
     <button ng-class="{'disabled': isDisabled('translate')}" class="btn btn-info" tooltip-enable="isDisabled('translate')"
             tooltip='You must select a language and edit the translation'
-            ng-click="translate('done')"
+            ng-click="isDisabled('translate')?null:translate('done')"
     >Translated</button>
     <button ng-class="{'disabled': isDisabled()}" class="btn btn-danger" tooltip-enable='isDisabled()'
             tooltip='You must select a language the translation is ignored'
-            ng-click="translate('none')"
+            ng-click="isDisabled()?null:translate('none')"
     >No translation</button>
 </td>

@@ -10,6 +10,7 @@ from rest_framework.response import Response
 #Local Imports
 import contacts.models as cont
 from messages import MessageSerializer
+from visits import VisitSerializer
 
 ##############################################
 # Facility Serializer and Viewset
@@ -40,7 +41,8 @@ class PendingViewSet(viewsets.ViewSet):
         pending = {
           'message_url':request.build_absolute_uri(reverse('pending-messages')),
           'messages':cont.Message.objects.for_user(request.user).pending().count(),
-          'visits':0,
+          'visits':(cont.Visit.objects.get_upcoming() | cont.Visit.objects.get_bookcheck()).count(),
+          'visits_url':request.build_absolute_uri(reverse('pending-visits')),
           'calls':0,
           'translations':cont.Message.objects.for_user(request.user).to_translate().count(),
           'translations_url':request.build_absolute_uri(reverse('pending-translations')),
@@ -58,3 +60,12 @@ class PendingViewSet(viewsets.ViewSet):
         messages = cont.Message.objects.for_user(request.user).to_translate()
         serialized_messages = MessageSerializer(messages,many=True,context={'request':request})
         return Response(serialized_messages.data)
+
+    @list_route()
+    def visits(self,request):
+        visits = cont.Visit.objects.for_user(request.user)
+        upcoming = VisitSerializer(visits.get_upcoming(),many=True,context={'request':request})
+        # bookchecks = VisitSerializer(visits.get_bookcheck(),many=True,context={'request':request})
+        bookchecks = {'1':'1'}
+
+        return Response({'upcomming':upcoming.data,'bookchecks':bookchecks})

@@ -41,6 +41,7 @@ angular.module('mwachx')
   };
 })
 
+// *************************************
 // Filter to capitalize first letter: from
 // *************************************
 angular.module('mwachx')

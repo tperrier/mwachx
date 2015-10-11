@@ -35,7 +35,32 @@
 // *************************************
 
   angular.module('mwachx').controller("MainController",
-    ['$scope','$anchorScroll','$timeout',function($scope,$anchorScroll,$timeout) {
+    ['$scope','$location','$http','$filter',function($scope,$location,$http,$filter) {
+
+      angular.extend($scope,{
+        date_forward:function(delta){
+          delta = delta || 1;
+          pri.delta_date('forward',delta);
+        },
+        date_backward:function(delta){
+          delta = delta || 1;
+          pri.delta_date('back',delta);
+        },
+      });
+
+      var pri = {
+        delta_date:function(direction,delta){
+          $http.get('staff/date/'+direction+'/'+delta+'/').then(function(response){
+            $location.path('/'); // reload index
+
+            // Update $scope.current_date
+            delta *= (direction == 'back')?-1:1;
+            var epoch = new Date( Date.parse($scope.current_date) + (86400*delta*1000) );
+            $scope.current_date = $filter('date')(epoch,'yyyy-MM-dd','UTC');
+            console.log(delta,epoch,$scope.current_date);
+          });
+        },
+      }
     }]);
 
 

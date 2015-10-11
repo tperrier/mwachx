@@ -9,9 +9,11 @@ from django.db.models import Max
 from django.core.management import ManagementUtility
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from constance import config
 from django.db import transaction
 
 import contacts.models as cont
+import utils
 
 JSON_DATA_FILE =  os.path.join(settings.PROJECT_ROOT,'tools','small.json')
 if settings.ON_OPENSHIFT:
@@ -63,6 +65,7 @@ class Command(BaseCommand):
             if options['jennifer']:
                 add_jennifers()
 
+        config.CURRENT_DATE = '2015-08-06'
         #commit data
         #transaction.commit()
 
@@ -100,6 +103,7 @@ def add_client(client,i,facility=None):
         add_visit(v,contact)
     for n in client['notes']:
         add_note(n,contact)
+    add_new_visit(contact)
 
     return new_client
 
@@ -128,13 +132,23 @@ def add_visit(visit,contact):
     if visit['scheduled_date']:
         new_visit = {
             'scheduled':visit['scheduled_date'],
-            'reminder_last_seen':dateutil.parser.parse(visit['scheduled_date'])-datetime.timedelta(days=1),
+            'notification_last_seen':dateutil.parser.parse(visit['scheduled_date'])-datetime.timedelta(days=1),
             'arrived':visit['date'],
             'skipped':True if random.random() < .25 else False,
             'comment':visit['comments'],
-            'contact':contact
+            'participant':contact
         }
-        _visit = cont.Visit.objects.create(**new_visit)
+        cont.Visit.objects.create(**new_visit)
+
+VISIT_COUNT = 0
+def add_new_visit(contact):
+    global VISIT_COUNT
+    new_visit = {
+        'scheduled':utils.today() + datetime.timedelta(days=VISIT_COUNT+1),
+        'participant':contact,
+    }
+    VISIT_COUNT += 1
+    cont.Visit.objects.create(**new_visit)
 
 def add_note(note,contact):
     new_note = {
@@ -170,7 +184,7 @@ def load_old_participants(options):
             msg.save()
 
         # Make last visit arrived = None.
-        last_visits = cont.Visit.objects.all().values('contact_id').order_by().annotate(Max('id'))
+        last_visits = cont.Visit.objects.all().values('participant_id').order_by().annotate(Max('id'))
         cont.Visit.objects.filter(id__in=[d['id__max'] for d in last_visits]).update(arrived=None,skipped=None)
 
 def add_jennifers():
