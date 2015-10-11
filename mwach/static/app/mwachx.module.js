@@ -35,7 +35,7 @@
 // *************************************
 
   angular.module('mwachx').controller("MainController",
-    ['$scope','$location','$http','$filter',function($scope,$location,$http,$filter) {
+    ['$scope','$state','$http','$filter',function($scope,$state,$http,$filter) {
 
       angular.extend($scope,{
         date_forward:function(delta){
@@ -51,7 +51,7 @@
       var pri = {
         delta_date:function(direction,delta){
           $http.get('staff/date/'+direction+'/'+delta+'/').then(function(response){
-            $location.path('/'); // reload index
+            $state.transitionTo('home',null,{reload:true});
 
             // Update $scope.current_date
             delta *= (direction == 'back')?-1:1;
