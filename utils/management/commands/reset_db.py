@@ -9,12 +9,18 @@ from django.db.models import Max
 from django.core.management import ManagementUtility
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from django.db import transaction 
+from constance import config
+from django.db import transaction
 
 import contacts.models as cont
+import utils
+
+JSON_DATA_FILE =  os.path.join(settings.PROJECT_ROOT,'tools','small.json')
+if settings.ON_OPENSHIFT:
+    JSON_DATA_FILE = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'small.json')
 
 class Command(BaseCommand):
-    
+
     help = 'Delete old sqlite file, migrate new models, and load fake data'
 
     option_list = BaseCommand.option_list + (
@@ -22,8 +28,9 @@ class Command(BaseCommand):
                 default=0,help='Number of participants to add. Default = 0'),
             make_option('-J','--jennifer',default=False,action='store_true',
                 help='Add a fake account for Jennifer to each facility'),
+            make_option('-F','--facility',default=None,help='Force participants into one facility'),
         )
-    
+
     def handle(self,*args,**options):
 
         #Delete old DB
@@ -35,7 +42,10 @@ class Command(BaseCommand):
                 os.remove(os.path.join(settings.PROJECT_PATH,'mwach.db'))
         except OSError:
             pass
-        
+
+        if not os.path.isfile(JSON_DATA_FILE):
+            sys.exit('JSON file %s Does Not Exist'%(JSON_DATA_FILE,))
+
         #Migrate new models
         print 'Migrating new db....'
         utility = ManagementUtility(['reset_db.py','migrate'])
@@ -46,16 +56,16 @@ class Command(BaseCommand):
 
         with transaction.atomic():
             #Add new fake data
-            create_languages()
             create_facilities()
             create_users()
 
             if options['participants'] > 0:
-                load_old_participants(options['participants'])
+                load_old_participants(options)
 
             if options['jennifer']:
                 add_jennifers()
 
+        config.CURRENT_DATE = '2015-08-06'
         #commit data
         #transaction.commit()
 
@@ -64,8 +74,12 @@ class Command(BaseCommand):
 ###################
 
 study_groups = ['control','one-way','two-way']
-def add_client(client,i):
-    facility_list = cont.Facility.objects.all()
+def add_client(client,i,facility=None):
+    if facility:
+        facility_list = cont.Facility.objects.filter(name=facility)
+    else:
+        facility_list = cont.Facility.objects.all()
+    mod = len(facility_list)
     new_client = {
         'study_id':i,
         'anc_num':client['anc_num'],
@@ -74,12 +88,12 @@ def add_client(client,i):
         'study_group':random.choice(study_groups),
         'due_date':get_due_date(),
         'last_msg_client':client['last_msg_client'],
-        'facility':facility_list[i%3],
+        'facility':facility_list[i%mod],
         'status':'post' if random.random() < .25 else 'pregnant',
         }
     contact = cont.Contact.objects.create(**new_client)
     connection = cont.Connection.objects.create(identity='+2500'+client['phone_number'][:8],contact=contact,is_primary=True)
-    
+
     message_count = len(client['messages'])
     for i,m in enumerate(client['messages']):
         #only make translations for last five messages
@@ -89,7 +103,8 @@ def add_client(client,i):
         add_visit(v,contact)
     for n in client['notes']:
         add_note(n,contact)
-            
+    add_new_visit(contact)
+
     return new_client
 
 def add_message(message,contact,connection,translate=False):
@@ -108,49 +123,56 @@ def add_message(message,contact,connection,translate=False):
 
     if translate and not system:
         _message.translated_text = "(translated)" + message['content']
-        _message.is_translated = True
-        _lang = cont.Language.objects.get(id=random.randint(1,4))
-        _message.languages.add(_lang)
-    
+        _message.translation_status = 'done'
+        _message.lanagues = random.choice(('english','swahili','sheng','luo'))
+
     _message.save()
-    
+
 def add_visit(visit,contact):
     if visit['scheduled_date']:
         new_visit = {
             'scheduled':visit['scheduled_date'],
-            'reminder_last_seen':dateutil.parser.parse(visit['scheduled_date'])-datetime.timedelta(days=1),
+            'notification_last_seen':dateutil.parser.parse(visit['scheduled_date'])-datetime.timedelta(days=1),
             'arrived':visit['date'],
             'skipped':True if random.random() < .25 else False,
             'comment':visit['comments'],
-            'contact':contact
+            'participant':contact
         }
-        _visit = cont.Visit.objects.create(**new_visit)
-        
+        cont.Visit.objects.create(**new_visit)
+
+VISIT_COUNT = 0
+def add_new_visit(contact):
+    global VISIT_COUNT
+    new_visit = {
+        'scheduled':utils.today() + datetime.timedelta(days=VISIT_COUNT+1),
+        'participant':contact,
+    }
+    VISIT_COUNT += 1
+    cont.Visit.objects.create(**new_visit)
+
 def add_note(note,contact):
     new_note = {
         'contact':contact,
         'comment':note['content'],
     }
-    
+
     _note = cont.Note.objects.create(**new_note)
     _note.created = note['date']
     _note.save()
-    
-    
+
+
 def get_due_date():
     return datetime.date.today() + datetime.timedelta(days=random.randint(0,100))
 
-def load_old_participants(n):
+def load_old_participants(options):
+        n = options['participants']
         print 'Loading %i Participants'%n
-        JSON_DATA_FILE =  os.path.join(settings.PROJECT_ROOT,'tools','small.json')
-        if settings.ON_OPENSHIFT:
-            JSON_DATA_FILE = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'small.json')
         clients = json.load(open(JSON_DATA_FILE))
         IMPORT_COUNT = min(n,len(clients))
         clients = clients.values()[:IMPORT_COUNT]
 
         for i,c in enumerate(clients):
-            print add_client(c,i)
+            print add_client(c,i,options['facility'])
 
         #Mark the last message for each contact is_viewed=False
         last_messages = cont.Message.objects.filter(is_outgoing=False).values('contact_id').order_by().annotate(Max('id'))
@@ -162,7 +184,7 @@ def load_old_participants(n):
             msg.save()
 
         # Make last visit arrived = None.
-        last_visits = cont.Visit.objects.all().values('contact_id').order_by().annotate(Max('id'))
+        last_visits = cont.Visit.objects.all().values('participant_id').order_by().annotate(Max('id'))
         cont.Visit.objects.filter(id__in=[d['id__max'] for d in last_visits]).update(arrived=None,skipped=None)
 
 def add_jennifers():
@@ -185,15 +207,6 @@ def create_jennifer(i,facility):
     connection = cont.Connection.objects.create(identity='+00{}'.format(i),contact=contact,is_primary=True)
 
 
-def create_languages():
-    print 'Creating Languages'
-    cont.Language.objects.bulk_create([
-        cont.Language(**{"short_name":"E", "name": 'English'}),
-        cont.Language(**{"short_name":"S", "name": 'Swahili'}),
-        cont.Language(**{"short_name":"H", "name": 'Sheng'}),
-        cont.Language(**{"short_name":"L", "name": 'Luo'}),
-    ])
-    
 def create_facilities():
     print 'Creating Facilities'
     cont.Facility.objects.bulk_create([
@@ -201,7 +214,7 @@ def create_facilities():
         cont.Facility(name='ahero'),
         cont.Facility(name='mathare'),
     ])
-    
+
 def create_users():
     #create admin user
     print 'Creating Users'

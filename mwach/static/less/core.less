@@ -1,0 +1,240 @@
+// Layout
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+#main-view-content {
+  height:auto;
+  width:auto;
+  top:60px;
+  left:0px;
+  right:0px;
+  position:absolute;
+}
+
+/*http://stackoverflow.com/a/25193399/2708328 (I spent half a day on this one)*/
+input[datepicker-position-right] + ul {
+  margin: 2px -80px;
+}
+
+.no-gutter [class*="col-"] {
+  padding-left: 0;
+  padding-right:0;
+}
+.outside-gutter {
+  & > div:first-child {
+    padding-left: (@grid-gutter-width / 2);
+  }
+  & > div:last-child {
+    padding-right: (@grid-gutter-width / 2);
+  }
+}
+.flush-right {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.flush-left {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.flush-bottom {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.flush-top {
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+}
+
+// Status colors
+.pregnant {
+  color: @brand-primary;
+}
+.postpartum {
+  color: darken(@brand-success, 10%);
+}
+.adverse-event {
+  color: @brand-danger;
+}
+
+
+// New button
+.btn-xxl {
+  font-size: 3em;
+}
+.btn-highlight {
+  .button-variant(@btn-highlight-color; @btn-highlight-bg; @btn-highlight-border);
+}
+
+.mw-toggle-btn {
+  .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
+
+  &.active {
+    background-color: @brand-primary;
+    color: white;
+
+    &:hover,
+    &:active {
+      background-color: darken(@brand-primary, 10%);
+    }
+  }
+}
+
+// New badge
+.badge-warning:extend(.badge) {
+  background-color: @brand-warning;
+}
+
+// Action button
+// TODO: the color bits at the bottom could be redone with a mixin like the
+// button-variant above.
+.action-btn{
+  padding: 0px;
+  display: table;
+  border-bottom: solid 0.5em;
+
+  span, label {
+    vertical-align: middle;
+    display: table-cell;
+    text-align: left;
+  }
+
+  label {
+    padding-left: 15px;
+    cursor: pointer;
+  }
+
+  & > span {
+    width: 1.5em;
+    text-align: center;
+    font-size: 2em;
+    white-space: nowrap;
+
+    & > span.custom-stack {
+      position: relative;
+      display: inline-block;
+      width: 2em;
+      height: 2em;
+      line-height: 2em;
+      top: 0.2em;
+      font-size: 0.5em;
+      vertical-align: baseline;
+      strong {
+        font-weight: bold;
+        font-size: 0.7em;
+      }
+    }
+  }
+
+  &.btn-danger {
+    border-color: darken(@btn-danger-border, 12%);
+    & > span {
+      background-color: darken(@btn-danger-bg, 10%);
+    }
+  }
+
+  &.btn-highlight {
+    border-color: darken(@btn-highlight-border, 12%);
+    & > span {
+      background-color: darken(@btn-highlight-bg, 10%);
+    }
+  }
+
+  &.btn-success {
+    border-color: darken(@btn-success-border, 12%);
+    & > span {
+      background-color: darken(@btn-success-bg, 10%);
+    }
+  }
+
+  &.btn-info {
+    border-color: darken(@btn-info-border, 12%);
+    & > span {
+      background-color: darken(@btn-info-bg, 10%);
+    }
+  }
+
+}
+
+// *************************************
+// Special Styles
+// *************************************
+.capitalize {
+  text-transform: capitalize;
+}
+
+.avatar-nurse {
+  vertical-align: bottom;
+  color: #00c49e;
+}
+.avatar-system {
+  vertical-align: bottom;
+  color: gray;
+}
+.avatar-participant {
+  vertical-align: bottom;
+  color: #406281;
+}
+
+.textblob {
+  padding: 5px;
+}
+.textblob[contenteditable] {
+  outline: 1px dotted #c05dca;
+
+  &:hover, &:focus {
+    outline: 2px solid #ac3cb8;
+  }
+}
+
+#translations-table .current {
+  outline: 1px dotted #c05dca;
+}
+
+
+.btn-sm,
+.btn-group-sm > .btn {
+  font-size: 0.7em;
+  padding: 2px 4px;
+}
+
+.btn-language {
+  background-color: #eeeeee;
+  border-color: gray;
+
+  &:hover {
+    background-color: #406281;
+    color: white;
+  }
+
+  &:active, &.active, &:focus, &.focus {
+      background-color: #6f95b8;
+      color: white;
+  }
+}
+
+// *************************************
+// Angular Form Control
+// *************************************
+
+form.ng-scope {
+
+  input, select {
+
+    &.ng-pristine.ng-invalid {
+      border: 2px dashed red;
+    }
+
+    &.ng-dirty.ng-invalid {
+      border: 2px solid red;
+    }
+
+    &.ng-dirty.ng-valid {
+      border: 1px dashed green;
+    }
+  }
+}

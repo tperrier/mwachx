@@ -1,0 +1,83 @@
+// *************************************
+// Main Content Layout
+// *************************************
+.participant-page {
+  padding:0px 60px;
+  .participant-messages {
+    // H1 font size minus row offset
+    margin-left: calc(36px - 15px);
+    .message-list {
+      overflow-y:auto;
+      height:625px;  
+    }
+
+}
+}
+// *************************************
+// Side Panel Layout
+// *************************************
+.details-table tbody tr td:first-child {
+  font-weight: bold;
+  text-align: right;
+}
+
+.details-table-offset tbody tr td {
+  vertical-align: middle;
+  &:nth-child(3) {
+    font-weight: bold;
+    text-align: right;
+  }
+}
+
+// Icons labeling the sender
+.avatar {
+  &.pull-right{
+    padding: 0 0 0 15px;
+  }
+  &.pull-left {
+    padding: 0 15px 0 0;
+  }
+
+  &.nurse {
+    color: @brand-success;
+  }
+  &.system {
+    color: @gray-light;
+  }
+  &.participant {
+    color: @brand-primary;
+  }
+}
+
+// The actual message
+.message {
+  width:    70%;
+  margin:   0.5em 0 0.5em 0;
+
+  &.pull-right{
+    border-radius: 0 @msg-border-radius;
+  }
+  &.pull-left {
+    border-radius: @msg-border-radius 0;
+  }
+
+  .msg-content {
+    padding:  0 @msg-side-padding 0.3em @msg-side-padding;
+  }
+
+  // Colors and details for header and footer
+  &.nurse {
+    .message-variant(@state-success-bg);
+  }
+  &.system {
+    .message-variant(@gray-lighter);
+  }
+  &.participant {
+    .message-variant(@state-info-bg);
+  }
+}
+.input-mini {
+  height: 1.4em;
+  line-height: 1.4em;
+  padding: 0px;
+}

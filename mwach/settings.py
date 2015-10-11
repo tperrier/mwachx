@@ -45,20 +45,29 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admindocs',
-    
+
     'crispy_forms',
     'parsley',
-    
+
+
+    'rest_framework',
+
     #constane setup
     'constance',
     'constance.backends.database',
-    
+
     #mWaChx setup
     'contacts',
     'utils',
     'http_transport',
     'africas_talking',
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    # 'PAGINATE_BY': 10
+}
+
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
@@ -80,9 +89,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.i18n',
     'django.core.context_processors.static',
-    
+
     'constance.context_processors.config',
-    
+
     'utils.context_processors.openshift',
     'utils.context_processors.current_date',
     'utils.context_processors.brand_status',
@@ -138,12 +147,16 @@ STATICFILES_FINDERS = (
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_PATH,'static'),
+)
+
 #CONSTANCE SETUP
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_CONFIG = {
-    'CURRENT_DATE':('2014-8-1','Current Date for training'),
-    'AFRICAS_TALKING_SEND':(True,"Africa's Talking Send"),
+    'CURRENT_DATE':('2015-8-1','Current Date for training'),
+    'AFRICAS_TALKING_SEND':(False,"Africa's Talking Send"),
 }
 
 ################
@@ -186,5 +199,5 @@ MESSAGING_ADMIN = 'auth.User'
 try:
     from local_settings import *
 except ImportError as e:
-    #Silently fail if no local settings 
+    #Silently fail if no local settings
     pass

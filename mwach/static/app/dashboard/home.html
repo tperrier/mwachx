@@ -1,0 +1,51 @@
+<div style="padding: 0 40px;">
+  <mw-action-btn
+    class="btn-xxl"
+    ui-sref="messages-pending"
+    mw-icon="mw-comment-empty mw-stack-2x"
+    mw-stack-class="custom-stack"
+    mw-stack-inside="SMS"
+    mw-style="{{pending.messages}}"
+    style="margin: 20px 0; width: 100%;">
+    New messages?
+  </mw-action-btn>
+
+  <mw-action-btn
+    class="btn-xxl"
+    ui-sref="visits-upcomming"
+    mw-icon="mw-hospital-o"
+    mw-style="{{pending.visits}}"
+    style="margin: 20px 0; width: 100%;">
+    New visits?
+  </mw-action-btn>
+
+  <mw-action-btn
+    class="btn-xxl"
+    ui-sref="calls"
+    mw-icon="mw-mobile-1"
+    mw-style="{{pending.calls}}"
+    style="margin: 20px 0; width: 100%;">
+    New calls?
+  </mw-action-btn>
+
+  <mw-action-btn
+    class="btn-xxl"
+    ui-sref="translations"
+    mw-icon="mw-language"
+    mw-style="{{pending.translations}}"
+    style="margin: 20px 0; width: 100%;">
+    New translations?
+  </mw-action-btn>
+
+  <div class="btn-group btn-group-justified">
+    <mw-action-btn ui-sref='participant-new' class="btn-lg" mw-icon="mw-mwach-phone-add" mw-style="info" >
+      Enroll Participant
+    </mw-action-btn>
+    <mw-action-btn ui-sref="participant-list" class="btn-lg" mw-icon="mw-mwach-phone" mw-style="info" >
+      Find Participant
+    </mw-action-btn>
+    <mw-action-btn ui-sref="visits-upcomming" class="btn-lg" mw-icon="mw-list" mw-style="info">
+      Upcoming Visits
+    </mw-action-btn>
+  </div>
+</div>

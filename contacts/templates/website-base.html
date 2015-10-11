@@ -5,43 +5,15 @@
 <head>
     <meta charset="UTF-8">
 
-    <link rel='stylesheet' href='{% static "css/style.css" %}'>
-
-    <script src='{% static "libs/jquery.js" %}'></script>
-    <script type="text/javascript">
-        window.ParsleyConfig = {
-            errorClass: 'has-error',
-            successClass: 'has-success',
-            classHandler: function(ParsleyField) {
-                return ParsleyField.$element.parents('.form-group');
-            },
-            errorsContainer: function(ParsleyField) {
-                return ParsleyField.$element.parents('.form-group');
-            },
-            errorsWrapper: '<span class="help-block pull-right">',
-            errorTemplate: '<div></div>'
-        };
-    </script>
-    <script src='{% static "libs/parsley.min.js" %}'></script>
-    <script src='{% static "libs/bootstrap/js/bootstrap.js" %}'></script>
-    <script src='{% static "libs/bootstrap-switch/js/bootstrap-switch.min.js" %}'></script>
-    <script src='{% static "libs/fuelux/js/fuelux.min.js" %}'></script>
-    
-    <script src='{% static "js/mwach.js" %}'></script>
+    <link rel='stylesheet' href='{% static "css/main.css" %}'>
 
     <title>{% block title %}mWaCHx{% endblock %}</title>
-    
+
     {% block head_custom %}{% endblock %}
-    
-    <script type="text/javascript">
-        $(function(){
-            {% block js_onLoad %}{% endblock %}
-        });
-    </script>
 
 </head>
 
-<body class='fuelux'>
+<body>
 {% block body %} Website base template {% endblock %}
 </body>
 

@@ -1,10 +1,21 @@
 from django.conf.urls import patterns, include, url
+
+from rest_framework import routers
+
 import views
+from serializers import router
+# from views import angular_views
+
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'contacts.views.dashboard'),
-    url(r'^$', 'contacts.views.home'),
+    # DRF API viewer
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api/v0.1/', include(router.urls)),
+
+    # Angular app
+    url(r'^$', 'contacts.views.angular_view'),
+
+    # All of these are old - they should be deleted
     url(r'^message/new/?$', 'contacts.views.messages_new'),
     url(r'^visit/$', 'contacts.views.visits'),
     # url(r'^visit/dismiss/(?P<visit_id>\d*)/?$','contacts.views.visit_dismiss'),
@@ -21,13 +32,11 @@ urlpatterns = patterns('',
     url(r'^message/?$', 'contacts.views.messages'),
     url(r'^message/update/(?P<message_id>\d*)/?$','contacts.views.message_update'),
     url(r'^message/dismiss/(?P<message_id>\d*)/?$','contacts.views.message_dismiss'),
-    
+
     url(r'^staff/facility_change/(?P<facility_name>.*)/$','contacts.views.staff_facility_change'), #If we have more than 9 facilities we'd need to change this
     url(r'^staff/date/(?P<direction>back|forward)/(?P<delta>\d{1,365})/$','contacts.views.change_current_date'),
 
-    url(r'^participant/update/(?P<pk>\d+)/$', 'contacts.views.update_participant_details'),
-    
-    # TODO: this is not a RESTful API. We can do better.
-    url(r'^translation/notrequired/(?P<message_id>\d*)/?$','contacts.views.translation_not_required'),
-    url(r'^translation/save/(?P<message_id>\d*)/?$','contacts.views.save_translation'),
+    # crispy-form partial
+    url(r'^crispy-forms/participant/new/?$','contacts.views.crispy.participant_add'),
+    url(r'^crispy-forms/participant/update/?$','contacts.views.crispy.participant_update'),
 )

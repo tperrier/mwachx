@@ -1,0 +1,79 @@
+{% load staticfiles %}
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel='stylesheet' href='{% static "css/main.css" %}'>
+
+    <script src="{% static 'components.js' %}"></script>
+    <script src="{% static 'mwachx.js' %}"></script>
+
+  </head>
+
+  <body ng-app="mwachx" ng-controller="MainController">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand {{BRAND_STATUS}}" ui-sref="home"><i class="mw mw-mwach-phone"></i></a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="main-navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a ui-sref="home"><i class='mw mw-home'></i> Home</a>
+                    </li>
+                    <li>
+                        <a ui-sref="messages-pending"><i class='mw mw-comment'></i> Messages</a>
+                    </li>
+                    <li>
+                        <a ui-sref="visits-upcomming"><i class='mw mw-hospital-o'></i> Visits</a>
+                    </li>
+                    <li>
+                        <a ui-sref="calls"><i class='mw mw-mobile-1'></i> Calls</a>
+                    </li>
+                    <li>
+                        <a ui-sref="translations"><i class='mw mw-language'></i> Translations</a>
+                    </li>
+
+                     <li>
+                        <a ui-sref="participant-list"><i class="mw mw-mwach-phone"></i> Participants</a>
+                    </li>
+                </ul>
+                <h3 class='pull-right'>
+                    {% if not user.is_anonymous %}
+                     <a class='btn btn-warning' href='/accounts/logout/?next=/'>Logout: {{user.username}}</a>
+                        {% if user.is_staff %}
+                        <select id='id_staff_facility' name='staff_facility'>
+                            <option value='bondo'{% if user.practitioner.facility.name == 'bondo' %} selected{% endif %}>Bondo</option>
+                            <option value='ahero'{% if user.practitioner.facility.name == 'ahero' %} selected{% endif %}>Ahero</option>
+                            <option value='mathare'{% if user.practitioner.facility.name == 'mathare' %} selected{% endif %}>Mathare</option>
+                            <option value='demo'{% if user.practitioner.facility.name == 'demo' %} selected{% endif %}>Demo</option>
+                        </select>
+                        {% endif %}
+                    {% endif %}
+                    <a class='date-delta btn btn-sm btn-warning' ng-click='date_backward()'><</a>
+                    <span class="label label-warning"
+                          ng-init="current_date = '{{CURRENT_DATE|date:'Y-m-d'}}'" 
+                          ng-bind='current_date'></span>
+                    <a class='date-delta btn btn-sm btn-warning' ng-click='date_forward()'>></a>
+                </h3>
+
+            </div>
+        </div>
+    </nav>
+
+    <div ui-view autoscroll='true' class="container-fluid" id="main-view-content"></div>
+
+  </body>
+</html>

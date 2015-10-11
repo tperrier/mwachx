@@ -3,10 +3,20 @@
 *.pyc
 *~
 *.json
-*.xlsx
-!package.json
 *.log
-ignore/
+*.xlsx
+
+# Node and Bower
 node_modules/
-contacts/static/css/maps/
+bower_components/
+!package.json
+!bower.json
+
+# Ignore compiled code
+mwach/static/css/
+mwach/static/mwachx.js
+mwach/static/components.js
+*.map
+
+ignore/
 local_settings.py

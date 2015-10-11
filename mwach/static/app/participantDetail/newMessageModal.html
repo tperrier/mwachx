@@ -1,0 +1,57 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="cancel()" aria-label="Close">
+    <span aria-hidden="true">×</span>
+  </button>
+  <h3 class="modal-title">Send Message:</h3>
+</div>
+
+<div class="modal-body">
+
+  <div ng-if="reply" class="alert alert-success">{{reply.text}}</div>
+
+  <form name='send_to_form'>
+  <div class="row no-gutter outside-gutter">
+    <div class="col-md-6">
+    <div class="panel panel-primary flush-bottom flush-right">
+        <div class="panel-heading flush-right">Outgoing message:</div>
+        <div class="panel-body">
+        <textarea class="form-control"
+                  ng-model='message'
+                  ng-change='type_message()'
+                  name="message"
+                  rows="5"
+                  placeholder="Message to send....">
+        </textarea>
+        </div>
+    </div>
+    </div>
+    <div class="col-md-6">
+    <div class="panel panel-default flush-bottom flush-left">
+        <div class="panel-heading flush-left">Translated message:</div>
+        <div class="panel-body">
+        <textarea class="form-control" ng-model='translation' name="translation" rows="5" placeholder="Translation...."></textarea>
+        </div>
+    </div>
+    </div>
+  </div>
+  </form>
+
+  <div class="btn-group btn-group-justified">
+    <label
+      class="btn btn-language mw-toggle-btn flush-top capitalize" 
+      ng-repeat="language in languageOptions"
+      ng-model="languages[language]"
+      btn-checkbox >
+      {{ language }}
+    </label>
+  </div>
+
+  <div ng-if='error_msg'>{{error_msg}}</div>
+
+</div>
+
+<div class="modal-footer">
+  <button class="btn" ng-click="send('todo')" ng-class="{'disabled btn-default':isDisabled('todo'),'btn-primary':!isDisabled('todo')}">Send translate later</button>
+  <button class="btn" ng-click="send('none')" ng-class="{'disabled btn-default':isDisabled('none'),'btn-primary':!isDisabled('none')}">Send no translation</button>
+  <button class="btn" ng-click="send('done')" ng-class="{'disabled btn-default':isDisabled('done'),'btn-primary':!isDisabled('done')}">Send translation complete</button>
+</div>

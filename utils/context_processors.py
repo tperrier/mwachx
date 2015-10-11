@@ -15,8 +15,8 @@ def current_date(context):
 	}
 
 def brand_status(context):
-	if str(context.user) == "AnonymousUser":
-		return {'BRAND_STATUS': "brand-status-success"}
+	# Make this always return success for now. We will probably do this from angular later
+	return {'BRAND_STATUS': "brand-status-success"}
 
 	# do we have work to do?
 	nonzero = 0
@@ -28,6 +28,6 @@ def brand_status(context):
 
 	if nonzero > 0:
 		# if nonzero == 1:
-		# 	return {'BRAND_STATUS': "brand-status-warning"}	
+		# 	return {'BRAND_STATUS': "brand-status-warning"}
 		return {'BRAND_STATUS': "brand-status-danger"}
 	return {'BRAND_STATUS': "brand-status-success"}

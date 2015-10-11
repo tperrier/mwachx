@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.db.models import Count
 from django.views.generic.edit import CreateView
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import get_object_or_404
@@ -20,6 +21,22 @@ import json
 #Local Imports
 import contacts.models as cont
 import contacts.forms as forms, utils
+
+
+
+
+
+@csrf_protect
+@ensure_csrf_cookie
+@login_required()
+def angular_view(request):
+    return render(request, 'app/index.html')
+
+
+
+
+
+
 
 
 # === Action views ===

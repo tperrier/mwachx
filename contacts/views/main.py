@@ -76,6 +76,13 @@ def contact(request,study_id):
     return render(request,'contacts/contact.html',{'contact':contact,'modify_form':modify_form, 'langs': langs})
 
 @login_required()    
+def generate_add_participant_form(request):   
+    cf = forms.ContactAdd() 
+    return render(request,'crispy/participant_add_form.html',{'form':cf})
+
+
+
+@login_required()    
 def contact_add(request):
     
     if request.POST:
