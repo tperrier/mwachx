@@ -13,13 +13,12 @@
     <div class="col-md-8">
 
       <div class="btn-group btn-group-justified" id="msg-list-btn-group">
-        <mw-action-btn
-          mw-icon="mw-comment"
-          mw-style="success"
-          ng-click="openSendModal()">
+        <mw-action-btn mw-icon="mw-comment" mw-style="success" ng-click="openSendModal()">
           Send Msg
         </mw-action-btn>
-        <mw-action-btn mw-icon="mw-mobile-1" mw-style="highlight">Record Call</mw-action-btn>
+        <mw-action-btn mw-icon="mw-mobile-1" mw-style="highlight" ng-click="openPhoneModal()">
+          Record Call
+        </mw-action-btn>
       </div>
 
       <!-- TODO:. Need to sort out the overflow scrolling bits and infinate scroll with angular and drf-->
@@ -39,7 +38,9 @@
 
       <div class="panel panel-info">
         <div class="panel-heading">
-          <h3 class="panel-title">Participant Details <i id="context-edit" class="mw mw-cogs pull-right" ng-click='openModifyModel()'></i></h3>
+          <h3 class="panel-title">Participant Details
+            <i id="context-edit" class="mw mw-cogs pull-right" ng-click='openModifyModel()'></i>
+          </h3>
         </div>
 
         <table class="details-table table table-condensed">

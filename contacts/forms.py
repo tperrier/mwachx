@@ -106,11 +106,8 @@ class ContactAdd(forms.ModelForm):
         # thank you: http://stackoverflow.com/questions/24663564/django-add-attribute-to-every-field-by-default
         for field in self:
 
-          # field.field.widget.attrs.update({'ng-focus': ''})
-
           field.field.widget.attrs.update({
               'ng-model': 'participant.{0}'.format(field.name),
-              # 'get-error-elements': '',
           })
 
     class Meta:

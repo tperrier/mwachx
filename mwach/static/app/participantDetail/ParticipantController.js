@@ -84,7 +84,14 @@
             var modalInstance = $modal.open({
               templateUrl: routePrefix + 'modifyParticipantModal.html',
               size: 'lg',
-              controller: 'ModifyParticipantController',
+              controller:'ParticipantUpdateController',
+              resolve:{
+                participant:function(){return $scope.participant},
+              },
+            });
+
+            modalInstance.result.then(function(result){
+              console.log('Update',result);
             });
 
         }
@@ -155,21 +162,6 @@ angular.module('mwachx') .controller('NewMessageController',
   }
 
 }]);
-angular.module('mwachx').controller('ParticipantUpdateController',['$scope',function($scope){}]);
-  angular.module('mwachx').controller('ModifyParticipantController',
-  ['$scope','$modalInstance',
-  function ($scope,$modalInstance) {
-
-    // Methods for close and cancel
-    $scope.ok = function() {
-      $modalInstance.close(
-        // In here goes anything I want to pass back
-        );
-    };
-    $scope.cancel = function() {
-      $modalInstance.dismiss('cancel');
-    };
-  }]);
 
 
 })();
