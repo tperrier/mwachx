@@ -63,9 +63,7 @@ class PendingViewSet(viewsets.ViewSet):
 
     @list_route()
     def visits(self,request):
-        visits = cont.Visit.objects.for_user(request.user)
-        upcoming = VisitSerializer(visits.get_upcoming(),many=True,context={'request':request})
-        # bookchecks = VisitSerializer(visits.get_bookcheck(),many=True,context={'request':request})
-        bookchecks = {'1':'1'}
+        upcoming_visits = cont.Visit.objects.for_user(request.user).get_upcoming()
+        serialized_visits = VisitSerializer(upcoming_visits,many=True,context={'request':request})
 
-        return Response({'upcomming':upcoming.data,'bookchecks':bookchecks})
+        return Response(serialized_visits.data)

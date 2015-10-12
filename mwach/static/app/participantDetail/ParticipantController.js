@@ -95,81 +95,81 @@
 // Modal Controllers
 // *************************************
 
-angular.module('mwachx')
-  .controller('NewMessageController',['$scope','$modalInstance','$log','reply',
-    function ($scope, $modalInstance, $log, reply) {
-      angular.extend($scope,{
-        // TODO: should these be fetched so we DRY?
-        languageOptions:['english', 'swahili', 'sheng', 'luo'],
-        languages:{},
-        reply:reply,
+angular.module('mwachx') .controller('NewMessageController',
+  ['$scope','$modalInstance','$log','reply',
+  function ($scope, $modalInstance, $log, reply) {
+    angular.extend($scope,{
+      // TODO: should these be fetched so we DRY?
+      languageOptions:['english', 'swahili', 'sheng', 'luo'],
+      languages:{},
+      reply:reply,
 
-        send:function(status) {
-          console.log('Send',$scope.reply);
-          var message = {
-            message:$scope.message,
-            languages:pri.getLanguages(),
-            translated_text:$scope.translation,
-            translation_status:status,
-          }
-          if (reply !== undefined ) {
-            message.reply = reply;
-          }
-          $modalInstance.close( message );
-        },
-
-        type_message:function() {
-          // Make translation track message if not changed. Angular makes this so easy!
-          if($scope.send_to_form.translation.$pristine){
-            $scope.translation = $scope.message;
-          }
-        },
-
-        isDisabled:function(status) {
-          var base_condition =  $scope.message == undefined || $scope.message == '' || pri.getLanguages() == '';
-          if ( status == 'none' ) {
-            return base_condition || $scope.message != $scope.translation;
-          }
-          else if ( status == 'done' ) {
-            return base_condition || $scope.message == $scope.translation;
-          }
-          return base_condition;
-        },
-
-        cancel:function() {
-          $modalInstance.dismiss('cancel');
+      send:function(status) {
+        console.log('Send',$scope.reply);
+        var message = {
+          message:$scope.message,
+          languages:pri.getLanguages(),
+          translated_text:$scope.translation,
+          translation_status:status,
         }
-      });
+        if (reply !== undefined ) {
+          message.reply = reply;
+        }
+        $modalInstance.close( message );
+      },
 
-    // *************************************
-    // Private Functions
-    // *************************************
+      type_message:function() {
+        // Make translation track message if not changed. Angular makes this so easy!
+        if($scope.send_to_form.translation.$pristine){
+          $scope.translation = $scope.message;
+        }
+      },
 
-    var pri = {
-      getLanguages: function() {
-        return Object.keys($scope.languages)
-                     .filter(function(item,index){return $scope.languages[item] })
-                     .join(';');
+      isDisabled:function(status) {
+        var base_condition =  $scope.message == undefined || $scope.message == '' || pri.getLanguages() == '';
+        if ( status == 'none' ) {
+          return base_condition || $scope.message != $scope.translation;
+        }
+        else if ( status == 'done' ) {
+          return base_condition || $scope.message == $scope.translation;
+        }
+        return base_condition;
+      },
+
+      cancel:function() {
+        $modalInstance.dismiss('cancel');
       }
+    });
 
+  // *************************************
+  // Private Functions
+  // *************************************
+
+  var pri = {
+    getLanguages: function() {
+      return Object.keys($scope.languages)
+                   .filter(function(item,index){return $scope.languages[item] })
+                   .join(';');
     }
 
+  }
+
 }]);
+angular.module('mwachx').controller('ParticipantUpdateController',['$scope',function($scope){}]);
+  angular.module('mwachx').controller('ModifyParticipantController',
+  ['$scope','$modalInstance',
+  function ($scope,$modalInstance) {
 
-    angular.module('mwachx').controller('ModifyParticipantController',
-      ['$scope','$modalInstance',
-        function ($scope,$modalInstance) {
-
-          // Methods for close and cancel
-          $scope.ok = function() {
-            $modalInstance.close(
-              // In here goes anything I want to pass back
-              );
-          };
-          $scope.cancel = function() {
-            $modalInstance.dismiss('cancel');
-          };
-        }]);
+    // Methods for close and cancel
+    $scope.ok = function() {
+      $modalInstance.close(
+        // In here goes anything I want to pass back
+        );
+    };
+    $scope.cancel = function() {
+      $modalInstance.dismiss('cancel');
+    };
+  }]);
 
 
 })();

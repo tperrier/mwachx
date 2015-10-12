@@ -20,7 +20,7 @@ class ParticipantSimpleSerialier(serializers.ModelSerializer):
 
 	class Meta:
 		model = cont.Contact
-		fields = ('nickname','study_id','study_group', 'status','phone_number','href')
+		fields = ('nickname','study_id','study_group','anc_num', 'status','phone_number','href')
 
 	def get_status(self, obj):
 		return obj.get_status_display()

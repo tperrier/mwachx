@@ -32,7 +32,7 @@ class ConnectionAdmin(admin.ModelAdmin):
 
 @admin.register(cont.Visit)
 class VisitAdmin(admin.ModelAdmin):
-    list_display = ('study_id','contact_name','scheduled', 'notification_last_seen', 'arrived','skipped')
+    list_display = ('study_id','contact_name','scheduled', 'notification_last_seen','notify_count', 'arrived','skipped')
     date_hierarchy = 'scheduled'
     list_filter = ('skipped',)
 

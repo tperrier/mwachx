@@ -1,6 +1,7 @@
 #!/usr/bin/python
 #Django Imports
 from django.db import models
+from django.db.models import Q
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -28,20 +29,21 @@ class VisitQuerySet(BaseQuerySet):
         today = utils.today()
         start = today - datetime.timedelta(**start)
         notification_start = today - datetime.timedelta(**notification_start)
-        print today,start
+
         if end is not None:
             end = today - datetime.timedelta(**end)
-            if notification_end is not None:
-                notification_end = today - datetime.timedelta(**notification_end)
-                # return self.pending().filter(scheduled__range=(end,start), notification_last_seen__range=(notification_end,notification_start))
-                return self.pending().filter(scheduled__range=(end,start))
-            # return self.pending().filter(scheduled__range=(end,start), notification_last_seen__lte=notification_start)
-            return self.pending().filter(scheduled__range=(end,start))
+            scheduled_Q = Q(scheduled__range=(end,start))
         else:
-            if notification_end is not None:
-                notification_end = today - datetime.timedelta(**notification_end)
-                return self.pending().filter(scheduled__lte=start, notification_last_seen__range=(notification_end,notification_start))
-        return self.pending().filter(scheduled__lte=start, notification_last_seen__lte=notification_start)
+            scheduled_Q = Q(scheduled__lte=start)
+
+        if notification_end is not None:
+            notification_end = today - datetime.timedelta(**notification_end)
+            notification_Q = Q(notification_last_seen__range=(notification_end,notification_start))
+        else:
+            notification_Q = Q(notification_last_seen__lte=notification_start)
+
+        notification_Q |= Q(notification_last_seen__isnull=True)
+        return self.pending().filter( scheduled_Q & notification_Q)
 
     def for_user(self,user):
         try:
@@ -70,6 +72,7 @@ class Visit(TimeStampedModel):
     scheduled = models.DateField()
     arrived = models.DateField(blank=True,null=True,default=None)
     notification_last_seen = models.DateField(null=True,default=None)
+    notify_count = models.IntegerField(default=0)
     skipped = models.NullBooleanField(default=None)
 
     participant = models.ForeignKey(settings.MESSAGING_CONTACT)
@@ -89,3 +92,25 @@ class Visit(TimeStampedModel):
 
     def days_overdue(self):
         return (utils.today()-self.scheduled).days
+
+    def is_bookcheck(self):
+        ''' Bookcheck is true for any visit more than 7 days overdue '''
+        return self.days_overdue() >= 7
+
+    def seen(self):
+        ''' Mark visit as seen today '''
+        self.notify_count += 1
+        self.notification_last_seen = utils.today()
+        self.save()
+
+    def attended(self,arrived=None):
+        ''' Mark visted as attended on @arrived (default today) '''
+        self.arrived = arrived if arrived is not None else utils.today()
+        self.skipped = False
+        self.save()
+
+    def skip(self):
+        ''' Mark visit as skipped '''
+        self.arrived = None
+        self.skipped = True
+        self.save()

@@ -1,0 +1,18 @@
+<td>
+  <a class='btn btn-danger'
+     tooltip='{{visit.participant.nickname}} did not visit today'
+     ng-click='missedVisit()'>
+    <i class='mw mw-2x mw-eye-off'></i>
+  </a>
+  <a class='btn btn-info'
+     tooltip='{{visit.participant.nickname}} came for a {{visit.visit_type}} visit'
+     ng-click='attendedVisit()'>
+    <i class='mw mw-2x mw-hospital-o '></i>
+  </a>
+</td>
+<td>{{visit.participant.nickname}}</td>
+<td>{{visit.visit_type}}</td>
+<td>{{visit.participant.study_group}}</td>
+<td>{{visit.participant.anc_num}}</td>
+<td>{{visit.scheduled | date : 'MMM d, yyyy'}}</td>
+<td>{{visit.days_overdue}}</td>

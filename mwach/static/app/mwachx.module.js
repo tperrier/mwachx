@@ -51,7 +51,8 @@
       var pri = {
         delta_date:function(direction,delta){
           $http.get('staff/date/'+direction+'/'+delta+'/').then(function(response){
-            $state.transitionTo('home',null,{reload:true});
+            // $state.transitionTo('home',null,{reload:true});
+            $state.reload();
 
             // Update $scope.current_date
             delta *= (direction == 'back')?-1:1;
