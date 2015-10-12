@@ -54,6 +54,7 @@ class Command(BaseCommand):
         #Turn off Autocommit
         #transaction.set_autocommit(False)
 
+        config.CURRENT_DATE = datetime.date.today()
         with transaction.atomic():
             #Add new fake data
             create_facilities()
@@ -65,7 +66,6 @@ class Command(BaseCommand):
             if options['jennifer']:
                 add_jennifers()
 
-        config.CURRENT_DATE = '2015-08-06'
         #commit data
         #transaction.commit()
 
