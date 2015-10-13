@@ -117,7 +117,7 @@ class ContactAdd(forms.ModelForm):
         widgets = {
             # validation
             'study_id': forms.NumberInput(attrs={'min':'10000000','max':'99999999','required':True}), # TODO: Update this to be dependent on facility of logged in user
-            'anc_num': forms.NumberInput(attrs={'min':'1','max':'5000','required':True}), # TODO: Update this to be dependent on facility of logged in user
+            'anc_num': forms.NumberInput(attrs={'min':'100000','max':'999999','required':True}), # TODO: Update this to be dependent on facility of logged in user
             'previous_pregnancies': forms.NumberInput(attrs={'min':'0','max':'15'}),
             'study_group': forms.Select(attrs={'required':True}),
             'send_day': forms.Select(attrs={'required':True}),
