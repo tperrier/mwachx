@@ -80,6 +80,7 @@ class Contact(TimeStampedModel):
         ('single','Single'),
         ('partner','Partner'),
         ('married','Married'),
+        ('seperated','Seperated'),
     )
 
     DAY_CHOICES = (
