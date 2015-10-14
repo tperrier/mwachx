@@ -7,8 +7,8 @@
    * @constructor
    */
   angular.module('mwachx')
-    .controller('ParticipantNewController', ['$scope','$location','mwachxAPI','mwachxUtils',
-      function ($scope, $location,mwachxAPI,mwachxUtils) {
+    .controller('ParticipantNewController', ['$scope','$state','mwachxAPI','mwachxUtils',
+      function ($scope, $state,mwachxAPI,mwachxUtils) {
 
       $scope.status = {
         birthdate:false,
@@ -26,8 +26,14 @@
         $scope.participant.due_date = mwachxUtils.convert_form_date($scope.participant.due_date );
         $scope.participant.art_initiation = mwachxUtils.convert_form_date($scope.participant.art_initiation );
 
-        var response = mwachxAPI.participants.post($scope.participant);
-        console.log('Response',response)
+        if($scope.participant.study_id.length > 4) { // Study ID in form 25SSDDDD0
+          $scope.participant.study_id = $scope.participant.study_id.substr(4,4); // Extract 4 digit id
+        }
+
+        mwachxAPI.participants.post($scope.participant).then(function(response){;
+          console.log('Response',response);
+          $state.go('participant-details',{study_id:response.study_id});
+        });
       }
 
     }]);

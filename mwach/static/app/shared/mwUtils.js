@@ -2,15 +2,11 @@
   'use strict';
 
 angular.module('mwachx')
-  .factory('mwachxUtils',[function(){
+  .factory('mwachxUtils',['$filter',function($filter){
     var service = {};
 
     service.convert_form_date = function(date) {
-      if ( date instanceof Date ) {
-        return date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate();
-      } else {
-        return date;
-      }
+      return $filter('date')(date,'yyyy-MM-dd');
     };
 
     return service;

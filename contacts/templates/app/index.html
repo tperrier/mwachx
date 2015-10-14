@@ -64,7 +64,7 @@
                     {% endif %}
                     <a class='date-delta btn btn-sm btn-warning' ng-click='date_backward()'><</a>
                     <span class="label label-warning"
-                          ng-init="current_date = '{{CURRENT_DATE|date:'Y-m-d'}}'" 
+                          ng-init="current_date = '{{CURRENT_DATE|date:'Y-m-d'}}'"
                           ng-bind='current_date'></span>
                     <a class='date-delta btn btn-sm btn-warning' ng-click='date_forward()'>></a>
                 </h3>
@@ -73,7 +73,7 @@
         </div>
     </nav>
 
-    <div ui-view autoscroll='true' class="container-fluid" id="main-view-content"></div>
+    <div ui-view class="container-fluid" id="main-view-content"></div>
 
   </body>
 </html>

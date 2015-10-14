@@ -28,6 +28,7 @@
     datepickerConfig.showWeeks = false;
 
     datepickerPopupConfig.datepickerPopup = "yyyy-MM-dd";
+    datepickerPopupConfig.closeText = 'Close';
   }]);
 
 // *************************************
@@ -58,7 +59,7 @@
             delta *= (direction == 'back')?-1:1;
             var epoch = new Date( Date.parse($scope.current_date) + (86400*delta*1000) );
             $scope.current_date = $filter('date')(epoch,'yyyy-MM-dd','UTC');
-            console.log(delta,epoch,$scope.current_date);
+            // console.log(delta,epoch,$scope.current_date);
           });
         },
       }

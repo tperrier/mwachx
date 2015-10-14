@@ -13,7 +13,7 @@
                 'system pull-right':message.sent_by == 'system',
                 'participant pull-left':message.sent_by == 'participant'}">
 
-  <div class="msg-header">
+  <div class="msg-header clearfix">
     <strong class="pull-left capitalize">
       {{message.is_outgoing ? message.sent_by : participant.nickname}}
     </strong>

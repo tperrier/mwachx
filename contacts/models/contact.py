@@ -56,8 +56,8 @@ class Contact(TimeStampedModel):
 
     LANGUAGE_CHOICES = (
         ('english','English'),
-        ('dholuo','Dholuo'),
-        ('kiswahili','KiSwahili'),
+        ('luo','Luo'),
+        ('swahili','Swahili'),
     )
 
     CONDITION_CHOICES = (
@@ -107,9 +107,8 @@ class Contact(TimeStampedModel):
     objects = ContactQuerySet.as_manager()
 
     #Study Attributes
-    # NOTE: Updated to integer fields so that the validation can be done client side.
-    study_id = models.IntegerField(unique=True,verbose_name='Study ID')
-    anc_num = models.IntegerField(verbose_name='ANC #')
+    study_id = models.CharField(max_length=10,unique=True,verbose_name='Study ID')
+    anc_num = models.CharField(max_length=10,verbose_name='ANC #')
 
     facility = models.ForeignKey('contacts.Facility')
 
@@ -206,7 +205,7 @@ class Contact(TimeStampedModel):
         return '%04i'%self.study_id
 
     def validation_key(self):
-        sha = sha256('%i%s%i%s'%(self.id,self.nickname,self.anc_num,self.birthdate)).hexdigest()[:5]
+        sha = sha256('%i%s%s%s'%(self.id,self.nickname,self.anc_num,self.birthdate)).hexdigest()[:5]
         key = ''.join([str(int(i,16)) for i in sha])
         return key[:5]
 
