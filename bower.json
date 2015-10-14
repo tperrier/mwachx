@@ -19,11 +19,11 @@
   "dependencies": {
     "bootstrap": "3.x",
     "angular": "1.4.x",
-    "angular-bootstrap": "0.x",
-    "angular-resource": "1.x",
+    "angular-bootstrap": "0.13.4",
+    "angular-resource": "1.4.x",
     "angular-bootstrap-show-errors": "2.x",
-    "angular-ui-router": "0.x",
-    "restangular": "1.x"
+    "angular-ui-router": "0.2.x",
+    "restangular": "1.5.x"
   },
   "resolutions": {
     "angular": "1.4.3"
