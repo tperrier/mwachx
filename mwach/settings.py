@@ -13,6 +13,9 @@ import os
 #Determain if we are running on OpenShift
 ON_OPENSHIFT = True if os.environ.has_key('OPENSHIFT_REPO_DIR') else False
 
+# Determain if we are running on Webfaction
+ON_WEBFACTION = True if 'webfaction' in os.environ.get('HOSTNAME','').split('.') else False
+
 # The top directory for this project. Contains requirements/, manage.py,
 PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
 
@@ -135,6 +138,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 if ON_OPENSHIFT:
     STATIC_ROOT = os.path.join(os.environ.get('OPENSHIFT_REPO_DIR'),'wsgi','static')
+elif ON_WEBFACTION:
+    STATIC_ROOT = os.path.join(PROJECT_ROOT,'..\..\mwachx_static')
 else:
     STATIC_ROOT = os.path.join(PROJECT_ROOT, STATIC_URL.strip("/"))
 
