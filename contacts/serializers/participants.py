@@ -13,6 +13,7 @@ import contacts.models as cont
 import contacts.forms as forms
 from messages import MessageSerializer
 from visits import VisitSerializer
+from misc import PhoneCallSerializer
 
 #############################################
 #  Serializer Definitions
@@ -46,11 +47,14 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	condition = serializers.SerializerMethodField()
 	validation_key = serializers.SerializerMethodField()
 	phone_number = serializers.SerializerMethodField()
+	facility = serializers.SerializerMethodField()
 
 	href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
 	messages_url = serializers.HyperlinkedIdentityField(view_name='participant-messages',lookup_field='study_id')
 	visits_url = serializers.HyperlinkedIdentityField(view_name='participant-visits',lookup_field='study_id')
+	calls_url = serializers.HyperlinkedIdentityField(view_name='participant-calls',lookup_field='study_id')
 
+	calls = PhoneCallSerializer(source='phonecall_set',many=True)
 	messages = MessageSerializer(source='message_set.top',many=True)
 	visits = VisitSerializer(source='visit_set.top',many=True)
 
@@ -77,6 +81,9 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
 	def get_status(self, obj):
 		return obj.get_status_display()
+
+	def get_facility(self,obj):
+		return ''.join(word.capitalize() for word in obj.facility.name.split())
 
 #############################################
 #  ViewSet Definitions
@@ -192,9 +199,20 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
 			return Response(MessageSerializer(new_message,context={'request': request}).data)
 
+	@detail_route(methods=['get','post'])
+	def calls(self, request, study_id=None):
+		if request.method == 'GET': # Return serialized call history
+			call_history = cont.PhoneCall.objects.filter(contact__study_id=study_id)
+			call_serialized = PhoneCallSerializer(call_history,many=True,context={'request':request})
+			return Response(call_serialized.data)
+		elif request.method == 'POST': # Save a new call
+			participant = self.get_object()
+			new_call = participant.add_call(**request.data)
+			new_call_serialized = PhoneCallSerializer(new_call,context={'request':request})
+			return Response(new_call_serialized.data)
 
 	@detail_route()
 	def visits(self, request, study_id=None, *args, **kwargs):
-		contact_visits = cont.Visit.objects.filter(contact__study_id=study_id)
+		contact_visits = cont.Visit.objects.filter(participant__study_id=study_id)
 		contact_visits = VisitSerializer(contact_visits,many=True,context={'request':request})
 		return Response(contact_visits.data)

@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 #Local Imports
 import contacts.models as cont
-from messages import MessageSerializer
+from messages import MessageSerializer, ParticipantSimpleSerialier
 from visits import VisitSerializer
 
 ##############################################
@@ -67,3 +67,14 @@ class PendingViewSet(viewsets.ViewSet):
         serialized_visits = VisitSerializer(upcoming_visits,many=True,context={'request':request})
 
         return Response(serialized_visits.data)
+
+########################################
+# Phone Call Seralizer
+########################################
+
+class PhoneCallSerializer(serializers.ModelSerializer):
+
+    contact = ParticipantSimpleSerialier()
+
+    class Meta:
+        model = cont.PhoneCall

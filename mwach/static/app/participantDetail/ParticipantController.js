@@ -96,6 +96,18 @@
 
         }
 
+        $scope.openPhoneModal = function() {
+
+            var modalInstance = $modal.open({
+              templateUrl: routePrefix + 'phoneCallModal.html',
+              size: 'lg',
+              controller: 'PhoneCallController',
+              resolve:{
+                participant:function(){return $scope.participant},
+              },
+            });
+        }
+
       }]);
 
 // *************************************
@@ -163,5 +175,26 @@ angular.module('mwachx') .controller('NewMessageController',
 
 }]);
 
+angular.module('mwachx') .controller('ParticipantUpdateController', //Name is controlled by django form name
+  ['$scope','$modalInstance','$log','participant',
+  function ($scope, $modalInstance, $log, participant) {
+    angular.extend($scope,{
+        participant:participant,
+    });
+  }]);
+
+angular.module('mwachx') .controller('PhoneCallController',
+  ['$scope','$modalInstance','$log','participant',
+  function ($scope, $modalInstance, $log, participant) {
+    angular.extend($scope,{
+        participant:participant,
+        new_call:{incoming:false,created:new Date()},
+        add_call:function(){
+          $scope.participant.post('calls/',$scope.new_call).then(function(response){
+            console.log('Post Call');
+          });
+        },
+    });
+  }]);
 
 })();

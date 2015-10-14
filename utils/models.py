@@ -6,7 +6,7 @@ class TimeStampedModel(models.Model):
 
     class Meta:
         ordering = ['-created']
-    
+
     #The date and time this message was created or modified
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -16,14 +16,22 @@ class TimeStampedModel(models.Model):
 
     class Meta:
         abstract = True
-        
+
 class BaseQuerySet(models.QuerySet):
-    
+
     def get_or_none(self,**kwargs):
         return self.get_or_default(None,**kwargs)
-            
+
     def get_or_default(self,default=None,**kwargs):
         try:
             return self.get(**kwargs)
         except ObjectDoesNotExist:
             return default
+
+class ForUserQuerySet(BaseQuerySet):
+
+    def for_user(self,user):
+        try:
+            return self.filter(contact__facility=user.practitioner.facility)
+        except (ObjectDoesNotExist, AttributeError) as e:
+            return self.none()

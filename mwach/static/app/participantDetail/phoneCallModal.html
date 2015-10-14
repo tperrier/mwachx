@@ -1,0 +1,78 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+    <span aria-hidden="true">×</span>
+  </button>
+  <h3 class="modal-title">Phone Calls</h3>
+</div>
+<div class='model-body'>
+<div style='padding:5px 20px'>
+
+<accordion close-others="true">
+  <accordion-group heading="Record Phone Call" is-open="true">
+    <form name="call_form">
+    <div class='row'>
+      <div class="form-group">
+        <label class="col-sm-1 control-label" for="date_called">Called</label>
+          <div class="col-sm-3">
+            <p class='input-group'> <input ng-model='new_call.created' type='text' class='form-control'
+                   datepicker-popup is-open="created_open" name='created_open'/>
+             <span class="input-group-btn">
+               <button type="button" class="btn btn-default" ng-click="created_open = !created_open">
+                 <i class="glyphicon glyphicon-calendar"></i>
+              </button></span> </p>
+          </div>
+      </div>
+
+  <div class='col-sm-7'><div class='btn-group btn-group-justified'>
+    <label class='btn btn-primary' ng-model='new_call.incoming' btn-radio="true">Incoming</label>
+    <label class='btn btn-primary' ng-model='new_call.incoming' btn-radio="false">Outgoing</label>
+  </div></div>
+</div>
+
+<div class='row'>
+  <div class='col-sm-7'><div class='btn-group btn-group-justified'>
+    <label ng-if='new_call.incoming' class='btn btn-warning' ng-model='new_call.outcome' btn-radio="'no_ring'">No Ring</label>
+    <label class='btn btn-warning' ng-model='new_call.outcome' btn-radio="'no_answer'">No Answer</label>
+    <label class='btn btn-success' ng-model='new_call.outcome' btn-radio="'answered'">Answered</label>
+  </div></div>
+  <label class="col-sm-2 control-label" for="length">Length</label>
+  <div class='col-sm-3'>
+    <input type="text" name='length' ng-model='new_call.length'>
+  </div>
+</div>
+
+<div class='row'>
+    <label class="col-sm-4" for="comment">Comment</label>
+    <div class="col-sm-8"><textarea ng-model="new_call.comment" name="comment"></textarea></div>
+</div>
+
+<button class="btn btn-highlight" ng-click="add_call()">Add Call</button>
+<button class="btn btn-default" ng-click="$dismiss()">Close</button>
+{{call_form.$valid}}
+{{new_call}}
+</form>
+</accordion-group>
+
+<accordion-group heading="Call history for {{participant.nickname}}" >
+<div class='well well-lg'>
+  <div ng-repeat='call in participant.calls'>
+      <div class='avatar mw-4x call' ng-class="{'pull-left':call.incomming, 'pull-right':!call.incoming}">
+        <i class='mw mw-mobile-1'></i>
+    </div>
+
+    <div class='message' ng-class="{'pull-left':call.incomming, 'pull-right':!call.incoming}">
+      <div class="msg-header">
+        <div class="pull-right">{{call.created | date:'d MMM yy H:mm'}}</div>
+      </div>
+      <div class='msg-content'>{{call.comment}}</div>
+    </div>
+
+  </div>
+  </div>
+</accordion-group>
+
+</accordion>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-default" ng-click="$dismiss()">Close</button>
+</div>

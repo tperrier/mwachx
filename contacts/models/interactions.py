@@ -8,21 +8,30 @@ from django.core.exceptions import ObjectDoesNotExist
 from constance import config
 
 #Local Imports
-from utils.models import TimeStampedModel, BaseQuerySet
+from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
 
-class MessageQuerySet(BaseQuerySet):
+class Interaction(TimeStampedModel):
+    ''' Shared class for user interactions. Message/PhoneCall/Note '''
+
+    class Meta:
+        ordering = ('-created',)
+        app_label = 'contacts'
+
+    is_outgoing = models.BooleanField(default=True)
+
+    text = models.CharField(max_length=1000,help_text='Interaction content')
+
+    admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
+    connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
+    contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
+
+class MessageQuerySet(ForUserQuerySet):
 
     def pending(self):
         return self.filter(is_viewed=False,is_outgoing=False)
 
     def to_translate(self):
         return self.filter(is_system=False,translation_status='todo')
-
-    def for_user(self,user):
-        try:
-            return self.filter(contact__facility=user.practitioner.facility)
-        except (ObjectDoesNotExist, AttributeError) as e:
-            return self.none()
 
     def top(self):
         return self[:2]
@@ -173,3 +182,46 @@ class Message(TimeStampedModel):
             lang_objs = Language.objects.filter(id__in=languages)
             _msg.languages = lang_objs
             _msg.save()
+
+class PhoneCallQuerySet(BaseQuerySet):
+
+    class Meta:
+        app_label = 'contacts'
+
+    def for_user(self,user):
+        try:
+            return self.filter(contact__facility=user.practitioner.facility)
+        except ObjectDoesNotExist:
+            return self
+
+class PhoneCall(TimeStampedModel):
+
+    class Meta:
+        ordering = ('-created',)
+        app_label = 'contacts'
+
+    OUTCOME_CHOICES = (
+        ('no_ring','No Ring'),
+        ('no_answer','No Answer'),
+        ('answered','Answered'),
+    )
+
+    objects = PhoneCallQuerySet.as_manager()
+
+    contact = models.ForeignKey(settings.MESSAGING_CONTACT)
+    outcome = models.CharField(max_length=10,choices=OUTCOME_CHOICES,default='answered')
+    incoming = models.BooleanField(default=True)
+    length = models.IntegerField(default=-1)
+    comment = models.CharField(max_length=300,blank=True,null=True)
+
+class Note(TimeStampedModel):
+
+    class Meta:
+        ordering = ('-created',)
+        app_label = 'contacts'
+
+    objects = BaseQuerySet.as_manager()
+
+    contact = models.ForeignKey(settings.MESSAGING_CONTACT)
+    admin = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
+    comment = models.CharField(max_length=500,blank=True,null=True)

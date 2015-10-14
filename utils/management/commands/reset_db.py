@@ -104,6 +104,7 @@ def add_client(client,i,facility=None):
     for n in client['notes']:
         add_note(n,contact)
     add_new_visit(contact)
+    add_new_calls(contact)
 
     return new_client
 
@@ -149,6 +150,14 @@ def add_new_visit(contact):
     }
     VISIT_COUNT += 1
     cont.Visit.objects.create(**new_visit)
+
+def add_new_calls(contact):
+
+    cont.PhoneCall.objects.create(contact=contact,incoming=True,outcome=random.choice(cont.PhoneCall.OUTCOME_CHOICES)[0],
+        comment = 'This is a phone call that came in. Do we need a field for length')
+
+    cont.PhoneCall.objects.create(contact=contact,incoming=False,outcome=random.choice(cont.PhoneCall.OUTCOME_CHOICES)[0],
+        comment = 'This is an outgoing phone call. It was probably made at 1 month')
 
 def add_note(note,contact):
     new_note = {

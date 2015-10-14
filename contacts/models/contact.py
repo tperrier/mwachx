@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 #Local Imports
 from utils.models import TimeStampedModel, BaseQuerySet
-from contacts.models import Message
+from contacts.models import Message, PhoneCall
 import utils
 
 class ContactQuerySet(BaseQuerySet):
@@ -216,6 +216,11 @@ class Contact(TimeStampedModel):
     def send_message(self,text,**kwargs):
         new_message = Message.objects.create(text=text,contact=self,connection=self.connection,**kwargs)
         return new_message
+
+    def add_call(self,outcome,incoming,length,comment,created=None):
+        new_call = PhoneCall.objects.create(outcome=outcome,contact=self,incoming=incoming,
+                        comment=comment,created=created)
+        return new_call
 
     @property
     def pending(self):

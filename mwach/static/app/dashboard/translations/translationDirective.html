@@ -1,6 +1,6 @@
 <td>
-  <i ng-if="message.sent_by == 'nurse'" class="mw mw-user-md mw-3x avatar-nurse "></i>
-  <i ng-if="message.sent_by != 'nurse'" class="mw mw-3x avatar-participant"
+  <i ng-if="message.sent_by == 'nurse'" class="mw mw-user-md mw-3x avatar nurse "></i>
+  <i ng-if="message.sent_by != 'nurse'" class="mw mw-3x avatar participant"
      ng-class="{'mw-mwach-baby-phone': message.contact.status != 'Pregnant', 'mw-mwach-phone': message.contact.status == 'Pregnant'}"></i>
 </td>
 

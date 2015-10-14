@@ -26,6 +26,11 @@ class MessageAdmin(admin.ModelAdmin):
     list_filter = ('is_viewed','is_system','is_outgoing','translation_status')
     search_fields = ('^contact__study_id','^contact__first_name','^contact__last_name')
 
+@admin.register(cont.PhoneCall)
+class PhoneCallAdmin(admin.ModelAdmin):
+
+    list_display = ('created','contact','outcome','incoming','comment')
+
 @admin.register(cont.Connection)
 class ConnectionAdmin(admin.ModelAdmin):
     list_display = ('identity','contact')
