@@ -14,18 +14,17 @@ import utils
 
 class VisitQuerySet(BaseQuerySet):
 
-    def get_upcoming(self):
-        return self.visit_range(start={'weeks':0},end={'days':7},notification_start={'days':1})
-
-    def get_bookcheck(self):
+    def get_visit_checks(self):
+        visits_this_week = self.visit_range(start={'weeks':0},end={'days':7},notification_start={'days':1})
         bookcheck_weekly = self.visit_range(start={'days':8},end={'days':35},notification_start={'weeks':1})
         bookcheck_monthly = self.visit_range(start={'days':36},notification_start={'weeks':4})
-        return bookcheck_weekly | bookcheck_monthly
+
+        return visits_this_week | bookcheck_weekly | bookcheck_monthly
 
     def pending(self):
         return self.filter(arrived=None,skipped=None)
 
-    def visit_range(self,start,end=None,notification_start=None,notification_end=None):
+    def visit_range(self,start={'days':0},end=None,notification_start={'days':0},notification_end=None):
         today = utils.today()
         start = today - datetime.timedelta(**start)
         notification_start = today - datetime.timedelta(**notification_start)

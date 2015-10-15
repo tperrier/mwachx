@@ -41,7 +41,7 @@ class PendingViewSet(viewsets.ViewSet):
         pending = {
           'message_url':request.build_absolute_uri(reverse('pending-messages')),
           'messages':cont.Message.objects.for_user(request.user).pending().count(),
-          'visits':(cont.Visit.objects.get_upcoming() | cont.Visit.objects.get_bookcheck()).count(),
+          'visits':cont.Visit.objects.get_visit_checks().count(),
           'visits_url':request.build_absolute_uri(reverse('pending-visits')),
           'calls':0,
           'translations':cont.Message.objects.for_user(request.user).to_translate().count(),
@@ -63,8 +63,8 @@ class PendingViewSet(viewsets.ViewSet):
 
     @list_route()
     def visits(self,request):
-        upcoming_visits = cont.Visit.objects.for_user(request.user).get_upcoming()
-        serialized_visits = VisitSerializer(upcoming_visits,many=True,context={'request':request})
+        visit_checks = cont.Visit.objects.for_user(request.user).get_visit_checks()
+        serialized_visits = VisitSerializer(visit_checks,many=True,context={'request':request})
 
         return Response(serialized_visits.data)
 

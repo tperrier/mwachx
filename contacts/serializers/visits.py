@@ -19,7 +19,7 @@ class VisitSerializer(serializers.ModelSerializer):
     class Meta:
         model = cont.Visit
         fields = ('id','href','participant','scheduled','arrived','notification_last_seen','skipped',
-                  'comment','visit_type','days_overdue','is_bookcheck')
+                  'comment','visit_type','days_overdue')
 
 class VisitViewSet(viewsets.ModelViewSet):
 

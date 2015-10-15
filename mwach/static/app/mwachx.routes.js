@@ -45,8 +45,8 @@
           })
 
           // Visit state and substates
-          .state('visits-upcomming', {
-            url: '/visits/upcomming',
+          .state('visits-upcoming', {
+            url: '/visits/upcoming',
             templateUrl: routePrefix + 'dashboard/visits/upcomingVisits.html',
             controller: 'UpcomingVisitsController'
           })
