@@ -19,7 +19,8 @@
         link: function($scope, element, attrs) {
           angular.extend($scope,{
             missedVisit:function(){
-              $scope.visit.doPUT({},'seen').then(function(result){
+              $scope.visit.doPUT({},'seen/').then(function(result){
+                // console.log('Seen',$scope.upcoming.indexOf($scope.visit ))
                 $scope.upcoming.splice($scope.upcoming.indexOf($scope.visit),1);
               });
             },
@@ -34,8 +35,8 @@
                 console.log('Save',attended);
                 attended.arrived = mwachxUtils.convert_form_date(attended.arrived);
                 attended.next = mwachxUtils.convert_form_date(attended.next);
-                $scope.visit.doPUT(attended,'attended').then(function(result){
-                  console.log('Attended',result);
+                $scope.visit.doPUT(attended,'attended/').then(function(result){
+                  // console.log('Attended',result);
                   $scope.upcoming.splice($scope.upcoming.indexOf($scope.visit),1);
                 });
               });
