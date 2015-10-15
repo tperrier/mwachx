@@ -9,12 +9,12 @@ from rest_framework.response import Response
 
 #Local Imports
 import contacts.models as cont
-from messages import ParticipantSimpleSerialier
+from messages import ParticipantSimpleSerializer
 
 class VisitSerializer(serializers.ModelSerializer):
 
     href = serializers.HyperlinkedIdentityField(view_name='visit-detail')
-    participant = ParticipantSimpleSerialier()
+    participant = ParticipantSimpleSerializer()
 
     class Meta:
         model = cont.Visit

@@ -37,9 +37,13 @@ class ConnectionAdmin(admin.ModelAdmin):
 
 @admin.register(cont.Visit)
 class VisitAdmin(admin.ModelAdmin):
-    list_display = ('study_id','contact_name','scheduled', 'notification_last_seen','notify_count', 'arrived','skipped')
-    date_hierarchy = 'scheduled'
-    list_filter = ('skipped',)
+    list_display = ('study_id','participant_name','visit_type','scheduled', 'notification_last_seen','notify_count', 'arrived','skipped')
+    list_filter = ('skipped','visit_type')
+
+@admin.register(cont.ScheduledPhoneCall)
+class ScheduledPhoneCall(admin.ModelAdmin):
+    list_display = ('study_id','participant_name','call_type','scheduled', 'notification_last_seen','notify_count', 'arrived','skipped')
+    list_filter = ('skipped','call_type')
 
 @admin.register(cont.Facility)
 class FacilityAdmin(admin.ModelAdmin):

@@ -74,21 +74,21 @@ class Command(BaseCommand):
 ###################
 
 study_groups = ['control','one-way','two-way']
-def add_client(client,i,facility=None):
+def add_client(client,study_id,facility=None):
     if facility:
         facility_list = cont.Facility.objects.filter(name=facility)
     else:
         facility_list = cont.Facility.objects.all()
     mod = len(facility_list)
     new_client = {
-        'study_id':i,
+        'study_id':study_id,
         'anc_num':client['anc_num'],
         'nickname':client['nickname'],
         'birthdate':client['birth_date'],
         'study_group':random.choice(study_groups),
         'due_date':get_due_date(),
         'last_msg_client':client['last_msg_client'],
-        'facility':facility_list[i%mod],
+        'facility':facility_list[study_id%mod],
         'status':'post' if random.random() < .25 else 'pregnant',
         }
     contact = cont.Contact.objects.create(**new_client)
@@ -103,8 +103,9 @@ def add_client(client,i,facility=None):
         add_visit(v,contact)
     for n in client['notes']:
         add_note(n,contact)
-    add_new_visit(contact)
+    add_new_visit(contact,study_id)
     add_new_calls(contact)
+    add_new_scheduled_call(contact,study_id)
 
     return new_client
 
@@ -142,13 +143,11 @@ def add_visit(visit,contact):
         cont.Visit.objects.create(**new_visit)
 
 VISIT_COUNT = 0
-def add_new_visit(contact):
-    global VISIT_COUNT
+def add_new_visit(contact,i):
     new_visit = {
-        'scheduled':utils.today() + datetime.timedelta(days=VISIT_COUNT+1),
+        'scheduled':utils.today() + datetime.timedelta(days=i+1),
         'participant':contact,
     }
-    VISIT_COUNT += 1
     cont.Visit.objects.create(**new_visit)
 
 def add_new_calls(contact):
@@ -158,6 +157,15 @@ def add_new_calls(contact):
 
     cont.PhoneCall.objects.create(contact=contact,incoming=False,outcome=random.choice(cont.PhoneCall.OUTCOME_CHOICES)[0],
         comment = 'This is an outgoing phone call. It was probably made at 1 month')
+
+def add_new_scheduled_call(contact,i):
+
+    scheduled_date = utils.today() + datetime.timedelta(days=2*i+1)
+    cont.ScheduledPhoneCall.objects.create(scheduled=scheduled_date,participant=contact)
+    cont.ScheduledPhoneCall.objects.create(
+        scheduled=scheduled_date+datetime.timedelta(days=1),
+        participant=contact,
+        call_type='y')
 
 def add_note(note,contact):
     new_note = {

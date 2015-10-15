@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, FieldError
 # Create your models here.
 
 class TimeStampedModel(models.Model):
@@ -33,5 +33,10 @@ class ForUserQuerySet(BaseQuerySet):
     def for_user(self,user):
         try:
             return self.filter(contact__facility=user.practitioner.facility)
+        except FieldError as e:
+            try:
+                return self.filter(participant__facility=user.practitioner.facility)
+            except (ObjectDoesNotExist, AttributeError) as e:
+                return self.none()
         except (ObjectDoesNotExist, AttributeError) as e:
             return self.none()

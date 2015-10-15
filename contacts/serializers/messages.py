@@ -11,7 +11,7 @@ import contacts.models as cont
 #  Serializers Definitions
 #############################################
 
-class ParticipantSimpleSerialier(serializers.ModelSerializer):
+class ParticipantSimpleSerializer(serializers.ModelSerializer):
 
 	status = serializers.SerializerMethodField()
 	study_group = serializers.SerializerMethodField()
@@ -34,7 +34,7 @@ class ParticipantSimpleSerialier(serializers.ModelSerializer):
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
 
 	href = serializers.HyperlinkedIdentityField(view_name='message-detail')
-	contact = ParticipantSimpleSerialier()
+	contact = ParticipantSimpleSerializer()
 
 	class Meta:
 		model = cont.Message

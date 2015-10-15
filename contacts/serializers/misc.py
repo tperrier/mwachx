@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 #Local Imports
 import contacts.models as cont
-from messages import MessageSerializer, ParticipantSimpleSerialier
+from messages import MessageSerializer, ParticipantSimpleSerializer
 from visits import VisitSerializer
 
 ##############################################
@@ -41,9 +41,13 @@ class PendingViewSet(viewsets.ViewSet):
         pending = {
           'message_url':request.build_absolute_uri(reverse('pending-messages')),
           'messages':cont.Message.objects.for_user(request.user).pending().count(),
+
           'visits':cont.Visit.objects.get_visit_checks().count(),
           'visits_url':request.build_absolute_uri(reverse('pending-visits')),
-          'calls':0,
+
+          'calls':cont.ScheduledPhoneCall.objects.for_user(request.user).get_scheduled_calls().count(),
+          'calls_url':request.build_absolute_uri(reverse('pending-calls')),
+
           'translations':cont.Message.objects.for_user(request.user).to_translate().count(),
           'translations_url':request.build_absolute_uri(reverse('pending-translations')),
         }
@@ -56,17 +60,22 @@ class PendingViewSet(viewsets.ViewSet):
         return Response(messages_seri.data)
 
     @list_route()
+    def visits(self,request):
+        visit_checks = cont.Visit.objects.for_user(request.user).get_visit_checks()
+        serialized_visits = VisitSerializer(visit_checks,many=True,context={'request':request})
+        return Response(serialized_visits.data)
+
+    @list_route()
+    def calls(self,request):
+        calls_pending = cont.ScheduledPhoneCall.objects.for_user(request.user).get_scheduled_calls()
+        serialized_calls = ScheduledPhonCallSerializer(calls_pending,many=True,context={'request':request})
+        return Response(serialized_calls.data)
+
+    @list_route()
     def translations(self,request):
         messages = cont.Message.objects.for_user(request.user).to_translate()
         serialized_messages = MessageSerializer(messages,many=True,context={'request':request})
         return Response(serialized_messages.data)
-
-    @list_route()
-    def visits(self,request):
-        visit_checks = cont.Visit.objects.for_user(request.user).get_visit_checks()
-        serialized_visits = VisitSerializer(visit_checks,many=True,context={'request':request})
-
-        return Response(serialized_visits.data)
 
 ########################################
 # Phone Call Seralizer
@@ -74,7 +83,16 @@ class PendingViewSet(viewsets.ViewSet):
 
 class PhoneCallSerializer(serializers.ModelSerializer):
 
-    contact = ParticipantSimpleSerialier()
+
+    contact = ParticipantSimpleSerializer()
 
     class Meta:
         model = cont.PhoneCall
+
+class ScheduledPhonCallSerializer(serializers.ModelSerializer):
+    participant = ParticipantSimpleSerializer()
+
+    class Meta:
+        model = cont.ScheduledPhoneCall
+        fields = ('id','participant','scheduled','arrived','notification_last_seen','skipped',
+                  'call_type','days_overdue')

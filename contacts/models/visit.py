@@ -9,17 +9,10 @@ from django.core.exceptions import ObjectDoesNotExist
 import datetime
 
 #Local Imports
-from utils.models import TimeStampedModel,BaseQuerySet
+from utils.models import TimeStampedModel,ForUserQuerySet
 import utils
 
-class VisitQuerySet(BaseQuerySet):
-
-    def get_visit_checks(self):
-        visits_this_week = self.visit_range(start={'weeks':0},end={'days':7},notification_start={'days':1})
-        bookcheck_weekly = self.visit_range(start={'days':8},end={'days':35},notification_start={'weeks':1})
-        bookcheck_monthly = self.visit_range(start={'days':36},notification_start={'weeks':4})
-
-        return visits_this_week | bookcheck_weekly | bookcheck_monthly
+class SchedualQuerySet(ForUserQuerySet):
 
     def pending(self):
         return self.filter(arrived=None,skipped=None)
@@ -42,32 +35,15 @@ class VisitQuerySet(BaseQuerySet):
             notification_Q = Q(notification_last_seen__lte=notification_start)
 
         notification_Q |= Q(notification_last_seen__isnull=True)
-        return self.pending().filter( scheduled_Q & notification_Q)
+        return self.filter( scheduled_Q & notification_Q)
 
-    def for_user(self,user):
-        try:
-            return self.filter(participant__facility=user.practitioner.facility)
-        except (ObjectDoesNotExist, AttributeError) as e:
-            return self
-
-    def top(self):
-        return self[:2]
-
-class Visit(TimeStampedModel):
-
-    #Set Custom Manager
-    objects = VisitQuerySet.as_manager()
-
-    VISIT_TYPE_CHOICES = (
-        ('clinic','Clinic Visit'),
-        ('study','Study Visit'),
-    )
+class ScheduledEvent(TimeStampedModel):
 
     class Meta:
+        abstract = True
         ordering = ('-scheduled',)
         app_label = 'contacts'
 
-    # Date Fields
     scheduled = models.DateField()
     arrived = models.DateField(blank=True,null=True,default=None)
     notification_last_seen = models.DateField(null=True,default=None)
@@ -75,26 +51,19 @@ class Visit(TimeStampedModel):
     skipped = models.NullBooleanField(default=None)
 
     participant = models.ForeignKey(settings.MESSAGING_CONTACT)
-    comment = models.CharField(max_length=500,blank=True,null=True,default=None)
-
-    visit_type = models.CharField(max_length=25,choices=VISIT_TYPE_CHOICES,default='clinic')
 
     def study_id(self):
         return self.participant.id
     study_id.short_description = 'Study ID'
     study_id.admin_order_field = 'contact__study_id'
 
-    def contact_name(self):
+    def participant_name(self):
         return self.participant.nickname
-    contact_name.short_description = 'Nickname'
-    contact_name.admin_order_field = 'contact__nickname'
+    participant_name.short_description = 'Nickname'
+    participant_name.admin_order_field = 'participant__nickname'
 
     def days_overdue(self):
         return (utils.today()-self.scheduled).days
-
-    def is_bookcheck(self):
-        ''' Bookcheck is true for any visit more than 7 days overdue '''
-        return self.days_overdue() >= 7
 
     def seen(self):
         ''' Mark visit as seen today '''
@@ -113,3 +82,52 @@ class Visit(TimeStampedModel):
         self.arrived = None
         self.skipped = True
         self.save()
+
+class VisitQuerySet(SchedualQuerySet):
+
+    def get_visit_checks(self):
+        visits_this_week = self.pending().visit_range(start={'weeks':0},end={'days':7},notification_start={'days':1})
+        bookcheck_weekly = self.pending().visit_range(start={'days':8},end={'days':35},notification_start={'weeks':1})
+        bookcheck_monthly = self.pending().visit_range(start={'days':36},notification_start={'weeks':4})
+
+        print visits_this_week
+        return visits_this_week | bookcheck_weekly | bookcheck_monthly
+
+    def top(self):
+        return self[:2]
+
+class Visit(ScheduledEvent):
+
+    #Set Custom Manager
+    objects = VisitQuerySet.as_manager()
+
+    VISIT_TYPE_CHOICES = (
+        ('clinic','Clinic Visit'),
+        ('study','Study Visit'),
+    )
+
+    # Date Fields
+
+    comment = models.CharField(max_length=500,blank=True,null=True,default=None)
+    visit_type = models.CharField(max_length=25,choices=VISIT_TYPE_CHOICES,default='clinic')
+
+    def is_bookcheck(self):
+        ''' Bookcheck is true for any visit more than 7 days overdue '''
+        return self.days_overdue() >= 7
+
+
+class ScheduledPhoneCallQuerySet(SchedualQuerySet):
+
+    def get_scheduled_calls(self):
+        return self.pending().visit_range()
+
+class ScheduledPhoneCall(ScheduledEvent):
+
+    objects = ScheduledPhoneCallQuerySet.as_manager()
+
+    CALL_TYPE_OPTIONS = (
+        ('m','One Month'),
+        ('y','One Year'),
+    )
+
+    call_type = models.CharField(max_length=2,choices=CALL_TYPE_OPTIONS,default='m')
