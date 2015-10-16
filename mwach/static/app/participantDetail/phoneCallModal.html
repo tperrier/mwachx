@@ -9,11 +9,12 @@
 
 <accordion close-others="true">
   <accordion-group heading="Record Phone Call" is-open="true">
-    <form name="call_form">
+    <form class='form-inline' name="call_form">
+
     <div class='row'>
-      <div class="form-group">
-        <label class="col-sm-1 control-label" for="date_called">Called</label>
-          <div class="col-sm-3">
+      <div class="col-sm-5">
+        <div class='form-group'>
+        <label class="control-label" for="date_called">Called</label>
             <p class='input-group'> <input ng-model='new_call.created' type='text' class='form-control'
                    datepicker-popup is-open="created_open" name='created_open'/>
              <span class="input-group-btn">
@@ -23,33 +24,36 @@
           </div>
       </div>
 
-  <div class='col-sm-7'><div class='btn-group btn-group-justified'>
-    <label class='btn btn-primary' ng-model='new_call.incoming' btn-radio="true">Incoming</label>
-    <label class='btn btn-primary' ng-model='new_call.incoming' btn-radio="false">Outgoing</label>
-  </div></div>
-</div>
+    <div class='col-sm-7'><div class='form-group'><div class='btn-group btn-group-justified'>
+      <label class='btn btn-primary' ng-model='new_call.incoming' btn-radio="true">Incoming</label>
+      <label class='btn btn-primary' ng-model='new_call.incoming' btn-radio="false">Outgoing</label>
+    </div></div></div>
+  </div>
 
 <div class='row'>
-  <div class='col-sm-7'><div class='btn-group btn-group-justified'>
-    <label ng-if='new_call.incoming' class='btn btn-warning' ng-model='new_call.outcome' btn-radio="'no_ring'">No Ring</label>
+  <div class='col-sm-7'><div class='form-group'><div class='btn-group btn-group-justified'>
+    <label ng-if='!new_call.incoming' class='btn btn-warning' ng-model='new_call.outcome' btn-radio="'no_ring'">No Ring</label>
     <label class='btn btn-warning' ng-model='new_call.outcome' btn-radio="'no_answer'">No Answer</label>
     <label class='btn btn-success' ng-model='new_call.outcome' btn-radio="'answered'">Answered</label>
-  </div></div>
-  <label class="col-sm-2 control-label" for="length">Length</label>
-  <div class='col-sm-3'>
-    <input type="text" name='length' ng-model='new_call.length'>
+  </div></div></div>
+  <div class='col-sm-5'>
+  <label class="control-label" for="length">Length</label>
+    <input class='form-control' type="text" name='length' ng-model='new_call.length'>
   </div>
 </div>
 
 <div class='row'>
-    <label class="col-sm-4" for="comment">Comment</label>
-    <div class="col-sm-8"><textarea ng-model="new_call.comment" name="comment"></textarea></div>
+    <div class='col-sm-8'><div class='form-group'>
+    <label for="comment">Comment</label>
+    <textarea style='margin:10px 0px;' cols='50' class='form-control' ng-model="new_call.comment" name="comment"></textarea>
+  </div></div>
+  <div class='col-sm-4'><div style='padding:20px;' class='form-group'>
+    <button class="btn btn-highlight" ng-click="add_call()">Add Call</button>
+    <button class="btn btn-default" ng-click="$dismiss()">Close</button>
+  </div></div>
 </div>
 
-<button class="btn btn-highlight" ng-click="add_call()">Add Call</button>
-<button class="btn btn-default" ng-click="$dismiss()">Close</button>
-{{call_form.$valid}}
-{{new_call}}
+
 </form>
 </accordion-group>
 
