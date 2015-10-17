@@ -54,7 +54,8 @@
           // Calls state and substates
           .state('calls',{
             url: '/calls',
-            templateUrl: routePrefix + 'dashboard/calls.html'
+            templateUrl: routePrefix + 'dashboard/calls/calls.html',
+            controller: 'UpcomingCallsController',
           })
 
           // Translation state and substates

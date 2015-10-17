@@ -89,8 +89,17 @@ class PhoneCallSerializer(serializers.ModelSerializer):
     class Meta:
         model = cont.PhoneCall
 
+########################################
+# Scheduled Phone Calls
+########################################
+
+class ScheduledParticipantSerializer(ParticipantSimpleSerializer):
+
+    pass
+
 class ScheduledPhonCallSerializer(serializers.ModelSerializer):
-    participant = ParticipantSimpleSerializer()
+
+    participant = ScheduledParticipantSerializer()
 
     class Meta:
         model = cont.ScheduledPhoneCall
