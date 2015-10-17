@@ -68,7 +68,7 @@ class PendingViewSet(viewsets.ViewSet):
     @list_route()
     def calls(self,request):
         calls_pending = cont.ScheduledPhoneCall.objects.for_user(request.user).get_scheduled_calls()
-        serialized_calls = ScheduledPhonCallSerializer(calls_pending,many=True,context={'request':request})
+        serialized_calls = ScheduledCallSerializer(calls_pending,many=True,context={'request':request})
         return Response(serialized_calls.data)
 
     @list_route()
@@ -94,14 +94,19 @@ class PhoneCallSerializer(serializers.ModelSerializer):
 ########################################
 
 class ScheduledParticipantSerializer(ParticipantSimpleSerializer):
-
     pass
 
-class ScheduledPhonCallSerializer(serializers.ModelSerializer):
+class ScheduledCallSerializer(serializers.ModelSerializer):
 
+    href = serializers.HyperlinkedIdentityField(view_name='call-detail')
     participant = ScheduledParticipantSerializer()
 
     class Meta:
         model = cont.ScheduledPhoneCall
         fields = ('id','participant','scheduled','arrived','notification_last_seen','skipped',
-                  'call_type','days_overdue')
+                  'call_type','days_overdue','href')
+
+class ScheduledCallViewSet(viewsets.ModelViewSet):
+
+    queryset = cont.ScheduledPhoneCall.objects.all()
+    serializer_class = ScheduledCallSerializer

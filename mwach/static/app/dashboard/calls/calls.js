@@ -44,6 +44,7 @@ angular.module('mwachx') .directive('mwUpcomingCall',
 angular.module('mwachx').controller('RecordCallController',
   ['$scope','call',function($scope,call){
     $scope.call = call;
+    $scope.new_call = {created:new Date()};
 
     $scope.add_call = function(){
       console.log($scope.new_call);

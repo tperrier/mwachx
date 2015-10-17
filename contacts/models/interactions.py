@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from constance import config
 
 #Local Imports
+from visit import ScheduledPhoneCall
 from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
 
 class Interaction(TimeStampedModel):
@@ -183,16 +184,8 @@ class Message(TimeStampedModel):
             _msg.languages = lang_objs
             _msg.save()
 
-class PhoneCallQuerySet(BaseQuerySet):
-
-    class Meta:
-        app_label = 'contacts'
-
-    def for_user(self,user):
-        try:
-            return self.filter(contact__facility=user.practitioner.facility)
-        except ObjectDoesNotExist:
-            return self
+class PhoneCallQuerySet(ForUserQuerySet):
+    pass
 
 class PhoneCall(TimeStampedModel):
 
@@ -213,6 +206,9 @@ class PhoneCall(TimeStampedModel):
     incoming = models.BooleanField(default=True)
     length = models.IntegerField(default=-1)
     comment = models.CharField(max_length=300,blank=True,null=True)
+
+    # Link to scheduled phone call field
+    scheduled = models.ForeignKey(ScheduledPhoneCall,blank=True,null=True)
 
 class Note(TimeStampedModel):
 
