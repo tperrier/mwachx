@@ -14,6 +14,7 @@ import contacts.forms as forms
 from messages import MessageSerializer
 from visits import VisitSerializer
 from misc import PhoneCallSerializer
+import utils
 
 #############################################
 #  Serializer Definitions
@@ -48,6 +49,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	validation_key = serializers.SerializerMethodField()
 	phone_number = serializers.SerializerMethodField()
 	facility = serializers.SerializerMethodField()
+	hiv_disclosed = serializers.SerializerMethodField()
 
 	href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
 	messages_url = serializers.HyperlinkedIdentityField(view_name='participant-messages',lookup_field='study_id')
@@ -79,11 +81,11 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	def get_status(self, obj):
 		return obj.get_status_display()
 
-	def get_status(self, obj):
-		return obj.get_status_display()
-
 	def get_facility(self,obj):
 		return ''.join(word.capitalize() for word in obj.facility.name.split())
+
+	def get_hiv_disclosed(self,obj):
+		return utils.null_boolean_display(obj.hiv_disclosed)
 
 #############################################
 #  ViewSet Definitions

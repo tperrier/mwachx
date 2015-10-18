@@ -128,7 +128,7 @@ class Contact(TimeStampedModel):
     status = models.CharField(max_length=20,choices=STATUS_CHOICES, default='pregnant')
     language = models.CharField(max_length=25,choices=LANGUAGE_CHOICES,default='english')
     condition = models.CharField(max_length=40,choices=CONDITION_CHOICES,default='normal')
-    family_planning = models.CharField(max_length=50,blank=True,null=True,choices=FAMILY_PLANNING_CHOICES,default='none',verbose_name='Family Planning')
+    family_planning = models.CharField(max_length=50,choices=FAMILY_PLANNING_CHOICES,default='none',verbose_name='Family Planning')
     art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART Initiation',verbose_name='ART Initiation')
     hiv_disclosed = models.NullBooleanField(default=None,verbose_name='HIV Disclosed')
     child_hiv_status = models.CharField(max_length=20,choices=CHILD_STATUS_CHOICES,default='unknown',verbose_name='Child HIV Status')
