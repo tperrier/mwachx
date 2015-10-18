@@ -42,7 +42,7 @@ class PendingViewSet(viewsets.ViewSet):
           'message_url':request.build_absolute_uri(reverse('pending-messages')),
           'messages':cont.Message.objects.for_user(request.user).pending().count(),
 
-          'visits':cont.Visit.objects.get_visit_checks().count(),
+          'visits':cont.Visit.objects.for_user(request.user).get_visit_checks().count(),
           'visits_url':request.build_absolute_uri(reverse('pending-visits')),
 
           'calls':cont.ScheduledPhoneCall.objects.for_user(request.user).get_pending_calls().count(),
