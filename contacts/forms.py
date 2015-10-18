@@ -62,7 +62,8 @@ class ContactAdd(forms.ModelForm):
                 Div(
                     Div('send_day', css_class="col-md-4"),
                     Div('send_time', css_class="col-md-4"),
-                    css_class="row"
+                    css_class="row",
+                    ng_if="participant.study_group != 'control'"
                 ),
             ), Fieldset (
                 'Client Information',
