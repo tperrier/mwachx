@@ -187,13 +187,19 @@ angular.module('mwachx') .controller('PhoneCallController',
   ['$scope','$modalInstance','$log','participant',
   function ($scope, $modalInstance, $log, participant) {
     angular.extend($scope,{
-        participant:participant,
-        new_call:{incoming:false,created:new Date()},
-        add_call:function(){
-          $scope.participant.post('calls/',$scope.new_call).then(function(response){
-            console.log('Post Call');
-          });
-        },
+      participant:participant,
+      form:{},
+      new_call:{is_outgoing:true,created:new Date()},
+      addCall:function(){
+        $scope.participant.post('calls/',$scope.new_call).then(function(response){
+          console.log('Post Call');
+        });
+      },
+      addDisabled:function(){
+        return $scope.new_call.outcome === undefined ||
+               ($scope.new_call.outcome == 'answered' && $scope.form.call_form.comment.$pristine) ||
+               !$scope.form.call_form.$valid;
+      },
     });
   }]);
 

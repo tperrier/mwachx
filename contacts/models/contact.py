@@ -220,7 +220,9 @@ class Contact(TimeStampedModel):
                  created=None,admin_user=None,scheduled=None):
         if created is None:
             created = utils.today()
-            
+        else:
+            created = utils.angular_datepicker(created)
+
         new_call = PhoneCall.objects.create(outcome=outcome,contact=self,is_outgoing=is_outgoing,
                         comment=comment,created=created,connection=self.connection,length=length,
                         scheduled=scheduled)

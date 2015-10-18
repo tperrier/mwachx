@@ -8,8 +8,8 @@
 <div style='padding:5px 20px'>
 
 <accordion close-others="true">
-  <accordion-group heading="Record Phone Call" is-open="true">
-    <form class='form-inline' name="call_form">
+  <accordion-group heading="Record Phone Call">
+    <form class='form-inline' name="form.call_form">
 
     <div class='row'>
       <div class="col-sm-5">
@@ -26,19 +26,19 @@
 
     <div class='col-sm-7'><div class='form-group'><div class='btn-group btn-group-justified'>
       <label class='btn btn-primary' ng-model='new_call.is_outgoing' btn-radio="false">Incoming</label>
-      <label class='btn btn-primary' ng-model='new_call.is_outgoing' btn-radio="ture">Outgoing</label>
+      <label class='btn btn-primary' ng-model='new_call.is_outgoing' btn-radio="true">Outgoing</label>
     </div></div></div>
   </div>
 
 <div class='row'>
   <div class='col-sm-7'><div class='form-group'><div class='btn-group btn-group-justified'>
-    <label ng-if='!new_call.incoming' class='btn btn-warning' ng-model='new_call.outcome' btn-radio="'no_ring'">No Ring</label>
+    <label ng-if='new_call.is_outgoing' class='btn btn-warning' ng-model='new_call.outcome' btn-radio="'no_ring'">No Ring</label>
     <label class='btn btn-warning' ng-model='new_call.outcome' btn-radio="'no_answer'">No Answer</label>
     <label class='btn btn-success' ng-model='new_call.outcome' btn-radio="'answered'">Answered</label>
   </div></div></div>
-  <div class='col-sm-5'>
+  <div ng-if="new_call.outcome == 'answered'" class='col-sm-5'>
   <label class="control-label" for="length">Length</label>
-    <input class='form-control' type="text" name='length' ng-model='new_call.length'>
+    <input class='form-control' required ng-pattern='/^\d{1,2}$/' type="text" name='length' ng-model='new_call.length'>
   </div>
 </div>
 
@@ -48,7 +48,7 @@
     <textarea style='margin:10px 0px;' cols='50' class='form-control' ng-model="new_call.comment" name="comment"></textarea>
   </div></div>
   <div class='col-sm-4'><div style='padding:20px;' class='form-group'>
-    <button class="btn btn-highlight" ng-click="add_call()">Add Call</button>
+    <button class="btn btn-highlight" ng-disabled='addDisabled()' ng-click="addCall()">Add Call</button>
     <button class="btn btn-default" ng-click="$dismiss()">Close</button>
   </div></div>
 </div>
@@ -57,21 +57,22 @@
 </form>
 </accordion-group>
 
-<accordion-group heading="Call history for {{participant.nickname}}" >
-<div class='well well-lg'>
-  <div ng-repeat='call in participant.calls'>
-      <div class='avatar mw-4x call' ng-class="{'pull-left':call.incomming, 'pull-right':!call.incoming}">
+<accordion-group heading="Call history for {{participant.nickname}}" is-open="true">
+  <div ng-repeat='call in participant.calls' class='clearfix'>
+      <div class='avatar mw-4x call' ng-class="{'pull-left':!call.is_outgoing, 'pull-right':call.is_outgoing}">
         <i class='mw mw-mobile-1'></i>
     </div>
 
-    <div class='message' ng-class="{'pull-left':call.incomming, 'pull-right':!call.incoming}">
-      <div class="msg-header">
+    <div class='message call' ng-class="{'pull-left':!call.is_outgoing, 'pull-right':call.is_outgoing}">
+      <div class="msg-header clearfix">
+        <strong class='pull-left'>
+          Phone Call {{(call.is_outgoing)?'To':'From'}} {{call.participant.nickname}}
+        </strong>
         <div class="pull-right">{{call.created | date:'d MMM yy H:mm'}}</div>
       </div>
       <div class='msg-content'>{{call.comment}}</div>
     </div>
 
-  </div>
   </div>
 </accordion-group>
 

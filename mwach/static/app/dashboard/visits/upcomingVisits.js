@@ -15,7 +15,7 @@
     }]);
 
 angular.module('mwachx')
-  .directive('mwUpcomingVisit',[ '$modal','mwachxUtils',function($modal,mwachxUtils) {
+  .directive('mwUpcomingVisit',[ '$modal',function($modal) {
 
     var pri = {
     }; // close private
@@ -43,8 +43,6 @@ angular.module('mwachx')
 
             modalInstance.result.then(function(attended){
               console.log('Save',attended);
-              attended.arrived = mwachxUtils.convert_form_date(attended.arrived);
-              attended.next = mwachxUtils.convert_form_date(attended.next);
               $scope.visit.doPUT(attended,'attended/').then(function(result){
                 // console.log('Attended',result);
                 $scope.upcoming.splice($scope.upcoming.indexOf($scope.visit),1);

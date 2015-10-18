@@ -152,7 +152,7 @@ def add_new_visit(contact,i):
 
 def add_new_calls(contact):
 
-    contact.add_call( outcome=random.choice(cont.PhoneCall.OUTCOME_CHOICES)[0],
+    contact.add_call( outcome=random.choice(cont.PhoneCall.OUTCOME_CHOICES)[0],is_outgoing=False,
         comment = 'This is a phone call that came in. Do we need a field for length')
 
     contact.add_call(outcome=random.choice(cont.PhoneCall.OUTCOME_CHOICES)[0],

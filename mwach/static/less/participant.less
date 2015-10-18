@@ -8,7 +8,7 @@
     margin-left: calc(36px - 15px);
     .message-list {
       overflow-y:auto;
-      height:625px;  
+      height:625px;
     }
 
 }
@@ -47,6 +47,10 @@
   &.participant {
     color: @brand-primary;
   }
+
+  &.call {
+    color: @brand-highlight;
+  }
 }
 
 // The actual message
@@ -63,6 +67,7 @@
 
   .msg-content {
     padding:  0 @msg-side-padding 0.3em @msg-side-padding;
+    min-height: 35px;
   }
 
   // Colors and details for header and footer
@@ -74,6 +79,10 @@
   }
   &.participant {
     .message-variant(@state-info-bg);
+  }
+
+  &.call {
+    .message-variant(lighten(@brand-highlight,20%));
   }
 }
 .input-mini {

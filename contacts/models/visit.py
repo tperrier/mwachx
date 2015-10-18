@@ -143,11 +143,6 @@ class ScheduledPhoneCall(ScheduledEvent):
 
     def called(self,outcome,created=None,length=None,comment=None,admin_user=None):
 
-        if created is None:
-            created = utils.today()
-        else:
-            created = utils.angular_datepicker(created)
-
         if outcome == 'answered':
             self.attended(created)
         else:
