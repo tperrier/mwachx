@@ -188,11 +188,15 @@ angular.module('mwachx') .controller('PhoneCallController',
   function ($scope, $modalInstance, $log, participant) {
     angular.extend($scope,{
       participant:participant,
+      status:{call_history_open:true},
       form:{},
       new_call:{is_outgoing:true,created:new Date()},
       addCall:function(){
         $scope.participant.post('calls/',$scope.new_call).then(function(response){
-          console.log('Post Call');
+          console.log('Post Call',response,$scope.status);
+          participant.calls.push(response)
+          $scope.status.call_history_open = true;
+          console.log($scope.status);
         });
       },
       addDisabled:function(){

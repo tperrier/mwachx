@@ -57,7 +57,7 @@
 </form>
 </accordion-group>
 
-<accordion-group heading="Call history for {{participant.nickname}}" is-open="true">
+<accordion-group heading="Call history for {{participant.nickname}}" is-open="status.call_history_open">
   <div ng-repeat='call in participant.calls' class='clearfix'>
       <div class='avatar mw-4x call' ng-class="{'pull-left':!call.is_outgoing, 'pull-right':call.is_outgoing}">
         <i class='mw mw-mobile-1'></i>
@@ -68,9 +68,17 @@
         <strong class='pull-left'>
           Phone Call {{(call.is_outgoing)?'To':'From'}} {{call.participant.nickname}}
         </strong>
+        <span>Length: {{ (call.length)?call.length:'0' }} min</span>
         <div class="pull-right">{{call.created | date:'d MMM yy H:mm'}}</div>
       </div>
-      <div class='msg-content'>{{call.comment}}</div>
+      <div class='msg-content'>
+        <strong>
+          <span ng-if="call.outcome == 'no_ring'">Call but no ring.</span>
+          <span ng-if="call.outcome == 'no_answer'">Ring but no answer</span>
+          <span ng-if="call.outcome == 'answered'">Answered: </span>
+        </strong>
+        {{call.comment}}
+      </div>
     </div>
 
   </div>

@@ -94,7 +94,7 @@ class Contact(TimeStampedModel):
     TIME_CHOICES = (
         (8,'Morning (8 AM)'),
         (13,'Afternoon (1 PM)'),
-        (19,'Evening (7 PM)'),
+        (20,'Evening (8 PM)'),
     )
 
     CHILD_STATUS_CHOICES = (
@@ -216,7 +216,7 @@ class Contact(TimeStampedModel):
         new_message = Message.objects.create(text=text,contact=self,connection=self.connection,**kwargs)
         return new_message
 
-    def add_call(self,outcome,comment,length=None,is_outgoing=True,
+    def add_call(self,outcome='answered',comment=None,length=None,is_outgoing=True,
                  created=None,admin_user=None,scheduled=None):
         if created is None:
             created = utils.today()
