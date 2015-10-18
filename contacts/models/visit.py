@@ -65,15 +65,25 @@ class ScheduledEvent(TimeStampedModel):
     def days_overdue(self):
         return (utils.today()-self.scheduled).days
 
-    def seen(self):
+    def seen(self,seen=None):
         ''' Mark visit as seen today '''
+        if seen is None:
+            seen = utils.today()
+        else:
+            seen = utils.angular_datepicker(seen)
+
         self.notify_count += 1
-        self.notification_last_seen = utils.today()
+        self.notification_last_seen = seen
         self.save()
 
     def attended(self,arrived=None):
         ''' Mark visted as attended on @arrived (default today) '''
-        self.arrived = arrived if arrived is not None else utils.today()
+        if arrived is None:
+            arrived = utils.today()
+        else:
+            arrived = utils.angular_datepicker(arrived)
+
+        self.arrived = arrived
         self.skipped = False
         self.save()
 
@@ -115,11 +125,10 @@ class Visit(ScheduledEvent):
         ''' Bookcheck is true for any visit more than 7 days overdue '''
         return self.days_overdue() >= 7
 
-
 class ScheduledPhoneCallQuerySet(SchedualQuerySet):
 
-    def get_scheduled_calls(self):
-        return self.pending().visit_range()
+    def get_pending_calls(self):
+        return self.pending().visit_range(notification_start={'days':2})
 
 class ScheduledPhoneCall(ScheduledEvent):
 
@@ -131,3 +140,19 @@ class ScheduledPhoneCall(ScheduledEvent):
     )
 
     call_type = models.CharField(max_length=2,choices=CALL_TYPE_OPTIONS,default='m')
+
+    def called(self,outcome,created=None,length=None,comment=None,admin_user=None):
+
+        if created is None:
+            created = utils.today()
+        else:
+            created = utils.angular_datepicker(created)
+
+        if outcome == 'answered':
+            self.attended(created)
+        else:
+            self.seen(created)
+
+        # Make a new phone call for participant
+        return self.participant.add_call(created=created,outcome=outcome,length=length,comment=comment,
+             scheduled=self,admin_user=admin_user)

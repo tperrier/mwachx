@@ -39,7 +39,7 @@ class VisitViewSet(viewsets.ModelViewSet):
     def attended(self, request, pk):
 
         instance = self.get_object()
-        instance.attended(datetime.datetime.strptime(request.data.get('arrived',None),'%Y-%m-%d').date())
+        instance.attended(request.data.get('arrived',None))
         instance_serialized = VisitSerializer(instance,context={'request':request}).data
 
         # Make next visit if needed
@@ -47,7 +47,7 @@ class VisitViewSet(viewsets.ModelViewSet):
         if request.data.has_key('next'):
             next_visit = cont.Visit.objects.create(
                 participant=instance.participant,
-                scheduled=datetime.datetime.strptime(request.data['next'],'%Y-%m-%d').date(),
+                scheduled=request.data['next'],
                 visit_type=request.data['type']
             )
             next_visit_serialized = VisitSerializer(next_visit,context={'request':request}).data

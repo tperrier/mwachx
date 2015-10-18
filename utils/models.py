@@ -1,5 +1,9 @@
+# Python Imports
+
+# Django Imports
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, FieldError
+from django.utils import timezone
 # Create your models here.
 
 class TimeStampedModel(models.Model):
@@ -8,7 +12,7 @@ class TimeStampedModel(models.Model):
         ordering = ['-created']
 
     #The date and time this message was created or modified
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(default=timezone.now)
     modified = models.DateTimeField(auto_now=True)
 
     def created_str(self,format='%Y-%m-%d %H:%M'):

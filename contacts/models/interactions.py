@@ -11,21 +11,6 @@ from constance import config
 from visit import ScheduledPhoneCall
 from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
 
-class Interaction(TimeStampedModel):
-    ''' Shared class for user interactions. Message/PhoneCall/Note '''
-
-    class Meta:
-        ordering = ('-created',)
-        app_label = 'contacts'
-
-    is_outgoing = models.BooleanField(default=True)
-
-    text = models.CharField(max_length=1000,help_text='Interaction content')
-
-    admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
-    connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
-    contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
-
 class MessageQuerySet(ForUserQuerySet):
 
     def pending(self):
@@ -201,10 +186,13 @@ class PhoneCall(TimeStampedModel):
 
     objects = PhoneCallQuerySet.as_manager()
 
+    connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
+    admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
+
+    is_outgoing = models.BooleanField(default=False)
     outcome = models.CharField(max_length=10,choices=OUTCOME_CHOICES,default='answered')
-    incoming = models.BooleanField(default=True)
-    length = models.IntegerField(default=-1)
+    length = models.IntegerField(blank=True,null=True)
     comment = models.CharField(max_length=300,blank=True,null=True)
 
     # Link to scheduled phone call field

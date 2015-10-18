@@ -26,13 +26,15 @@ angular.module('mwachx') .directive('mwUpcomingCall',
       link: function($scope, element, attrs) {
         angular.extend($scope,{
           recordCall:function(call){
-            console.log('call');
             var callModal = $modal.open({
               templateUrl: routePrefix + 'recordCallModal.html',
               size:'lg',
               controller:'RecordCallController',
               resolve:{
-                call:function(){return call},
+                resolveData:{
+                  call:$scope.call,
+                  callList:$scope.callList,
+                }
               }
             });
           } // End RecordCall
@@ -42,13 +44,29 @@ angular.module('mwachx') .directive('mwUpcomingCall',
   }]);
 
 angular.module('mwachx').controller('RecordCallController',
-  ['$scope','call',function($scope,call){
-    $scope.call = call;
-    $scope.new_call = {created:new Date()};
+  ['$scope','$modalInstance','mwachxUtils','resolveData',
+  function($scope,$modalInstance,mwachxUtils,resolveData){
 
-    $scope.add_call = function(){
-      console.log($scope.new_call);
-    };
+    angular.extend($scope,{
+      call:resolveData.call,
+      new_call:{
+        created:new Date(),
+        comment:(resolveData.call.call_type == 'm')?'One month phone call':'One year phone call',
+      },
+      recordCall:function(){
+        $scope.new_call.created = mwachxUtils.convert_form_date($scope.new_call.created);
+        console.log('Record',$scope.new_call);
+        $scope.call.doPUT($scope.new_call,'called/').then(function(result){
+          console.log('Called',result);
+          resolveData.callList.splice(resolveData.callList.indexOf($scope.call),1);
+          $modalInstance.close();
+        });
+      },
+      formDisabled:function(){
+        return $scope.new_call.outcome === undefined || !$scope.call_form.$valid;
+      }
+    });
+
   }]);
 
 })();

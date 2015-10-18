@@ -13,7 +13,7 @@
         <div class='form-group'>
         <label class="control-label" for="date_called">Called</label>
             <p class='input-group'> <input ng-model='new_call.created' type='text' class='form-control'
-                   datepicker-popup is-open="created_open" name='created_open'/>
+                   datepicker-popup is-open="created_open" name='created'/>
              <span class="input-group-btn">
                <button type="button" class="btn btn-default" ng-click="created_open = !created_open">
                  <i class="glyphicon glyphicon-calendar"></i>
@@ -34,12 +34,12 @@
     <div ng-if="new_call.outcome == 'answered'">
       <label class="control-label" for="length">Length</label>
       <p class='input-group'>
-        <input class='form-control' type="text" name='length' ng-model='new_call.length'>
+        <input class='form-control' type="text" name='length' required ng-pattern='/^\d{1,2}$/' ng-model='new_call.length'>
         <span class="input-group-btn"><button class='btn btn-default'>min</button></span>
       </p>
     </div>
     <div style='text-align:center;margin:10px 0px;'>
-      <button class="btn btn-highlight" ng-click="add_call()">Add Call</button>
+      <button class="btn btn-highlight" ng-disabled='formDisabled()' ng-click="recordCall()">Add Call</button>
       <button class="btn btn-default" ng-click="$dismiss()">Close</button>
     </div>
   </div>

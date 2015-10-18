@@ -118,10 +118,10 @@ def add_message(message,contact,connection,translate=False):
         'is_outgoing':outgoing,
         'is_system':system,
         'contact':contact,
-        'connection':connection
+        'connection':connection,
+        'created':message['date'],
     }
     _message = cont.Message.objects.create(**new_message)
-    _message.created = message['date']
 
     if translate and not system:
         _message.translated_text = "(translated)" + message['content']
@@ -152,10 +152,10 @@ def add_new_visit(contact,i):
 
 def add_new_calls(contact):
 
-    cont.PhoneCall.objects.create(contact=contact,incoming=True,outcome=random.choice(cont.PhoneCall.OUTCOME_CHOICES)[0],
+    contact.add_call( outcome=random.choice(cont.PhoneCall.OUTCOME_CHOICES)[0],
         comment = 'This is a phone call that came in. Do we need a field for length')
 
-    cont.PhoneCall.objects.create(contact=contact,incoming=False,outcome=random.choice(cont.PhoneCall.OUTCOME_CHOICES)[0],
+    contact.add_call(outcome=random.choice(cont.PhoneCall.OUTCOME_CHOICES)[0],
         comment = 'This is an outgoing phone call. It was probably made at 1 month')
 
 def add_new_scheduled_call(contact,i):
@@ -171,10 +171,10 @@ def add_note(note,contact):
     new_note = {
         'contact':contact,
         'comment':note['content'],
+        'created':note['date'],
     }
 
     _note = cont.Note.objects.create(**new_note)
-    _note.created = note['date']
     _note.save()
 
 

@@ -38,22 +38,22 @@
           })
 
           // Message state and substates
-          .state('messages-pending', {
-            url: '/messages/pending',
+          .state('pending-messages', {
+            url: '/pending/messages',
             templateUrl: routePrefix + 'dashboard/messages/pendingMessages.html',
             controller: 'PendingMessageController'
           })
 
           // Visit state and substates
-          .state('visits-upcoming', {
-            url: '/visits/upcoming',
+          .state('pending-visits', {
+            url: '/pending/visits',
             templateUrl: routePrefix + 'dashboard/visits/upcomingVisits.html',
             controller: 'UpcomingVisitsController'
           })
 
           // Calls state and substates
-          .state('calls',{
-            url: '/calls',
+          .state('pending-calls',{
+            url: '/pending/calls',
             templateUrl: routePrefix + 'dashboard/calls/calls.html',
             controller: 'UpcomingCallsController',
           })

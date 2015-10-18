@@ -16,7 +16,7 @@
         <div class='form-group'>
         <label class="control-label" for="date_called">Called</label>
             <p class='input-group'> <input ng-model='new_call.created' type='text' class='form-control'
-                   datepicker-popup is-open="created_open" name='created_open'/>
+                   datepicker-popup is-open="created_open" name='created'/>
              <span class="input-group-btn">
                <button type="button" class="btn btn-default" ng-click="created_open = !created_open">
                  <i class="glyphicon glyphicon-calendar"></i>
@@ -25,8 +25,8 @@
       </div>
 
     <div class='col-sm-7'><div class='form-group'><div class='btn-group btn-group-justified'>
-      <label class='btn btn-primary' ng-model='new_call.incoming' btn-radio="true">Incoming</label>
-      <label class='btn btn-primary' ng-model='new_call.incoming' btn-radio="false">Outgoing</label>
+      <label class='btn btn-primary' ng-model='new_call.is_outgoing' btn-radio="false">Incoming</label>
+      <label class='btn btn-primary' ng-model='new_call.is_outgoing' btn-radio="ture">Outgoing</label>
     </div></div></div>
   </div>
 

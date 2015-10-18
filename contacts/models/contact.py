@@ -216,9 +216,14 @@ class Contact(TimeStampedModel):
         new_message = Message.objects.create(text=text,contact=self,connection=self.connection,**kwargs)
         return new_message
 
-    def add_call(self,outcome,incoming,length,comment,created=None):
-        new_call = PhoneCall.objects.create(outcome=outcome,contact=self,incoming=incoming,
-                        comment=comment,created=created)
+    def add_call(self,outcome,comment,length=None,is_outgoing=True,
+                 created=None,admin_user=None,scheduled=None):
+        if created is None:
+            created = utils.today()
+            
+        new_call = PhoneCall.objects.create(outcome=outcome,contact=self,is_outgoing=is_outgoing,
+                        comment=comment,created=created,connection=self.connection,length=length,
+                        scheduled=scheduled)
         return new_call
 
     @property

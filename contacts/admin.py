@@ -29,7 +29,7 @@ class MessageAdmin(admin.ModelAdmin):
 @admin.register(cont.PhoneCall)
 class PhoneCallAdmin(admin.ModelAdmin):
 
-    list_display = ('created','contact','outcome','incoming','comment')
+    list_display = ('created','contact','outcome','is_outgoing','comment')
 
 @admin.register(cont.Connection)
 class ConnectionAdmin(admin.ModelAdmin):

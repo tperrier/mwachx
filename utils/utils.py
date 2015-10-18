@@ -11,3 +11,8 @@ def today():
 
 def parse_date(datestr):
  	return datetime.datetime.strptime(datestr,'%d-%m-%Y').date()
+
+def angular_datepicker(datestr):
+    if hasattr(datestr,'isoformat'):
+        return datestr #datestr is a date
+    return datetime.datetime.strptime(datestr,'%Y-%m-%d').date()

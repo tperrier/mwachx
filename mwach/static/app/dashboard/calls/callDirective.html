@@ -1,7 +1,7 @@
 <td>
   <a class="btn btn-danger"
      tooltip="Record call for {{call.participant.nickname}}"
-     ng-click="recordCall()">
+     ng-click="recordCall(call)">
     <i class='mw mw-2x mw-mwach-phone'></i>
   </a>
 </td>
@@ -10,3 +10,4 @@
 <td> {{call.participant.study_group}} </td>
 <td> {{call.participant.anc_num}} </td>
 <td> {{call.days_overdue}} </td>
+<td> {{call.notify_count}} </td>
