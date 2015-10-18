@@ -19,9 +19,6 @@
         },
         templateUrl: routePrefix + 'shared/mwActionBtn.html',
         link:function(scope,element,attrs){
-          scope.get_count = function(urgency){
-            return isNaN(parseInt(urgency))?'':urgency;
-          };
 
           scope.get_class = function(urgency) {
             var btn_class = 'btn-info', int_urgency = parseInt(urgency,10);

@@ -14,7 +14,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="message in pending" ui-sref="participant-details({study_id:message.contact.study_id})">
+      <tr class='pointer' ng-repeat="message in pending" ui-sref="participant-details({study_id:message.contact.study_id})">
         <td>
           <a ui-sref="participant-details({study_id:message.contact.study_id})"
              ng-class="{'btn-primary':message.contact.status == 'post','btn-info':message.contact.status != 'post','btn': true}"

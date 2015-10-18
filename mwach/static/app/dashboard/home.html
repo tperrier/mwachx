@@ -7,7 +7,8 @@
     mw-stack-inside="SMS"
     mw-style="{{pending.messages}}"
     style="margin: 20px 0; width: 100%;">
-    New messages?
+    <span ng-if='pending.messages == 0'> No new messages! </span>
+    <span ng-if='pending.messages != 0'> You have <strong> {{pending.messages}}</strong> new messages</span>
   </mw-action-btn>
 
   <mw-action-btn
@@ -16,7 +17,8 @@
     mw-icon="mw-hospital-o"
     mw-style="{{pending.visits}}"
     style="margin: 20px 0; width: 100%;">
-    New visits?
+    <span ng-if='pending.visits == 0'> No pending visits! </span>
+    <span ng-if='pending.visits != 0'> You have <strong> {{pending.visits}}</strong> new visits to view</span>
   </mw-action-btn>
 
   <mw-action-btn
@@ -25,7 +27,8 @@
     mw-icon="mw-mobile-1"
     mw-style="{{pending.calls}}"
     style="margin: 20px 0; width: 100%;">
-    New calls?
+    <span ng-if='pending.calls == 0'> No pending calls! </span>
+    <span ng-if='pending.calls != 0'> You have <strong> {{pending.calls}}</strong> new calls to make</span>
   </mw-action-btn>
 
   <mw-action-btn
@@ -34,7 +37,8 @@
     mw-icon="mw-language"
     mw-style="{{pending.translations}}"
     style="margin: 20px 0; width: 100%;">
-    New translations?
+    <span ng-if='pending.translations == 0'> No new translations! </span>
+    <span ng-if='pending.translations != 0'> You have <strong> {{pending.translations}}</strong> translations to do</span>
   </mw-action-btn>
 
   <div class="btn-group btn-group-justified">

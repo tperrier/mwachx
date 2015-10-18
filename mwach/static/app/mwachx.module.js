@@ -28,7 +28,7 @@
     datepickerConfig.showWeeks = false;
 
     datepickerPopupConfig.datepickerPopup = "yyyy-MM-dd";
-    datepickerPopupConfig.closeText = 'Close';
+    datepickerPopupConfig.closeText = 'Cancel';
   }]);
 
 // *************************************

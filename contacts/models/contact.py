@@ -108,7 +108,7 @@ class Contact(TimeStampedModel):
 
     #Study Attributes
     study_id = models.CharField(max_length=10,unique=True,verbose_name='Study ID')
-    anc_num = models.CharField(max_length=10,verbose_name='ANC #')
+    anc_num = models.CharField(max_length=20,verbose_name='ANC #')
 
     facility = models.ForeignKey('contacts.Facility')
 
