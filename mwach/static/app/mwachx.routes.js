@@ -29,7 +29,7 @@
             url:          '/participant/new',
             //templateUrl:  routePrefix + 'dashboard/participantNew.html',
             templateUrl:   'crispy-forms/participant/new',
-            controller:   'ParticipantNewController'
+            // controller:   'ParticipantNewController'
           })
           .state('participant-details', {
             url:          '/participant/:study_id',

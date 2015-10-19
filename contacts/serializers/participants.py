@@ -42,14 +42,20 @@ class ParticipantListSerializer(serializers.ModelSerializer):
 		return obj.phone_number
 
 class ParticipantSerializer(serializers.ModelSerializer):
-	status = serializers.SerializerMethodField()
+	status_display = serializers.SerializerMethodField()
+
+	send_time_display = serializers.SerializerMethodField()
 	send_time = serializers.SerializerMethodField()
+
+	send_day_display = serializers.SerializerMethodField()
 	send_day = serializers.SerializerMethodField()
+
 	condition = serializers.SerializerMethodField()
 	validation_key = serializers.SerializerMethodField()
 	phone_number = serializers.SerializerMethodField()
 	facility = serializers.SerializerMethodField()
-	hiv_disclosed = serializers.SerializerMethodField()
+
+	hiv_disclosed_display = serializers.SerializerMethodField()
 
 	href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
 	messages_url = serializers.HyperlinkedIdentityField(view_name='participant-messages',lookup_field='study_id')
@@ -72,20 +78,26 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	def get_condition(self, obj):
 		return obj.get_condition_display()
 
-	def get_send_day(self, obj):
+	def get_send_day_display(self, obj):
 		return obj.get_send_day_display()
 
-	def get_send_time(self, obj):
+	def get_send_day(self, obj):
+		return str(obj.send_day)
+
+	def get_send_time_display(self, obj):
 		return obj.get_send_time_display()
 
-	def get_status(self, obj):
+	def get_send_time(self, obj):
+		return str(obj.send_time)
+
+	def get_status_display(self, obj):
 		return obj.get_status_display()
 
 	def get_facility(self,obj):
 		return ''.join(word.capitalize() for word in obj.facility.name.split())
 
-	def get_hiv_disclosed(self,obj):
-		return utils.null_boolean_display(obj.hiv_disclosed)
+	def get_hiv_disclosed_display(self,obj):
+		return obj.get_hiv_disclosed_display()
 
 #############################################
 #  ViewSet Definitions
@@ -149,13 +161,21 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 					'data':request.data,
 					'valid':cf.is_valid()})
 
-	def update(self, request, study_id=None, *args, **kwargs):
-		''' PUT - full update a new participant '''
-		return Response({'message':'put - update','data':request.data})
-
+	# TODO: Edit this to watch for status changes
 	def partial_update(self, request, study_id=None, *args, **kwargs):
 		''' PATCH - partial update a participant '''
-		return Response({'message':'patch - partial update','data':request.data})
+
+		instance = self.get_object()
+
+		instance.status = request.data['status']
+		instance.send_time = request.data['send_time']
+		instance.send_day = request.data['send_day']
+		instance.art_initiation = utils.angular_datepicker(request.data['art_initiation'])
+		instance.hiv_disclosed = request.data['hiv_disclosed']
+
+		instance.save()
+		instance_serialized = ParticipantSerializer(instance,context={'request':request}).data
+		return Response(instance_serialized)
 
 	@detail_route(methods=['post','get'])
 	def messages(self, request, study_id=None, *args, **kwargs):

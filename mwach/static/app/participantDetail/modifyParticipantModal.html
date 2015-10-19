@@ -5,7 +5,9 @@
   <h3 class="modal-title">Modify Participant</h3>
 </div>
 
-<div class="modal-body" ng-include="'/crispy-forms/participant/update'"> </div>
+<div class="modal-body">
+  <div ng-include="'/crispy-forms/participant/update'"></div>
+ </div>
 
 <div class="modal-footer">
   <button class="btn btn-primary" ng-click="$close(participant)">Change</button>

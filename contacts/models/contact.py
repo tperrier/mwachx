@@ -103,6 +103,12 @@ class Contact(TimeStampedModel):
         ('positive','Positive'),
     )
 
+    HIV_DISCLOSED_CHOICES = (
+        (None,'Unknown'),
+        ('y','Yes'),
+        ('n','No'),
+    )
+
     #Set Custom Manager
     objects = ContactQuerySet.as_manager()
 
@@ -130,7 +136,7 @@ class Contact(TimeStampedModel):
     condition = models.CharField(max_length=40,choices=CONDITION_CHOICES,default='normal')
     family_planning = models.CharField(max_length=50,choices=FAMILY_PLANNING_CHOICES,default='none',verbose_name='Family Planning')
     art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART Initiation',verbose_name='ART Initiation')
-    hiv_disclosed = models.NullBooleanField(default=None,verbose_name='HIV Disclosed')
+    hiv_disclosed = models.CharField(default=None,max_length=1,choices=HIV_DISCLOSED_CHOICES,verbose_name='HIV Disclosed',blank=True,null=True)
     child_hiv_status = models.CharField(max_length=20,choices=CHILD_STATUS_CHOICES,default='unknown',verbose_name='Child HIV Status')
     due_date = models.DateField(verbose_name='Estimated Delivery Date')
     delivery_date = models.DateField(verbose_name='Delivery Date',blank=True,null=True)

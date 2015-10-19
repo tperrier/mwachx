@@ -5,11 +5,10 @@
 // ParticipantController Main Controller for participants objects
 // *************************************
 
-  angular.module('mwachx')
-    .controller('ParticipantController',['$scope','$modal','$location','$stateParams','$log','$rootScope',
-      'mwachxAPI',
-      function ParticipantController($scope, $modal, $location, $stateParams, $log, $rootScope,
-        mwachxAPI) {
+  angular.module('mwachx') .controller('ParticipantController',
+  ['$scope','$modal','$location','$stateParams','$log','$rootScope', 'mwachxAPI','mwachxUtils',
+  function ParticipantController($scope, $modal, $location, $stateParams, $log, $rootScope,
+        mwachxAPI,mwachxUtils) {
 
         $scope.participant      = [];
         $scope.messages         = [];
@@ -17,6 +16,7 @@
         mwachxAPI.participants.get($stateParams.study_id).then(function(participant){
           $scope.participant = participant;
           $scope.messages = participant.getList('messages').$object;
+
         });
 
         $scope.detailsList      = [
@@ -24,15 +24,15 @@
          {'label': 'Study ID',               'value': 'study_id',},
          {'label': 'ANC Number',             'value': 'anc_num',},
          {'label': 'Phone number',           'value': 'phone_number',},
-         {'label': 'Status',                 'value': 'status',},
-         {'label': 'Estimated Delivery Date','value': 'phone_number',},
-         {'label': 'Send Day',               'value': 'send_day',},
-         {'label': 'Send Time',              'value': 'send_time',},
+         {'label': 'Status',                 'value': 'status_display',},
+         {'label': 'Estimated Delivery Date','value': 'due_date',},
+         {'label': 'Send Day',               'value': 'send_day_display',},
+         {'label': 'Send Time',              'value': 'send_time_display',},
          {'label': 'SMS Track',              'value': 'condition',},
          {'label': 'ART Initiation',         'value': 'art_initiation',},
          {'label': 'Previous pregnancies',   'value': 'previous_pregnancies',},
          {'label': 'Family Planning',        'value': 'family_planning',},
-         {'label': 'HIV Disclosure',         'value': 'hiv_disclosed',},
+         {'label': 'HIV Disclosure',         'value': 'hiv_disclosed_display',},
          {'label': 'Confirmation Code',      'value': 'validation_key',},
         ];
 
@@ -91,7 +91,18 @@
             });
 
             modalInstance.result.then(function(result){
-              console.log('Update',result);
+              var patch = {
+                status:result.status,
+                send_day:result.send_day,
+                send_time:result.send_time,
+                art_initiation:mwachxUtils.convert_form_date(result.art_initiation),
+                hiv_disclosed:result.hiv_disclosed,
+              }
+              console.log('Update',result,patch);
+              $scope.participant.patch(patch).then(function(result){
+                console.log('PATCH',result);
+                $scope.participant = result;
+              });
             });
 
         }
@@ -175,7 +186,7 @@ angular.module('mwachx') .controller('NewMessageController',
 
 }]);
 
-angular.module('mwachx') .controller('ParticipantUpdateController', //Name is controlled by django form name
+angular.module('mwachx').controller('ParticipantUpdateController', //Name is controlled by django form name
   ['$scope','$modalInstance','$log','participant',
   function ($scope, $modalInstance, $log, participant) {
     angular.extend($scope,{
@@ -189,7 +200,6 @@ angular.module('mwachx') .controller('PhoneCallController',
     angular.extend($scope,{
       participant:participant,
       status:{call_history_open:true},
-      form:{},
       new_call:{is_outgoing:true,created:new Date()},
       addCall:function(){
         $scope.participant.post('calls/',$scope.new_call).then(function(response){

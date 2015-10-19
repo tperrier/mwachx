@@ -17,10 +17,3 @@ def angular_datepicker(datestr):
         return datestr #datestr is a date
     # datestr from angular datepicker is: 2015-10-18T05:54:53.529Z
     return datetime.datetime.strptime(datestr[:10],'%Y-%m-%d').date()
-
-def null_boolean_display(attr):
-    if attr is None:
-        return 'Unkown'
-    elif attr is True:
-        return 'Yes'
-    return 'No'

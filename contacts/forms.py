@@ -98,7 +98,7 @@ class ContactAdd(forms.ModelForm):
                 )
             ),
             FormActions(
-                Submit('submit', 'Enroll Participant'),
+                Submit('submit', 'Enroll Participant',ng_disabled='participantNewForm.$invalid'),
                 css_class="row"
             )
         )
