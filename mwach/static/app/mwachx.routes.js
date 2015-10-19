@@ -21,7 +21,7 @@
           // Participant state and substates
           .state('participant-list', {
             url:          '/participant',
-            templateUrl:  routePrefix + 'dashboard/participantList.html',
+            templateUrl:  routePrefix + 'dashboard/participant/participantList.html',
             controller:   'ParticipantListController'
           })
 
