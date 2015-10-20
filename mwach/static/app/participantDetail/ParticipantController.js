@@ -203,6 +203,7 @@ angular.module('mwachx') .controller('PhoneCallController',
       participant:participant,
       status:{call_history_open:true},
       new_call:{is_outgoing:true,created:new Date()},
+      form:{},
       addCall:function(){
         $scope.participant.post('calls/',$scope.new_call).then(function(response){
           console.log('Post Call',response,$scope.status);
