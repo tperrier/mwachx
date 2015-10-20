@@ -186,7 +186,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 		instance.hiv_disclosed = request.data['hiv_disclosed']
 
 		instance.save()
-		instance_serialized = ParticipantSerializer(instance,context={'request':request}).data
+		instance_serialized = ParticipantSerializer(cont.Contact.objects.get(pk=instance.pk),context={'request':request}).data
 		return Response(instance_serialized)
 
 	@detail_route(methods=['post','get'])
