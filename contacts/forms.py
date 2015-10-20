@@ -20,6 +20,9 @@ class ContactAdd(forms.ModelForm):
     phone_number = forms.CharField(label='Phone Number',
         widget=forms.TextInput(attrs={'required':'True','placeholder':'07xxxxxxx','pattern': '^07[0-9]{8}'}))
 
+    study_visit = forms.DateField(label='Next Study Visit')
+    clinic_visit = forms.DateField(label='Next Clinic Visit')
+
     def __init__(self, *args, **kwargs):
         super(ContactAdd, self).__init__(*args, **kwargs)
 
@@ -43,6 +46,8 @@ class ContactAdd(forms.ModelForm):
         self.fields['due_date'].widget = util.AngularPopupDatePicker({'required':True})
         self.fields['birthdate'].widget = util.AngularPopupDatePicker({'required':True,'datepicker-position-right':True})
         self.fields['art_initiation'].widget = util.AngularPopupDatePicker()
+        self.fields['clinic_visit'].widget = util.AngularPopupDatePicker({'required':True})
+        self.fields['study_visit'].widget = util.AngularPopupDatePicker({'required':True,'datepicker-position-right':True})
 
 
         self.helper = FormHelper()
@@ -82,6 +87,7 @@ class ContactAdd(forms.ModelForm):
                 Div(
                     Div('phone_shared', css_class="col-md-4"),
                     Div('language', css_class="col-md-4"),
+                    Div('hiv_disclosed', css_class="col-md-4"),
                     css_class="row"
                 ),
             ), Fieldset (
@@ -89,11 +95,13 @@ class ContactAdd(forms.ModelForm):
                 Div(
                     Div('condition', css_class="col-md-4"),
                     Div('art_initiation', css_class="col-md-4"),
-                    Div('hiv_disclosed', css_class="col-md-4"),
+                    Div('hiv_messaging', css_class="col-md-4"),
                     css_class="row"
                 ),
                 Div(
                     Div('due_date', css_class="col-md-4"),
+                    Div('clinic_visit', css_class="col-md-4"),
+                    Div('study_visit', css_class="col-md-4"),
                     css_class="row"
                 )
             ),

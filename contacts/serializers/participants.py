@@ -150,6 +150,14 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			phone_number = '+254%s'%cf.cleaned_data['phone_number'][1:]
 			cont.Connection.objects.create(identity=phone_number,contact=contact,is_primary=True)
 
+			# Set the next visits
+			if cf.cleaned_data['clinic_visit']:
+				cont.Visit.objects.create(scheduled=cf.cleaned_data['clinic_visit'],
+					participant=contact,visit_type='clinic')
+			if cf.cleaned_data['study_visit']:
+				cont.Visit.objects.create(scheduled=cf.cleaned_data['study_visit'],
+					participant=contact,visit_type='study')
+
 			'''
 			#Send Welcome Message
 			message = 'Welcome to the mWaCh X Study. Please send your five letter confirmation code'

@@ -13,7 +13,7 @@ def parse_date(datestr):
  	return datetime.datetime.strptime(datestr,'%d-%m-%Y').date()
 
 def angular_datepicker(datestr):
-    if hasattr(datestr,'isoformat'):
+    if datestr is None or hasattr(datestr,'isoformat'):
         return datestr #datestr is a date
     # datestr from angular datepicker is: 2015-10-18T05:54:53.529Z
     return datetime.datetime.strptime(datestr[:10],'%Y-%m-%d').date()
