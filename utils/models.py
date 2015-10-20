@@ -12,7 +12,7 @@ class TimeStampedModel(models.Model):
         ordering = ['-created']
 
     #The date and time this message was created or modified
-    created = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(default=timezone.now,editable=False)
     modified = models.DateTimeField(auto_now=True)
 
     def created_str(self,format='%Y-%m-%d %H:%M'):

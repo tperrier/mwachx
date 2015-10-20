@@ -89,6 +89,8 @@ class Contact(TimeStampedModel):
         (2,'Wednesday'),
         (3,'Thursday'),
         (4,'Friday'),
+        (5,'Satuday'),
+        (6,'Sunday'),
     )
 
     TIME_CHOICES = (
@@ -97,54 +99,47 @@ class Contact(TimeStampedModel):
         (20,'Evening (8 PM)'),
     )
 
-    CHILD_STATUS_CHOICES = (
-        ('unknown','Unknown'),
-        ('negative','Negative'),
-        ('positive','Positive'),
-    )
-
-    HIV_DISCLOSED_CHOICES = (
-        (None,'Unknown'),
-        ('y','Yes'),
-        ('n','No'),
-    )
-
     #Set Custom Manager
     objects = ContactQuerySet.as_manager()
 
     #Study Attributes
     study_id = models.CharField(max_length=10,unique=True,verbose_name='Study ID')
     anc_num = models.CharField(max_length=20,verbose_name='ANC #')
-
+    ccc_num = models.CharField(max_length=20,verbose_name='CCC #',blank=True,null=True)
     facility = models.ForeignKey('contacts.Facility')
 
     study_group = models.CharField(max_length=10,choices=GROUP_CHOICES,verbose_name='Group')
-    send_day = models.IntegerField(choices=DAY_CHOICES, default=3,verbose_name='Send Day')
-    send_time = models.IntegerField(choices=TIME_CHOICES,default=13,verbose_name='Send Time')
+    send_day = models.IntegerField(choices=DAY_CHOICES, default=0,verbose_name='Send Day')
+    send_time = models.IntegerField(choices=TIME_CHOICES,default=8,verbose_name='Send Time')
 
-    #Client Personal Information
+    # Required Client Personal Information
     nickname = models.CharField(max_length=50)
     birthdate = models.DateField(verbose_name='DOB')
-    partner_name = models.CharField(max_length=100,blank=True,null=True,verbose_name='Partner Name')
-    relationship_status = models.CharField(max_length=30,choices=RELATIONSHIP_CHOICES,default='married',verbose_name='Relationship Status',blank=True,null=True)
-    previous_pregnancies = models.IntegerField(default=0,blank=True,null=True)
-    phone_shared = models.NullBooleanField(default=None,verbose_name='Phone Shared')
 
-    #Medical Information
+    # Optional Clinet Personal Informaiton
+    partner_name = models.CharField(max_length=100,blank=True,verbose_name='Partner Name')
+    relationship_status = models.CharField(max_length=30,choices=RELATIONSHIP_CHOICES,verbose_name='Relationship Status',blank=True)
+    previous_pregnancies = models.IntegerField(blank=True,null=True)
+    phone_shared = models.NullBooleanField(verbose_name='Phone Shared')
+
+    # Required Medical Information
     status = models.CharField(max_length=20,choices=STATUS_CHOICES, default='pregnant')
     language = models.CharField(max_length=25,choices=LANGUAGE_CHOICES,default='english')
     condition = models.CharField(max_length=40,choices=CONDITION_CHOICES,default='normal')
-    family_planning = models.CharField(max_length=50,choices=FAMILY_PLANNING_CHOICES,default='none',verbose_name='Family Planning')
-    art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART Initiation',verbose_name='ART Initiation')
-    hiv_disclosed = models.CharField(default=None,max_length=1,choices=HIV_DISCLOSED_CHOICES,verbose_name='HIV Disclosed',blank=True,null=True)
-    child_hiv_status = models.CharField(max_length=20,choices=CHILD_STATUS_CHOICES,default='unknown',verbose_name='Child HIV Status')
     due_date = models.DateField(verbose_name='Estimated Delivery Date')
+
     delivery_date = models.DateField(verbose_name='Delivery Date',blank=True,null=True)
 
+    # Optional Medical Informaton
+    art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART Initiation',verbose_name='ART Initiation')
+    hiv_disclosed = models.NullBooleanField(blank=True,verbose_name='HIV Disclosed')
+    child_hiv_status = models.NullBooleanField(blank=True,verbose_name='Child HIV Status')
+    family_planning = models.CharField(max_length=50,blank=True,choices=FAMILY_PLANNING_CHOICES,verbose_name='Family Planning')
+
     #State attributes to be edited by the system
-    last_msg_client = models.DateField(blank=True,null=True,help_text='Date of last client message received')
-    last_msg_system = models.DateField(blank=True,null=True,help_text='Date of last system message sent')
-    is_validated = models.BooleanField(default=False)
+    last_msg_client = models.DateField(blank=True,null=True,help_text='Date of last client message received',editable=False)
+    last_msg_system = models.DateField(blank=True,null=True,help_text='Date of last system message sent',editable=False)
+    is_validated = models.BooleanField(default=False,blank=True)
 
     class Meta:
         app_label = 'contacts'

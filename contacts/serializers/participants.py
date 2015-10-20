@@ -56,6 +56,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	facility = serializers.SerializerMethodField()
 
 	hiv_disclosed_display = serializers.SerializerMethodField()
+	hiv_disclosed = serializers.SerializerMethodField()
 
 	href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
 	messages_url = serializers.HyperlinkedIdentityField(view_name='participant-messages',lookup_field='study_id')
@@ -97,7 +98,10 @@ class ParticipantSerializer(serializers.ModelSerializer):
 		return ''.join(word.capitalize() for word in obj.facility.name.split())
 
 	def get_hiv_disclosed_display(self,obj):
-		return obj.get_hiv_disclosed_display()
+		return utils.null_boolean_display(obj.hiv_disclosed)
+
+	def get_hiv_disclosed(self,obj):
+		return utils.null_boolean_form_value(obj.hiv_disclosed)
 
 #############################################
 #  ViewSet Definitions
