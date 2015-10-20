@@ -42,21 +42,23 @@ class ParticipantListSerializer(serializers.ModelSerializer):
 		return obj.phone_number
 
 class ParticipantSerializer(serializers.ModelSerializer):
-	status_display = serializers.SerializerMethodField()
+	status_display = serializers.CharField(source='get_status_display')
 
-	send_time_display = serializers.SerializerMethodField()
-	send_time = serializers.SerializerMethodField()
+	send_time_display = serializers.CharField(source='get_send_time_display')
+	send_time = serializers.CharField()
+	send_day_display = serializers.CharField(source='get_send_day_display')
+	send_day = serializers.CharField()
 
-	send_day_display = serializers.SerializerMethodField()
-	send_day = serializers.SerializerMethodField()
-
-	condition = serializers.SerializerMethodField()
-	validation_key = serializers.SerializerMethodField()
-	phone_number = serializers.SerializerMethodField()
+	condition = serializers.CharField(source='get_condition_display')
+	validation_key = serializers.CharField()
+	phone_number = serializers.CharField()
 	facility = serializers.SerializerMethodField()
+	age = serializers.CharField(read_only=True)
 
 	hiv_disclosed_display = serializers.SerializerMethodField()
 	hiv_disclosed = serializers.SerializerMethodField()
+	hiv_messaging_display = serializers.SerializerMethodField()
+	hiv_messaging = serializers.SerializerMethodField()
 
 	href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
 	messages_url = serializers.HyperlinkedIdentityField(view_name='participant-messages',lookup_field='study_id')
@@ -70,30 +72,6 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = cont.Contact
 
-	def get_phone_number(self, obj):
-		return obj.phone_number
-
-	def get_validation_key(self, obj):
-		return obj.validation_key()
-
-	def get_condition(self, obj):
-		return obj.get_condition_display()
-
-	def get_send_day_display(self, obj):
-		return obj.get_send_day_display()
-
-	def get_send_day(self, obj):
-		return str(obj.send_day)
-
-	def get_send_time_display(self, obj):
-		return obj.get_send_time_display()
-
-	def get_send_time(self, obj):
-		return str(obj.send_time)
-
-	def get_status_display(self, obj):
-		return obj.get_status_display()
-
 	def get_facility(self,obj):
 		return ''.join(word.capitalize() for word in obj.facility.name.split())
 
@@ -102,6 +80,12 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
 	def get_hiv_disclosed(self,obj):
 		return utils.null_boolean_form_value(obj.hiv_disclosed)
+
+	def get_hiv_messaging_display(self,obj):
+		return utils.null_boolean_display(obj.hiv_messaging)
+
+	def get_hiv_messaging(self,obj):
+		return utils.null_boolean_form_value(obj.hiv_messaging)
 
 #############################################
 #  ViewSet Definitions

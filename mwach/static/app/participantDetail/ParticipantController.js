@@ -20,12 +20,13 @@
         });
 
         $scope.detailsList      = [
-         {'label': 'Nickname',               'value': 'nickname',},
-         {'label': 'Study ID',               'value': 'study_id',},
-         {'label': 'ANC Number',             'value': 'anc_num',},
+        //  {'label': 'Nickname',               'value': 'nickname',},
+        //  {'label': 'Study ID',               'value': 'study_id',},
+        //  {'label': 'ANC Number',             'value': 'anc_num',},
          {'label': 'Phone number',           'value': 'phone_number',},
          {'label': 'Status',                 'value': 'status_display',},
          {'label': 'Estimated Delivery Date','value': 'due_date',},
+         {'label': 'Age',                    'value': 'age',},
          {'label': 'Send Day',               'value': 'send_day_display',},
          {'label': 'Send Time',              'value': 'send_time_display',},
          {'label': 'SMS Track',              'value': 'condition',},
@@ -33,6 +34,7 @@
          {'label': 'Previous pregnancies',   'value': 'previous_pregnancies',},
          {'label': 'Family Planning',        'value': 'family_planning',},
          {'label': 'HIV Disclosure',         'value': 'hiv_disclosed_display',},
+         {'label': 'HIV Messaging',          'value': 'hiv_disclosed_messaging_display',},
          {'label': 'Confirmation Code',      'value': 'validation_key',},
         ];
 

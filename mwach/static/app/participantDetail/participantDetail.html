@@ -5,8 +5,9 @@
       <i class="mw" ng-class="participant.status == 'post' ? 'mw-mwach-baby-phone' : 'mw-mwach-phone'" ></i>
       {{participant.nickname}}
     </span>
-    <small>Study ID: {{participant.study_id}}</small>
-    <small>ANC #: {{participant.anc_num}}</small>
+    <small>Study ID: <strong>{{participant.study_id}}</strong></small>
+    <small>ANC #: <strong>{{participant.anc_num}}</strong></small>
+    <small>CCC #: <strong>{{participant.ccc_num}}</strong></small>
   </h1>
 
   <div class="row participant-messages">
@@ -38,7 +39,7 @@
 
       <div class="panel panel-info">
         <div class="panel-heading">
-          <h3 class="panel-title">Participant Details
+          <h3 class="panel-title">Participant Details: <strong>{{participant.nickname}}</strong>
             <i id="context-edit" style='cursor:pointer' class="mw mw-cogs pull-right" ng-click='openModifyModel()'> Edit</i>
           </h3>
         </div>

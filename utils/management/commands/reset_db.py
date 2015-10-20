@@ -83,6 +83,7 @@ def add_client(client,study_id,facility=None):
     new_client = {
         'study_id':study_id,
         'anc_num':client['anc_num'],
+        'ccc_num':client['anc_num'],
         'nickname':client['nickname'],
         'birthdate':client['birth_date'],
         'study_group':random.choice(study_groups),
