@@ -34,7 +34,7 @@
          {'label': 'Previous pregnancies',   'value': 'previous_pregnancies',},
          {'label': 'Family Planning',        'value': 'family_planning',},
          {'label': 'HIV Disclosure',         'value': 'hiv_disclosed_display',},
-         {'label': 'HIV Messaging',          'value': 'hiv_disclosed_messaging_display',},
+         {'label': 'HIV Messaging',          'value': 'hiv_messaging_display',},
          {'label': 'Confirmation Code',      'value': 'validation_key',},
         ];
 
