@@ -47,6 +47,13 @@
           delta = delta || 1;
           pri.delta_date('back',delta);
         },
+        change_facility:function(){
+          console.log('Change',$scope.facility);
+          $http.get('staff/facility_change/'+$scope.facility).then(function(response){
+            $state.reload();
+            console.log(response);
+          });
+        },
       });
 
       var pri = {
@@ -54,12 +61,7 @@
           $http.get('staff/date/'+direction+'/'+delta+'/').then(function(response){
             // $state.transitionTo('home',null,{reload:true});
             $state.reload();
-
-            // Update $scope.current_date
-            delta *= (direction == 'back')?-1:1;
-            var epoch = new Date( Date.parse($scope.current_date) + (86400*delta*1000) );
-            $scope.current_date = $filter('date')(epoch,'yyyy-MM-dd','UTC');
-            // console.log(delta,epoch,$scope.current_date);
+            $scope.current_date = response.data.current_date;
           });
         },
       }
