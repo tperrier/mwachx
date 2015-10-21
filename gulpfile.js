@@ -7,7 +7,6 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var plumber = require('gulp-plumber');
 var os = require('os');
-var gulpFilter = require('gulp-filter');
 
 gulp.task('less', function() {
     return gulp.src('./mwach/static/less/main.less')
