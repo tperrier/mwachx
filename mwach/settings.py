@@ -139,7 +139,7 @@ STATIC_URL = '/static/'
 if ON_OPENSHIFT:
     STATIC_ROOT = os.path.join(os.environ.get('OPENSHIFT_REPO_DIR'),'wsgi','static')
 elif ON_WEBFACTION:
-    STATIC_ROOT = os.path.join(PROJECT_PATH,'static')
+    STATIC_ROOT = os.path.join(PROJECT_ROOT,'..','..','mwachx_static')
 else:
     STATIC_ROOT = os.path.join(PROJECT_ROOT, STATIC_URL.strip("/"))
 

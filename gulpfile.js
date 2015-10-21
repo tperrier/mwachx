@@ -8,6 +8,8 @@ var uglify = require('gulp-uglify');
 var plumber = require('gulp-plumber');
 var os = require('os');
 
+var webfaction_static = '../../mwachx_static';
+
 gulp.task('less', function() {
     return gulp.src('./mwach/static/less/main.less')
         .pipe(plumber())
@@ -21,7 +23,7 @@ gulp.task('webfaction_less', function() {
     return gulp.src('./mwach/static/less/main.less')
         .pipe(plumber())
         .pipe(less())
-        .pipe(gulp.dest('./mwach/static/css'))
+        .pipe(gulp.dest(webfaction_static + '/css'))
 });
 
 // From: https://medium.com/@dickeyxxx/best-practices-for-building-angular-js-apps-266c1a4a6917
@@ -38,7 +40,7 @@ gulp.task('webfaction_js',function () {
   return gulp.src(['./mwach/static/app/mwachx.module.js','mwach/static/app/**/*.js'])
     .pipe(concat('mwachx.js'))
       // .pipe(uglify())
-    .pipe(gulp.dest('./mwach/static'))
+    .pipe(gulp.dest(webfaction_static))
 });
 
 var LIBS = [
@@ -63,7 +65,7 @@ gulp.task('webfaction_libs',function(){
   return gulp.src(LIBS)
     .pipe(concat('components.js'))
     .pipe(uglify())
-    .pipe(gulp.dest('./mwach/static'))
+    .pipe(gulp.dest(webfaction_static))
 });
 
 gulp.task('watch', function() {
@@ -84,7 +86,5 @@ gulp.task('default', ['watch','less','js','libs'], function() {
 });
 
 gulp.task('webfaction', ['webfaction_js','webfaction_less','webfaction_libs'], function() {
-  var on_webfaction = os.hostname().split('.').some(function(ele){return ele == 'webfaction'});
-  var new_root = (on_webfaction)?'../../mwachx_static':'./ignore/webfaction';
-  gulp.src('./mwach/static/**/*').pipe(gulp.dest(new_root));
+  console.log('Gulp Webfaction Deploy Done');
 });
