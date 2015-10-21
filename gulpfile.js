@@ -6,20 +6,28 @@ var livereload = require('gulp-livereload');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var plumber = require('gulp-plumber');
+var os = require('os');
+var gulpFilter = require('gulp-filter');
 
 gulp.task('less', function() {
-    gulp.src('./mwach/static/less/main.less')
+    return gulp.src('./mwach/static/less/main.less')
         .pipe(plumber())
         .pipe(sourcemaps.init())
         .pipe(less())
         .pipe(sourcemaps.write('./maps'))
         .pipe(gulp.dest('./mwach/static/css'))
-        .pipe(livereload());
+});
+
+gulp.task('webfaction_less', function() {
+    return gulp.src('./mwach/static/less/main.less')
+        .pipe(plumber())
+        .pipe(less())
+        .pipe(gulp.dest('./mwach/static/css'))
 });
 
 // From: https://medium.com/@dickeyxxx/best-practices-for-building-angular-js-apps-266c1a4a6917
 gulp.task('js',function () {
-  gulp.src(['./mwach/static/app/mwachx.module.js','mwach/static/app/**/*.js'])
+  return gulp.src(['./mwach/static/app/mwachx.module.js','mwach/static/app/**/*.js'])
     .pipe(sourcemaps.init())
       .pipe(concat('mwachx.js'))
       // .pipe(uglify())
@@ -27,8 +35,14 @@ gulp.task('js',function () {
     .pipe(gulp.dest('./mwach/static'))
 });
 
-gulp.task('libs',function(){
-  gulp.src([
+gulp.task('webfaction_js',function () {
+  return gulp.src(['./mwach/static/app/mwachx.module.js','mwach/static/app/**/*.js'])
+    .pipe(concat('mwachx.js'))
+      // .pipe(uglify())
+    .pipe(gulp.dest('./mwach/static'))
+});
+
+var LIBS = [
     'mwach/static/bower_components/angular/angular.js',
     'mwach/static/bower_components/angular-ui-router/release/angular-ui-router.js',
     'mwach/static/bower_components/angular-resource/angular-resource.js',
@@ -36,10 +50,20 @@ gulp.task('libs',function(){
     'mwach/static/bower_components/angular-bootstrap-show-errors/src/showErrors.js',
     'mwach/static/bower_components/lodash/lodash.js',
     'mwach/static/bower_components/restangular/src/restangular.js'
-  ])
+];
+
+gulp.task('libs',function(){
+  return gulp.src(LIBS)
    .pipe(sourcemaps.init())
     .pipe(concat('components.js'))
     .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest('./mwach/static'))
+});
+
+gulp.task('webfaction_libs',function(){
+  return gulp.src(LIBS)
+    .pipe(concat('components.js'))
+    .pipe(uglify())
     .pipe(gulp.dest('./mwach/static'))
 });
 
@@ -58,4 +82,10 @@ gulp.task('watch', function() {
 
 gulp.task('default', ['watch','less','js','libs'], function() {
 	return
+});
+
+gulp.task('webfaction', ['webfaction_js','webfaction_less','webfaction_libs'], function() {
+  var on_webfaction = os.hostname().split('.').some(function(ele){return ele == 'webfaction'});
+  var new_root = (on_webfaction)?'../../mwachx_static':'./ignore/webfaction';
+  gulp.src('./mwach/static/**/*').pipe(gulp.dest(new_root));
 });
