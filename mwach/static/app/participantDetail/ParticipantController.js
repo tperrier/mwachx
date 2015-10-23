@@ -114,6 +114,7 @@
             var modalInstance = $modal.open({
               templateUrl: routePrefix + 'phoneCallModal.html',
               controller: 'PhoneCallController',
+              size: 'lg',
               resolve:{
                 participant:function(){return $scope.participant},
               },
