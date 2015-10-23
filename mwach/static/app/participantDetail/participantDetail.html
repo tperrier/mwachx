@@ -64,12 +64,12 @@
           <i class="mw mw-2x mw-hospital-o"></i>
         </a></td>
 
-        <td><a class="btn btn-info" tooltip="{{participant.nickname}} delivered" >
-          <i class="mw mw-2x mw-baby-noun"></i>
-        </a></td>
-
         <td><a class="btn btn-info" tooltip="{{participant.nickname}} visit history" ng-click="showVisitHistory()">
           <i class="mw mw-2x mw-hospital-o"></i> Visit History
+        </a></td>
+
+        <td><a class="btn btn-info" tooltip="{{participant.nickname}} delivered" >
+          <i class="mw mw-2x mw-baby-noun"></i>
         </a></td>
 
         <table ng-switch-default class="table table-condensed table-striped">
@@ -80,12 +80,12 @@
               <th>Time</th>
               <th></th>
             </thead>
-            <tr ng-repeat="visit in participant.visits">
+            <tr ng-repeat="visit in participant.visits | orderBy : 'scheduled'">
               <td>{{visit.scheduled}}</td>
               <td>{{visit.visit_type}}</td>
               <td>{{-1*visit.days_overdue}}</td>
-              <td><button class='btn btn-danger btn-sm' ng-click='visitDismiss($index)' tooltip="Mark visit as skipped" >Dismiss</btn></td>
-              <td><button class='btn btn-info btn-sm' ng-click='visitAttended($index)' tooltip="{{participant.nickname}} came for this visit">Attended</btn></td>
+              <td><button class='btn btn-danger btn-sm' ng-click='visitDismiss(visit)' tooltip="Mark visit as skipped" >Dismiss</btn></td>
+              <td><button class='btn btn-info btn-sm' ng-click='visitAttended(visit)' tooltip="{{participant.nickname}} came for this visit">Attended</btn></td>
             </tr>
           </tbody>
         </table>

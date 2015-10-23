@@ -6,8 +6,9 @@
 // *************************************
 
   angular.module('mwachx') .controller('ParticipantController',
-  ['$scope','$modal','$location','$stateParams','$log','$rootScope', 'mwachxAPI','mwachxUtils',
-  function ParticipantController($scope, $modal, $location, $stateParams, $log, $rootScope,
+  ['$scope','$modal','$location','$stateParams','$log','$rootScope', 'Restangular',
+    'mwachxAPI','mwachxUtils',
+  function ParticipantController($scope, $modal, $location, $stateParams, $log, $rootScope, Restangular,
         mwachxAPI,mwachxUtils) {
 
         $scope.participant      = [];
@@ -121,16 +122,14 @@
             });
         }
 
-        $scope.visitDismiss = function(iVisit) {
-          // @iVisit = $index of visit in participant.visits
+        $scope.visitDismiss = function(visit) {
           var modalInstance = $modal.open({
             templateUrl: routePrefix + 'modalVisitDismiss.html',
             size: 'sm',
           }).result.then(function(){
-            var visit = $scope.participant.visits[iVisit];
-            console.log('OK now dismiss',iVisit,$scope.participant.visits[iVisit]);
+            console.log('OK now dismiss',visit);
             visit.doPUT({},'skip/').then(function(response) {
-              $scope.participant.visits.splice(iVisit,1);
+              $scope.participant.visits.splice($scope.participant.visits.indexOf(visit),1);
             });
         });
       }
@@ -142,17 +141,31 @@
         var modalInstance = $modal.open({
           templateUrl: "/static/app/dashboard/visits/attendedModal.html",
           scope: $modalScope,
-        }).result.then(function(result) {
-          console.log(result);
+        }).result.then(function(put) {
+          console.log('Schedule',put);
+          $scope.participant.post('visits/',put).then(function(response){
+            $scope.participant.visits.push(
+              Restangular.restangularizeElement($scope.participant,response,'visits/')
+            );
+          });
         });
       }
 
-      $scope.visitAttended = function() {
-
+      $scope.visitAttended = function(visit) {
         var modalInstance = $modal.open({
           templateUrl: "/static/app/dashboard/visits/attendedModal.html",
-        }).result.then(function(result) {
-          console.log(result);
+        }).result.then(function(attended) {
+          console.log('Attended',attended);
+          visit.doPUT(attended,'attended/').then(function(response){
+            console.log('Result',response);
+            if(response.next) {
+              // There is a next visit
+              $scope.participant.visits.push(
+                Restangular.restangularizeElement($scope.participant,response.next,'visits/')
+              );
+            }
+            $scope.participant.visits.splice($scope.participant.visits.indexOf(visit),1);
+          });
         });
       }
 

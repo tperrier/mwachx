@@ -3,11 +3,11 @@
     <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
       <span aria-hidden="true">×</span>
     </button>
-    <h3 ng-if='scheduleOnly === unddefined || scheduleOnly === false' class="modal-title">Visit Attended</h3>
+    <h3 ng-if='!scheduleOnly' class="modal-title">Visit Attended</h3>
     <h3 ng-if='scheduleOnly === true' class="modal-title">Schedule Visit</h3>
   </div>
 
-  <div ng-if='scheduleOnly === unddefined || scheduleOnly === false' class="form-group">
+  <div ng-hide='scheduleOnly' class="form-group">
     <label class="col-sm-3 control-label" for="arrived">Date arrived:</label>
       <div class="col-sm-9">
         <p class='input-group'> <input ng-model='attended.arrived' type='text' class='form-control'
@@ -18,6 +18,7 @@
           </button></span> </p>
       </div>
   </div>
+
   <div class="form-group">
       <label class="col-sm-3 control-label" for="next_visit">Date of next visit:</label>
       <div class="col-sm-9">

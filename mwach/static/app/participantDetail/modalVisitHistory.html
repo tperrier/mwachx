@@ -5,9 +5,22 @@
   <h3 class="modal-title">{{participant.nickname}}'s Visit History</h3>
 </div>
 
-{{visits}}
+<table class='table table-condensed table-striped'>
+  <thead><tr>
+    <th>Scheduled</th>
+    <th>Type</th>
+    <th>Attended</th>
+  </tr></thead>
+  <tbody>
+    <tr ng-repeat="visit in visits">
+      <td>{{visit.scheduled}}</td>
+      <td>{{visit.visit_type}}</td>
+      <td ng-if="visit.arrived">{{visit.arrived}}</td>
+      <td ng-if="!visit.arrived">{{(visit.skipped == true)?'Skipped':'Pending'}}</td>
+    </tr>
+  </tbody>
+</table>
 
 <div class="modal-footer">
-  <button class="btn btn-primary" ng-click="$close()">Dismiss</button>
-  <button class="btn btn-default" ng-click="$dismiss()">Cancel</button>
+  <button class="btn btn-default" ng-click="$dismiss()">Close</button>
 </div>

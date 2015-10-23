@@ -207,11 +207,11 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
 			if request.data.has_key('reply'):
 				message['parent'] = cont.Message.objects.get(pk=request.data['reply']['id'])
-				print 'Reply To',message['parent']
+				# print 'Reply To',message['parent']
 
 				if message['parent'].is_pending:
 					message['parent'].dismiss(**request.data['reply'])
-					print 'Dismiss',request.data['reply']
+					# print 'Dismiss',request.data['reply']
 
 			new_message = participant.send_message(**message)
 
@@ -229,8 +229,19 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			new_call_serialized = PhoneCallSerializer(new_call,context={'request':request})
 			return Response(new_call_serialized.data)
 
-	@detail_route()
+	@detail_route(methods=['get','post'])
 	def visits(self, request, study_id=None, *args, **kwargs):
-		contact_visits = cont.Visit.objects.filter(participant__study_id=study_id)
-		contact_visits = VisitSerializer(contact_visits,many=True,context={'request':request})
-		return Response(contact_visits.data)
+		if request.method == 'GET': # Return a serialized list of all visits
+
+			contact_visits = cont.Visit.objects.filter(participant__study_id=study_id)
+			contact_visits = VisitSerializer(contact_visits,many=True,context={'request':request})
+			return Response(contact_visits.data)
+
+		elif request.method == 'POST': # Schedual a new visit
+
+			instance = self.get_object()
+			next_visit = instance.visit_set.create(
+			scheduled=utils.angular_datepicker(request.data['next']),
+			visit_type=request.data['type']
+			)
+			return Response(VisitSerializer(next_visit,context={'request':request}).data)

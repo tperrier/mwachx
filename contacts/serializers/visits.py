@@ -10,6 +10,7 @@ from rest_framework.response import Response
 #Local Imports
 import contacts.models as cont
 from messages import ParticipantSimpleSerializer
+import utils
 
 class VisitSerializer(serializers.ModelSerializer):
 
@@ -43,11 +44,11 @@ class VisitViewSet(viewsets.ModelViewSet):
         instance_serialized = VisitSerializer(instance,context={'request':request}).data
 
         # Make next visit if needed
-        next_visit_serialized = {}
+        next_visit_serialized = None
         if request.data.has_key('next'):
-            next_visit = cont.Visit.objects.create(
-                participant=instance.participant,
-                scheduled=request.data['next'],
+            print 'Next Visit',request.data['next']
+            next_visit = instance.participant.visit_set.create(
+                scheduled=utils.angular_datepicker(request.data['next']),
                 visit_type=request.data['type']
             )
             next_visit_serialized = VisitSerializer(next_visit,context={'request':request}).data
@@ -60,6 +61,5 @@ class VisitViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         instance.skip()
         instance_serialized = VisitSerializer(instance,context={'request':request}).data
-
 
         return Response(instance_serialized)
