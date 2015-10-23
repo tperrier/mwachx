@@ -53,3 +53,13 @@ class VisitViewSet(viewsets.ModelViewSet):
             next_visit_serialized = VisitSerializer(next_visit,context={'request':request}).data
 
         return Response({'visit':instance_serialized,'next':next_visit_serialized})
+
+    @detail_route(methods=['put'])
+    def skip(self, request, pk):
+
+        instance = self.get_object()
+        instance.skip()
+        instance_serialized = VisitSerializer(instance,context={'request':request}).data
+
+
+        return Response(instance_serialized)

@@ -121,7 +121,21 @@
             });
         }
 
-      }]);
+        $scope.visitDismiss = function(iVisit) {
+          // @iVisit = $index of visit in participant.visits
+          var modalInstance = $modal.open({
+            templateUrl: routePrefix + 'modalVisitDismiss.html',
+            size: 'sm',
+          }).result.then(function(){
+            var visit = $scope.participant.visits[iVisit];
+            console.log('OK now dismiss',iVisit,$scope.participant.visits[iVisit]);
+            visit.doPUT({},'skip/').then(function(response) {
+              $scope.participant.visits.splice(iVisit,1);
+            });
+        });
+      }
+
+      }]); // End Main Controller
 
 // *************************************
 // Modal Controllers

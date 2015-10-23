@@ -133,7 +133,7 @@ class Contact(TimeStampedModel):
     # Optional Medical Informaton
     art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART Initiation',verbose_name='ART Initiation')
     hiv_disclosed = models.NullBooleanField(blank=True,verbose_name='HIV Disclosed')
-    hiv_messaging = models.BooleanField(default=False,verbose_name='HIV Messaging')
+    hiv_messaging = models.BooleanField(default=False   ,verbose_name='HIV Messaging')
     child_hiv_status = models.NullBooleanField(blank=True,verbose_name='Child HIV Status')
     family_planning = models.CharField(max_length=50,blank=True,choices=FAMILY_PLANNING_CHOICES,verbose_name='Family Planning')
 
@@ -183,9 +183,17 @@ class Contact(TimeStampedModel):
         delta = today - self.birthdate
         return int((delta.days - delta.seconds/86400.0)/365.2425)
 
+    ''' ~REMOVE
     @property
     def get_visits(self):
         return self.visit_set.filter(~models.Q(skipped=False))
+    '''
+
+    def get_visit_history(self):
+        return self.visit_set.filter(skipped__isnull=False)
+
+    def get_scheduled_visits(self):
+        return self.visit_set.filter(skipped__isnull=True)
 
     def weeks(self,today=None):
         '''
@@ -230,6 +238,8 @@ class Contact(TimeStampedModel):
                         scheduled=scheduled)
         return new_call
 
+    ''' ~REMOVE
     @property
     def pending(self):
         return Message.objects.filter(contact=self,is_viewed=False).count()
+    '''

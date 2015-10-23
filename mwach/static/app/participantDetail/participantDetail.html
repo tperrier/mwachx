@@ -54,6 +54,29 @@
         </table>
       </div>
 
+      <div ng-switch on="participant.visits.length" class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title">Scheduled Visits</h3>
+        </div>
+
+        <table ng-switch-default class="table table-condensed table-striped">
+          <tbody>
+            <thead>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Time</th>
+              <th></th>
+            </thead>
+            <tr ng-repeat="visit in participant.visits">
+              <td>{{visit.scheduled}}</td>
+              <td>{{visit.visit_type}}</td>
+              <td>{{-1*visit.days_overdue}}</td>
+              <td><button class='btn btn-danger btn-sm' ng-click='visitDismiss($index)'>Dismiss</btn></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 ng-switch-when='0'>No Scheduled Visits</h3>
     </div>
 
   </div>

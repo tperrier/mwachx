@@ -67,7 +67,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
 	calls = PhoneCallSerializer(source='phonecall_set',many=True)
 	messages = MessageSerializer(source='message_set.top',many=True)
-	visits = VisitSerializer(source='visit_set.top',many=True)
+	visits = VisitSerializer(source='get_scheduled_visits',many=True)
 
 	class Meta:
 		model = cont.Contact
