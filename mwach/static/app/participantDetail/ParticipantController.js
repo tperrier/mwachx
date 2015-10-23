@@ -113,7 +113,6 @@
 
             var modalInstance = $modal.open({
               templateUrl: routePrefix + 'phoneCallModal.html',
-              size: 'lg',
               controller: 'PhoneCallController',
               resolve:{
                 participant:function(){return $scope.participant},
@@ -153,6 +152,16 @@
           templateUrl: "/static/app/dashboard/visits/attendedModal.html",
         }).result.then(function(result) {
           console.log(result);
+        });
+      }
+
+      $scope.showVisitHistory = function() {
+        var modalInstance = $modal.open({
+          templateUrl: routePrefix + 'modalVisitHistory.html',
+          controller: 'VisitHistoryModalController',
+          resolve:{
+            participant:function(){return $scope.participant},
+          },
         });
       }
 
@@ -252,6 +261,17 @@ angular.module('mwachx') .controller('PhoneCallController',
                ($scope.new_call.outcome == 'answered' && $scope.form.call_form.comment.$pristine) ||
                !$scope.form.call_form.$valid;
       },
+    });
+
+  }]);
+
+
+angular.module('mwachx').controller('VisitHistoryModalController',
+  ['$scope','$modalInstance','$log','participant',
+  function ($scope, $modalInstance, $log, participant) {
+    angular.extend($scope,{
+      participant: participant,
+      visits: participant.all('visits').getList().$object,
     });
   }]);
 
