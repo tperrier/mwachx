@@ -135,7 +135,28 @@
         });
       }
 
-      }]); // End Main Controller
+      $scope.scheduleVisit = function() {
+
+        var $modalScope = $rootScope.$new(); $modalScope.scheduleOnly = true;
+
+        var modalInstance = $modal.open({
+          templateUrl: "/static/app/dashboard/visits/attendedModal.html",
+          scope: $modalScope,
+        }).result.then(function(result) {
+          console.log(result);
+        });
+      }
+
+      $scope.visitAttended = function() {
+
+        var modalInstance = $modal.open({
+          templateUrl: "/static/app/dashboard/visits/attendedModal.html",
+        }).result.then(function(result) {
+          console.log(result);
+        });
+      }
+
+    }]); // End Main Controller
 
 // *************************************
 // Modal Controllers
