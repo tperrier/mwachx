@@ -5,7 +5,6 @@ import math
 
 #Django Imports
 from django.db import models
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
 #Local Imports
@@ -149,35 +148,23 @@ class Contact(TimeStampedModel):
         return self.nickname
 
     def __repr__(self):
-        return "(#%03s) %s"%(self.study_id,self.nickname)
+        return "(#%03s) %s - %s"%(self.study_id,self.nickname,self.facility)
 
-    @property
+    # @property
     def connection(self):
-        from contacts.models import Connection
-        return Connection.objects.filter(contact=self,is_primary=True).first()
+        return self.connection_set.filter(is_primary=True).first()
+        # from contacts.models import Connection
+        # return Connection.objects.filter(contact=self,is_primary=True).first()
 
-    @property
+    # @property
     def phone_number(self):
-        return self.connection.identity
+        return self.connection().identity
 
-    @property
-    def is_pregnant(self):
-        return self.status == 'pregnant' or self.status == 'over'
-
-    def was_pregnant(self,today=None):
-        '''
-        Returns true if the contact was pregnant at date today
-        '''
-        #ToDo: we need to add a delivery_date field to contact and use that here
-        if today is None:
-            today = settings.utils.today()
-        return today < self.due_date
-
-    @property
+    # @property
     def is_active(self):
         return not (self.status == 'completed' or self.status == 'stopped' or self.status == 'other')
 
-    @property
+    # @property
     def age(self):
         today = utils.today()
         delta = today - self.birthdate
@@ -189,30 +176,49 @@ class Contact(TimeStampedModel):
         return self.visit_set.filter(~models.Q(skipped=False))
     '''
 
-    def get_visit_history(self):
-        return self.visit_set.filter(skipped__isnull=False)
-
     def get_scheduled_visits(self):
+        ''' Return all currently scheduled visits '''
         return self.visit_set.filter(skipped__isnull=True)
 
-    def weeks(self,today=None):
+    def get_pending_messages(self):
+        ''' Return all currently pending messages '''
+        return self.message_set.pending()
+
+    # @property
+    def is_pregnant(self):
+        return self.status == 'pregnant' or self.status == 'over'
+
+    def was_pregnant(self,today=None):
         '''
-        Returns the number weeks until EDD or since delivery
+        Returns true if the contact was pregnant at date today
+        '''
+        #ToDo: we need to add a delivery_date field to contact and use that here
+        if today is None:
+            today = utils.today()
+        return today < self.due_date
+
+    def delta_days(self,today=None):
+        '''
+        Return the number days until EDD or since delivery
         '''
         if today is None:
             today = utils.today()
+
         if self.was_pregnant(today):
-            days = (self.due_date - today).days
-            weeks =  days/7
-            return 40 - weeks
+            # Return 40*7 - days until due date
+            return 280 - (self.due_date - today).days
         else: #post-partum
-            return (today-self.due_date).days/7 #ToDO: Change this to delivered date when we start using that
+            #ToDO: Change this to delivered date when we start using that
+            # Return days since due date
+            return (today-self.due_date).days
 
-    def weeks_display(self):
-        return 'EGA: %i wks'%self.weeks()
+    def days_str(self,today=None):
+        return utils.days_as_str(self.delta_days(today))
 
+    ''' ~REMOVE
     def study_id_short(self):
         return '%04i'%self.study_id
+    '''
 
     def validation_key(self):
         sha = sha256('%i%s%s%s'%(self.id,self.nickname,self.anc_num,self.birthdate)).hexdigest()[:5]
@@ -223,7 +229,7 @@ class Contact(TimeStampedModel):
         return '%s (%s)'%(self.nickname,self.facility)
 
     def send_message(self,text,**kwargs):
-        new_message = Message.objects.create(text=text,contact=self,connection=self.connection,**kwargs)
+        new_message = Message.objects.create(text=text,contact=self,connection=self.connection(),**kwargs)
         return new_message
 
     def add_call(self,outcome='answered',comment=None,length=None,is_outgoing=True,
@@ -234,7 +240,7 @@ class Contact(TimeStampedModel):
             created = utils.angular_datepicker(created)
 
         new_call = PhoneCall.objects.create(outcome=outcome,contact=self,is_outgoing=is_outgoing,
-                        comment=comment,created=created,connection=self.connection,length=length,
+                        comment=comment,created=created,connection=self.connection(),length=length,
                         scheduled=scheduled)
         return new_call
 

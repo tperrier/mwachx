@@ -7,13 +7,17 @@
 
 <table class='table table-condensed table-striped'>
   <thead><tr>
+    <th style='width:100px'></th>
     <th>Scheduled</th>
     <th>Type</th>
     <th>Attended</th>
   </tr></thead>
   <tbody>
     <tr ng-repeat="visit in visits">
-      <td>{{visit.scheduled}}</td>
+      <td class='text-center'>
+        <i class="mw mw-2x" ng-class="visit.is_pregnant ? 'mw-mwach-phone pregnant' : 'mw-mwach-baby-phone postpartum'"></i>
+      </td>
+      <td>{{visit.scheduled}} ({{visit.days_str}})</td>
       <td>{{visit.visit_type}}</td>
       <td ng-if="visit.arrived">{{visit.arrived}}</td>
       <td ng-if="!visit.arrived">{{(visit.skipped == true)?'Skipped':'Pending'}}</td>

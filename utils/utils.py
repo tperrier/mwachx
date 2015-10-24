@@ -34,3 +34,10 @@ def null_boolean_from_form(form_value):
     Return the boolean value based on a NullBooleanSelect form value
     '''
     return {'1':None,'2':True,'3':False}.get(form_value)
+
+
+def days_as_str(days):
+    ''' Return a short string version of days '''
+    if -7 <= days <= 7:
+        return '{:d}d'.format(days)
+    return '{:d}w'.format(int(round(days/7.0))) 

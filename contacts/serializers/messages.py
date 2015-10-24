@@ -13,23 +13,14 @@ import contacts.models as cont
 
 class ParticipantSimpleSerializer(serializers.ModelSerializer):
 
-	status = serializers.SerializerMethodField()
-	study_group = serializers.SerializerMethodField()
-	phone_number = serializers.SerializerMethodField()
+	status = serializers.CharField(source='get_status_display')
+	study_group = serializers.CharField(source='get_study_group_display')
+	phone_number = serializers.CharField()
 	href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
 
 	class Meta:
 		model = cont.Contact
 		fields = ('nickname','study_id','study_group','anc_num', 'status','phone_number','href')
-
-	def get_status(self, obj):
-		return obj.get_status_display()
-
-	def get_study_group(self, obj):
-		return obj.get_study_group_display()
-
-	def get_phone_number(self, obj):
-		return obj.phone_number
 
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
 

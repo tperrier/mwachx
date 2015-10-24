@@ -25,7 +25,7 @@ class ParticipantListSerializer(serializers.ModelSerializer):
 	# user = serializers.Field(source='user')
 	status = serializers.SerializerMethodField()
 	study_group = serializers.SerializerMethodField()
-	phone_number = serializers.SerializerMethodField()
+	phone_number = serializers.CharField()
 	href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
 
 	class Meta:
@@ -37,9 +37,6 @@ class ParticipantListSerializer(serializers.ModelSerializer):
 
 	def get_study_group(self, obj):
 		return obj.get_study_group_display()
-
-	def get_phone_number(self, obj):
-		return obj.phone_number
 
 class ParticipantSerializer(serializers.ModelSerializer):
 	status_display = serializers.CharField(source='get_status_display')
@@ -66,7 +63,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	calls_url = serializers.HyperlinkedIdentityField(view_name='participant-calls',lookup_field='study_id')
 
 	calls = PhoneCallSerializer(source='phonecall_set',many=True)
-	messages = MessageSerializer(source='message_set.top',many=True)
+	messages = MessageSerializer(source='get_pending_messages',many=True)
 	visits = VisitSerializer(source='get_scheduled_visits',many=True)
 
 	class Meta:

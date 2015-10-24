@@ -9,7 +9,7 @@ from django.db.models import Max
 from django.core.management import ManagementUtility
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from django.db import transaction 
+from django.db import transaction
 from django.contrib.auth.models import User
 
 from constance import config
@@ -17,7 +17,7 @@ from constance import config
 import contacts.models as cont
 
 class Command(BaseCommand):
-    
+
     help = 'Delete and reset messages, contacts and visits for the Demo Site'
 
     option_list = BaseCommand.option_list + (
@@ -33,11 +33,11 @@ class Command(BaseCommand):
             print 'Live Run: Changing database'
 
         try:
-            # Make sure demo facility exists 
+            # Make sure demo facility exists
             demo = cont.Facility.objects.get(name='demo')
             print 'Demo Facility Exists....Deleting'
             demo.delete()
-            # Make sure participants exist 
+            # Make sure participants exist
 
         except cont.Facility.DoesNotExist:
             print 'Demo Facility Does Not Exist'
@@ -63,7 +63,7 @@ class Command(BaseCommand):
             contacts = create_participants(demo,clients)
             create_messages(contacts,messages)
             config.CURRENT_DATE = '2015-07-20'
-        
+
 ######################################################################
 # Utility Functions
 ######################################################################
@@ -127,7 +127,7 @@ def create_message(contact,message):
         'is_outgoing':message.is_outgoing,
         'is_system':message.is_system,
         'contact':contact,
-        'connection':contact.connection,
+        'connection':contact.connection(),
         'translated_text':message.message,
         'translate_skipped':True,
     }

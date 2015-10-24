@@ -80,6 +80,7 @@ def add_client(client,study_id,facility=None):
     else:
         facility_list = cont.Facility.objects.all()
     mod = len(facility_list)
+    status = 'post' if random.random() < .5 else 'pregnant'
     new_client = {
         'study_id':study_id,
         'anc_num':client['anc_num'],
@@ -87,10 +88,10 @@ def add_client(client,study_id,facility=None):
         'nickname':client['nickname'],
         'birthdate':client['birth_date'],
         'study_group':random.choice(study_groups),
-        'due_date':get_due_date(),
+        'due_date':get_due_date(status),
         'last_msg_client':client['last_msg_client'],
         'facility':facility_list[study_id%mod],
-        'status':'post' if random.random() < .25 else 'pregnant',
+        'status':status
         }
     contact = cont.Contact.objects.create(**new_client)
     connection = cont.Connection.objects.create(identity='+2500'+client['phone_number'][:8],contact=contact,is_primary=True)
@@ -120,7 +121,7 @@ def add_message(message,contact,connection,translate=False):
         'is_system':system,
         'contact':contact,
         'connection':connection,
-        'created':message['date'],
+        'created':dateutil.parser.parse(message['date']) + datetime.timedelta(days=365),
     }
     _message = cont.Message.objects.create(**new_message)
 
@@ -134,7 +135,7 @@ def add_message(message,contact,connection,translate=False):
 def add_visit(visit,contact):
     if visit['scheduled_date']:
         new_visit = {
-            'scheduled':visit['scheduled_date'],
+            'scheduled':dateutil.parser.parse(visit['scheduled_date']) + datetime.timedelta(days=365),
             'notification_last_seen':dateutil.parser.parse(visit['scheduled_date'])-datetime.timedelta(days=1),
             'arrived':visit['date'],
             'skipped':True if random.random() < .25 else False,
@@ -179,8 +180,9 @@ def add_note(note,contact):
     _note.save()
 
 
-def get_due_date():
-    return datetime.date.today() + datetime.timedelta(days=random.randint(0,100))
+def get_due_date(status='pregnant'):
+    direction = -1 if status == 'post' else 1
+    return datetime.date.today() + direction * datetime.timedelta(days=random.randint(0,100))
 
 def load_old_participants(options):
         n = options['participants']

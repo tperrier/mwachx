@@ -59,7 +59,7 @@
           <h3 class="panel-title">Clinic Visits and History</h3>
         </div>
 
-        <table class="table table-condensed"><tr>
+        <table class="table table-condensed text-center"><tr>
         <td><a class="btn btn-info" tooltip="Schedule new visit for {{participant.nickname}}" ng-click="scheduleVisit()">
           <i class="mw mw-2x mw-hospital-o"></i>
         </a></td>
@@ -72,14 +72,14 @@
           <i class="mw mw-2x mw-baby-noun"></i>
         </a></td>
 
-        <table ng-switch-default class="table table-condensed table-striped">
-          <tbody>
+        <table ng-switch-default class="table table-condensed table-striped text-center">
             <thead>
               <th>Date</th>
               <th>Type</th>
               <th>Time</th>
               <th></th>
             </thead>
+            <tbody>
             <tr ng-repeat="visit in participant.visits | orderBy : 'scheduled'">
               <td>{{visit.scheduled}}</td>
               <td>{{visit.visit_type}}</td>

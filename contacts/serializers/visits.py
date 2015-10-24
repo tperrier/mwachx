@@ -17,10 +17,14 @@ class VisitSerializer(serializers.ModelSerializer):
     href = serializers.HyperlinkedIdentityField(view_name='visit-detail')
     participant = ParticipantSimpleSerializer()
 
+    days_str = serializers.CharField()
+    is_pregnant = serializers.BooleanField()
+
+
     class Meta:
         model = cont.Visit
         fields = ('id','href','participant','scheduled','arrived','notification_last_seen','skipped',
-                  'comment','visit_type','days_overdue')
+                  'comment','visit_type','days_overdue','days_str','is_pregnant')
 
 class VisitViewSet(viewsets.ModelViewSet):
 

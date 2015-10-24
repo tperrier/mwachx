@@ -65,6 +65,12 @@ class ScheduledEvent(TimeStampedModel):
     def days_overdue(self):
         return (utils.today()-self.scheduled).days
 
+    def days_str(self):
+        return self.participant.days_str(today=self.scheduled)
+
+    def is_pregnant(self):
+        return self.participant.was_pregnant(today=self.scheduled)
+
     def seen(self,seen=None):
         ''' Mark visit as seen today '''
         if seen is None:

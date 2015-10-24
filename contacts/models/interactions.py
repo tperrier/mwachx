@@ -105,8 +105,8 @@ class Message(TimeStampedModel):
     identity.short_description = 'Identity'
     identity.admin_order_field = 'connection__identity'
 
-    def weeks(self):
-        return self.contact.weeks(today=self.created.date())
+    def days_str(self):
+        return self.contact.days_str(today=self.created.date())
 
     def is_pregnant(self):
         return self.contact.was_pregnant(today=self.created.date())
@@ -147,7 +147,7 @@ class Message(TimeStampedModel):
         if config.AFRICAS_TALKING_SEND:
             import africas_talking
             try:
-                at_id = africas_talking.send(contact.connection.identity,message)
+                at_id = africas_talking.send(contact.phone_number(),message)
             except africas_talking.AfricasTalkingException as e:
                 at_id = 'error'
 
@@ -157,7 +157,7 @@ class Message(TimeStampedModel):
             translated_text=translation,
             is_translated=is_translated,
             translate_skipped=translate_skipped,
-            connection=contact.connection,
+            connection=contact.connection(),
             contact=contact,
             is_viewed=True,
             parent=parent,
