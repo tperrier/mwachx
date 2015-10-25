@@ -1,17 +1,18 @@
 <div class="form-horizontal">
+<form name="visitScheduleForm">
   <div class="modal-header">
     <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
       <span aria-hidden="true">×</span>
     </button>
     <h3 ng-if='!scheduleOnly' class="modal-title">Visit Attended</h3>
-    <h3 ng-if='scheduleOnly === true' class="modal-title">Schedule Visit</h3>
+    <h3 ng-if='scheduleOnly' class="modal-title">Schedule Visit</h3>
   </div>
 
   <div ng-hide='scheduleOnly' class="form-group">
     <label class="col-sm-3 control-label" for="arrived">Date arrived:</label>
       <div class="col-sm-9">
-        <p class='input-group'> <input ng-model='attended.arrived' type='text' class='form-control'
-               datepicker-popup is-open="arrived_open"/>
+        <p class='input-group'> <input name='arrived' ng-model='attended.arrived' type='text' class='form-control'
+               datepicker-popup is-open="arrived_open" ng-required='!scheduleOnly'>
          <span class="input-group-btn">
            <button type="button" class="btn btn-default" ng-click="arrived_open = !arived_open">
              <i class="glyphicon glyphicon-calendar"></i>
@@ -22,15 +23,16 @@
   <div class="form-group">
       <label class="col-sm-3 control-label" for="next_visit">Date of next visit:</label>
       <div class="col-sm-9">
-        <p class='input-group'> <input ng-model='attended.next' type='text' class='form-control'
-               datepicker-popup is-open="next_open"/>
+        <p class='input-group'> <input name='next' ng-model='attended.next' type='text' class='form-control'
+               datepicker-popup is-open="next_open"
+               ng-required="scheduleOnly">
          <span class="input-group-btn">
            <button type="button" class="btn btn-default" ng-click="next_open = !next_open">
              <i class="glyphicon glyphicon-calendar"></i>
           </button></span></p>
       </div>
-      </div>
-  </div>
+    </div>
+
 
   <div class="form-group" id="visit_type_block">
     <label class="col-sm-3 control-label" for="">Type of next visit:</label>
@@ -38,12 +40,17 @@
         <div class="btn-group">
             <label class="btn btn-language" ng-model='attended.type' btn-radio="'clinic'"> Clinic Visit </label>
             <label class="btn btn-language" ng-model='attended.type' btn-radio="'study'"> Study Visit </label>
+            <input type='hidden' ng-model='attended.type' name='type' ng-required='attended.next'>
         </div>
     </div>
   </div>
 
   <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="$close(attended)">Save</button>
+    <button class="btn btn-primary" ng-click="$close(attended)"
+      ng-disabled="visitScheduleForm.$invalid">
+    Save </button>
     <button class="btn btn-default" ng-click="$dismiss()">Cancel</button>
   </div>
+
+</form>
 </div>

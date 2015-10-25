@@ -139,7 +139,7 @@
         var $modalScope = $rootScope.$new(); $modalScope.scheduleOnly = true;
 
         var modalInstance = $modal.open({
-          templateUrl: "/static/app/dashboard/visits/attendedModal.html",
+          templateUrl: "/static/app/dashboard/visits/modalVisitAttendSchedule.html",
           scope: $modalScope,
         }).result.then(function(put) {
           console.log('Schedule',put);
@@ -153,7 +153,7 @@
 
       $scope.visitAttended = function(visit) {
         var modalInstance = $modal.open({
-          templateUrl: "/static/app/dashboard/visits/attendedModal.html",
+          templateUrl: "/static/app/dashboard/visits/modalVisitAttendSchedule.html",
         }).result.then(function(attended) {
           console.log('Attended',attended);
           visit.doPUT(attended,'attended/').then(function(response){

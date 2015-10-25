@@ -37,7 +37,7 @@ angular.module('mwachx')
 
           attendedVisit:function(){
             var modalInstance = $modal.open({
-              templateUrl:routePrefix + 'attendedModal.html',
+              templateUrl:routePrefix + 'modalVisitAttendSchedule.html',
             });
 
             modalInstance.result.then(function(attended){
