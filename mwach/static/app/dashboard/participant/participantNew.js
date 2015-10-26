@@ -23,6 +23,8 @@
         due_date:false,
       };
 
+      $scope.alerts = [];
+
       $scope.submit = function(){
         console.log('Submit',$scope.participant,$scope.participantNewForm);
 
@@ -46,9 +48,21 @@
 
         mwachxAPI.participants.post($scope.participant).then(function(response){;
           console.log('Response',response);
-          $state.go('participant-details',{study_id:response.study_id});
+          if ( response.hasOwnProperty('errors') ) {
+              for ( var key in response.errors ) {
+                var error = response.errors[key];
+                console.log(key,error,error[0].message);
+                $scope.alerts.push(error[0].message);
+              }
+          } else {
+            $state.go('participant-details',{study_id:response.study_id});
+          }
         });
-      }
+      };
+
+      $scope.closeAlert = function(i) {
+        $scope.alerts.splice(i,1);
+      };
 
     }]);
 

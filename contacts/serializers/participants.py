@@ -149,10 +149,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			return Response(serialized_contact.data)
 
 		else:
-			return Response({'message':'post - create',
-					'errors':json.loads(cf.errors.as_json()),
-					'data':request.data,
-					'valid':cf.is_valid()})
+			return Response({ 'errors':json.loads(cf.errors.as_json()) })
 
 	# TODO: Edit this to watch for status changes
 	def partial_update(self, request, study_id=None, *args, **kwargs):
