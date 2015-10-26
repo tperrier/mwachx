@@ -1,0 +1,26 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+    <span aria-hidden="true">×</span>
+  </button>
+  <h3 class="modal-title">Record Deliver For {{participant.nickname}}</h3>
+</div>
+
+<form name="deliveryForm" class="form-horizontal">
+  <div class="form-group">
+    <label for="delivery_date" class="col-sm-4 col-sm-offset-1 text-right">Deliver Date</label>
+    <p class="input-group col-sm-6">
+      <input type="text" name="delivery_date" is-open="deliveryDateOpen" ng-model="delivery.delivery_date"
+             datepicker-popup class="form-control" required
+             min-date="minDate" max-date="maxDate" max-mode="'day'">
+      <span class='input-group-btn'>
+        <button type='button' class='btn btn-default' ng-click="deliveryDateOpen = !deliveryDateOpen">
+          <i class='glyphicon glyphicon-calendar'></i>
+        </button>
+      </span>
+    </p>
+  </div>
+  
+<div class="modal-footer">
+  <button class="btn btn-primary" ng-disabled="deliveryForm.$invalid" ng-click="$close(delivery)">Record Delivery</button>
+  <button class="btn btn-default" ng-click="$dismiss()">Cancel</button>
+</div>

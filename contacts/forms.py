@@ -55,6 +55,7 @@ class ContactAdd(forms.ModelForm):
         self.helper.form_id = 'participant-details-form'
         self.helper.label_class = 'col-sm-6'
         self.helper.field_class = 'col-sm-6'
+
         self.helper.layout = Layout(
             Fieldset(
                 'Study Information',
@@ -70,7 +71,9 @@ class ContactAdd(forms.ModelForm):
                     Div('send_time', css_class="col-md-4", ng_if="participant.study_group != 'control'" ),
                     css_class="row",
                 ),
-            ), Fieldset (
+            ),
+
+            Fieldset (
                 'Client Information',
                 Div(
                     Div('nickname', css_class="col-md-4"),
@@ -90,7 +93,9 @@ class ContactAdd(forms.ModelForm):
                     Div('hiv_disclosed', css_class="col-md-4"),
                     css_class="row"
                 ),
-            ), Fieldset (
+            ),
+
+            Fieldset (
                 'Medical Information',
                 Div(
                     Div('condition', css_class="col-md-4"),

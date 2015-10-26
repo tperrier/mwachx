@@ -85,7 +85,7 @@
         $scope.openModifyModel = function() {
 
             var modalInstance = $modal.open({
-              templateUrl: routePrefix + 'modifyParticipantModal.html',
+              templateUrl: routePrefix + 'modalModifyParticipant.html',
               size: 'lg',
               controller:'ParticipantUpdateController',
               resolve:{
@@ -176,6 +176,25 @@
           resolve:{
             participant:function(){return $scope.participant},
           },
+        });
+      }
+
+      $scope.recordDelivery = function() {
+
+        var today = new Date().getTime();
+        var $modalScope = $rootScope.$new();
+        angular.extend($modalScope,{
+          participant:$scope.participant,
+          // 5356800000 = 62 days
+          minDate: (new Date()).setTime(today - 5356800000),
+          maxDate: (new Date()).setTime(today + 5356800000),
+        });
+
+        var modalInstance = $modal.open({
+          templateUrl: routePrefix + 'modalDelivery.html',
+          scope: $modalScope,
+        }).result.then(function(delivery) {
+          console.log('Delivery',delivery);
         });
       }
 

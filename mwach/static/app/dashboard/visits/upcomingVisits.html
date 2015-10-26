@@ -3,7 +3,7 @@
 <table class='table table-condensed table-striped'>
   <thead>
     <tr>
-      <th>Scheduled</th><th>Type</th><th>Name</th>
+      <th>Scheduled</th><th>Type</th><th>Name</th><th>ID#</th><th>ANC#</th>
     </tr>
   </thead>
   <tbody>
@@ -12,6 +12,8 @@
       <td>{{ visit.scheduled | date : 'EEE dd MMM' }}</td>
       <td>{{ visit.visit_type }}</td>
       <td>{{ visit.participant.nickname }}</td>
+      <td>{{ visit.participant.study_id }}</td>
+      <td>{{ visit.participant.anc_num }}</td>
     </tr>
   </tbody>
 </table>
