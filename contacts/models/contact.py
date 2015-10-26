@@ -102,7 +102,7 @@ class Contact(TimeStampedModel):
     objects = ContactQuerySet.as_manager()
 
     #Study Attributes
-    study_id = models.CharField(max_length=10,unique=True,verbose_name='Study ID',help_text="Please Use Barcode Scanner")
+    study_id = models.CharField(max_length=10,unique=True,verbose_name='Study ID',help_text="* Use Barcode Scanner")
     anc_num = models.CharField(max_length=20,verbose_name='ANC #')
     ccc_num = models.CharField(max_length=20,verbose_name='CCC #',blank=True,null=True)
     facility = models.ForeignKey('contacts.Facility')

@@ -149,6 +149,7 @@ def add_new_visit(contact,i):
     new_visit = {
         'scheduled':utils.today() + datetime.timedelta(days=i+1),
         'participant':contact,
+        'visit_type':'clinic' if random.random() < 0.5 else 'study'
     }
     cont.Visit.objects.create(**new_visit)
 

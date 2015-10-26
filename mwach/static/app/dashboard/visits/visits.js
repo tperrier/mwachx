@@ -2,26 +2,33 @@
   'use strict';
   var routePrefix = '/static/app/dashboard/visits/';
 
-  angular.module('mwachx')
-    .controller('UpcomingVisitsController', ['$scope','mwachxAPI',
-      function ($scope, mwachxAPI) {
+angular.module('mwachx') .controller('PendingVisitsController',
+  ['$scope','mwachxAPI',
+  function ($scope, mwachxAPI) {
 
-      mwachxAPI.pending.all('visits').getList().then(function(visits) {
-        $scope.upcoming = visits.filter(function(item,index){return item.days_overdue <= 7});
-        $scope.bookchecks = visits.filter(function(item,index){return item.days_overdue > 7});
-      });
+    mwachxAPI.pending.all('visits').getList().then(function(visits) {
+      $scope.current = visits.filter(function(item,index){return item.days_overdue <= 7});
+      $scope.bookchecks = visits.filter(function(item,index){return item.days_overdue > 7});
+    });
 
+}]);
 
-    }]);
+angular.module('mwachx') .controller('UpcomingVisitsController',
+  ['$scope','mwachxAPI',
+  function ($scope, mwachxAPI) {
+
+    $scope.upcoming = mwachxAPI.visits.all('upcoming').getList().$object;
+
+}]);
 
 angular.module('mwachx')
-  .directive('mwUpcomingVisit',[ '$modal',function($modal) {
+  .directive('mwPendingVisit',[ '$modal',function($modal) {
 
     var pri = {
     }; // close private
 
     return {
-      restrict:'A',templateUrl:routePrefix + 'upcomingDirective.html',
+      restrict:'A',templateUrl:routePrefix + 'pendingVisitDirective.html',
       scope: {
         'visit':'=',
         'upcoming':'=',

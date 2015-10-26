@@ -1,42 +1,34 @@
-<div style="padding: 0 40px;">
-  <div class="row">
-    <div class="col-md-9 col-sm-8">
-    <h1>
-      <input type="text" ng-model="query" placeholder="Search by any field" aria-label="Filter" style="width:100%"/>
-    </h1>
-    </div>
-    <div class="col-md-3 col-sm-4">
-      <!-- TODO: still need to get rid of the inline style -->
-      <mw-action-btn
-        ui-sref='participant-new'
-        mw-icon="mw-mwach-phone-add"
-        mw-style="info"
-        style="margin: 20px 0; width: 100%;">
-        Enroll Participant
-      </mw-action-btn>
-    </div>
+<div class="row">
+  <div class="col-md-9 col-sm-8">
+  <h1>
+    <input type="text" ng-model="query" placeholder="Search by any field" aria-label="Filter" style="width:100%"/>
+  </h1>
   </div>
-
-  <table class="table table-striped table-hover">
-      <thead>
-        <tr>
-          <th>Study ID</th>
-          <th>ANC number</th>
-          <th>Name</th>
-          <th>Study Group</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          ng-repeat="participant in participants | filter:query"
-          style="cursor:pointer"
-          ui-sref='participant-details({study_id: participant.study_id})'>
-          <td>{{participant.study_id}}</td>
-          <td>{{participant.anc_num}}</td>
-          <td>{{participant.nickname}}</td>
-          <td>{{participant.study_group}}</td>
-          <td>{{participant.status}}</td>
-        </tr>
-    </table>
+  <div class="col-md-3 col-sm-4">
+    <!-- TODO: still need to get rid of the inline style -->
+    <mw-action-btn
+      ui-sref='participant-new'
+      mw-icon="mw-mwach-phone-add"
+      mw-style="info"
+      style="margin: 20px 0; width: 100%;">
+      Enroll Participant
+    </mw-action-btn>
+  </div>
 </div>
+
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th>Study ID</th><th>ANC number</th><th>Name</th><th>Study Group</th><th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="pointer" ng-repeat="participant in participants | filter:query"
+      ui-sref='participant-details({study_id: participant.study_id})'>
+      <td>{{participant.study_id}}</td>
+      <td>{{participant.anc_num}}</td>
+      <td>{{participant.nickname}}</td>
+      <td>{{participant.study_group}}</td>
+      <td>{{participant.status}}</td>
+    </tr>
+</table>

@@ -16,6 +16,7 @@ angular.module('mwachx')
 
     service.facilities = Restangular.all('facilities');
     service.pending = Restangular.one('pending');
+    service.visits = Restangular.all('visits');
 
     return service;
   }])

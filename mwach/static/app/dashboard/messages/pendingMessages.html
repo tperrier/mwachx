@@ -1,33 +1,28 @@
-<div style="margin:0px 50px" class="container-fluid">
-  <div class='row'>
-    <h1>New Messages</h1>
-  </div>
+<div class='row'>
+  <h1>New Messages</h1>
+</div>
 
-  <div class='row'>
-  <table class="table table-striped table-hover table-condensed">
-    <thead>
-      <tr>
-         <th></th>
-         <th>Date</th>
-         <th>Name</th>
-         <th>Message</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class='pointer' ng-repeat="message in pending" ui-sref="participant-details({study_id:message.contact.study_id})">
-        <td>
-          <a ui-sref="participant-details({study_id:message.contact.study_id})"
-             ng-class="{'btn-primary':message.contact.status == 'post','btn-info':message.contact.status != 'post','btn': true}"
-             tooltip="View details for {{message.contact.nickname}}"
-          >
-            <i ng-class="{'mw-mwach-baby-phone':message.contact.status == 'post','mw-mwach-phone':message.contact.status != 'post','mw mw-2x':true}"></i>
-          </a>
-        </td>
-        <td>{{message.created | date : 'EEE'}}</td>
-        <td><strong>{{message.contact.nickname}}</strong> <!-- TODO: Add weeks -->
-        <td>{{message.text}}
-      </tr>
-    </tbody>
-  </table>
-  </div>
+<div class='row'>
+<table class="table table-striped table-hover table-condensed">
+  <thead>
+    <tr>
+       <th></th><th>Date</th><th>Name</th><th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class='pointer' ng-repeat="message in pending" ui-sref="participant-details({study_id:message.contact.study_id})">
+      <td>
+        <a ui-sref="participant-details({study_id:message.contact.study_id})"
+           ng-class="{'btn-primary':message.contact.status == 'post','btn-info':message.contact.status != 'post','btn': true}"
+           tooltip="View details for {{message.contact.nickname}}"
+        >
+          <i ng-class="{'mw-mwach-baby-phone':message.contact.status == 'post','mw-mwach-phone':message.contact.status != 'post','mw mw-2x':true}"></i>
+        </a>
+      </td>
+      <td>{{message.created | date : 'EEE'}}</td>
+      <td><strong>{{message.contact.nickname}}</strong> <!-- TODO: Add weeks -->
+      <td>{{message.text}}
+    </tr>
+  </tbody>
+</table>
 </div>

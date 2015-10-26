@@ -4,7 +4,7 @@ import datetime
 # Rest Framework Imports
 from rest_framework import serializers
 from rest_framework import viewsets
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
 #Local Imports
@@ -20,6 +20,8 @@ class VisitSerializer(serializers.ModelSerializer):
     days_str = serializers.CharField()
     is_pregnant = serializers.BooleanField()
 
+    visit_type = serializers.CharField(source='get_visit_type_display')
+
 
     class Meta:
         model = cont.Visit
@@ -30,6 +32,12 @@ class VisitViewSet(viewsets.ModelViewSet):
 
     queryset =  cont.Visit.objects.all()
     serializer_class = VisitSerializer
+
+    @list_route()
+    def upcoming(self, request):
+        queryset = self.queryset.visit_range(start={'days':-14},end={'days':0}).order_by('scheduled')
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @detail_route(methods=['put'])
     def seen(self, request, pk):

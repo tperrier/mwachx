@@ -1,44 +1,17 @@
-<div style="margin:0px 50px" class="container-fluid">
-  <div class='row'>
-    <h3><i class="mw mw-hospital-o"></i> Visits this week </h3>
+<h1> Upcoming Visits </h1>
 
-  <table class='table table-hover table-stribed table-condensed'>
-    <thead>
-      <tr>
-        <th></th>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Study Group</th>
-        <th>ANC</th>
-        <th>Orig. Scheduled Visit</th>
-        <th>Days Overdue</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr mw-upcoming-visit ng-repeat='visit in upcoming' visit='visit' upcoming='upcoming'>
-      </tr>
-    </tbody>
-  </table>
-
-<h3><i class="mw mw-book"></i> Today's Bookcheks </h3>
-
-  <table class='table table-hover table-stribed table-condensed'>
-    <thead>
-      <tr>
-        <th></th>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Study Group</th>
-        <th>ANC</th>
-        <th>Orig. Scheduled Visit</th>
-        <th>Days Overdue</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr mw-upcoming-visit ng-repeat='visit in bookchecks' visit='visit' upcoming='bookchecks'>
-      </tr>
-    </tbody>
-  </table>
-
-</div>
-</div>
+<table class='table table-condensed table-striped'>
+  <thead>
+    <tr>
+      <th>Scheduled</th><th>Type</th><th>Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat='visit in upcoming' class='pointer'
+      ui-sref='participant-details({study_id: visit.participant.study_id})'>
+      <td>{{ visit.scheduled | date : 'EEE dd MMM' }}</td>
+      <td>{{ visit.visit_type }}</td>
+      <td>{{ visit.participant.nickname }}</td>
+    </tr>
+  </tbody>
+</table>

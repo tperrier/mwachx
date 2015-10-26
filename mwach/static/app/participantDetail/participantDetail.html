@@ -1,98 +1,96 @@
-<div class='participant-page'>
 
-  <h1>
-    <span ng-class="participant.status == 'post' ? 'postpartum' : 'pregnant'">
-      <i class="mw" ng-class="participant.status == 'post' ? 'mw-mwach-baby-phone' : 'mw-mwach-phone'" ></i>
-      {{participant.nickname}}
-    </span>
-    <small>Study ID: <strong>{{participant.study_id}}</strong></small>
-    <small>ANC #: <strong>{{participant.anc_num}}</strong></small>
-    <small>CCC #: <strong>{{participant.ccc_num}}</strong></small>
-  </h1>
+<h1>
+  <span ng-class="participant.status == 'post' ? 'postpartum' : 'pregnant'">
+    <i class="mw" ng-class="participant.status == 'post' ? 'mw-mwach-baby-phone' : 'mw-mwach-phone'" ></i>
+    {{participant.nickname}}
+  </span>
+  <small>Study ID: <strong>{{participant.study_id}}</strong></small>
+  <small>ANC #: <strong>{{participant.anc_num}}</strong></small>
+  <small>CCC #: <strong>{{participant.ccc_num}}</strong></small>
+</h1>
 
-  <div class="row participant-messages">
-    <div class="col-md-8">
+<div class="row participant-messages">
+  <div class="col-md-8">
 
-      <div class="btn-group btn-group-justified" id="msg-list-btn-group">
-        <mw-action-btn mw-icon="mw-comment" mw-style="success" ng-click="openSendModal()">
-          Send Msg
-        </mw-action-btn>
-        <mw-action-btn mw-icon="mw-mobile-1" mw-style="highlight" ng-click="openPhoneModal()">
-          Call Log
-        </mw-action-btn>
-      </div>
-
-      <!-- TODO:. Need to sort out the overflow scrolling bits and infinate scroll with angular and drf-->
-      <div class="message-list">
-        <mw-message
-          message="msg"
-          participant="participant"
-          open-send-modal-fn="openSendModal"
-          ng-repeat="msg in messages | orderBy:'created':true"
-          class="clearfix">
-        </mw-message>
-      </div>
-
+    <div class="btn-group btn-group-justified" id="msg-list-btn-group">
+      <mw-action-btn mw-icon="mw-comment" mw-style="success" ng-click="openSendModal()">
+        Send Msg
+      </mw-action-btn>
+      <mw-action-btn mw-icon="mw-mobile-1" mw-style="highlight" ng-click="openPhoneModal()">
+        Call Log
+      </mw-action-btn>
     </div>
 
-    <div class="col-md-4">
-
-      <div class="panel panel-info">
-        <div class="panel-heading">
-          <h3 class="panel-title">Participant Details: <strong>{{participant.nickname}}</strong>
-            <i id="context-edit" style='cursor:pointer' class="mw mw-cogs pull-right" ng-click='openModifyModel()'> Edit</i>
-          </h3>
-        </div>
-
-        <table class="details-table table table-condensed">
-          <tbody>
-          <tr ng-repeat="detail in detailsList" >
-            <td>{{detail.label}}</td>
-            <td>{{participant[detail.value]}}</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div ng-switch on="participant.visits.length" class="panel panel-info">
-        <div class="panel-heading">
-          <h3 class="panel-title">Clinic Visits and History</h3>
-        </div>
-
-        <table class="table table-condensed text-center"><tr>
-        <td><a class="btn btn-info" tooltip="Schedule new visit for {{participant.nickname}}" ng-click="scheduleVisit()">
-          <i class="mw mw-2x mw-hospital-o"></i>
-        </a></td>
-
-        <td><a class="btn btn-info" tooltip="{{participant.nickname}} visit history" ng-click="showVisitHistory()">
-          <i class="mw mw-2x mw-hospital-o"></i> Visit History
-        </a></td>
-
-        <td><a class="btn btn-info" tooltip="{{participant.nickname}} delivered" >
-          <i class="mw mw-2x mw-baby-noun"></i>
-        </a></td>
-
-        <table ng-switch-default class="table table-condensed table-striped text-center">
-            <thead>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Time</th>
-              <th></th>
-            </thead>
-            <tbody>
-            <tr ng-repeat="visit in participant.visits | orderBy : 'scheduled'">
-              <td>{{visit.scheduled}}</td>
-              <td>{{visit.visit_type}}</td>
-              <td>{{-1*visit.days_overdue}}</td>
-              <td><button class='btn btn-danger btn-sm' ng-click='visitDismiss(visit)' tooltip="Mark visit as skipped" >Dismiss</btn></td>
-              <td><button class='btn btn-info btn-sm' ng-click='visitAttended(visit)' tooltip="{{participant.nickname}} came for this visit">Attended</btn></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3 ng-switch-when='0'>No Scheduled Visits</h3>
+    <!-- TODO:. Need to sort out the overflow scrolling bits and infinate scroll with angular and drf-->
+    <div class="message-list">
+      <mw-message
+        message="msg"
+        participant="participant"
+        open-send-modal-fn="openSendModal"
+        ng-repeat="msg in messages | orderBy:'created':true"
+        class="clearfix">
+      </mw-message>
     </div>
 
   </div>
 
+  <div class="col-md-4">
+
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        <h3 class="panel-title">Participant Details: <strong>{{participant.nickname}}</strong>
+          <i id="context-edit" style='cursor:pointer' class="mw mw-cogs pull-right" ng-click='openModifyModel()'> Edit</i>
+        </h3>
+      </div>
+
+      <table class="details-table table table-condensed">
+        <tbody>
+        <tr ng-repeat="detail in detailsList" >
+          <td>{{detail.label}}</td>
+          <td>{{participant[detail.value]}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div ng-switch on="participant.visits.length" class="panel panel-info">
+      <div class="panel-heading">
+        <h3 class="panel-title">Clinic Visits and History</h3>
+      </div>
+
+      <table class="table table-condensed text-center"><tr>
+      <td><a class="btn btn-info" tooltip="Schedule new visit for {{participant.nickname}}" ng-click="scheduleVisit()">
+        <i class="mw mw-2x mw-hospital-o"></i>
+      </a></td>
+
+      <td><a class="btn btn-info" tooltip="{{participant.nickname}} visit history" ng-click="showVisitHistory()">
+        <i class="mw mw-2x mw-hospital-o"></i> Visit History
+      </a></td>
+
+      <td><a class="btn btn-info" tooltip="{{participant.nickname}} delivered" >
+        <i class="mw mw-2x mw-baby-noun"></i>
+      </a></td>
+
+      <table ng-switch-default class="table table-condensed table-striped text-center">
+          <thead>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Time</th>
+            <th></th>
+          </thead>
+          <tbody>
+          <tr ng-repeat="visit in participant.visits | orderBy : 'scheduled'">
+            <td>{{visit.scheduled}}</td>
+            <td>{{visit.visit_type}}</td>
+            <td>{{-1*visit.days_overdue}}</td>
+            <td><button class='btn btn-danger btn-sm' ng-click='visitDismiss(visit)' tooltip="Mark visit as skipped" >Dismiss</btn></td>
+            <td><button class='btn btn-info btn-sm' ng-click='visitAttended(visit)' tooltip="{{participant.nickname}} came for this visit">Attended</btn></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 ng-switch-when='0'>No Scheduled Visits</h3>
+  </div>
+  
+</div>
 </div>

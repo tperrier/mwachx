@@ -1,6 +1,6 @@
 {% load crispy_forms_tags %}
 {% load mw_filters %}
-<div style='margin: 0 40px;'>
+<div class='mw-padded-content'>
   <form id='{{form_name}}' ng-controller='{{form_name | form_controller}}' name='{{form_name | camel}}'
         class='form-horizontal' role="form" novalidate ng-submit='submit()'>
       {% crispy form %}

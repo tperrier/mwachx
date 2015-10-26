@@ -27,7 +27,6 @@
 
           .state('participant-new', {
             url:          '/participant/new',
-            //templateUrl:  routePrefix + 'dashboard/participantNew.html',
             templateUrl:   'crispy-forms/participant/new',
             // controller:   'ParticipantNewController'
           })
@@ -47,6 +46,13 @@
           // Visit state and substates
           .state('pending-visits', {
             url: '/pending/visits',
+            templateUrl: routePrefix + 'dashboard/visits/pendingVisits.html',
+            controller: 'PendingVisitsController'
+          })
+
+          // Upcoming Visits state and substates
+          .state('visits-upcoming', {
+            url: '/vists/upcoming',
             templateUrl: routePrefix + 'dashboard/visits/upcomingVisits.html',
             controller: 'UpcomingVisitsController'
           })
@@ -65,12 +71,6 @@
             controller: 'PendingTranslationController',
           })
 
-          // Testing state
-          .state('tests', {
-            url: '/test',
-            templateUrl: 'crispy-forms/participant/update',
-            controller:'TestController'
-          });
       }]);
 
 
