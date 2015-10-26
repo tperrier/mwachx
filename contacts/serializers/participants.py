@@ -113,6 +113,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 	def create(self, request, *args, **kwargs):
 		''' POST - create a new participant '''
 		cf = forms.ContactAdd(request.data)
+
 		if cf.is_valid():
 			#Create new contact but do not save in DB
 			contact = cf.save(commit=False)
@@ -149,7 +150,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			return Response(serialized_contact.data)
 
 		else:
-			return Response({ 'errors':json.loads(cf.errors.as_json()) })
+			return Response({ 'errors': json.loads(cf.errors.as_json()) })
 
 	# TODO: Edit this to watch for status changes
 	def partial_update(self, request, study_id=None, *args, **kwargs):

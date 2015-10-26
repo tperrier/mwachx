@@ -20,6 +20,14 @@ class ContactAdd(forms.ModelForm):
     phone_number = forms.CharField(label='Phone Number',
         widget=forms.TextInput(attrs={'required':'True','placeholder':'07xxxxxxx','pattern': '^07[0-9]{8}'}))
 
+    def clean_phone_number(self):
+        ''' Add custom validation for unique phone number '''
+        phone_number = '+254%s'%self.cleaned_data['phone_number'][1:]
+        connection = cont.Connection.objects.get_or_none(identity=phone_number)
+        if connection is not None:
+            raise forms.ValidationError("Phone number provided already exists",code="unique")
+        return self.cleaned_data['phone_number']
+
     study_visit = forms.DateField(label='Next Study Visit')
     clinic_visit = forms.DateField(label='Next Clinic Visit')
 
@@ -55,6 +63,7 @@ class ContactAdd(forms.ModelForm):
         self.helper.form_id = 'participant-details-form'
         self.helper.label_class = 'col-sm-6'
         self.helper.field_class = 'col-sm-6'
+        self.helper.form_tag = False
 
         self.helper.layout = Layout(
             Fieldset(
@@ -111,7 +120,7 @@ class ContactAdd(forms.ModelForm):
                 )
             ),
             FormActions(
-                Submit('submit', 'Enroll Participant',ng_disabled='participantNewForm.$invalid'),
+                Submit('submit', 'Enroll Participant',ng_disabled='participantNewForm.$invalid', style='margin-bottom:20px'),
                 css_class="row"
             )
         )

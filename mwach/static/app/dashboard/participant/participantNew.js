@@ -47,13 +47,13 @@
         }
 
         mwachxAPI.participants.post($scope.participant).then(function(response){;
-          console.log('Response',response);
+          console.log('Response',response,response.errors);
           if ( response.hasOwnProperty('errors') ) {
-              for ( var key in response.errors ) {
+              for ( var key in response.errors ) { if ( response.errors.hasOwnProperty(key) ) {
                 var error = response.errors[key];
-                console.log(key,error,error[0].message);
+                console.log(key,error,error[0].message,$scope.alerts);
                 $scope.alerts.push(error[0].message);
-              }
+              }}
           } else {
             $state.go('participant-details',{study_id:response.study_id});
           }
