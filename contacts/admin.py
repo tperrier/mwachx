@@ -14,7 +14,8 @@ class ContactAdmin(admin.ModelAdmin):
     date_hierarchy = 'due_date'
     ordering = ('study_id',)
 
-    search_fields = ('^study_id','^nickname',)
+    search_fields = ('^study_id','^nickname')
+    readonly_fields = ('created','modified')
 
 @admin.register(cont.Message)
 class MessageAdmin(admin.ModelAdmin):

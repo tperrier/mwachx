@@ -51,6 +51,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	phone_number = serializers.CharField()
 	facility = serializers.SerializerMethodField()
 	age = serializers.CharField(read_only=True)
+	is_pregnant = serializers.BooleanField(read_only=True)
 
 	hiv_disclosed_display = serializers.SerializerMethodField()
 	hiv_disclosed = serializers.SerializerMethodField()
@@ -186,7 +187,9 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			    contact_messages = contact_messages[:limit]
 			contact_messages = MessageSerializer(contact_messages,many=True,context={'request':request})
 			return Response(contact_messages.data)
+
 		elif request.method == 'POST':
+			'''A POST to participant/:study_id:/messages sends a new message to that participant'''
 			print 'Participant Message Post: ',request.data
 			participant = self.get_object()
 			message = {
@@ -240,3 +243,18 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			visit_type=request.data['type']
 			)
 			return Response(VisitSerializer(next_visit,context={'request':request}).data)
+
+	@detail_route(methods=['put'])
+	def delivery(self, request, study_id=None):
+
+		instance = self.get_object()
+		if not instance.is_pregnant():
+			return Response({'error':{'message':'Participant already post-partum'}})
+
+		delivery_date = utils.angular_datepicker(request.data.get('delivery_date'))
+		instance.delivery_date = delivery_date
+		instance.status = 'post'
+		instance.save()
+
+		serializer = self.get_serializer(instance)
+		return Response(serializer.data)

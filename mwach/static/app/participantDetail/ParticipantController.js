@@ -18,26 +18,33 @@
           $scope.participant = participant;
           $scope.messages = participant.getList('messages').$object;
 
-        });
+          $scope.detailsList      = [
+          //  {'label': 'Nickname',               'value': 'nickname',},
+          //  {'label': 'Study ID',               'value': 'study_id',},
+          //  {'label': 'ANC Number',             'value': 'anc_num',},
+           {'label': 'Phone number',           'value': 'phone_number',},
+           {'label': 'Status',                 'value': 'status_display',},
+           {'label': 'Estimated Delivery Date','value': 'due_date',}
+           ];
 
-        $scope.detailsList      = [
-        //  {'label': 'Nickname',               'value': 'nickname',},
-        //  {'label': 'Study ID',               'value': 'study_id',},
-        //  {'label': 'ANC Number',             'value': 'anc_num',},
-         {'label': 'Phone number',           'value': 'phone_number',},
-         {'label': 'Status',                 'value': 'status_display',},
-         {'label': 'Estimated Delivery Date','value': 'due_date',},
-         {'label': 'Age',                    'value': 'age',},
-         {'label': 'Send Day',               'value': 'send_day_display',},
-         {'label': 'Send Time',              'value': 'send_time_display',},
-         {'label': 'SMS Track',              'value': 'condition',},
-         {'label': 'ART Initiation',         'value': 'art_initiation',},
-         {'label': 'Previous pregnancies',   'value': 'previous_pregnancies',},
-         {'label': 'Family Planning',        'value': 'family_planning',},
-         {'label': 'HIV Disclosure',         'value': 'hiv_disclosed_display',},
-         {'label': 'HIV Messaging',          'value': 'hiv_messaging_display',},
-         {'label': 'Confirmation Code',      'value': 'validation_key',},
-        ];
+           if ( !participant.is_pregnant)
+            $scope.detailsList.push({'label':'Delivery Date', 'value':'delivery_date'});
+
+           Array.prototype.push.apply($scope.detailsList,[
+             {'label': 'Age',                    'value': 'age',},
+             {'label': 'Send Day',               'value': 'send_day_display',},
+             {'label': 'Send Time',              'value': 'send_time_display',},
+             {'label': 'SMS Track',              'value': 'condition',},
+             {'label': 'ART Initiation',         'value': 'art_initiation',},
+             {'label': 'Previous pregnancies',   'value': 'previous_pregnancies',},
+             {'label': 'Family Planning',        'value': 'family_planning',},
+             {'label': 'HIV Disclosure',         'value': 'hiv_disclosed_display',},
+             {'label': 'HIV Messaging',          'value': 'hiv_messaging_display',},
+           ]);
+
+           if ( !participant.is_validated)
+            $scope.detailsList.push({'label': 'Confirmation Code',      'value': 'validation_key',});
+        });
 
         //
         // Public Methods
@@ -195,6 +202,14 @@
           scope: $modalScope,
         }).result.then(function(delivery) {
           console.log('Delivery',delivery);
+          $scope.participant.doPUT(delivery,'delivery/').then(function(result) {
+            console.log('Result',result);
+            if ( ! result.hasOwnProperty('error') ){
+              ['status','status_display','is_pregnant','delivery_date'].forEach(function(ele) {
+                $scope.participant[ele] = result[ele];
+              });
+            }
+          });
         });
       }
 
