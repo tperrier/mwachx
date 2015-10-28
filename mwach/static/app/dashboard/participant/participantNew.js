@@ -1,5 +1,4 @@
-(function(){
-  'use strict';
+(function(){ 'use strict';
 
   /**
    *
@@ -14,7 +13,7 @@
       $scope.participant = {
         hiv_disclosed:'1',
         phone_shared:'1',
-        hiv_messaging:'1',
+        hiv_messaging:'',
       }
 
       $scope.status = {

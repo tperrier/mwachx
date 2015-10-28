@@ -55,8 +55,8 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
 	hiv_disclosed_display = serializers.SerializerMethodField()
 	hiv_disclosed = serializers.SerializerMethodField()
-	hiv_messaging_display = serializers.SerializerMethodField()
-	hiv_messaging = serializers.SerializerMethodField()
+	hiv_messaging_display = serializers.CharField(source='get_hiv_messaging_display')
+	hiv_messaging = serializers.CharField()
 
 	href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
 	messages_url = serializers.HyperlinkedIdentityField(view_name='participant-messages',lookup_field='study_id')
@@ -78,12 +78,6 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
 	def get_hiv_disclosed(self,obj):
 		return utils.null_boolean_form_value(obj.hiv_disclosed)
-
-	def get_hiv_messaging_display(self,obj):
-		return utils.null_boolean_display(obj.hiv_messaging)
-
-	def get_hiv_messaging(self,obj):
-		return utils.null_boolean_form_value(obj.hiv_messaging)
 
 #############################################
 #  ViewSet Definitions
@@ -164,6 +158,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 		instance.send_day = request.data['send_day']
 		instance.art_initiation = utils.angular_datepicker(request.data['art_initiation'])
 		instance.hiv_disclosed = request.data['hiv_disclosed']
+		instance.hiv_messaging = request.data['hiv_messaging']
 
 		instance.save()
 		instance_serialized = ParticipantSerializer(cont.Contact.objects.get(pk=instance.pk),context={'request':request}).data

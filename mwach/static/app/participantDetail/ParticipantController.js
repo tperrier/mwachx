@@ -68,17 +68,15 @@
     var routePrefix   = '/static/app/participantDetail/';
     $scope.openSendModal = function(msg) {
 
+      var $modalScope = $rootScope.$new()
+      if (msg) $modalScope.reply = msg;
+      $modalScope.participant = $scope.participant;
+
       var modalInstance = $modal.open({
         templateUrl: routePrefix + 'modalSendMessage.html',
         controller: 'NewMessageController',
         size: 'lg',
-        resolve: {
-          reply:function(){
-            if(msg) {
-              return msg;
-            }
-          }
-        }
+        scope: $modalScope,
       });
 
       modalInstance.result.then(
@@ -123,6 +121,7 @@
             send_time:result.send_time,
             art_initiation:mwachxUtils.convert_form_date(result.art_initiation),
             hiv_disclosed:result.hiv_disclosed,
+            hiv_messaging:result.hiv_messaging,
           }
           console.log('Update',result,patch);
           $scope.participant.patch(patch).then(function(result){
@@ -253,13 +252,13 @@
 // *************************************
 
 angular.module('mwachx') .controller('NewMessageController',
-  ['$scope','$modalInstance','$log','reply',
-  function ($scope, $modalInstance, $log, reply) {
+  ['$scope','$modalInstance','$log',
+  function ($scope, $modalInstance, $log) {
+    console.log('Reply',$scope.reply,$scope.participant);
     angular.extend($scope,{
       // TODO: should these be fetched so we DRY?
       languageOptions:['english', 'swahili', 'sheng', 'luo'],
       languages:{},
-      reply:reply,
 
       send:function(status) {
         console.log('Send',$scope.reply);
@@ -273,6 +272,14 @@ angular.module('mwachx') .controller('NewMessageController',
           message.reply = reply;
         }
         $modalInstance.close( message );
+      },
+
+      alertClass:function() {
+          var style = 'alert-', status = $scope.participant.hiv_messaging;
+          if (status == 'system') { style += 'success'; }
+          else if (status == 'initiated') { style += 'warning';}
+          else { style += 'danger' }
+          return style;
       },
 
       type_message:function() {

@@ -13,7 +13,8 @@
     </tr>
   </thead>
   <tbody>
-    <tr mw-upcoming-call ng-repeat="call in month" call="call" call-list="month" >   </tr>
+    <tr mw-upcoming-call ng-repeat="call in month" call="call" call-list="month"
+        class="pointer" ui-sref="participant-details({study_id:call.participant.study_id})"></tr>
   </tbody>
 </table>
 
@@ -31,7 +32,8 @@
     </tr>
   </thead>
   <tbody>
-    <tr mw-upcoming-call ng-repeat='call in year' call='call' call-list='year'>
+    <tr mw-upcoming-call ng-repeat='call in year' call='call' call-list='year'
+        class="pointer" ui-sref="participant-details({study_id:call.participant.study_id})"></tr>
     </tr>
   </tbody>
 </table>

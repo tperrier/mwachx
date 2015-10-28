@@ -9,8 +9,8 @@
     </tr>
   </thead>
   <tbody>
-    <tr mw-pending-visit ng-repeat='visit in current' visit='visit' upcoming='upcoming'>
-    </tr>
+    <tr mw-pending-visit ng-repeat='visit in current' visit='visit' upcoming='upcoming'
+        ui-sref='participant-details({study_id:visit.participant.study_id})' class='pointer' ></tr>
   </tbody>
 </table>
 
@@ -24,8 +24,8 @@
     </tr>
   </thead>
   <tbody>
-    <tr mw-pending-visit ng-repeat='visit in bookchecks' visit='visit' upcoming='bookchecks'>
-    </tr>
+    <tr mw-pending-visit ng-repeat='visit in bookchecks' visit='visit' upcoming='bookchecks'
+        ui-sref='participant-details({study_id:visit.participant.study_id})' class='pointer' ></tr>
   </tbody>
 </table>
 

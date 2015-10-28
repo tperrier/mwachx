@@ -99,6 +99,12 @@ class Contact(TimeStampedModel):
         (20,'Evening (8 PM)'),
     )
 
+    MESSAGING_CHOICES = (
+        ('','No HIV Messaging'),
+        ('initiated','HIV Content If Initiated'),
+        ('system','HIV Content Allowed'),
+    )
+
     #Set Custom Manager
     objects = ContactQuerySet.as_manager()
 
@@ -133,7 +139,7 @@ class Contact(TimeStampedModel):
     # Optional Medical Informaton
     art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART Initiation',verbose_name='ART Initiation')
     hiv_disclosed = models.NullBooleanField(blank=True,verbose_name='HIV Disclosed')
-    hiv_messaging = models.BooleanField(default=False   ,verbose_name='HIV Messaging')
+    hiv_messaging = models.CharField(max_length=15,default='',blank=True,choices=MESSAGING_CHOICES,verbose_name='HIV Messaging')
     child_hiv_status = models.NullBooleanField(blank=True,verbose_name='Child HIV Status')
     family_planning = models.CharField(max_length=50,blank=True,choices=FAMILY_PLANNING_CHOICES,verbose_name='Family Planning')
 
