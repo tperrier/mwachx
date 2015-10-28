@@ -1,16 +1,13 @@
 #Django Imports
 from django.shortcuts import render, redirect
-from django.views.decorators.http import require_POST
-from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
 from constance import config
 
 #Python Imports
-import datetime,collections,sys,json
+import datetime
 
 #Local Imports
 import contacts.models as cont
