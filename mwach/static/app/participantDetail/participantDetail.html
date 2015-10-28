@@ -80,14 +80,14 @@
           <thead>
             <th>Date</th>
             <th>Type</th>
-            <th>Time</th>
+            <th>When</th>
             <th></th>
           </thead>
           <tbody>
           <tr ng-repeat="visit in participant.visits | orderBy : 'scheduled'">
             <td>{{visit.scheduled}}</td>
             <td>{{visit.visit_type}}</td>
-            <td>{{-1*visit.days_overdue}}</td>
+            <td>{{days_str(visit.days_overdue)}}</td>
             <td><button class='btn btn-danger btn-sm' ng-click='visitDismiss(visit)' tooltip="Mark visit as skipped" >Dismiss</btn></td>
             <td><button class='btn btn-info btn-sm' ng-click='visitAttended(visit)' tooltip="{{participant.nickname}} came for this visit">Attended</btn></td>
           </tr>

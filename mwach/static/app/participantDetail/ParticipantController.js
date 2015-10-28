@@ -7,9 +7,9 @@
 
   angular.module('mwachx') .controller('ParticipantController',
   ['$scope','$modal','$location','$stateParams','$log','$rootScope', 'Restangular',
-  'mwachxAPI','mwachxUtils',
+  '$state','mwachxAPI','mwachxUtils',
   function ParticipantController($scope, $modal, $location, $stateParams, $log, $rootScope, Restangular,
-    mwachxAPI,mwachxUtils) {
+    $state,mwachxAPI,mwachxUtils) {
 
     $scope.participant      = [];
     $scope.messages         = [];
@@ -44,11 +44,27 @@
 
        if ( !participant.is_validated)
         $scope.detailsList.push({'label': 'Confirmation Code',      'value': 'validation_key',});
+    }, function(error) {
+      console.log('Participant Not Found',error);
+      $state.go('participant-list',
+        {message:'Participant with Study ID '+$stateParams.study_id+' not found'},
+        {location:false}
+      );
     });
 
-    //
-    // Public Methods
-    //
+//
+// Public Methods
+//
+
+  $scope.days_str = function(days) {
+    return mwachxUtils.days_str(-1*days);
+  }
+
+
+// *************************************
+// Modal Open Functions
+// *************************************
+
     var routePrefix   = '/static/app/participantDetail/';
     $scope.openSendModal = function(msg) {
 
@@ -311,7 +327,7 @@ angular.module('mwachx') .controller('PhoneCallController',
     angular.extend($scope,{
       participant:participant,
       status:{call_history_open:true},
-      new_call:{is_outgoing:true,created:new Date()},
+      new_call:{is_outgoing:false,created:new Date()},
       form:{},
       addCall:function(){
         $scope.participant.post('calls/',$scope.new_call).then(function(response){

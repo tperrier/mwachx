@@ -3,11 +3,18 @@
 
 angular.module('mwachx')
   .factory('mwachxUtils',['$filter',function($filter){
-    var service = {};
+    var service = {
+      convert_form_date:function(date) {
+        return $filter('date')(date,'yyyy-MM-dd');
+      },
 
-    service.convert_form_date = function(date) {
-      return $filter('date')(date,'yyyy-MM-dd');
-    };
+      days_str:function(days) {
+        if (-7 < days && days < 7)
+          return days+'d';
+        var weeks = Math.round(Number(days)/7);
+        return weeks+'w';
+      },
+    }
 
     return service;
   }]);

@@ -54,15 +54,15 @@ angular.module('mwachx').controller('RecordCallController',
         comment:(resolveData.call.call_type == 'm')?'One month phone call':'One year phone call',
       },
       recordCall:function(){
-        console.log('Record',$scope.new_call);
+        // console.log('Record',$scope.new_call);
         $scope.call.doPUT($scope.new_call,'called/').then(function(result){
-          console.log('Called',result);
+          // console.log('Called',result);
           resolveData.callList.splice(resolveData.callList.indexOf($scope.call),1);
           $modalInstance.close();
         });
       },
       formDisabled:function(){
-        console.log($scope,$scope.call_form);
+        // console.log($scope,$scope.call_form);
         return $scope.new_call.outcome === undefined || !$scope.call_form.$valid;
       }
     });

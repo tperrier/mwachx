@@ -35,7 +35,7 @@ class VisitViewSet(viewsets.ModelViewSet):
 
     @list_route()
     def upcoming(self, request):
-        queryset = self.queryset.visit_range(start={'days':-14},end={'days':0}).order_by('scheduled')
+        queryset = self.queryset.for_user(request.user).visit_range(start={'days':-14},end={'days':0}).order_by('scheduled')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
