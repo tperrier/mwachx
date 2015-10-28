@@ -9,6 +9,7 @@ import models as cont
 class ContactAdmin(admin.ModelAdmin):
 
     list_display = ('study_id','nickname','study_group','status','due_date','facility')
+    list_display_links = ('study_id','nickname')
     list_filter = ('study_group','status','facility')
 
     date_hierarchy = 'due_date'
@@ -21,16 +22,20 @@ class ContactAdmin(admin.ModelAdmin):
 class MessageAdmin(admin.ModelAdmin):
 
     list_display = ('text','contact_name','is_viewed','is_system','is_outgoing','languages',
-        'translated_text','translation_status','is_related','identity',
-        'external_id','external_linkId','time_received','created')
+        'translation_status','is_related', 'external_id','external_linkId','time_received','created')
     date_hierarchy = 'created'
-    list_filter = ('is_viewed','is_system','is_outgoing','translation_status')
+    list_filter = ('is_viewed','is_system','is_outgoing','translation_status','is_related')
     search_fields = ('^contact__study_id','^contact__first_name','^contact__last_name')
+
+    readonly_fields = ('created','modified')
 
 @admin.register(cont.PhoneCall)
 class PhoneCallAdmin(admin.ModelAdmin):
 
-    list_display = ('created','contact','outcome','is_outgoing','comment')
+    list_display = ('comment','contact_name','outcome','is_outgoing','created')
+    date_hierarchy = 'created'
+    list_filter = ('outcome','is_outgoing')
+    readonly_fields = ('created','modified')
 
 @admin.register(cont.Connection)
 class ConnectionAdmin(admin.ModelAdmin):
@@ -38,7 +43,9 @@ class ConnectionAdmin(admin.ModelAdmin):
 
 @admin.register(cont.Visit)
 class VisitAdmin(admin.ModelAdmin):
-    list_display = ('study_id','participant_name','visit_type','scheduled', 'notification_last_seen','notify_count', 'arrived','skipped')
+    list_display = ('study_id','participant_name','visit_type','scheduled',
+        'notification_last_seen','notify_count', 'arrived','skipped')
+    date_hierarchy = 'arrived'
     list_filter = ('skipped','visit_type')
 
 @admin.register(cont.ScheduledPhoneCall)
@@ -56,7 +63,7 @@ class PractitionerAdmin(admin.ModelAdmin):
 
 @admin.register(cont.StatusChange)
 class StatusChangeAdmin(admin.ModelAdmin):
-    list_display = ('created','old','new','comment')
+    list_display = ('comment','contact_name','old','new','created')
 
 class PractitionerInline(admin.TabularInline):
     model = cont.Practitioner

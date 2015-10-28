@@ -277,3 +277,11 @@ class StatusChange(TimeStampedModel):
     new = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
 
     comment = models.CharField(max_length=300)
+
+    def contact_name(self):
+        if self.contact:
+            return '<a href="../contact/{0.study_id}">{0.nickname}</a>'.format(self.contact)
+        return None
+    contact_name.short_description = 'Contact Name'
+    contact_name.admin_order_field = 'contact__nickname'
+    contact_name.allow_tags = True

@@ -58,9 +58,10 @@ class ScheduledEvent(TimeStampedModel):
     study_id.admin_order_field = 'contact__study_id'
 
     def participant_name(self):
-        return self.participant.nickname
+        return '<a href="../contact/{0.study_id}">{0.nickname}</a>'.format(self.participant)
     participant_name.short_description = 'Nickname'
     participant_name.admin_order_field = 'participant__nickname'
+    participant_name.allow_tags = True
 
     def days_overdue(self):
         return (utils.today()-self.scheduled).days
