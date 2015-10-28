@@ -4,6 +4,7 @@ from hashlib import sha256
 import math
 
 #Django Imports
+from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -244,8 +245,29 @@ class Contact(TimeStampedModel):
                         scheduled=scheduled)
         return new_call
 
-    ''' ~REMOVE
-    @property
-    def pending(self):
-        return Message.objects.filter(contact=self,is_viewed=False).count()
-    '''
+    def delivery(self, delivery_date, comment=None):
+
+        self.delivery_date = delivery_date
+        self.set_status('post', comment)
+
+    def set_status(self, new_status, comment=None):
+        old_status = self.status
+        self.status = new_status
+        self.save()
+
+        self.statuschange_set.create(
+            old = old_status, new = new_status, comment = comment
+        )
+
+class StatusChange(TimeStampedModel):
+
+    objects = BaseQuerySet.as_manager()
+
+    class Meta:
+        app_label = 'contacts'
+
+    contact = models.ForeignKey(settings.MESSAGING_CONTACT)
+    old = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
+    new = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
+
+    comment = models.CharField(max_length=300)

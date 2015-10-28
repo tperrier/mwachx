@@ -34,11 +34,6 @@ def angular_view(request):
 
 
 
-
-
-
-
-
 # === Action views ===
 
 #TODO: No CSRF protection yet. (let's use PUT and the REST plugin)
@@ -47,7 +42,7 @@ def message_update(request,message_id=None):
     msg = get_object_or_404(cont.Message, pk=message_id)
     if not request.POST:
         return HttpResponseBadRequest()
-    
+
     if 'is_translated' in request.POST.keys(): msg.is_translated = (request.POST['is_translated'].lower() in ('true'))
     if 'translate_skipped' in request.POST.keys(): msg.translate_skipped = (request.POST['translate_skipped'].lower() in ('true'))
     y = msg.is_translated
@@ -71,7 +66,7 @@ def update_participant_details(request,pk=None):
 
 
 
-@login_required()    
+@login_required()
 def messages_new(request):
     new_msg_list = cont.Message.objects.for_user(request.user).pending()
     return render(request, 'messages_new.html',{'new_message_list':new_msg_list})
@@ -85,7 +80,7 @@ def contact_send(request):
     translation = request.POST['translation']
     parent_id = request.POST.get('parent_id',-1)
     parent = cont.Message.objects.get_or_none(pk=parent_id if parent_id else -1)
-    
+
     is_translated = json.loads(request.POST["is_translated"]) if "is_translated" in request.POST.keys() else False
     translate_skipped = json.loads(request.POST["translate_skipped"]) if "translate_skipped" in request.POST.keys() else False
     #Mark Parent As Viewed If Unviewed
@@ -94,7 +89,7 @@ def contact_send(request):
         parent.topic = request.POST['topic']
         parent.is_viewed = True
         parent.save()
-    
+
     cont.Message.send(contact,message,translation,
         languages=request.POST.getlist('language'),
         is_translated=is_translated,
@@ -132,11 +127,11 @@ def _record_translation(message_id, txt, langs, is_skipped=False):
     _msg.translated_text = txt
     _msg.is_translated = True
     _msg.translate_skipped = is_skipped
-    _msg.save()    
+    _msg.save()
 
 @require_POST
 def save_translation(request, message_id):
-    _record_translation( 
+    _record_translation(
         message_id,
         request.POST['translation'],
         request.POST.getlist('languages[]'), # if posted from jquery, need the []'s. See: http://stackoverflow.com/questions/11190070/django-getlist
@@ -147,7 +142,7 @@ def save_translation(request, message_id):
 
 @require_POST
 def translation_not_required(request, message_id):
-    _record_translation( 
+    _record_translation(
         message_id,
         request.POST['translation'],
         request.POST.getlist('languages[]'),
@@ -155,7 +150,7 @@ def translation_not_required(request, message_id):
 
     # done, so return an http 200
     return HttpResponse()
-    
+
 @require_POST
 def visit_schedule(request):
     study_id = request.POST['study_id']
@@ -166,7 +161,7 @@ def visit_schedule(request):
     if parent_visit:
         parent_visit.arrived = utils.parse_date(request.POST['arrived'])
         parent_visit.save()
-        
+
     cont.Visit.objects.create(**{
         'contact':cont.Contact.objects.get(study_id=study_id),
         'scheduled':utils.parse_date(request.POST['next_visit']),

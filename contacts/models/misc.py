@@ -30,18 +30,6 @@ class Connection(models.Model):
 
     is_primary = models.BooleanField(default=False)
 
-class StatusChange(TimeStampedModel):
-
-    objects = BaseQuerySet.as_manager()
-
-    class Meta:
-        ordering = ('-created',)
-        app_label = 'contacts'
-
-    contact = models.ForeignKey(settings.MESSAGING_CONTACT)
-    old = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
-    new = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
-
 class Facility(models.Model):
 
     class Meta:
@@ -51,7 +39,7 @@ class Facility(models.Model):
     name = models.CharField(max_length='50',help_text='Facility Name')
 
     def __str__(self):
-        #Change kisumu_east to Kisumu East
+        # Change snake_case to Snake Case
         return ' '.join([word.capitalize() for word in self.name.split('_')])
 
 class Practitioner(models.Model):
@@ -69,4 +57,4 @@ class Practitioner(models.Model):
         return self.user.username
 
     def __str__(self):
-        return '<{}> <{}>'.format(self.facility,self.user.username)
+        return '<{0!s}> <{1}>'.format(self.facility,self.user.username)

@@ -8,9 +8,6 @@ from django.utils import timezone
 
 class TimeStampedModel(models.Model):
 
-    class Meta:
-        ordering = ['-created']
-
     #The date and time this message was created or modified
     created = models.DateTimeField(default=timezone.now,editable=False)
     modified = models.DateTimeField(auto_now=True)
@@ -20,6 +17,7 @@ class TimeStampedModel(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ['-created']
 
 class BaseQuerySet(models.QuerySet):
 

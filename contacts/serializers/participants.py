@@ -252,9 +252,18 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			return Response({'error':{'message':'Participant already post-partum'}})
 
 		delivery_date = utils.angular_datepicker(request.data.get('delivery_date'))
-		instance.delivery_date = delivery_date
-		instance.status = 'post'
-		instance.save()
+		instance.delivery(delivery_date, comment = 'Delivery event recorded by {}'.format(request.user.practitioner))
+
+		serializer = self.get_serializer(instance)
+		return Response(serializer.data)
+
+	@detail_route(methods=['put'])
+	def stop_messaging(self, request, study_id=None):
+
+		instance = self.get_object()
+		comment = request.data.get('reason','')
+		comment += " Stopped by {}".format(request.user.practitioner)
+		instance.set_status('stopped', comment=comment)
 
 		serializer = self.get_serializer(instance)
 		return Response(serializer.data)

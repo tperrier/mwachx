@@ -218,10 +218,19 @@
     var modalInstance = $modal.open({
       templateUrl: routePrefix + 'modalStopMessaging.html',
       size:'sm',
+    }).result.then(function(reason){
+      console.log('Stop',reason);
+      $scope.participant.doPUT(reason,'stop_messaging/').then(function(result) {
+        if ( !result.hasOwnProperty('error') ) {
+          ['status','status_display'].forEach(function(ele) {
+            $scope.participant[ele] = result[ele];
+          });
+        }
+      });
     });
-  };
+  }; // End Stop Messaging
 
-    }]); // End Main Controller
+}]); // End Main Controller
 
 // *************************************
 // Modal Controllers

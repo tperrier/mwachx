@@ -54,6 +54,10 @@ class FacilityAdmin(admin.ModelAdmin):
 class PractitionerAdmin(admin.ModelAdmin):
     list_display = ('facility','username')
 
+@admin.register(cont.StatusChange)
+class StatusChangeAdmin(admin.ModelAdmin):
+    list_display = ('created','old','new','comment')
+
 class PractitionerInline(admin.TabularInline):
     model = cont.Practitioner
 
