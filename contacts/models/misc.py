@@ -17,16 +17,10 @@ class Connection(models.Model):
 
     objects = BaseQuerySet.as_manager()
 
-    TYPE_CHOICES = (
-        ('phone','Phone Number'),
-        ('email','Email'),
-    )
-
     identity = models.CharField(max_length=25,primary_key=True)
     contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
 
     description = models.CharField(max_length=150,blank=True,null=True,help_text='Description of phone numbers relationship to contact')
-    connection_type = models.CharField(max_length=10,help_text='Type of connection',choices=TYPE_CHOICES,default='phone')
 
     is_primary = models.BooleanField(default=False)
 

@@ -268,8 +268,8 @@ angular.module('mwachx') .controller('NewMessageController',
           translated_text:$scope.translation,
           translation_status:status,
         }
-        if (reply !== undefined ) {
-          message.reply = reply;
+        if ($scope.reply !== undefined ) {
+          message.reply = $scope.reply;
         }
         $modalInstance.close( message );
       },

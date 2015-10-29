@@ -1,4 +1,0 @@
-
-
-class AfricasTalkingException(Exception):
-    pass

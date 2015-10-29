@@ -50,11 +50,11 @@ class Message(TimeStampedModel):
     parent = models.ForeignKey('contacts.Message',related_name='replies',blank=True,null=True)
 
     # translation
-    translated_text = models.CharField(max_length=1000,help_text='Text of the translated message',default=None,blank=True,null=True)
+    translated_text = models.CharField(max_length=1000,help_text='Text of the translated message',default='',blank=True)
     translation_status = models.CharField(max_length='5',help_text='Status of translation',choices=STATUS_CHOICES,default='todo')
 
     # Meta Data
-    languages = models.CharField(max_length=100,help_text='Semi colon seperated list of languages',default=None,blank=True,null=True)
+    languages = models.CharField(max_length=100,help_text='Semi colon seperated list of languages',default='',blank=True)
     topic = models.CharField(max_length=50,help_text='The topic of this message',default='',blank=True)
 
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
@@ -141,34 +141,6 @@ class Message(TimeStampedModel):
             external_id=external_id,
             external_linkId=external_linkId
         )
-
-    @staticmethod
-    def send(contact,message,translation,is_translated=False,translate_skipped=False,is_system=True,parent=None,languages=None,**kwargs):
-
-        if config.AFRICAS_TALKING_SEND:
-            import africas_talking
-            try:
-                at_id = africas_talking.send(contact.phone_number(),message)
-            except africas_talking.AfricasTalkingException as e:
-                at_id = 'error'
-
-        _msg = Message.objects.create(
-            is_system=is_system,
-            text=message,
-            translated_text=translation,
-            is_translated=is_translated,
-            translate_skipped=translate_skipped,
-            connection=contact.connection(),
-            contact=contact,
-            is_viewed=True,
-            parent=parent,
-            external_id=at_id
-        )
-
-        if languages:
-            lang_objs = Language.objects.filter(id__in=languages)
-            _msg.languages = lang_objs
-            _msg.save()
 
 class PhoneCallQuerySet(ForUserQuerySet):
     pass

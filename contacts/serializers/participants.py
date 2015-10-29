@@ -195,6 +195,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 				'is_viewed':False,
 				'admin_user':request.user
 			}
+			
 			if message['translation_status'] == 'done':
 				message['translated_text'] = request.data['translated_text']
 

@@ -12,6 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from utils.models import TimeStampedModel, BaseQuerySet
 from contacts.models import Message, PhoneCall
 import utils
+import transports
 
 class ContactQuerySet(BaseQuerySet):
 
@@ -235,10 +236,6 @@ class Contact(TimeStampedModel):
     def choice_label(self):
         return '%s (%s)'%(self.nickname,self.facility)
 
-    def send_message(self,text,**kwargs):
-        new_message = Message.objects.create(text=text,contact=self,connection=self.connection(),**kwargs)
-        return new_message
-
     def add_call(self,outcome='answered',comment=None,length=None,is_outgoing=True,
                  created=None,admin_user=None,scheduled=None):
         if created is None:
@@ -264,6 +261,24 @@ class Contact(TimeStampedModel):
         self.statuschange_set.create(
             old = old_status, new = new_status, comment = comment
         )
+
+    def send_message(self,text,**kwargs):
+
+        # Send message over system transport
+        try:
+            msg_id = transports.send(self.phone_number(),text)
+        except transports.TransportError as e:
+            msg_id = 'error'
+
+        # Create new message
+        new_message = self.message_set.create(
+            text=text,
+            connection=self.connection(),
+            external_id=msg_id,
+            **kwargs)
+
+        return new_message
+
 
 class StatusChange(TimeStampedModel):
 

@@ -62,8 +62,11 @@ INSTALLED_APPS = (
     #mWaChx setup
     'contacts',
     'utils',
-    'http_transport',
-    'africas_talking',
+
+    # Transports
+    'transports',
+    # 'transports.http_transport',
+    # 'transports.africas_talking',
 )
 
 REST_FRAMEWORK = {

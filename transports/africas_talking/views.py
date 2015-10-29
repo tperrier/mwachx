@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def receive(request):
-	
+
 	logger.debug('receive(): %s\n%s\n%s',request.method,request.META,request.POST)
 
 	if request.method == 'POST':
@@ -33,5 +33,4 @@ def receive(request):
 			return render(request,'africas_talking/test_receive.html',{'form':form})
 	else: #GET request
 		form = forms.AfricasTalkingForm()
-	return render(request,'africas_talking/test_receive.html',{'form':form})
-
+	return render(request,'transports/africas_talking/test_receive.html',{'form':form})

@@ -8,7 +8,7 @@ import forms
 
 
 def send_message(request):
-    
+
     contact = None
     system = None
     participant_send_form = forms.ParticipantSendForm()
@@ -26,7 +26,7 @@ def send_message(request):
                 #now save the message
                 message.save()
                 contact = message.contact
-                
+
                 #reset form on valid
                 participant_send_form = forms.ParticipantSendForm()
 
@@ -47,7 +47,7 @@ def send_message(request):
                 #reset form on valid
                 system_send_form = forms.SystemSendForm()
 
-                
-    return render(request,'http_transport/send_message.html',
+
+    return render(request,'transports/http/send_message.html',
         {'participant_form':participant_send_form,'contact':contact,
           'system_form':system_send_form,'system':system})
