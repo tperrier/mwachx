@@ -59,11 +59,11 @@
 
 <accordion-group heading="Call history for {{participant.nickname}}" is-open="status.call_history_open">
   <div ng-repeat='call in participant.calls' class='clearfix'>
-      <div class='avatar mw-4x call' ng-class="{'pull-left':!call.is_outgoing, 'pull-right':call.is_outgoing}">
-        <i class='mw mw-mobile-1'></i>
+      <div class='avatar mw-4x' ng-class="{'pull-left call':!call.is_outgoing, 'pull-right nurse':call.is_outgoing}">
+        <i class='mw' ng-class="{'mw-mobile-1':!call.is_outgoing, 'mw-user-md':call.is_outgoing}"></i>
     </div>
 
-    <div class='message call' ng-class="{'pull-left':!call.is_outgoing, 'pull-right':call.is_outgoing}">
+    <div class='message' ng-class="{'pull-left call':!call.is_outgoing, 'pull-right nurse':call.is_outgoing}">
       <div class="msg-header clearfix">
         <strong class='pull-left'>
           Phone Call {{(call.is_outgoing)?'To':'From'}} {{call.participant.nickname}}
