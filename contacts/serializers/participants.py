@@ -1,5 +1,5 @@
 # Python Imports
-import json
+import json, datetime
 
 # Rest Framework Imports
 from rest_framework import serializers
@@ -131,8 +131,9 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			if cf.cleaned_data['clinic_visit']:
 				cont.Visit.objects.create(scheduled=cf.cleaned_data['clinic_visit'],
 					participant=contact,visit_type='clinic')
-			if cf.cleaned_data['study_visit']:
-				cont.Visit.objects.create(scheduled=cf.cleaned_data['study_visit'],
+			if cf.cleaned_data['due_date']:
+				# Set first study visit to 6 weeks (42 days) after EDD
+				cont.Visit.objects.create(scheduled=cf.cleaned_data['due_date']+datetime.timedelta(days=42),
 					participant=contact,visit_type='study')
 
 			'''
@@ -195,7 +196,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 				'is_viewed':False,
 				'admin_user':request.user
 			}
-			
+
 			if message['translation_status'] == 'done':
 				message['translated_text'] = request.data['translated_text']
 

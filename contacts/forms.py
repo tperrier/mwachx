@@ -28,7 +28,6 @@ class ContactAdd(forms.ModelForm):
             raise forms.ValidationError("Phone number provided already exists",code="unique")
         return self.cleaned_data['phone_number']
 
-    study_visit = forms.DateField(label='Next Study Visit')
     clinic_visit = forms.DateField(label='Next Clinic Visit')
 
     def __init__(self, *args, **kwargs):
@@ -55,8 +54,6 @@ class ContactAdd(forms.ModelForm):
         self.fields['birthdate'].widget = util.AngularPopupDatePicker({'required':True,'datepicker-position-right':True})
         self.fields['art_initiation'].widget = util.AngularPopupDatePicker()
         self.fields['clinic_visit'].widget = util.AngularPopupDatePicker({'required':True})
-        self.fields['study_visit'].widget = util.AngularPopupDatePicker({'required':True,'datepicker-position-right':True})
-
 
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
@@ -115,7 +112,6 @@ class ContactAdd(forms.ModelForm):
                 Div(
                     Div('due_date', css_class="col-md-4"),
                     Div('clinic_visit', css_class="col-md-4"),
-                    Div('study_visit', css_class="col-md-4"),
                     css_class="row"
                 )
             ),
