@@ -11,7 +11,7 @@
   function ($scope, $stateParams, mwachxAPI) {
 
       $scope.participants = mwachxAPI.participants.getList().$object;
-      $scope.alerts = [$stateParams.message];
+      if ($stateParams.message) $scope.alerts = [$stateParams.message];
       $scope.closeAlert = function(i){$scope.alerts.splice(i,1)}
     }]);
 

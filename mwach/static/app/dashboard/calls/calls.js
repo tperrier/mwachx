@@ -25,7 +25,8 @@ angular.module('mwachx') .directive('mwUpcomingCall',
       },
       link: function($scope, element, attrs) {
         angular.extend($scope,{
-          recordCall:function(call){
+          recordCall:function(call,$event){
+            $event.stopPropagation();
             var callModal = $modal.open({
               templateUrl: routePrefix + 'recordCallModal.html',
               size:'lg',

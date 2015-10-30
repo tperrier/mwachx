@@ -24,25 +24,24 @@ angular.module('mwachx') .controller('UpcomingVisitsController',
 angular.module('mwachx')
   .directive('mwPendingVisit',[ '$modal',function($modal) {
 
-    var pri = {
-    }; // close private
-
     return {
       restrict:'A',templateUrl:routePrefix + 'pendingVisitDirective.html',
       scope: {
         'visit':'=',
-        'upcoming':'=',
+        'visits':'=',
       },
       link: function($scope, element, attrs) {
         angular.extend($scope,{
-          missedVisit:function(){
+          missedVisit:function($event){
+            $event.stopPropagation();
             $scope.visit.doPUT({},'seen/').then(function(result){
               // console.log('Seen',$scope.upcoming.indexOf($scope.visit ))
-              $scope.upcoming.splice($scope.upcoming.indexOf($scope.visit),1);
+              $scope.visits.splice($scope.visits.indexOf($scope.visit),1);
             });
           },
 
-          attendedVisit:function(){
+          attendedVisit:function($event){
+            $event.stopPropagation();
             var modalInstance = $modal.open({
               templateUrl:routePrefix + 'modalVisitAttendSchedule.html',
             });
@@ -51,7 +50,7 @@ angular.module('mwachx')
               console.log('Save',attended);
               $scope.visit.doPUT(attended,'attended/').then(function(result){
                 // console.log('Attended',result);
-                $scope.upcoming.splice($scope.upcoming.indexOf($scope.visit),1);
+                $scope.visits.splice($scope.visits.indexOf($scope.visit),1);
               });
             });
           },
