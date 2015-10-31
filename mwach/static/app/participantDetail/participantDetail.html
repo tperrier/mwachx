@@ -39,7 +39,9 @@
     <div class="panel panel-info">
       <div class="panel-heading">
         <h3 class="panel-title">Participant Details: <strong>{{participant.nickname}}</strong>
-          <i id="context-edit" style='cursor:pointer' class="mw mw-pencil pull-right" ng-click='openModifyModel()'> Edit</i>
+          <span class="pull-right pointer badge" tooltip="Edit Details" ng-click='openModifyModel()'>
+             Edit <i class="mw mw-pencil"></i>
+          </span>
         </h3>
       </div>
 
