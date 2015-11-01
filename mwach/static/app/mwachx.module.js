@@ -16,8 +16,9 @@
 
 	}])
 
-  .config(['$uiViewScrollProvider',function($uiViewScrollProvider){
+  .config(['$urlMatcherFactoryProvider',function($urlMatcherFactoryProvider){
     // $uiViewScrollProvider.useAnchorScroll();
+    $urlMatcherFactoryProvider.strictMode(false)
   }])
 
 	.config(['showErrorsConfigProvider', function(showErrorsConfigProvider) {
