@@ -50,9 +50,6 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
 
     'crispy_forms',
-    'parsley',
-
-
     'rest_framework',
 
     #constane setup
@@ -62,11 +59,10 @@ INSTALLED_APPS = (
     #mWaChx setup
     'contacts',
     'utils',
+    'backend',
 
     # Transports
     'transports',
-    # 'transports.http_transport',
-    # 'transports.africas_talking',
 )
 
 REST_FRAMEWORK = {

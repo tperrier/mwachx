@@ -9,6 +9,7 @@ from rest_framework.response import Response
 
 #Local Imports
 import contacts.models as cont
+import backend.models as back
 from messages import MessageSerializer, ParticipantSimpleSerializer
 from visits import VisitSerializer
 
@@ -21,14 +22,14 @@ class FacilitySerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
 
     class Meta:
-        model = cont.Facility
+        model = back.Facility
 
     def get_name(self,obj):
         return ''.join(word.capitalize() for word in obj.name.split())
 
 class FacilityViewSet(viewsets.ModelViewSet):
 
-    queryset = cont.Facility.objects.all()
+    queryset = back.Facility.objects.all()
     serializer_class = FacilitySerializer
 
 ########################################

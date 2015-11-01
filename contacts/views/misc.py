@@ -11,17 +11,18 @@ import datetime
 
 #Local Imports
 import contacts.models as cont
+import backend.models as back
 import utils
 
 
 @staff_member_required
 def staff_facility_change(request,facility_name):
     try:
-        facility = cont.Facility.objects.get(name=facility_name)
-    except cont.Facility.DoesNotExist as e:
+        facility = back.Facility.objects.get(name=facility_name)
+    except back.Facility.DoesNotExist as e:
         # Did not find by name so return first facility
-        facility = cont.Facility.objects.all().first()
-    print facility
+        facility = back.Facility.objects.all().first()
+    # print facility
     request.user.practitioner.facility = facility
     request.user.practitioner.save()
     return JsonResponse({'current_facility':facility.name})

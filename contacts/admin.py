@@ -53,10 +53,6 @@ class ScheduledPhoneCall(admin.ModelAdmin):
     list_display = ('study_id','participant_name','call_type','scheduled', 'notification_last_seen','notify_count', 'arrived','skipped')
     list_filter = ('skipped','call_type')
 
-@admin.register(cont.Facility)
-class FacilityAdmin(admin.ModelAdmin):
-    list_display = ('pk','__str__')
-
 @admin.register(cont.Practitioner)
 class PractitionerAdmin(admin.ModelAdmin):
     list_display = ('facility','username')

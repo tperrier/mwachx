@@ -10,11 +10,13 @@ from rest_framework.response import Response
 
 #Local Imports
 import contacts.models as cont
+import backend.models as back
 import contacts.forms as forms
+import utils
+
 from messages import MessageSerializer
 from visits import VisitSerializer
 from misc import PhoneCallSerializer
-import utils
 
 #############################################
 #  Serializer Definitions
@@ -114,7 +116,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			contact = cf.save(commit=False)
 
 			#Set contacts facility to facility of current user
-			facility = cont.Facility.objects.get(pk=1) #default to first facility if none found
+			facility = back.Facility.objects.get(pk=1) #default to first facility if none found
 			try:
 				facility = request.user.practitioner.facility
 			except cont.Practitioner.DoesNotExist:

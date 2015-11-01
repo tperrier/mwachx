@@ -13,6 +13,7 @@ from constance import config
 from django.db import transaction
 
 import contacts.models as cont
+import backend.models as back
 import utils
 
 JSON_DATA_FILE =  os.path.join(settings.PROJECT_ROOT,'tools','small.json')
@@ -76,9 +77,9 @@ class Command(BaseCommand):
 study_groups = ['control','one-way','two-way']
 def add_client(client,study_id,facility=None):
     if facility:
-        facility_list = cont.Facility.objects.filter(name=facility)
+        facility_list = back.Facility.objects.filter(name=facility)
     else:
-        facility_list = cont.Facility.objects.all()
+        facility_list = back.Facility.objects.all()
     mod = len(facility_list)
     status = 'post' if random.random() < .5 else 'pregnant'
     new_client = {
@@ -210,7 +211,7 @@ def load_old_participants(options):
 
 def add_jennifers():
     print 'Loading Fake Jennifer Users'
-    for i,facility in enumerate(cont.Facility.objects.all()):
+    for i,facility in enumerate(back.Facility.objects.all()):
         create_jennifer(i,facility)
 
 def create_jennifer(i,facility):
@@ -230,19 +231,19 @@ def create_jennifer(i,facility):
 
 def create_facilities():
     print 'Creating Facilities'
-    cont.Facility.objects.bulk_create([
-        cont.Facility(name='bondo'),
-        cont.Facility(name='ahero'),
-        cont.Facility(name='mathare'),
+    back.Facility.objects.bulk_create([
+        back.Facility(name='bondo'),
+        back.Facility(name='ahero'),
+        back.Facility(name='mathare'),
     ])
 
 def create_users():
     #create admin user
     print 'Creating Users'
     oscard = User.objects.create_superuser('admin',email='o@o.org',password='mwachx')
-    cont.Practitioner.objects.create(facility=cont.Facility.objects.get(pk=1),user=oscard)
+    cont.Practitioner.objects.create(facility=back.Facility.objects.get(pk=1),user=oscard)
     #create study nurse users
     facility_list = ['bondo','ahero','mathare']
     for f in facility_list:
         user = User.objects.create_user('n_{}'.format(f),password='mwachx')
-        cont.Practitioner.objects.create(facility=cont.Facility.objects.get(name=f),user=user)
+        cont.Practitioner.objects.create(facility=back.Facility.objects.get(name=f),user=user)

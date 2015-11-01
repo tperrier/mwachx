@@ -24,18 +24,6 @@ class Connection(models.Model):
 
     is_primary = models.BooleanField(default=False)
 
-class Facility(models.Model):
-
-    class Meta:
-        verbose_name_plural = 'facilities'
-        app_label = 'contacts'
-
-    name = models.CharField(max_length='50',help_text='Facility Name')
-
-    def __str__(self):
-        # Change snake_case to Snake Case
-        return ' '.join([word.capitalize() for word in self.name.split('_')])
-
 class Practitioner(models.Model):
     '''
     User profile for nurse practitioners to link a User profile to a Facility
@@ -44,7 +32,7 @@ class Practitioner(models.Model):
         app_label = 'contacts'
 
     user = models.OneToOneField(User)
-    facility = models.ForeignKey('contacts.Facility')
+    facility = models.ForeignKey('backend.Facility')
 
     @property
     def username(self):
