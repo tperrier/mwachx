@@ -151,7 +151,7 @@ class ContactUpdate(forms.ModelForm):
 
     class Meta:
         model = cont.Contact
-        fields = ['send_day','send_time','art_initiation','hiv_messaging', 'hiv_disclosed']
+        fields = ['send_day','send_time','due_date','art_initiation','hiv_messaging', 'hiv_disclosed']
 
     def __init__(self, *args, **kwargs):
         super(ContactUpdate, self).__init__(*args, **kwargs)
@@ -161,11 +161,8 @@ class ContactUpdate(forms.ModelForm):
         self.helper.label_class = 'col-lg-4'
         self.helper.field_class = 'col-lg-7'
 
-        art_BO = [{
-            'from': today().strftime("%Y-%m-%d"),
-            'to': (datetime.datetime(2100,1,1)).strftime("%Y-%m-%d"),
-        }]
-        self.fields['art_initiation'].widget = util.AngularPopupDatePicker()
+        self.fields['art_initiation'].widget = util.AngularPopupDatePicker(max=0)
+        self.fields['due_date'].widget = util.AngularPopupDatePicker(min=3,max=280)
 
         # thank you: http://stackoverflow.com/questions/24663564/django-add-attribute-to-every-field-by-default
         for field in self:
