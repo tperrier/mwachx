@@ -50,10 +50,12 @@ class ContactAdd(forms.ModelForm):
             'from': today().strftime("%Y-%m-%d"),
             'to': (datetime.datetime(2100,1,1)).strftime("%Y-%m-%d"),
         }]
-        self.fields['due_date'].widget = util.AngularPopupDatePicker({'required':True})
-        self.fields['birthdate'].widget = util.AngularPopupDatePicker({'required':True,'datepicker-position-right':True})
-        self.fields['art_initiation'].widget = util.AngularPopupDatePicker()
-        self.fields['clinic_visit'].widget = util.AngularPopupDatePicker({'required':True})
+        self.fields['due_date'].widget = util.AngularPopupDatePicker({'required':True},min=28)
+        self.fields['birthdate'].widget = util.AngularPopupDatePicker(
+            {'required':True,'datepicker-position-right':True},max=-5110 # 14 years or older 
+        )
+        self.fields['art_initiation'].widget = util.AngularPopupDatePicker(max=0)
+        self.fields['clinic_visit'].widget = util.AngularPopupDatePicker({'required':True}, min=7)
 
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
