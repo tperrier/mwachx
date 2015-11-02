@@ -11,6 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 #Local Imports
 from utils.models import TimeStampedModel, BaseQuerySet
 from contacts.models import Message, PhoneCall
+import backend.models as back
 import utils
 import transports
 
@@ -278,6 +279,14 @@ class Contact(TimeStampedModel):
             **kwargs)
 
         return new_message
+
+    def send_automated_message(self,send_base,send_offset=None):
+        potential_messages = back.AutomatedMessage.objects.filter(
+            send_base__name=send_base,
+            send_offset=send_offset
+        )
+        message = potential_messages.first()
+        self.send_message(text=message.for_participant(self),translation_status='auto',auto=message)
 
 
 class StatusChange(TimeStampedModel):

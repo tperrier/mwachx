@@ -138,11 +138,8 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 				cont.Visit.objects.create(scheduled=cf.cleaned_data['due_date']+datetime.timedelta(days=42),
 					participant=contact,visit_type='study')
 
-			'''
 			#Send Welcome Message
-			message = 'Welcome to the mWaCh X Study. Please send your five letter confirmation code'
-			cont.Message.send(contact,message,'',translate_skipped=True)
-			'''
+			contact.send_automated_message('signup',0)
 
 			serialized_contact = ParticipantSerializer(contact,context={'request':request})
 			return Response(serialized_contact.data)

@@ -8,3 +8,13 @@ import backend.models as back
 class FacilityAdmin(admin.ModelAdmin):
     list_display = ('pk','__str__')
     list_display_links = ('pk','__str__')
+
+@admin.register(back.AutomatedMessage)
+class AutomatedMessageAdmin(admin.ModelAdmin):
+    list_display = ('message','send_base','send_offset')
+    list_filter = ('send_base','tags')
+
+@admin.register(back.MessageTag)
+class MessageTagAdmin(admin.ModelAdmin):
+    list_display = ('name','display','type')
+    list_filter = ('type',)

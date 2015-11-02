@@ -31,7 +31,8 @@ class Message(TimeStampedModel):
     STATUS_CHOICES = (
         ('todo','Todo'),
         ('none','None'),
-        ('done','Done')
+        ('done','Done'),
+        ('auto','Auto'),
     )
 
     class Meta:
@@ -46,7 +47,7 @@ class Message(TimeStampedModel):
     is_viewed = models.BooleanField(default=False)
     is_related = models.NullBooleanField(default=None,blank=True,null=True)
 
-    # ToDo:Link To Automated Message
+    auto = models.ForeignKey('backend.AutomatedMessage',related_name='outgoing',blank=True,null=True)
     parent = models.ForeignKey('contacts.Message',related_name='replies',blank=True,null=True)
 
     # translation
@@ -66,15 +67,6 @@ class Message(TimeStampedModel):
     time_received = models.CharField(max_length=50,default=None,blank=True,null=True)
     external_id = models.CharField(max_length=50,default=None,blank=True,null=True)
     external_linkId = models.CharField(max_length=50,default=None,blank=True,null=True)
-
-    def is_translated(self):
-        return self.translation_status == 'done'
-
-    def translation_skipped(self):
-        return self.translation_status == 'none'
-
-    def is_translation_pending(self):
-        return (not self.is_translated) and (not self.is_system)
 
     def is_pending(self):
         return not self.is_viewed and not self.is_outgoing

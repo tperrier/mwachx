@@ -57,9 +57,7 @@ class Command(BaseCommand):
 
         config.CURRENT_DATE = datetime.date.today()
         with transaction.atomic():
-            #Add new fake data
-            create_facilities()
-            create_users()
+            create_backend()
 
             if options['participants'] > 0:
                 load_old_participants(options)
@@ -229,6 +227,11 @@ def create_jennifer(i,facility):
     connection = cont.Connection.objects.create(identity='+00{}'.format(i),contact=contact,is_primary=True)
 
 
+def create_backend():
+    create_facilities()
+    create_users()
+    create_automated_messages()
+
 def create_facilities():
     print 'Creating Facilities'
     back.Facility.objects.bulk_create([
@@ -247,3 +250,16 @@ def create_users():
     for f in facility_list:
         user = User.objects.create_user('n_{}'.format(f),password='mwachx')
         cont.Practitioner.objects.create(facility=back.Facility.objects.get(name=f),user=user)
+
+def create_automated_messages():
+
+    # Create Message Bases
+    send_bases = ( ('signup', 'Sign Up'), ('edd', 'ANC Messaging'), ('visit', 'Visit Messages'), ('dd', 'Postpartum Messaging'), )
+    for name,display in send_bases:
+        back.MessageTag.objects.create(name=name,display=display,type='base')
+
+    back.AutomatedMessage.objects.create(
+        send_base = back.MessageTag.objects.get(type='base',name='signup'),
+        message = 'Welcome to the mWaCh X Study. Please send your five letter confirmation code',
+        send_offset_unit = 'd'
+    )
