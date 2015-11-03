@@ -258,8 +258,8 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 	def stop_messaging(self, request, study_id=None):
 
 		instance = self.get_object()
-		comment = request.data.get('reason','')
-		comment += " Stopped by {}".format(request.user.practitioner)
+		reason = request.data.get('reason','')
+		comment = "{}\nStopped by {}".format(reason,request.user.practitioner)
 		instance.set_status('stopped', comment=comment)
 
 		serializer = self.get_serializer(instance)

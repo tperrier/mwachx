@@ -75,3 +75,13 @@ class VisitViewSet(viewsets.ModelViewSet):
         instance_serialized = VisitSerializer(instance,context={'request':request}).data
 
         return Response(instance_serialized)
+
+    @detail_route(methods=['put'])
+    def edit(self, request, pk):
+
+        instance = self.get_object()
+        instance.scheduled = utils.angular_datepicker(request.data['scheduled'])
+        instance.save()
+
+        instance_serialized = self.get_serializer(instance)
+        return Response(instance_serialized.data)

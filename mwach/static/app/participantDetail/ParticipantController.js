@@ -164,6 +164,7 @@
     var modalInstance = $modal.open({
       templateUrl: "/static/app/dashboard/visits/modalVisitAttendSchedule.html",
       scope: $modalScope,
+      controller: 'VisitModifyModalController',
     }).result.then(function(put) {
       console.log('Schedule',put);
       $scope.participant.post('visits/',put).then(function(response){
@@ -177,6 +178,7 @@
   $scope.visitAttended = function(visit) {
     var modalInstance = $modal.open({
       templateUrl: "/static/app/dashboard/visits/modalVisitAttendSchedule.html",
+      controller: 'VisitModifyModalController',
     }).result.then(function(attended) {
       console.log('Attended',attended);
       visit.doPUT(attended,'attended/').then(function(response){
@@ -188,6 +190,27 @@
           );
         }
         $scope.participant.visits.splice($scope.participant.visits.indexOf(visit),1);
+      });
+    });
+  }
+
+  $scope.visitEdit = function(visit) {
+
+    var $modalScope = $rootScope.$new();
+    angular.extend($modalScope,{
+      visit:visit,
+    });
+
+    var modalInstance = $modal.open({
+      templateUrl: routePrefix + "modalVisitEdit.html",
+      scope: $modalScope,
+      controller: 'VisitModifyModalController',
+    }).result.then(function(put) {
+      console.log('Edit',put);
+      put = {scheduled:mwachxUtils.convert_form_date(put.scheduled)}
+      visit.doPUT(put,'edit/').then(function(result) {
+        console.log('Result',result);
+        visit.scheduled = result.scheduled;
       });
     });
   }

@@ -8,11 +8,13 @@
     <h3 ng-if='scheduleOnly' class="modal-title">Schedule Visit</h3>
   </div>
 
+<div class="modal-body">
+
   <div ng-hide='scheduleOnly' class="form-group">
     <label class="col-sm-3 control-label" for="arrived">Date arrived:</label>
       <div class="col-sm-9">
         <p class='input-group'> <input name='arrived' ng-model='attended.arrived' type='text' class='form-control'
-               datepicker-popup is-open="arrived_open" ng-required='!scheduleOnly'>
+               datepicker-popup is-open="arrived_open" ng-required='!scheduleOnly' max-date="today">
          <span class="input-group-btn">
            <button type="button" class="btn btn-default" ng-click="arrived_open = !arived_open">
              <i class="glyphicon glyphicon-calendar"></i>
@@ -24,8 +26,7 @@
       <label class="col-sm-3 control-label" for="next_visit">Date of next visit:</label>
       <div class="col-sm-9">
         <p class='input-group'> <input name='next' ng-model='attended.next' type='text' class='form-control'
-               datepicker-popup is-open="next_open"
-               ng-required="scheduleOnly">
+               datepicker-popup is-open="next_open" ng-required="scheduleOnly" min-date="today">
          <span class="input-group-btn">
            <button type="button" class="btn btn-default" ng-click="next_open = !next_open">
              <i class="glyphicon glyphicon-calendar"></i>
@@ -45,12 +46,14 @@
     </div>
   </div>
 
-  <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="$close(attended)"
-      ng-disabled="visitScheduleForm.$invalid">
-    Save </button>
-    <button class="btn btn-default" ng-click="$dismiss()">Cancel</button>
-  </div>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-primary" ng-click="$close(attended)"
+    ng-disabled="visitScheduleForm.$invalid">
+  Save </button>
+  <button class="btn btn-default" ng-click="$dismiss()">Cancel</button>
+</div>
 
 </form>
 </div>

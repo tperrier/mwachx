@@ -62,4 +62,14 @@ angular.module('mwachx')
 
 }]); // End Directive
 
+// *************************************
+// Modal Controllers
+// *************************************
+
+angular.module('mwachx') .controller('VisitModifyModalController',
+  ['$scope','$modalInstance',
+  function ($scope, $modalInstance) {
+    $scope.today = new Date();
+  }]);
+
 })();

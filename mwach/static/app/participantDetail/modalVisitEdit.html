@@ -1,0 +1,34 @@
+<div class="form-horizontal">
+<form name="visitScheduleForm">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
+      <span aria-hidden="true">×</span>
+    </button>
+    <h3 class="modal-title">Edit Visit: {{visit.scheduled}}</h3>
+  </div>
+
+<div class="modal-body">
+
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="arrived">Scheduled Date:</label>
+      <div class="col-sm-9">
+        <p class='input-group'> <input name='arrived' ng-model='visit.scheduled' type='text' class='form-control'
+               datepicker-popup is-open="arrived_open" required min-date="today">
+         <span class="input-group-btn">
+           <button type="button" class="btn btn-default" ng-click="arrived_open = !arived_open">
+             <i class="glyphicon glyphicon-calendar"></i>
+          </button></span> </p>
+      </div>
+  </div>
+
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-primary" ng-click="$close(visit)"
+    ng-disabled="visitScheduleForm.$invalid">
+  Save </button>
+  <button class="btn btn-default" ng-click="$dismiss()">Cancel</button>
+</div>
+
+</form>
+</div>
