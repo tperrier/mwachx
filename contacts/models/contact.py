@@ -265,11 +265,16 @@ class Contact(TimeStampedModel):
 
     def send_message(self,text,**kwargs):
 
-        # Send message over system transport
-        try:
-            msg_id = transports.send(self.phone_number(),text)
-        except transports.TransportError as e:
-            msg_id = 'error'
+        if self.study_group != 'control':
+            # Make sure we don't send messages to the control group
+            # Send message over system transport
+            try:
+                msg_id = transports.send(self.phone_number(),text)
+            except transports.TransportError as e:
+                msg_id = 'error'
+        else:
+            text = 'WARNING: Message not sent control' + text
+            msg_id = 'control'
 
         # Create new message
         new_message = self.message_set.create(
