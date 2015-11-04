@@ -265,8 +265,7 @@ class Contact(TimeStampedModel):
 
     def send_message(self,text,**kwargs):
 
-        if self.study_group != 'control':
-            # Make sure we don't send messages to the control group
+        if self.study_group != 'control': # Make sure we don't send messages to the control group
             # Send message over system transport
             try:
                 msg_id = transports.send(self.phone_number(),text)
@@ -285,12 +284,13 @@ class Contact(TimeStampedModel):
 
         return new_message
 
-    def send_automated_message(self,send_base,send_offset=None):
-        potential_messages = back.AutomatedMessage.objects.filter(
-            send_base__name=send_base,
-            send_offset=send_offset
-        )
-        message = potential_messages.first()
+    def send_automated_message(self,send_base=None,send_offset=0):
+        # potential_messages = back.AutomatedMessage.objects.filter(
+        #     send_base__name=send_base,
+        #     send_offset=send_offset
+        # )
+        # message = potential_messages.first()
+        message = back.AutomatedMessage.objects.filter_participant(self,send_base,send_offset)
         self.send_message(text=message.for_participant(self),translation_status='auto',auto=message)
 
 

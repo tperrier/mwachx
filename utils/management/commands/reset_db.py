@@ -253,13 +253,21 @@ def create_users():
 
 def create_automated_messages():
 
-    # Create Message Bases
-    send_bases = ( ('signup', 'Sign Up'), ('edd', 'ANC Messaging'), ('visit', 'Visit Messages'), ('dd', 'Postpartum Messaging'), )
-    for name,display in send_bases:
-        back.MessageTag.objects.create(name=name,display=display,type='base')
+    # Create Message Tags
+    tags = {
+        'base': ( ('signup', 'Sign Up'), ('edd', 'ANC Messaging'),
+                      ('visit', 'Visit Messages'), ('dd', 'Postpartum Messaging'), ),
+        'language': ( ('english','English'), ),
+        'condition': ( ('normal','Normal'), ),
+    }
+    for type, tag_list in tags.iteritems():
+        for name,display in tag_list:
+            back.MessageTag.objects.create(name=name,display=display,type=type)
 
-    back.AutomatedMessage.objects.create(
+    signup_message = back.AutomatedMessage.objects.create(
         send_base = back.MessageTag.objects.get(type='base',name='signup'),
         message = 'Welcome to the mWaCh X Study. Please send your five letter confirmation code',
         send_offset_unit = 'd'
     )
+    signup_message.tags = [back.MessageTag.objects.get(name='english'),back.MessageTag.objects.get(name='normal')]
+    signup_message.save()
