@@ -45,6 +45,8 @@ class VisitViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         instance.seen()
 
+        cont.EventLog.objects.create(user=request.user,event='visit.seen',data={'visit_id':instance.id})
+
         visit = VisitSerializer(instance,context={'request':request})
         return Response(visit.data)
 
@@ -54,6 +56,8 @@ class VisitViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         instance.attended(request.data.get('arrived',None))
         instance_serialized = VisitSerializer(instance,context={'request':request}).data
+
+        cont.EventLog.objects.create(user=request.user,event='visit.attended',data={'visit_id':instance.id})
 
         # Make next visit if needed
         next_visit_serialized = None

@@ -84,7 +84,6 @@ class PendingViewSet(viewsets.ViewSet):
 
 class PhoneCallSerializer(serializers.ModelSerializer):
 
-
     participant = ParticipantSimpleSerializer(source='contact')
 
     class Meta:

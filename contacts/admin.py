@@ -61,6 +61,10 @@ class PractitionerAdmin(admin.ModelAdmin):
 class StatusChangeAdmin(admin.ModelAdmin):
     list_display = ('comment','contact_name','old','new','created')
 
+@admin.register(cont.EventLog)
+class EventLogAdmin(admin.ModelAdmin):
+    list_display = ('user','event','created')
+
 class PractitionerInline(admin.TabularInline):
     model = cont.Practitioner
 
