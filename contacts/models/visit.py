@@ -125,7 +125,7 @@ class Visit(ScheduledEvent):
 
     # Date Fields
 
-    comment = models.CharField(max_length=500,blank=True,null=True,default=None)
+    comment = models.TextField(blank=True,null=True)
     visit_type = models.CharField(max_length=25,choices=VISIT_TYPE_CHOICES,default='clinic')
 
     def is_bookcheck(self):

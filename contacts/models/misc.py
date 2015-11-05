@@ -20,7 +20,7 @@ class Connection(models.Model):
     identity = models.CharField(max_length=25,primary_key=True)
     contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
 
-    description = models.CharField(max_length=150,blank=True,null=True,help_text='Description of phone numbers relationship to contact')
+    description = models.CharField(max_length=30,blank=True,null=True,help_text='Description of phone numbers relationship to contact')
 
     is_primary = models.BooleanField(default=False)
 

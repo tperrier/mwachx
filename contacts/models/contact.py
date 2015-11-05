@@ -112,8 +112,8 @@ class Contact(TimeStampedModel):
 
     #Study Attributes
     study_id = models.CharField(max_length=10,unique=True,verbose_name='Study ID',help_text="* Use Barcode Scanner")
-    anc_num = models.CharField(max_length=20,verbose_name='ANC #')
-    ccc_num = models.CharField(max_length=20,verbose_name='CCC #',blank=True,null=True)
+    anc_num = models.CharField(max_length=15,verbose_name='ANC #')
+    ccc_num = models.CharField(max_length=15,verbose_name='CCC #',blank=True,null=True)
     facility = models.ForeignKey('backend.Facility')
 
     study_group = models.CharField(max_length=10,choices=GROUP_CHOICES,verbose_name='Group')
@@ -121,19 +121,19 @@ class Contact(TimeStampedModel):
     send_time = models.IntegerField(choices=TIME_CHOICES,default=8,verbose_name='Send Time')
 
     # Required Client Personal Information
-    nickname = models.CharField(max_length=50)
+    nickname = models.CharField(max_length=20)
     birthdate = models.DateField(verbose_name='DOB')
 
     # Optional Clinet Personal Informaiton
-    partner_name = models.CharField(max_length=100,blank=True,verbose_name='Partner Name')
-    relationship_status = models.CharField(max_length=30,choices=RELATIONSHIP_CHOICES,verbose_name='Relationship Status',blank=True)
+    partner_name = models.CharField(max_length=40,blank=True,verbose_name='Partner Name')
+    relationship_status = models.CharField(max_length=15,choices=RELATIONSHIP_CHOICES,verbose_name='Relationship Status',blank=True)
     previous_pregnancies = models.IntegerField(blank=True,null=True)
     phone_shared = models.NullBooleanField(verbose_name='Phone Shared')
 
     # Required Medical Information
-    status = models.CharField(max_length=20,choices=STATUS_CHOICES, default='pregnant')
-    language = models.CharField(max_length=25,choices=LANGUAGE_CHOICES,default='english')
-    condition = models.CharField(max_length=40,choices=CONDITION_CHOICES,default='normal')
+    status = models.CharField(max_length=15,choices=STATUS_CHOICES, default='pregnant')
+    language = models.CharField(max_length=10,choices=LANGUAGE_CHOICES,default='english')
+    condition = models.CharField(max_length=15,choices=CONDITION_CHOICES,default='normal')
     due_date = models.DateField(verbose_name='Estimated Delivery Date')
 
     delivery_date = models.DateField(verbose_name='Delivery Date',blank=True,null=True)
@@ -143,7 +143,7 @@ class Contact(TimeStampedModel):
     hiv_disclosed = models.NullBooleanField(blank=True,verbose_name='HIV Disclosed')
     hiv_messaging = models.CharField(max_length=15,default='',blank=True,choices=MESSAGING_CHOICES,verbose_name='HIV Messaging')
     child_hiv_status = models.NullBooleanField(blank=True,verbose_name='Child HIV Status')
-    family_planning = models.CharField(max_length=50,blank=True,choices=FAMILY_PLANNING_CHOICES,verbose_name='Family Planning')
+    family_planning = models.CharField(max_length=10,blank=True,choices=FAMILY_PLANNING_CHOICES,verbose_name='Family Planning')
 
     #State attributes to be edited by the system
     last_msg_client = models.DateField(blank=True,null=True,help_text='Date of last client message received',editable=False)
@@ -302,10 +302,11 @@ class StatusChange(TimeStampedModel):
         app_label = 'contacts'
 
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
+
     old = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
     new = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
 
-    comment = models.CharField(max_length=300)
+    comment = models.TextField()
 
     def contact_name(self):
         if self.contact:

@@ -39,7 +39,7 @@ class Message(TimeStampedModel):
         ordering = ('-created',)
         app_label = 'contacts'
 
-    text = models.CharField(max_length=1000,help_text='Text of the SMS message')
+    text = models.TextField(help_text='Text of the SMS message')
 
     #Boolean Flags on Message
     is_outgoing = models.BooleanField(default=True)
@@ -51,12 +51,12 @@ class Message(TimeStampedModel):
     parent = models.ForeignKey('contacts.Message',related_name='replies',blank=True,null=True)
 
     # translation
-    translated_text = models.CharField(max_length=1000,help_text='Text of the translated message',default='',blank=True)
-    translation_status = models.CharField(max_length='5',help_text='Status of translation',choices=STATUS_CHOICES,default='todo')
+    translated_text = models.TextField(max_length=1000,help_text='Text of the translated message',default='',blank=True)
+    translation_status = models.CharField(max_length=5,help_text='Status of translation',choices=STATUS_CHOICES,default='todo')
 
     # Meta Data
-    languages = models.CharField(max_length=100,help_text='Semi colon seperated list of languages',default='',blank=True)
-    topic = models.CharField(max_length=50,help_text='The topic of this message',default='',blank=True)
+    languages = models.CharField(max_length=50,help_text='Semi colon seperated list of languages',default='',blank=True)
+    topic = models.CharField(max_length=10,help_text='The topic of this message',default='',blank=True)
 
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
@@ -158,7 +158,7 @@ class PhoneCall(TimeStampedModel):
     is_outgoing = models.BooleanField(default=False)
     outcome = models.CharField(max_length=10,choices=OUTCOME_CHOICES,default='answered')
     length = models.IntegerField(blank=True,null=True)
-    comment = models.CharField(max_length=300,blank=True,null=True)
+    comment = models.TextField(blank=True,null=True)
 
     # Link to scheduled phone call field
     scheduled = models.ForeignKey(ScheduledPhoneCall,blank=True,null=True)
@@ -181,4 +181,4 @@ class Note(TimeStampedModel):
 
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
     admin = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
-    comment = models.CharField(max_length=500,blank=True,null=True)
+    comment = models.TextField(blank=True,null=True)
