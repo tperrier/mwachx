@@ -179,6 +179,6 @@ class Note(TimeStampedModel):
 
     objects = BaseQuerySet.as_manager()
 
-    contact = models.ForeignKey(settings.MESSAGING_CONTACT)
+    participant = models.ForeignKey(settings.MESSAGING_CONTACT)
     admin = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     comment = models.TextField(blank=True,null=True)

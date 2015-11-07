@@ -46,6 +46,9 @@ class Practitioner(models.Model):
 
 class EventLog(TimeStampedModel):
 
+    class Meta:
+        app_label = 'contacts'
+
     objects = BaseQuerySet.as_manager()
 
     user = models.ForeignKey(User)

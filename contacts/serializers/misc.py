@@ -79,15 +79,18 @@ class PendingViewSet(viewsets.ViewSet):
         return Response(serialized_messages.data)
 
 ########################################
-# Phone Call Seralizer
+# Phone Call and Note Seralizer
 ########################################
 
 class PhoneCallSerializer(serializers.ModelSerializer):
 
-    participant = ParticipantSimpleSerializer(source='contact')
-
     class Meta:
         model = cont.PhoneCall
+
+class NoteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = cont.Note
 
 ########################################
 # Scheduled Phone Calls

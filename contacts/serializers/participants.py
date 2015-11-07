@@ -16,7 +16,7 @@ import utils
 
 from messages import MessageSerializer
 from visits import VisitSerializer
-from misc import PhoneCallSerializer
+from misc import PhoneCallSerializer, NoteSerializer
 
 #############################################
 #  Serializer Definitions
@@ -64,6 +64,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	messages_url = serializers.HyperlinkedIdentityField(view_name='participant-messages',lookup_field='study_id')
 	visits_url = serializers.HyperlinkedIdentityField(view_name='participant-visits',lookup_field='study_id')
 	calls_url = serializers.HyperlinkedIdentityField(view_name='participant-calls',lookup_field='study_id')
+	notes_url = serializers.HyperlinkedIdentityField(view_name='participant-notes',lookup_field='study_id')
 
 	calls = PhoneCallSerializer(source='phonecall_set',many=True)
 	messages = MessageSerializer(source='get_pending_messages',many=True)
@@ -228,9 +229,9 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 	def visits(self, request, study_id=None, *args, **kwargs):
 		if request.method == 'GET': # Return a serialized list of all visits
 
-			contact_visits = cont.Visit.objects.filter(participant__study_id=study_id)
-			contact_visits = VisitSerializer(contact_visits,many=True,context={'request':request})
-			return Response(contact_visits.data)
+			visits = cont.Visit.objects.filter(participant__study_id=study_id)
+			visits_serialized = VisitSerializer(visits,many=True,context={'request':request})
+			return Response(visits_serialized.data)
 
 		elif request.method == 'POST': # Schedual a new visit
 
@@ -240,6 +241,15 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			visit_type=request.data['type']
 			)
 			return Response(VisitSerializer(next_visit,context={'request':request}).data)
+
+	@detail_route(methods=['get','post'])
+	def notes(self, request, study_id=None):
+		if request.method == 'GET': # Return a serialized list of all notes
+
+			notes = cont.Note.objects.filter(participant__study_id=study_id)
+			notes_serialized = NoteSerializer(notes,many=True,context={'request',request})
+			return Response(notes_serialized.data)
+
 
 	@detail_route(methods=['put'])
 	def delivery(self, request, study_id=None):

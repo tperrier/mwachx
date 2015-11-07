@@ -66,7 +66,7 @@
     <div class='message' ng-class="{'pull-left call':!call.is_outgoing, 'pull-right nurse':call.is_outgoing}">
       <div class="msg-header clearfix">
         <strong class='pull-left'>
-          Phone Call {{(call.is_outgoing)?'To':'From'}} {{call.participant.nickname}}
+          Phone Call {{(call.is_outgoing)?'To':'From'}} {{participant.nickname}}
         </strong>
         <span>Length: {{ (call.length)?call.length:'0' }} min</span>
         <div class="pull-right">{{call.created | date:'d MMM yy H:mm'}}</div>

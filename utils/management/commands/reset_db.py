@@ -171,7 +171,7 @@ def add_new_scheduled_call(contact,i):
 
 def add_note(note,contact):
     new_note = {
-        'contact':contact,
+        'participant':contact,
         'comment':note['content'],
         'created':note['date'],
     }
