@@ -182,3 +182,6 @@ class Note(TimeStampedModel):
     participant = models.ForeignKey(settings.MESSAGING_CONTACT)
     admin = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     comment = models.TextField(blank=True,null=True)
+
+    def is_pregnant(self):
+        return self.participant.was_pregnant(today=self.created.date())

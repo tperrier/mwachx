@@ -101,5 +101,18 @@
       <h3 ng-switch-when='0'>No Scheduled Visits</h3>
   </div>
 
+  <div class='panel panel-info'>
+    <div class='panel-heading'>
+      <div class='panel-title'>Other Actions</div>
+    </div>
+
+    <div class='panel-body'>
+      <button class='btn btn-info' tooltips='Notes for {{participant.nickname}}' ng-click='viewNotes()'>
+        Notes <span class='badge'>{{participant.note_count}}</span>
+      </button>
+    </div>
+
+  </div>
+
 </div>
 </div>

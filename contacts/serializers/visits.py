@@ -18,7 +18,7 @@ class VisitSerializer(serializers.ModelSerializer):
     participant = ParticipantSimpleSerializer()
 
     days_str = serializers.CharField()
-    is_pregnant = serializers.BooleanField()
+    is_pregnant = serializers.BooleanField(read_only=True)
 
     visit_type = serializers.CharField(source='get_visit_type_display')
 

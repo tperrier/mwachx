@@ -89,6 +89,8 @@ class PhoneCallSerializer(serializers.ModelSerializer):
 
 class NoteSerializer(serializers.ModelSerializer):
 
+    is_pregnant = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = cont.Note
 

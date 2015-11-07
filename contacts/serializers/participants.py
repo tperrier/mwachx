@@ -69,12 +69,16 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	calls = PhoneCallSerializer(source='phonecall_set',many=True)
 	messages = MessageSerializer(source='get_pending_messages',many=True)
 	visits = VisitSerializer(source='get_scheduled_visits',many=True)
+	note_count = serializers.SerializerMethodField()
 
 	class Meta:
 		model = cont.Contact
 
 	def get_facility(self,obj):
 		return ''.join(word.capitalize() for word in obj.facility.name.split())
+
+	def get_note_count(self,obj):
+		return obj.note_set.count()
 
 	def get_hiv_disclosed_display(self,obj):
 		return utils.null_boolean_display(obj.hiv_disclosed)

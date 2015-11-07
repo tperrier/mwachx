@@ -269,6 +269,16 @@
     });
   }; // End Stop Messaging
 
+  $scope.viewNotes = function() {
+
+    var modalInstance = $modal.open({
+      templateUrl: routePrefix + 'modalNotes.html',
+      controller: 'NotesModalController',
+      resolve: { participant : $scope.participant },
+    });
+
+  }; // End View Notes
+
 }]); // End Main Controller
 
 // *************************************
@@ -384,6 +394,15 @@ angular.module('mwachx').controller('VisitHistoryModalController',
     angular.extend($scope,{
       participant: participant,
       visits: participant.all('visits').getList().$object,
+    });
+  }]);
+
+angular.module('mwachx').controller('NotesModalController',
+  ['$scope','$modalInstance','$log','participant',
+  function ($scope, $modalInstance, $log, participant) {
+    angular.extend($scope,{
+      participant: participant,
+      notes: participant.all('notes').getList().$object,
     });
   }]);
 
