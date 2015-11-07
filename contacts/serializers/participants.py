@@ -255,6 +255,12 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			notes_serialized = NoteSerializer(notes,many=True,context={'request',request})
 			return Response(notes_serialized.data)
 
+		elif request.method == 'POST': # Add a new note
+
+			note = cont.Note.objects.create(participant=self.get_object(),admin=request.user,comment=request.data['comment'])
+			note_serialized	= NoteSerializer(note,context={'request',request})
+			return Response(note_serialized.data)
+
 
 	@detail_route(methods=['put'])
 	def delivery(self, request, study_id=None):

@@ -403,6 +403,14 @@ angular.module('mwachx').controller('NotesModalController',
     angular.extend($scope,{
       participant: participant,
       notes: participant.all('notes').getList().$object,
+      addNote: function() {
+        // console.log('Add Note',$scope.note);
+        $scope.participant.post('notes/',$scope.note).then(function(result) {
+          $scope.notes.unshift(result);
+          $scope.participant.note_count += 1;
+          $scope.note.comment = undefined;
+        });
+      },
     });
   }]);
 
