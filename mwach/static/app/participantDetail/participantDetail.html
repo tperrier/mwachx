@@ -73,9 +73,6 @@
         <i class="mw mw-2x mw-baby-noun"></i>
       </a></td>
 
-      <td><a class="btn btn-danger" tooltip="Stop messaging for {{participant.nickname}}" ng-click="stopMessaging()">
-        <i class="mw mw-2x">×</i>
-      </a></td>
       </tr></table>
 
       <table ng-switch-default class="table table-condensed table-striped text-center">
@@ -109,6 +106,10 @@
     <div class='panel-body'>
       <button class='btn btn-info' tooltips='Notes for {{participant.nickname}}' ng-click='viewNotes()'>
         Notes <span class='badge'>{{participant.note_count}}</span>
+      </button>
+
+      <button class="btn btn-danger" tooltip="Stop messaging for {{participant.nickname}}" ng-click="stopMessaging()">
+        Stop
       </button>
     </div>
 
