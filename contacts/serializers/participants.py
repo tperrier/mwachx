@@ -124,6 +124,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 				pass
 
 			contact.facility = facility
+			contact.validation_key = contact.get_validation_key()
 			#Important: save before making foreign keys
 			contact.save()
 

@@ -149,6 +149,7 @@ class Contact(TimeStampedModel):
     last_msg_client = models.DateField(blank=True,null=True,help_text='Date of last client message received',editable=False)
     last_msg_system = models.DateField(blank=True,null=True,help_text='Date of last system message sent',editable=False)
     is_validated = models.BooleanField(default=False,blank=True)
+    validation_key = models.CharField(max_length=5,blank=True)
 
     class Meta:
         app_label = 'contacts'
@@ -229,8 +230,8 @@ class Contact(TimeStampedModel):
         return '%04i'%self.study_id
     '''
 
-    def validation_key(self):
-        sha = sha256('%i%s%s%s'%(self.id,self.nickname,self.anc_num,self.birthdate)).hexdigest()[:5]
+    def get_validation_key(self):
+        sha = sha256('%i%s%s%s'%(self.study_id,self.nickname,self.anc_num,self.birthdate)).hexdigest()[:5]
         key = ''.join([str(int(i,16)) for i in sha])
         return key[:5]
 

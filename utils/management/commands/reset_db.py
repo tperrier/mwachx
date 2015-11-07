@@ -92,7 +92,9 @@ def add_client(client,study_id,facility=None):
         'facility':facility_list[study_id%mod],
         'status':status
         }
-    contact = cont.Contact.objects.create(**new_client)
+    contact = cont.Contact(**new_client)
+    contact.validation_key = contact.get_validation_key()
+    contact.save()
     connection = cont.Connection.objects.create(identity='+2500'+client['phone_number'][:8],contact=contact,is_primary=True)
 
     message_count = len(client['messages'])
