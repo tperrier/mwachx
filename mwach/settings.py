@@ -56,13 +56,14 @@ INSTALLED_APPS = (
     'constance',
     'constance.backends.database',
 
+    # Transports
+    'transports',
+    
     #mWaChx setup
     'contacts',
     'utils',
     'backend',
 
-    # Transports
-    'transports',
 )
 
 REST_FRAMEWORK = {

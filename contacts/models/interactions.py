@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Q
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from jsonfield import JSONField
 
 from constance import config
 
@@ -63,10 +64,8 @@ class Message(TimeStampedModel):
     contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
 
     #Africa's Talking Data
-    #ToDo: make this a data field once we know the format
-    time_received = models.CharField(max_length=50,default=None,blank=True,null=True)
     external_id = models.CharField(max_length=50,default=None,blank=True,null=True)
-    external_linkId = models.CharField(max_length=50,default=None,blank=True,null=True)
+    external_data = JSONField()
 
     def is_pending(self):
         return not self.is_viewed and not self.is_outgoing
@@ -111,28 +110,6 @@ class Message(TimeStampedModel):
 			self.topic = topic
 		self.is_viewed = True
 		self.save()
-
-    @staticmethod
-    def receive(number,message,time_received,external_id,external_linkId):
-        '''
-        Main hook for receiving messages
-            * number: the phone number of the incoming message
-            * message: the text of the incoming message
-        '''
-        from contacts.models import Connection
-        #Get incoming connection
-        connection,created = Connection.objects.get_or_create(identity=number)
-        contact = None if created else connection.contact
-        Message.objects.create(
-            is_system=False,
-            is_outgoing=False,
-            text=message,
-            connection=connection,
-            contact=contact,
-            time_received=time_received,
-            external_id=external_id,
-            external_linkId=external_linkId
-        )
 
 class PhoneCallQuerySet(ForUserQuerySet):
     pass
