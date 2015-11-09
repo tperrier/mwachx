@@ -42,6 +42,9 @@ class Practitioner(models.Model):
         return self.user.username
 
     def __str__(self):
+        return '{0}'.format(self.user.username)
+
+    def __repr__(self):
         return '<{0!s}> <{1}>'.format(self.facility,self.user.username)
 
 class EventLog(TimeStampedModel):

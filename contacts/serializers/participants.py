@@ -281,7 +281,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
 		instance = self.get_object()
 		reason = request.data.get('reason','')
-		comment = "{}\nStopped by {}".format(reason,request.user.practitioner)
+		comment = "{}\nStopped in web interface by {}".format(reason,request.user.practitioner)
 		instance.set_status('stopped', comment=comment)
 
 		serializer = self.get_serializer(instance)

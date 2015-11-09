@@ -163,6 +163,18 @@ class Contact(TimeStampedModel):
     class Meta:
         app_label = 'contacts'
 
+    def __init__(self, *args, **kwargs):
+        ''' Override __init__ to save old status'''
+        super(Contact,self).__init__(*args,**kwargs)
+        self._old_status = self.status
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        if not self._old_status == self.status:
+            self.statuschange_set.create(old=self._old_status,new=self.status,comment='Status Admin Change')
+
+        super(Contact,self).save(force_insert,force_update,*args,**kwargs)
+        self._old_status = self.status
+
     def __str__ (self):
         return self.nickname
 
@@ -268,12 +280,13 @@ class Contact(TimeStampedModel):
 
         self.delivery_date = delivery_date
         self.delivery_source = source
-        self.set_status('post')
+        self.set_status('post',comment='Post-partum set by {0}'.format(user))
         self.note_set.create(comment=comment,admin=user)
 
     def set_status(self, new_status, comment=''):
         old_status = self.status
         self.status = new_status
+        self._old_status = new_status # Disable auto status change message
         self.save()
 
         self.statuschange_set.create(
