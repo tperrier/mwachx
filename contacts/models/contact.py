@@ -7,6 +7,7 @@ import math
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import dateparse
 
 #Local Imports
 from utils.models import TimeStampedModel, BaseQuerySet
@@ -213,7 +214,12 @@ class Contact(TimeStampedModel):
         #ToDo: we need to add a delivery_date field to contact and use that here
         if today is None:
             today = utils.today()
-        return today < self.due_date
+        if isinstance(today,basestring):
+            today = dateparse(today)
+
+        if self.delivery_date is not None:
+            return today <= self.delivery_date
+        return today <= self.due_date
 
     def delta_days(self,today=None):
         '''
