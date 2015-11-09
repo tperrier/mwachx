@@ -269,8 +269,9 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 		if not instance.is_pregnant():
 			return Response({'error':{'message':'Participant already post-partum'}})
 
+		comment = "Delivery notified via {0}. \n{1}".format(request.data.get('source'),request.data.get('comment',''))
 		delivery_date = utils.angular_datepicker(request.data.get('delivery_date'))
-		instance.delivery(delivery_date, comment = 'Delivery event recorded by {}'.format(request.user.practitioner))
+		instance.delivery(delivery_date, comment=comment, user=request.user, source=request.data['source'])
 
 		serializer = self.get_serializer(instance)
 		return Response(serializer.data)

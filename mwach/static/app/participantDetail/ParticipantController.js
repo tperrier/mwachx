@@ -244,7 +244,7 @@
       $scope.participant.doPUT(delivery,'delivery/').then(function(result) {
         console.log('Result',result);
         if ( ! result.hasOwnProperty('error') ){
-          ['status','status_display','is_pregnant','delivery_date'].forEach(function(ele) {
+          ['status','status_display','is_pregnant','delivery_date','note_count'].forEach(function(ele) {
             $scope.participant[ele] = result[ele];
           });
         }

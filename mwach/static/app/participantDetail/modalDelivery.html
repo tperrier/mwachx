@@ -20,6 +20,27 @@
       </span>
     </p>
   </div>
+
+  <div class="form-group">
+    <label for="comment" class="col-sm-4 col-sm-offset-1 text-right">Comment</label>
+    <div class="col-sm-6">
+      <textarea class="form-control" ng-model="delivery.comment" placeholder="Text..." cols="20"></textarea>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="col-sm-4 col-sm-offset-1 text-right">Source</label>
+    <div class="col-sm-6">
+      <select class="form-control" required ng-model="delivery.source" tooltip="How did you you find out about the delivery">
+        <option>---------</option>
+        <option value="phone">Phone Call</option>
+        <option value="sms">SMS</option>
+        <option value="visit">Clinic Visit</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+  </div>
+
 </form>
 </div>
 

@@ -107,6 +107,13 @@ class Contact(TimeStampedModel):
         ('system','HIV Content Allowed'),
     )
 
+    DELIVERY_SOURCE_CHOICES = (
+        ('phone','Phone'),
+        ('sms','SMS'),
+        ('visit','Clinic Visit'),
+        ('other','Other'),
+    )
+
     #Set Custom Manager
     objects = ContactQuerySet.as_manager()
 
@@ -137,11 +144,12 @@ class Contact(TimeStampedModel):
     due_date = models.DateField(verbose_name='Estimated Delivery Date')
 
     delivery_date = models.DateField(verbose_name='Delivery Date',blank=True,null=True)
+    delivery_source = models.CharField(max_length=10,verbose_name="Delivery Notification Source",choices=DELIVERY_SOURCE_CHOICES,blank=True)
 
     # Optional Medical Informaton
     art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART Initiation',verbose_name='ART Initiation')
     hiv_disclosed = models.NullBooleanField(blank=True,verbose_name='HIV Disclosed')
-    hiv_messaging = models.CharField(max_length=15,default='',blank=True,choices=MESSAGING_CHOICES,verbose_name='HIV Messaging')
+    hiv_messaging = models.CharField(max_length=15,blank=True,choices=MESSAGING_CHOICES,verbose_name='HIV Messaging')
     child_hiv_status = models.NullBooleanField(blank=True,verbose_name='Child HIV Status')
     family_planning = models.CharField(max_length=10,blank=True,choices=FAMILY_PLANNING_CHOICES,verbose_name='Family Planning')
 
@@ -250,12 +258,14 @@ class Contact(TimeStampedModel):
                         scheduled=scheduled)
         return new_call
 
-    def delivery(self, delivery_date, comment=None):
+    def delivery(self, delivery_date, comment='', user=None, source=None):
 
         self.delivery_date = delivery_date
-        self.set_status('post', comment)
+        self.delivery_source = source
+        self.set_status('post')
+        self.note_set.create(comment=comment,admin=user)
 
-    def set_status(self, new_status, comment=None):
+    def set_status(self, new_status, comment=''):
         old_status = self.status
         self.status = new_status
         self.save()
@@ -307,7 +317,7 @@ class StatusChange(TimeStampedModel):
     old = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
     new = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
 
-    comment = models.TextField()
+    comment = models.TextField(blank=True)
 
     def contact_name(self):
         if self.contact:
