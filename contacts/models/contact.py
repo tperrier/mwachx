@@ -10,20 +10,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import dateparse
 
 #Local Imports
-from utils.models import TimeStampedModel, BaseQuerySet
+from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
 from contacts.models import Message, PhoneCall
 import backend.models as back
 import utils
 import transports
 
-class ContactQuerySet(BaseQuerySet):
-
-    def for_user(self,user):
-        try:
-            return self.filter(facility=user.practitioner.facility)
-        except ObjectDoesNotExist:
-            return self.none()
-
+class ContactQuerySet(ForUserQuerySet):
 
     def pregnant(self):
         return self.filter(models.Q(status='pregnant')|models.Q(status='over'))

@@ -32,13 +32,27 @@ class BaseQuerySet(models.QuerySet):
 
 class ForUserQuerySet(BaseQuerySet):
 
-    def for_user(self,user):
+    def for_user(self,user, superuser=False):
+        if superuser and user.is_superuser:
+            return self.all()
+
+        # Get facility or return no participants if there is no facility
         try:
-            return self.filter(contact__facility=user.practitioner.facility)
-        except FieldError as e:
-            try:
-                return self.filter(participant__facility=user.practitioner.facility)
-            except (ObjectDoesNotExist, AttributeError) as e:
-                return self.none()
-        except (ObjectDoesNotExist, AttributeError) as e:
+            facility = user.practitioner.facility
+        except (ObjectDoesNotExist) as e:
             return self.none()
+
+        # Try to filter by facility using contact, participant or self
+        filter = _try_filter(self,models.Q(contact__facility=facility))
+        if filter is None:
+            filter = _try_filter(self,models.Q(participant__facility=facility))
+        if filter is None:
+            filter = _try_filter(self,models.Q(facility=facility))
+
+        return filter if filter is not None else self.none()
+
+def _try_filter(queryset,q):
+    try:
+        return queryset.filter(q)
+    except FieldError as e:
+        return None
