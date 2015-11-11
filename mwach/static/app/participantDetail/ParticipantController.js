@@ -254,9 +254,13 @@
 
   $scope.stopMessaging = function() {
 
+    var $modalScope = $rootScope.$new();
+    angular.extend($modalScope,{
+      participant:$scope.participant,
+    })
     var modalInstance = $modal.open({
       templateUrl: routePrefix + 'modalStopMessaging.html',
-      size:'sm',
+      scope:$modalScope,
     }).result.then(function(reason){
       console.log('Stop',reason);
       $scope.participant.doPUT(reason,'stop_messaging/').then(function(result) {

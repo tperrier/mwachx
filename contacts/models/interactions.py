@@ -14,15 +14,13 @@ from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
 
 class MessageQuerySet(ForUserQuerySet):
 
+    participant_field = 'contact'
+
     def pending(self):
         return self.filter(is_viewed=False,is_outgoing=False)
 
     def to_translate(self):
         return self.filter(is_system=False,translation_status='todo')
-
-    def top(self):
-        return self[:2]
-
 
 class Message(TimeStampedModel):
 
@@ -112,7 +110,8 @@ class Message(TimeStampedModel):
 		self.save()
 
 class PhoneCallQuerySet(ForUserQuerySet):
-    pass
+
+    participant_field = 'contact'
 
 class PhoneCall(TimeStampedModel):
 

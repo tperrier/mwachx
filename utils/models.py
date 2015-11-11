@@ -32,6 +32,8 @@ class BaseQuerySet(models.QuerySet):
 
 class ForUserQuerySet(BaseQuerySet):
 
+    participant_field = 'participant'
+
     def for_user(self,user, superuser=False):
         if superuser and user.is_superuser:
             return self.all()
@@ -42,17 +44,17 @@ class ForUserQuerySet(BaseQuerySet):
         except (ObjectDoesNotExist) as e:
             return self.none()
 
-        # Try to filter by facility using contact, participant or self
-        filter = _try_filter(self,models.Q(contact__facility=facility))
-        if filter is None:
-            filter = _try_filter(self,models.Q(participant__facility=facility))
-        if filter is None:
-            filter = _try_filter(self,models.Q(facility=facility))
+        return self.filter(self.participant_Q(facility=facility))
 
-        return filter if filter is not None else self.none()
+    def user_active(self):
+        ''' Filter queryset based on active users.
+            Active users have status not in [completed,stopped,other]
+        '''
 
-def _try_filter(queryset,q):
-    try:
-        return queryset.filter(q)
-    except FieldError as e:
-        return None
+        status_list = ['completed','stopped','other']
+        return self.exclude(self.participant_Q(status__in=status_list))
+
+    def participant_Q(self,**kwargs):
+        prefix = self.participant_field+'__' if self.participant_field is not None else ''
+        kwargs = {prefix+key:value for key,value in kwargs.items()}
+        return models.Q(**kwargs)
