@@ -5,16 +5,12 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>mWaCh X: Web Dashboard</title>
-
+    <title>{% block title %}mWaChX{% endblock %}</title>
     <link rel='stylesheet' href='{% static "css/main.css" %}'>
-
-    <script src="{% static 'components.js' %}"></script>
-    <script src="{% static 'mwachx.js' %}"></script>
 
   </head>
 
-  <body ng-app="mwachx" ng-controller="MainController">
+  <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -54,28 +50,16 @@
                 <h3 class='pull-right'>
                     {% if not user.is_anonymous %}
                      <a class='btn btn-warning' href='/accounts/logout/?next=/'>Logout: {{user.username}}</a>
-                        {% if user.is_staff %}
-                        <select ng-init="facility='{{user.practitioner.facility.name}}'"
-                                ng-change='change_facility()' ng-model='facility'
-                                id='id_staff_facility' name='staff_facility'>
-                            <option value='bondo'>Bondo</option>
-                            <option value='ahero'>Ahero</option>
-                            <option value='mathare'>Mathare</option>
-                        </select>
-                        {% endif %}
                     {% endif %}
-                    <a class='date-delta btn btn-sm btn-warning' ng-click='date_backward()'><</a>
-                    <span class="label label-warning"
-                          ng-init="current_date = '{{CURRENT_DATE|date:'Y-m-d'}}'"
-                          ng-bind='current_date'></span>
-                    <a class='date-delta btn btn-sm btn-warning' ng-click='date_forward()'>></a>
                 </h3>
 
             </div>
         </div>
     </nav>
 
-    <div ui-view class="container-fluid mw-main-view"></div>
+    <div class="container-fluid mw-main-view">
+    {% block content %}{% endblock %}
+    </div>
 
   </body>
 </html>

@@ -36,7 +36,7 @@ def receive(identity,message,external_id=None,**kwargs):
             validator.action(contact)
             break
 
-    Message.objects.create(
+    cont.Message.objects.create(
         is_system=False,
         is_outgoing=False,
         text=message,

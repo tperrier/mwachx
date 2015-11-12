@@ -5,6 +5,7 @@ from django.shortcuts import render
 #Local Imports
 import contacts.models as cont
 import forms
+import transports
 
 
 def send_message(request):
@@ -18,14 +19,9 @@ def send_message(request):
         if request.POST.get('participant-send',False):
             participant_send_form = forms.ParticipantSendForm(request.POST)
             if participant_send_form.is_valid():
-                message = participant_send_form.save(commit=False)
-                #set defaults for incoming message
-                message.is_outgoing = False
-                message.is_system = False
-                message.connection = cont.Connection.objects.get(identity=message.contact.phone_number)
-                #now save the message
-                message.save()
-                contact = message.contact
+                identity = participant_send_form.cleaned_data['contact'].phone_number()
+                text = participant_send_form.cleaned_data['text']
+                transports.receive(identity=identity,message=text)
 
                 #reset form on valid
                 participant_send_form = forms.ParticipantSendForm()
@@ -33,20 +29,12 @@ def send_message(request):
         elif request.POST.get('system-send',False):
             system_send_form = forms.SystemSendForm(request.POST)
             if system_send_form.is_valid():
-                message = system_send_form.save(commit=False)
-                #set defaults for incoming message
-                message.is_outgoing = True
-                message.is_system = True
-                message.is_viewed = True
-                message.connection = cont.Connection.objects.get(identity=message.contact.phone_number)
-                system = True
-
-                message.save()
-                contact = message.contact
+                contact = participant_send_form.cleaned_data['contact']
+                text = participant_send_form.cleaned_data['text']
+                message = contact.send_message(text)
 
                 #reset form on valid
                 system_send_form = forms.SystemSendForm()
-
 
     return render(request,'transports/http/send_message.html',
         {'participant_form':participant_send_form,'contact':contact,
