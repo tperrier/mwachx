@@ -295,21 +295,23 @@ class Contact(TimeStampedModel):
             # Make sure we don't send messages to the control group
             # Send message over system transport
             try:
-                msg_id, msg_status, external_data = transports.send(self.phone_number(),text)
+                msg_id, msg_success, external_data = transports.send(self.phone_number(),text)
             except transports.TransportError as e:
                 msg_id = ''
-                msg_status = str(e)
+                msg_success = False
+                external_data = {'error':str(e)}
         else:
             text = 'CONTROL NOT SENT: ' + text
             msg_id = 'control'
-            msg_status = 'Control: Not Sent'
+            msg_success = False
+            external_data = {}
 
         # Create new message
         new_message = self.message_set.create(
             text=text,
             connection=self.connection(),
             external_id=msg_id,
-            external_status=msg_status,
+            external_success=msg_success,
             external_data=external_data,
             **kwargs)
 

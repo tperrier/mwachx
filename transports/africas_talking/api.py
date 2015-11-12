@@ -55,9 +55,9 @@ def send(to,message):
         }
     }
     '''
-    # Return tuple (messageId, messageStatus, extra_data)
+    # Return tuple (messageId, messageSuccess, extra_data)
     recipients = data['SMSMessageData']['Recipients']
     if len(recipients) == 1:
         msg_id = recipients[0]['messageId']
-        msg_status = recipients[0]['status']
-        return msg_id, msg_status, {}
+        msg_success = recipients[0]['status'] == 'Success'
+        return msg_id, msg_success, {'status':recipients[0]['status']}

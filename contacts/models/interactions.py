@@ -63,7 +63,7 @@ class Message(TimeStampedModel):
 
     #Africa's Talking Data
     external_id = models.CharField(max_length=50,blank=True)
-    external_status = models.CharField(max_length=75,blank=True)
+    external_success = models.NullBooleanField()
     external_data = JSONField()
 
     def is_pending(self):
