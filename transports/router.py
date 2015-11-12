@@ -11,9 +11,7 @@ def send(identity, message, transport_name=None):
     '''
     # Find name of transport module
     if transport_name is None:
-        transport_name = getattr(settings,'transport',None)
-    if transport_name is None:
-        transport_name = 'default'
+        transport_name = getattr(settings,'SMS_TRANSPORT','default')
 
     # Get transport send Function
     transport = __import__(transport_name,globals(),locals())

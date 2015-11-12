@@ -4,9 +4,6 @@ import contacts.models
 import datetime
 import utils
 
-def openshift(context):
-	return {'ON_OPENSHIFT': settings.ON_OPENSHIFT}
-
 def current_date(context):
 	return {
 		'CURRENT_DATE': utils.today(),

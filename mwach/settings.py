@@ -58,7 +58,7 @@ INSTALLED_APPS = (
 
     # Transports
     'transports',
-    
+
     #mWaChx setup
     'contacts',
     'utils',
@@ -95,7 +95,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
     'constance.context_processors.config',
 
-    'utils.context_processors.openshift',
     'utils.context_processors.current_date',
     'utils.context_processors.brand_status',
 )
@@ -158,10 +157,8 @@ STATICFILES_DIRS = (
 
 #CONSTANCE SETUP
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
-
 CONSTANCE_CONFIG = {
     'CURRENT_DATE':('2015-8-1','Current Date for training'),
-    'AFRICAS_TALKING_SEND':(False,"Africa's Talking Send"),
 }
 
 ################
@@ -196,13 +193,13 @@ LOGGING = {
 #############
 # Custom Settings
 #############
-
 MESSAGING_CONTACT = 'contacts.Contact'
 MESSAGING_CONNECTION = 'contacts.Connection'
 MESSAGING_ADMIN = 'auth.User'
 
+
 try:
-    from local_settings import *
+    import local_settings
 except ImportError as e:
-    #Silently fail if no local settings
+    # Silently fail if no local settings found
     pass
