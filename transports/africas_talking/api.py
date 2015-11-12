@@ -27,10 +27,9 @@ if SHORTCODE:
     PARAMS['from'] = SHORTCODE
 
 def send(to,message):
-    
+
     if not AFRICAS_TALKING_SEND:
-        print "Africas Talking called when send not set to True"
-        return
+        raise AfricasTalkingException("Africas Talking called when send not set to True")
     if API_KEY is None:
         raise AfricasTalkingException('AFRICAS_TALKING var has not set API_KEY')
     if USERNAME is None:
@@ -48,7 +47,7 @@ def send(to,message):
     {u'SMSMessageData':
         {u'Message': u'Sent to 1/1 Total Cost: USD 0.0109',
         u'Recipients': [{
-            u'status': u'Success',
+            u'status': u'Success', #u'status': u'Invalid Phone Number',
             u'cost': u'KES 1.0000',
             u'number': u'+254708054321',
             u'messageId': u'ATXid_b50fada5b1af078f2277cacb58ef2447'
@@ -56,11 +55,9 @@ def send(to,message):
         }
     }
     '''
-    #Return single or list of UUIDs
+    # Return tuple (messageId, messageStatus, extra_data)
     recipients = data['SMSMessageData']['Recipients']
     if len(recipients) == 1:
-        msgID = recipients[0]['messageId']
-        if msgID == 'None':
-            return 'invalid'
-        return msgID
-    return [r['messageId'] for r in recipients]
+        msg_id = recipients[0]['messageId']
+        msg_status = recipients[0]['status']
+        return msg_id, msg_status, {}

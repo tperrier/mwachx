@@ -295,25 +295,34 @@ class Contact(TimeStampedModel):
             # Make sure we don't send messages to the control group
             # Send message over system transport
             try:
-                msg_id = transports.send(self.phone_number(),text)
+                msg_id, msg_status, external_data = transports.send(self.phone_number(),text)
             except transports.TransportError as e:
-                msg_id = 'error'
+                msg_id = ''
+                msg_status = str(e)
         else:
-            text = 'WARNING: Message not sent control' + text
+            text = 'CONTROL NOT SENT: ' + text
             msg_id = 'control'
+            msg_status = 'Control: Not Sent'
 
         # Create new message
         new_message = self.message_set.create(
             text=text,
             connection=self.connection(),
             external_id=msg_id,
+            external_status=msg_status,
+            external_data=external_data,
             **kwargs)
 
         return new_message
 
-    def send_automated_message(self,send_base=None,send_offset=0):
+    def send_automated_message(self,send_base=None,send_offset=0,control_overide=False):
         message = back.AutomatedMessage.objects.filter_participant(self,send_base,send_offset)
-        self.send_message(text=message.for_participant(self),translation_status='auto',auto=message)
+        return self.send_message(
+            text=message.for_participant(self),
+            translation_status='auto',
+            auto=message,
+            contorl_overide=contorl_overide
+        )
 
 
 class StatusChange(TimeStampedModel):

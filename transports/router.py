@@ -15,7 +15,8 @@ def send(identity, message, transport_name=None):
 
     # Get transport send Function
     transport = __import__(transport_name,globals(),locals())
-    transport.send(identity,message)
+    id, status, data = transport.send(identity,message)
+    return id, status, data
 
 def receive(identity,message,external_id=None,**kwargs):
     '''

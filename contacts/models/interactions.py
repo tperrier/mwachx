@@ -62,7 +62,8 @@ class Message(TimeStampedModel):
     contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
 
     #Africa's Talking Data
-    external_id = models.CharField(max_length=50,default=None,blank=True,null=True)
+    external_id = models.CharField(max_length=50,blank=True)
+    external_status = models.CharField(max_length=75,blank=True)
     external_data = JSONField()
 
     def is_pending(self):
