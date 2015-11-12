@@ -199,7 +199,7 @@ MESSAGING_ADMIN = 'auth.User'
 
 
 try:
-    import local_settings
+    from local_settings import *
 except ImportError as e:
     # Silently fail if no local settings found
     pass
