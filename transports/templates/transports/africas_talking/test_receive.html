@@ -1,18 +1,15 @@
-<html>
+{% extends 'base.html' %}
+{% load staticfiles %}
 
-	<head>
-		<title>Test Receive Message</title>
-	</head>
+{% block title %}Africa's Talking: Test Receive{% endblock %}
 
-	<body>
+{% block content %}
 		<h1>Test Receive Message</h1>
-		<form action='{% url "africas_talking.views.receive" %}' method='post'>
+		<form action='{% url "africas-talking-receive" %}' method='post'>
+			<input type='hidden' name='web_token' value='on'/>
 			<table>
 			{{form}}
 			</table>
 			<input type='submit' value='Send'/>
 		</form>
-
-	</body>
-
-</html>
+{% endblock %}

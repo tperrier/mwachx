@@ -3,5 +3,5 @@ import views
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'receive$',views.receive),
+    url(r'receive$',views.receive,name='africas-talking-receive'),
 )
