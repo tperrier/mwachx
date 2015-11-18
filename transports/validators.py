@@ -20,5 +20,5 @@ class KeywordValidator(Validator):
 
     def __init__(self,name,action=None):
         def keyword_check(contact,message):
-            return name.strip().lower() == message.strip().lower()
+            return name.lower() == message.lower(), {}, message
         super(KeywordValidator,self).__init__(name,keyword_check,action)

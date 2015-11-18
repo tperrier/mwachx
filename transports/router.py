@@ -29,21 +29,22 @@ def receive(identity,message,external_id=None,**kwargs):
     #Get incoming connection or create if not found
     connection,created = cont.Connection.objects.get_or_create(identity=identity)
     contact = None if created else connection.contact
+    message = message.strip()
 
     for validator in validation.validators:
-        if validator(contact,message):
-            validator.action(contact)
-            break
-
-    return cont.Message.objects.create(
-        is_system=False,
-        is_outgoing=False,
-        text=message,
-        connection=connection,
-        contact=contact,
-        external_id=external_id,
-        external_data=kwargs
-    )
+        valid, msg_args, message = validator(contact,message)
+        if valid:
+            validator.action(contact,message)
+            return cont.Message.objects.create(
+                is_system=False,
+                is_outgoing=False,
+                text=message,
+                connection=connection,
+                contact=contact,
+                external_id=external_id,
+                external_data=kwargs,
+                **msg_args
+            )
 
 class TransportError(Exception):
     pass
