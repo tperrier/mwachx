@@ -12,9 +12,4 @@ class FacilityAdmin(admin.ModelAdmin):
 @admin.register(back.AutomatedMessage)
 class AutomatedMessageAdmin(admin.ModelAdmin):
     list_display = ('message','send_base','send_offset')
-    list_filter = ('send_base','tags')
-
-@admin.register(back.MessageTag)
-class MessageTagAdmin(admin.ModelAdmin):
-    list_display = ('name','display','type')
-    list_filter = ('type',)
+    list_filter = ('send_base',)

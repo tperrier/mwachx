@@ -46,7 +46,6 @@ class Message(TimeStampedModel):
     is_viewed = models.BooleanField(default=False)
     is_related = models.NullBooleanField(default=None,blank=True,null=True)
 
-    auto = models.ForeignKey('backend.AutomatedMessage',related_name='outgoing',blank=True,null=True)
     parent = models.ForeignKey('contacts.Message',related_name='replies',blank=True,null=True)
 
     # translation
@@ -61,10 +60,13 @@ class Message(TimeStampedModel):
     connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
     contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
 
-    #Africa's Talking Data
+    #Africa's Talking Data Only for outgoing messages
     external_id = models.CharField(max_length=50,blank=True)
     external_success = models.NullBooleanField()
     external_data = JSONField()
+
+    # Only for system messages
+    auto = models.CharField(max_length=50,blank=True)
 
     def is_pending(self):
         return not self.is_viewed and not self.is_outgoing

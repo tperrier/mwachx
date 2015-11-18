@@ -219,7 +219,6 @@ class Contact(TimeStampedModel):
         '''
         Returns true if the contact was pregnant at date today
         '''
-        #ToDo: we need to add a delivery_date field to contact and use that here
         if today is None:
             today = utils.today()
         if isinstance(today,basestring):
@@ -235,6 +234,8 @@ class Contact(TimeStampedModel):
         '''
         if today is None:
             today = utils.today()
+        if isinstance(today,basestring):
+            today = dateparse(today)
 
         if self.was_pregnant(today):
             # Return 40*7 - days until due date
@@ -320,9 +321,9 @@ class Contact(TimeStampedModel):
     def send_automated_message(self,send_base=None,send_offset=0,control_overide=False):
         message = back.AutomatedMessage.objects.filter_participant(self,send_base,send_offset)
         return self.send_message(
-            text=message.for_participant(self),
+            text=message.message,
             translation_status='auto',
-            auto=message,
+            auto=message.description(),
             contorl_overide=contorl_overide
         )
 

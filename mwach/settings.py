@@ -61,9 +61,8 @@ INSTALLED_APPS = (
 
     #mWaChx setup
     'contacts',
-    'utils',
     'backend',
-
+    'utils',
 )
 
 REST_FRAMEWORK = {
