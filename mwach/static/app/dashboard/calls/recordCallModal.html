@@ -2,10 +2,14 @@
   <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
     <span aria-hidden="true">×</span>
   </button>
-  <h3 class="modal-title">Record Phone Call For {{call.participant.nickname}}: {{call.participant.phone_number}}</h3>
+  <h3 class="modal-title">
+    Record Phone Call For {{call.participant.nickname}}: {{call.participant.phone_number}}
+  </h3>
 </div>
 <div class='modal-body'>
-
+  <div class='alert alert-warning' ng-if='call.notify_count >= 4'>
+    {{call.notify_count}} calls made. Use secondary contact information.
+  </div>
   <form class='form-horizontal' name="call_form">
 
     <div class='form-group'>
