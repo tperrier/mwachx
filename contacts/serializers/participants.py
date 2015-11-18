@@ -145,7 +145,9 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 					participant=contact,visit_type='study')
 
 			#Send Welcome Message
-			contact.send_automated_message('signup',0,contorl_overide=True)
+			# contact.send_automated_message('signup',0,control=True)
+			contact.send_message('Welcome to the mWaCh X Study. Please send your five letter confirmation code',
+				control=True)
 
 			serialized_contact = ParticipantSerializer(contact,context={'request':request})
 			return Response(serialized_contact.data)

@@ -260,5 +260,5 @@ def create_automated_messages():
         message = 'Welcome to the mWaCh X Study. Please send your five letter confirmation code',
         language = 'english',
         send_offset = 0,
-        group = '', condition='', hiv_messaging = ''
+        group = '', condition='normal', hiv_messaging = False
     )

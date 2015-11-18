@@ -59,10 +59,10 @@ class Contact(TimeStampedModel):
     )
 
     CONDITION_CHOICES = (
-        ('art','Starting ART'),
-        ('adolescent','Adolescent'),
-        ('first','First Time Mother'),
-        ('normal','Normal'),
+        ('art','1 - Starting ART'),
+        ('adolescent','2 - Adolescent'),
+        ('first','3 - First Time Mother'),
+        ('normal','4 -  Normal'),
     )
 
     FAMILY_PLANNING_CHOICES = (
@@ -130,7 +130,7 @@ class Contact(TimeStampedModel):
     # Optional Clinet Personal Informaiton
     partner_name = models.CharField(max_length=40,blank=True,verbose_name='Partner Name')
     relationship_status = models.CharField(max_length=15,choices=RELATIONSHIP_CHOICES,verbose_name='Relationship Status',blank=True)
-    previous_pregnancies = models.IntegerField(blank=True,null=True)
+    previous_pregnancies = models.IntegerField(blank=True,null=True,help_text='* excluding current')
     phone_shared = models.NullBooleanField(verbose_name='Phone Shared')
 
     # Required Medical Information
@@ -254,7 +254,7 @@ class Contact(TimeStampedModel):
     '''
 
     def get_validation_key(self):
-        sha = sha256('%i%s%s%s'%(self.study_id,self.nickname,self.anc_num,self.birthdate)).hexdigest()[:5]
+        sha = sha256('%s%s%s%s'%(self.study_id,self.nickname,self.anc_num,self.birthdate)).hexdigest()[:5]
         key = ''.join([str(int(i,16)) for i in sha])
         return key[:5]
 
@@ -290,9 +290,9 @@ class Contact(TimeStampedModel):
             old = old_status, new = new_status, comment = comment
         )
 
-    def send_message(self,text,control_overide=False,**kwargs):
+    def send_message(self,text,control=False,**kwargs):
 
-        if self.study_group != 'control' or control_overide:
+        if self.study_group != 'control' or control:
             # Make sure we don't send messages to the control group
             # Send message over system transport
             try:
@@ -318,13 +318,13 @@ class Contact(TimeStampedModel):
 
         return new_message
 
-    def send_automated_message(self,send_base=None,send_offset=0,control_overide=False):
+    def send_automated_message(self,send_base=None,send_offset=0,control=False):
         message = back.AutomatedMessage.objects.filter_participant(self,send_base,send_offset)
         return self.send_message(
             text=message.message,
             translation_status='auto',
             auto=message.description(),
-            contorl_overide=contorl_overide
+            control=control
         )
 
 

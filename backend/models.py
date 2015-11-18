@@ -19,13 +19,17 @@ class AutomatedMessageQuerySet(models.QuerySet):
             send_base = 'edd' if participant.is_pregnant() else 'dd'
             send_offset = participant.delta_days()/7
 
-        message_set = self.filter(send_base=send_base, send_offset=send_offset, group=participant.study_group,
-            language=participant.language,hiv_messaginig=participant.hiv_messaging == 'system')
+        message_set = self.filter(send_base=send_base, send_offset=send_offset,
+            language=participant.language,hiv_messaging=participant.hiv_messaging == 'system')
         # TODO: selecting the first might not be the best stratagy
-        message = message_set.filter(condition=participant.condition).first()
+        message = message_set.filter(condition=participant.condition, group=participant.study_group).first()
 
         if message is None: # No match for participant conditions
             # Try to grab the normal message
+            message = message_set.filter(condition='normal', group=participant.study_group).first()
+
+        if message is None:
+            # If message is is still none don't check group
             message = message_set.filter(condition='normal').first()
 
         return message
@@ -91,4 +95,4 @@ class AutomatedMessage(models.Model):
             'Y' if self.hiv_messaging else 'N')
 
     def description(self):
-        return "{0}_{1}".format(self.category,self.send_offset)
+        return "{0}_{1}".format(self.category(),self.send_offset)
