@@ -98,7 +98,7 @@ class Contact(TimeStampedModel):
     )
 
     MESSAGING_CHOICES = (
-        ('','No HIV Messaging'),
+        ('none','No HIV Messaging'),
         ('initiated','HIV Content If Initiated'),
         ('system','HIV Content Allowed'),
     )
@@ -145,7 +145,7 @@ class Contact(TimeStampedModel):
     # Optional Medical Informaton
     art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART Initiation',verbose_name='ART Initiation')
     hiv_disclosed = models.NullBooleanField(blank=True,verbose_name='HIV Disclosed')
-    hiv_messaging = models.CharField(max_length=15,blank=True,choices=MESSAGING_CHOICES,verbose_name='HIV Messaging')
+    hiv_messaging = models.CharField(max_length=15,choices=MESSAGING_CHOICES,default='none',verbose_name='HIV Messaging')
     child_hiv_status = models.NullBooleanField(blank=True,verbose_name='Child HIV Status')
     family_planning = models.CharField(max_length=10,blank=True,choices=FAMILY_PLANNING_CHOICES,verbose_name='Family Planning')
 
@@ -163,10 +163,19 @@ class Contact(TimeStampedModel):
         ''' Override __init__ to save old status'''
         super(Contact,self).__init__(*args,**kwargs)
         self._old_status = self.status
+        self._old_hiv_messaging = self.hiv_messaging
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
         if not self._old_status == self.status:
             self.statuschange_set.create(old=self._old_status,new=self.status,comment='Status Admin Change')
+
+        if not self._old_hiv_messaging == self.hiv_messaging:
+            print self._old_hiv_messaging, self.hiv_messaging
+            self.statuschange_set.create(old=self._old_hiv_messaging,new=self.hiv_messaging,
+                comment='HIV messaging changed',type='hiv')
+
+        # Forc capitalization of nickname
+        self.nickname = self.nickname.capitalize()
 
         super(Contact,self).save(force_insert,force_update,*args,**kwargs)
         self._old_status = self.status
@@ -177,31 +186,21 @@ class Contact(TimeStampedModel):
     def __repr__(self):
         return "(#%03s) %s - %s"%(self.study_id,self.nickname,self.facility)
 
-    # @property
     def connection(self):
         return self.connection_set.filter(is_primary=True).first()
         # from contacts.models import Connection
         # return Connection.objects.filter(contact=self,is_primary=True).first()
 
-    # @property
     def phone_number(self):
         return self.connection().identity
 
-    # @property
     def is_active(self):
         return not (self.status == 'completed' or self.status == 'stopped' or self.status == 'other')
 
-    # @property
     def age(self):
         today = utils.today()
         delta = today - self.birthdate
         return int((delta.days - delta.seconds/86400.0)/365.2425)
-
-    ''' ~REMOVE
-    @property
-    def get_visits(self):
-        return self.visit_set.filter(~models.Q(skipped=False))
-    '''
 
     def get_scheduled_visits(self):
         ''' Return all currently scheduled visits '''
@@ -211,7 +210,6 @@ class Contact(TimeStampedModel):
         ''' Return all currently pending messages '''
         return self.message_set.pending()
 
-    # @property
     def is_pregnant(self):
         return self.status == 'pregnant' or self.status == 'over'
 
@@ -247,11 +245,6 @@ class Contact(TimeStampedModel):
 
     def days_str(self,today=None):
         return utils.days_as_str(self.delta_days(today))
-
-    ''' ~REMOVE
-    def study_id_short(self):
-        return '%04i'%self.study_id
-    '''
 
     def get_validation_key(self):
         sha = sha256('%s%s%s%s'%(self.study_id,self.nickname,self.anc_num,self.birthdate)).hexdigest()[:5]
@@ -318,7 +311,7 @@ class Contact(TimeStampedModel):
 
         return new_message
 
-    def send_automated_message(self,send_base=None,send_offset=0,control=False):
+    def send_automated_message(self,send_base=None,send_offset=None,control=False):
         message = back.AutomatedMessage.objects.filter_participant(self,send_base,send_offset)
         return self.send_message(
             text=message.message,
@@ -337,8 +330,9 @@ class StatusChange(TimeStampedModel):
 
     contact = models.ForeignKey(settings.MESSAGING_CONTACT)
 
-    old = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
-    new = models.CharField(max_length=20,choices=Contact.STATUS_CHOICES)
+    old = models.CharField(max_length=20)
+    new = models.CharField(max_length=20)
+    type = models.CharField(max_length=10,default='status')
 
     comment = models.TextField(blank=True)
 

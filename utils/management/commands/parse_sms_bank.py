@@ -5,6 +5,7 @@ import code
 import operator, collections, re
 
 from django.core.management.base import BaseCommand, CommandError
+import utils.sms_utils as sms
 
 class Command(BaseCommand):
 
@@ -34,6 +35,16 @@ class Command(BaseCommand):
             new_wb = xl.workbook.Workbook()
             make_ws(anc_ws,new_wb)
             new_wb.save('ignore/new.xlsx')
+        elif command == 'make_translations':
+            translations = xl.workbook.Workbook()
+            try:
+                old_translation_file = try_args(args,2,'No Old Translation File Found')
+                old_translation_wb = xl.load_workbook(old_translation_file)
+                translation_ws = old_translation_wb.active
+            except CommandError as e:
+                translation_ws = None
+            make_translations(wb,translations.active,translation_ws)
+            translations.save('ignore/mx_sms_translations_new.xlsx')
 
 
 ########################################
@@ -43,69 +54,19 @@ Action = collections.namedtuple('Action',('action','help'))
 actions = [
     Action('print','print group message counts'),
     Action('xlsx','make new xlsx'),
+    Action('make_translations','make translations'),
+    Action('import','import messages into backend.AutomatedMessage'),
 ]
 action_list = [a.action for a in actions]
 
 ########################################
 #  Utility Functions
 ########################################
-class MessageRow(object):
-
-    def __init__(self,row):
-        dx = 1 if row[0].value == '#' else 0
-        self.group, self.track, self.hiv, self.send_base = cell_values(*operator.itemgetter(0+dx,1+dx,2+dx,3+dx)(row))
-        self.english, self.swahili, self.luo, self.comment = cell_values(*operator.itemgetter(5+dx,8+dx,9+dx,10+dx)(row))
-        if self.hiv is not None:
-            self.hiv = False if self.hiv.strip().lower() == 'no' else True
-        self.offset = self.get_offset()
-        self.row = row[0].row
-        self.dx = dx
-
-    def get_offset(self):
-        if self.send_base == 'signup':
-            return 1
-        elif self.send_base == 'edd':
-            comment = self.parse_comment()
-            if comment is None:
-                return None
-            return 40 - comment
-        elif self.send_base == 'dd':
-            if self.comment.startswith('(Once'):
-                return 0
-            return self.parse_comment()
-
-    def parse_comment(self):
-        try:
-            match = re.search('\d+',self.comment)
-        except TypeError as e:
-            return None
-        if match is None:
-            print 'Comment Warning:',self.comment
-            return None
-        return int(match.group(0))
-
-    def __str__(self):
-        return "{0.send_base}_{0.group}_{0.track}_{0.hiv}".format(self)
-
-    def is_valid(self):
-        group_valid = self.group in ['one_way','two_way']
-        has_offset = self.offset is not None
-
-        return group_valid and has_offset
-
-    def make_row(self,row):
-        row = cell_values(*row)
-        if self.is_valid():
-            row[4+self.dx] = self.offset
-        if self.dx == 0:
-            return [None if self.is_valid() else '#']  + row
-        return row
-
 def recursive_dd():
     return collections.defaultdict(recursive_dd)
 
 def print_statistics(ws):
-    messages = parse_messages(ws)
+    messages = sms.parse_messages(ws)
     stats = recursive_dd()
     for msg in messages:
         base = stats[msg.send_base]
@@ -120,26 +81,35 @@ def print_statistics(ws):
                 for hiv, count in hiv_messaging.items():
                     print "{}_{}_{}_{}: {}".format(base,group,track,hiv,count)
 
-def parse_messages(ws):
-    messages = []
-    for row in ws.rows[1:]:
-        msg = MessageRow(row)
-        if msg.is_valid():
-            messages.append(MessageRow(row))
-        else:
-            print 'Row {} invalid: {}'.format(msg.row,msg)
-    return messages
-
 def make_ws(ws,wb):
     new_ws = wb.active
-    for row in ws.rows:
-        msg = MessageRow(row)
-        new_ws.append(msg.make_row(row))
+    # Header Row
+    new_ws.append(sms.cell_values(*ws.rows[0]))
+    for row in ws.rows[1:]:
+        msg = sms.MessageRow(row)
+        if msg.is_valid():
+            new_ws.append(msg.make_row(row))
 
-def cell_values(*args):
-    if len(args) == 1:
-        return args[0].value
-    return [arg.value for arg in args]
+def make_translations(in_wb,new_ws,old_translations=None):
+    new_ws.append(sms.MessageRow.translation_header())
+    old_translations = {} if old_translations == None else sms.message_dict(old_translations,translation=True)
+    todo_count = 0
+    for row in in_wb.get_sheet_by_name('anc').rows[1:]:
+        msg = sms.MessageRow(row)
+        if msg.is_valid():
+            row = msg.make_translation(old_translations)
+            if row[0] == '!':
+                todo_count += 1
+            new_ws.append(row)
+    for row in in_wb.get_sheet_by_name('special').rows[1:]:
+        msg = sms.MessageRow(row)
+        if msg.is_valid():
+            row = msg.make_translation(old_translations)
+            if row[0] == '!':
+                todo_count += 1
+            new_ws.append(row)
+    print 'Todo:',todo_count
+    new_ws.freeze_panes = 'A2'
 
 def try_args(args,index,msg):
     try:

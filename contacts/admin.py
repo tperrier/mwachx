@@ -59,7 +59,7 @@ class PractitionerAdmin(admin.ModelAdmin):
 
 @admin.register(cont.StatusChange)
 class StatusChangeAdmin(admin.ModelAdmin):
-    list_display = ('comment','contact_name','old','new','created')
+    list_display = ('comment','contact_name','old','new','type','created')
 
 @admin.register(cont.EventLog)
 class EventLogAdmin(admin.ModelAdmin):
