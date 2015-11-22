@@ -36,6 +36,7 @@ class Practitioner(models.Model):
 
     user = models.OneToOneField(User)
     facility = models.CharField(max_length=15,choices=settings.FACILITY_CHOICES)
+    password_changed = models.BooleanField(default=False)
 
     @property
     def username(self):

@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     # Misc Actions
     url(r'^staff/facility_change/(?P<facility_name>.*)/$','contacts.views.staff_facility_change'), #If we have more than 9 facilities we'd need to change this
     url(r'^staff/date/(?P<direction>back|forward)/(?P<delta>\d{1,365})/$','contacts.views.change_current_date'),
+    url(r'^staff/change_password/','contacts.views.change_password',name='mx-change-password'),
 
     # crispy-form partial
     url(r'^crispy-forms/participant/new/?$','contacts.views.crispy.participant_add'),
