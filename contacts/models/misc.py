@@ -35,7 +35,7 @@ class Practitioner(models.Model):
     objects = BaseQuerySet.as_manager()
 
     user = models.OneToOneField(User)
-    facility = models.ForeignKey('backend.Facility')
+    facility = models.CharField(max_length=15,choices=settings.FACILITY_CHOICES)
 
     @property
     def username(self):

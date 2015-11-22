@@ -11,7 +11,6 @@ import visits
 router = routers.DefaultRouter()
 router.register(r'participants', participants.ParticipantViewSet,'participant')
 router.register(r'messages', messages.MessageViewSet,'message')
-router.register(r'facilities', misc.FacilityViewSet)
 router.register(r'visits', visits.VisitViewSet,'visit')
 router.register(r'scheduled-calls', misc.PendingCallViewSet,'pending-call')
 router.register(r'pending',misc.PendingViewSet,'pending')

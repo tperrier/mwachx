@@ -51,7 +51,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	condition = serializers.CharField(source='get_condition_display')
 	validation_key = serializers.CharField()
 	phone_number = serializers.CharField()
-	facility = serializers.SerializerMethodField()
+	facility = serializers.CharField(source='get_facility_display')
 	age = serializers.CharField(read_only=True)
 	is_pregnant = serializers.BooleanField(read_only=True)
 
@@ -73,9 +73,6 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = cont.Contact
-
-	def get_facility(self,obj):
-		return ''.join(word.capitalize() for word in obj.facility.name.split())
 
 	def get_note_count(self,obj):
 		return obj.note_set.count()

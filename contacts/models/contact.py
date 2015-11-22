@@ -117,7 +117,7 @@ class Contact(TimeStampedModel):
     study_id = models.CharField(max_length=10,unique=True,verbose_name='Study ID',help_text="* Use Barcode Scanner")
     anc_num = models.CharField(max_length=15,verbose_name='ANC #')
     ccc_num = models.CharField(max_length=15,verbose_name='CCC #',blank=True,null=True)
-    facility = models.ForeignKey('backend.Facility')
+    facility = models.CharField(max_length=15,choices=settings.FACILITY_CHOICES)
 
     study_group = models.CharField(max_length=10,choices=GROUP_CHOICES,verbose_name='Group')
     send_day = models.IntegerField(choices=DAY_CHOICES, default=0,verbose_name='Send Day')
@@ -311,14 +311,15 @@ class Contact(TimeStampedModel):
 
         return new_message
 
-    def send_automated_message(self,send_base=None,send_offset=None,control=False):
-        message = back.AutomatedMessage.objects.filter_participant(self,send_base,send_offset)
-        return self.send_message(
-            text=message.message,
-            translation_status='auto',
-            auto=message.description(),
-            control=control
-        )
+    def send_automated_message(self,send_base=None,send_offset=0,control=False):
+        message = back.AutomatedMessage.objects.for_participant(self,send_base,send_offset)
+        if message is not None:
+            return self.send_message(
+                text=message.message,
+                translation_status='auto',
+                auto=message.description(),
+                control=control
+            )
 
 
 class StatusChange(TimeStampedModel):

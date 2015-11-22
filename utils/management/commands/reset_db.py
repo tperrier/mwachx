@@ -11,6 +11,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from constance import config
 from django.db import transaction
+from django.conf import settings
 
 import contacts.models as cont
 import backend.models as back
@@ -19,6 +20,7 @@ import utils
 JSON_DATA_FILE =  os.path.join(settings.PROJECT_ROOT,'tools','small.json')
 if settings.ON_OPENSHIFT:
     JSON_DATA_FILE = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'small.json')
+FACILITY_LIST = ['bondo','ahero','mathare']
 
 class Command(BaseCommand):
 
@@ -74,11 +76,6 @@ class Command(BaseCommand):
 
 study_groups = ['control','one-way','two-way']
 def add_client(client,study_id,facility=None):
-    if facility:
-        facility_list = back.Facility.objects.filter(name=facility)
-    else:
-        facility_list = back.Facility.objects.all()
-    mod = len(facility_list)
     status = 'post' if random.random() < .5 else 'pregnant'
     new_client = {
         'study_id':study_id,
@@ -89,7 +86,7 @@ def add_client(client,study_id,facility=None):
         'study_group':random.choice(study_groups),
         'due_date':get_due_date(status),
         'last_msg_client':client['last_msg_client'],
-        'facility':facility_list[study_id%mod],
+        'facility':FACILITY_LIST[study_id%3] if facility is None else facility,
         'status':status
         }
     contact = cont.Contact(**new_client)
@@ -211,7 +208,7 @@ def load_old_participants(options):
 
 def add_jennifers():
     print 'Loading Fake Jennifer Users'
-    for i,facility in enumerate(back.Facility.objects.all()):
+    for i,facility in FACILITY_LIST:
         create_jennifer(i,facility)
 
 def create_jennifer(i,facility):
@@ -230,29 +227,18 @@ def create_jennifer(i,facility):
 
 
 def create_backend():
-    create_facilities()
     create_users()
     create_automated_messages()
-
-def create_facilities():
-    print 'Creating Facilities'
-    back.Facility.objects.bulk_create([
-        back.Facility(name='bondo'),
-        back.Facility(name='ahero'),
-        back.Facility(name='mathare'),
-    ])
 
 def create_users():
     #create admin user
     print 'Creating Users'
     oscard = User.objects.create_superuser('admin',email='o@o.org',password='mwachx')
-    cont.Practitioner.objects.create(facility=back.Facility.objects.get(pk=1),user=oscard)
+    cont.Practitioner.objects.create(facility='bondo',user=oscard)
     #create study nurse users
-    facility_list = ['bondo','ahero','mathare']
-    for f in facility_list:
+    for f in FACILITY_LIST:
         user = User.objects.create_user('n_{}'.format(f),password='mwachx')
-        cont.Practitioner.objects.create(facility=back.Facility.objects.get(name=f),user=user)
+        cont.Practitioner.objects.create(facility=f,user=user)
 
 def create_automated_messages():
     pass
-        

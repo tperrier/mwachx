@@ -13,25 +13,6 @@ import backend.models as back
 from messages import MessageSerializer, ParticipantSimpleSerializer
 from visits import VisitSerializer
 
-##############################################
-# Facility Serializer and Viewset
-##############################################
-
-class FacilitySerializer(serializers.ModelSerializer):
-
-    name = serializers.SerializerMethodField()
-
-    class Meta:
-        model = back.Facility
-
-    def get_name(self,obj):
-        return ''.join(word.capitalize() for word in obj.name.split())
-
-class FacilityViewSet(viewsets.ModelViewSet):
-
-    queryset = back.Facility.objects.all()
-    serializer_class = FacilitySerializer
-
 ########################################
 # Pending View
 ########################################

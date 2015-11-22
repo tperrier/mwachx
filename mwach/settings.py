@@ -196,6 +196,11 @@ MESSAGING_CONTACT = 'contacts.Contact'
 MESSAGING_CONNECTION = 'contacts.Connection'
 MESSAGING_ADMIN = 'auth.User'
 
+FACILITY_CHOICES = (
+    ('mathare','Mathare'),
+    ('bondo','Bondo'),
+    ('ahero','Ahero'),
+)
 
 try:
     from local_settings import *

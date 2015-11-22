@@ -2,27 +2,16 @@ from django.db import models
 
 import utils.models as utils
 
-class Facility(models.Model):
-
-    class Meta:
-        verbose_name_plural = 'facilities'
-        app_label = 'backend'
-
-    name = models.CharField(max_length='50',help_text='Facility Name')
-
-    def __str__(self):
-        # Change snake_case to Snake Case
-        return self.name.replace('_',' ').title()
-
 class AutomatedMessageQuerySet(utils.BaseQuerySet):
 
-    def filter_participant(self,participant,send_base=None,send_offset=0):
+    def for_participant(self,participant,send_base=None,send_offset=0):
         if send_base is None:
             send_base = 'edd' if participant.is_pregnant() else 'dd'
             send_offset = participant.delta_days()/7
 
         message_set = self.filter(send_base=send_base, send_offset=send_offset,
-            language=participant.language,hiv_messaging=participant.hiv_messaging == 'system')
+            hiv_messaging=participant.hiv_messaging == 'system')
+
         # TODO: selecting the first might not be the best stratagy
         message = message_set.filter(condition=participant.condition, group=participant.study_group).first()
 
@@ -34,7 +23,10 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
             # If message is is still none don't check group
             message = message_set.filter(condition='normal').first()
 
-        return message
+        if message is None:
+            return None # Give up
+
+        return message.get_language(participant.language) if message is not None else None
 
     def from_description(self,description):
         send_base, group, condition, hiv, send_offset = description.split('.')
@@ -108,3 +100,7 @@ class AutomatedMessage(models.Model):
 
     def description(self):
         return "{0}.{1}".format(self.category(),self.send_offset)
+
+    def get_language(self,language):
+        # TODO: Error checking
+        return getattr(self,language)

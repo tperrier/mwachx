@@ -17,15 +17,9 @@ import utils
 
 @staff_member_required
 def staff_facility_change(request,facility_name):
-    try:
-        facility = back.Facility.objects.get(name=facility_name)
-    except back.Facility.DoesNotExist as e:
-        # Did not find by name so return first facility
-        facility = back.Facility.objects.all().first()
-    # print facility
-    request.user.practitioner.facility = facility
+    request.user.practitioner.facility = facility_name
     request.user.practitioner.save()
-    return JsonResponse({'current_facility':facility.name})
+    return JsonResponse({'current_facility':facility_name})
 
 @login_required()
 def change_current_date(request,direction,delta):
