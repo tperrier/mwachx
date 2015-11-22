@@ -11,5 +11,5 @@ class FacilityAdmin(admin.ModelAdmin):
 
 @admin.register(back.AutomatedMessage)
 class AutomatedMessageAdmin(admin.ModelAdmin):
-    list_display = ('message','send_base','send_offset')
-    list_filter = ('send_base',)
+    list_display = ('description','english','todo')
+    list_filter = ('send_base','todo','condition')

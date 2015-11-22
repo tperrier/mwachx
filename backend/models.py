@@ -1,5 +1,7 @@
 from django.db import models
 
+import utils.models as utils
+
 class Facility(models.Model):
 
     class Meta:
@@ -12,7 +14,7 @@ class Facility(models.Model):
         # Change snake_case to Snake Case
         return self.name.replace('_',' ').title()
 
-class AutomatedMessageQuerySet(models.QuerySet):
+class AutomatedMessageQuerySet(utils.BaseQuerySet):
 
     def filter_participant(self,participant,send_base=None,send_offset=0):
         if send_base is None:
@@ -35,10 +37,22 @@ class AutomatedMessageQuerySet(models.QuerySet):
         return message
 
     def from_description(self,description):
-        send_base, send_offset, group, condition, hiv, language = description.split('_')
+        send_base, group, condition, hiv, send_offset = description.split('.')
         hiv = hiv == 'Y'
-        return self.get(send_base=send_base, send_offset=send_offset, group=group, condition=condition,
-            hiv_messaging=hiv,language=language)
+        send_offset = int(send_offset)
+        return self.get_or_none(send_base=send_base, send_offset=send_offset, group=group, condition=condition,
+            hiv_messaging=hiv)
+
+    def from_excel(self,msg):
+        auto = self.from_description(msg.description())
+        if auto is None:
+            return self.create(**msg.kwargs())
+        else:
+            auto.english = msg.english
+            auto.swahili = msg.swahili
+            auto.luo = msg.luo
+            auto.save()
+            return auto
 
 
 class AutomatedMessage(models.Model):
@@ -59,12 +73,6 @@ class AutomatedMessage(models.Model):
         ('two-way','Two Way'),
     )
 
-    LANGUAGE_CHOICES = (
-        ('english','English'),
-        ('luo','Luo'),
-        ('swahili','Swahili'),
-    )
-
     CONDITION_CHOICES = (
         ('art','Starting ART'),
         ('adolescent','Adolescent'),
@@ -79,20 +87,24 @@ class AutomatedMessage(models.Model):
 
     priority = models.IntegerField(default=0)
 
-    message = models.TextField()
+    english = models.TextField()
+    swahili = models.TextField()
+    luo = models.TextField()
+
     comment = models.TextField(blank=True)
 
     group = models.CharField(max_length=10,choices=GROUP_CHOICES) # 2 groups
     condition = models.CharField(max_length=10,choices=CONDITION_CHOICES) # 4 conditions
     hiv_messaging = models.BooleanField() # True or False
-    language = models.CharField(max_length=10,choices=LANGUAGE_CHOICES) # 3 languages
 
     send_base = models.CharField(max_length=10,help_text='Base to send messages from',choices=SEND_BASES_CHOICES)
     send_offset = models.IntegerField(default=0,help_text='Offset from base in weeks')
 
+    todo = models.BooleanField()
+
     def category(self):
-        return "{0.send_base}_{0.group}_{0.condition}_{1}_{0.language}".format(self,
+        return "{0.send_base}.{0.group}.{0.condition}.{1}".format(self,
             'Y' if self.hiv_messaging else 'N')
 
     def description(self):
-        return "{0}_{1}".format(self.category(),self.send_offset)
+        return "{0}.{1}".format(self.category(),self.send_offset)

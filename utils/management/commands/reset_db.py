@@ -254,11 +254,5 @@ def create_users():
         cont.Practitioner.objects.create(facility=back.Facility.objects.get(name=f),user=user)
 
 def create_automated_messages():
-
-    signup_message = back.AutomatedMessage.objects.create(
-        send_base = 'signup',
-        message = 'Welcome to the mWaCh X Study. Please send your five letter confirmation code',
-        language = 'english',
-        send_offset = 0,
-        group = '', condition='normal', hiv_messaging = False
-    )
+    pass
+        
