@@ -11,7 +11,6 @@ validators = []
 #############
 stop_validator = KeywordValidator('stop')
 validators.append(stop_validator)
-############
 
 @stop_validator.set('action')
 def validator_action(contact,message):
@@ -21,8 +20,6 @@ def validator_action(contact,message):
 ############
 validation_validator = Validator('validation')
 validators.append(validation_validator)
-############
-
 
 @validation_validator.set('check')
 def validator_action(contact,message):
@@ -33,10 +30,10 @@ def validator_action(contact,message):
         else:
             message = 'Validation Code Incorrect: ' + message
             return False, {'topic':'validation','is_related':True,'is_viewed':True}, message
-    return False, {}
+    return False, {}, message
 
 @validation_validator.set('action')
 def validator_action(contact,message):
-    print 'VALIDATION ACTION for {}'.format(contact)
+    # print 'VALIDATION ACTION for {}'.format(contact)
     contact.is_validated = True
     contact.save()
