@@ -23,10 +23,7 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
             # If message is is still none don't check group
             message = message_set.filter(condition='normal').first()
 
-        if message is None:
-            return None # Give up
-
-        return message.get_language(participant.language) if message is not None else None
+        return message
 
     def from_description(self,description):
         send_base, group, condition, hiv, send_offset = description.split('.')

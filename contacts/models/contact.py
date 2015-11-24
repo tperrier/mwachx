@@ -315,7 +315,7 @@ class Contact(TimeStampedModel):
         message = back.AutomatedMessage.objects.for_participant(self,send_base,send_offset)
         if message is not None:
             return self.send_message(
-                text=message.message,
+                text=message.get_language(self.language),
                 translation_status='auto',
                 auto=message.description(),
                 control=control
