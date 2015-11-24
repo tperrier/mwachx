@@ -118,7 +118,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			contact = cf.save(commit=False)
 
 			#Set contacts facility to facility of current user
-			facility = back.Facility.objects.get(pk=1) #default to first facility if none found
+			facility = '' # Default to blank facility if none found
 			try:
 				facility = request.user.practitioner.facility
 			except cont.Practitioner.DoesNotExist:

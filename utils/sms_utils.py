@@ -11,6 +11,7 @@ class MessageRow(object):
             cell_values( *operator.itemgetter(0,1,2,3,4,5,6)(row))
         self.english = clean_msg(self.english)
         self.set_status()
+        self.group = self.group.replace('_','-')
 
         if not translation:
             self.swahili = ''

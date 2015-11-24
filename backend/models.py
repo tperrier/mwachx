@@ -79,9 +79,9 @@ class AutomatedMessage(models.Model):
 
     priority = models.IntegerField(default=0)
 
-    english = models.TextField()
-    swahili = models.TextField()
-    luo = models.TextField()
+    english = models.TextField(blank=True)
+    swahili = models.TextField(blank=True)
+    luo = models.TextField(blank=True)
 
     comment = models.TextField(blank=True)
 
