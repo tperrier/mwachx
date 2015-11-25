@@ -27,6 +27,7 @@ class MessageRow(object):
 
             if self.status == 'done' and self.new is not None:
                 self.english = self.new
+                self.new = ''
 
         if self.comment is None:
             self.comment = ''

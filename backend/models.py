@@ -37,7 +37,7 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
         if auto is None:
             return self.create(**msg.kwargs())
         else:
-            auto.english = msg.english
+            auto.english = msg.english if msg.english != '' else msg.new
             auto.swahili = msg.swahili
             auto.luo = msg.luo
             auto.save()
