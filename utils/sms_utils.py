@@ -25,7 +25,7 @@ class MessageRow(object):
             self.luo = clean_msg(self.luo)
             self.new = clean_msg(self.new)
 
-            if self.status == 'done' and self.new is not None:
+            if self.status == 'done' and self.new != '':
                 self.english = self.new
                 self.new = ''
 
