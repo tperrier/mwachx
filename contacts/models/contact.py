@@ -166,10 +166,11 @@ class Contact(TimeStampedModel):
         self._old_hiv_messaging = self.hiv_messaging
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
-        if not self._old_status == self.status:
+        # Check that self.id exists so this is not the first save
+        if not self._old_status == self.status and self.id is not None:
             self.statuschange_set.create(old=self._old_status,new=self.status,comment='Status Admin Change')
 
-        if not self._old_hiv_messaging == self.hiv_messaging:
+        if not self._old_hiv_messaging == self.hiv_messaging and self.id is not None:
             print self._old_hiv_messaging, self.hiv_messaging
             self.statuschange_set.create(old=self._old_hiv_messaging,new=self.hiv_messaging,
                 comment='HIV messaging changed',type='hiv')

@@ -43,7 +43,6 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
             auto.save()
             return auto
 
-
 class AutomatedMessage(models.Model):
     """Automated Messages for sending to participants"""
 
