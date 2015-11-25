@@ -27,6 +27,7 @@ class MessageRow(object):
 
             if self.status == 'done' and self.new is not None:
                 self.english = self.new
+
         if self.comment is None:
             self.comment = ''
         if self.hiv is not None:
@@ -44,7 +45,8 @@ class MessageRow(object):
     def kwargs(self):
         return {'send_base':self.send_base,'send_offset':self.offset,'group':self.group,
                 'condition':self.track,'comment':self.comment,'hiv_messaging':self.hiv,
-                'english':self.english,'swahili':self.swahili,'luo':self.luo,
+                'english':self.english if self.english != '' else self.new,
+                'swahili':self.swahili,'luo':self.luo,
                 'todo':self.status == 'todo'}
 
     def get_offset(self):
@@ -73,7 +75,7 @@ class MessageRow(object):
     def is_valid(self):
         if self.status == 'comment':
             return False
-        group_valid = self.group in ['one_way','two_way','control']
+        group_valid = self.group in ['one-way','two-way','control']
         has_offset = self.offset is not None
         return group_valid and has_offset
 
@@ -156,5 +158,7 @@ end_sentance = re.compile(r'([.?!])\s+',re.M)
 def clean_msg(msg):
     if not isinstance(msg,basestring):
         return ''
+    msg = msg.replace(u'\u2019','\'')  # replace right quot
+    msg = msg.replace(u'\xa0',' ') # replace non blank space
     msg = end_sentance.sub(r'\1 ',msg.strip())
     return msg.replace('\n',' ')
