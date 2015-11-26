@@ -8,9 +8,18 @@
     <title>mWaCh X: Web Dashboard</title>
 
     <link rel='stylesheet' href='{% static "css/main.css" %}'>
+    <script type="text/javascript" src="{% static 'components.js' %}"></script>
+    <script type="text/javascript" src="{% static 'mwachx.js' %}"></script>
 
-    <script src="{% static 'components.js' %}"></script>
-    <script src="{% static 'mwachx.js' %}"></script>
+    <script type="text/javascript">
+    angular.module('mwachx').factory('mwachxDjango',function(){
+      console.log('django');
+      return {
+        isAdmin:'{{config.user.is_superuser|default:""}}',
+        user:'{{config.user.id|default:""}}'
+      }
+    });
+    </script>
 
   </head>
 
@@ -53,7 +62,7 @@
                 </ul>
                 <h3 class='pull-right'>
                     {% if not user.is_anonymous %}
-                     <a class='btn btn-warning' href='/accounts/logout/?next=/'>Logout: {{user.username}}</a>
+                     <a class='btn btn-warning' href='/accounts/logout/?next=/'>Logout: {% if user.first_name %}{{user.first_name|capfirst}}{% else %}{{user.username}}{% endif %}</a>
                         {% if user.is_staff %}
                         <select ng-init="facility='{{user.practitioner.facility}}'"
                                 ng-change='change_facility()' ng-model='facility'
@@ -64,11 +73,15 @@
                         </select>
                         {% endif %}
                     {% endif %}
+
+                    {% if config.SHOW_DATE %}
                     <a class='date-delta btn btn-sm btn-warning' ng-click='date_backward()'><</a>
                     <span class="label label-warning"
                           ng-init="current_date = '{{CURRENT_DATE|date:'Y-m-d'}}'"
                           ng-bind='current_date'></span>
                     <a class='date-delta btn btn-sm btn-warning' ng-click='date_forward()'>></a>
+                    {% endif %}
+
                     {% if not user.practitioner.password_changed %}
                         <a class='btn btn-warning' href='/staff/change_password/'>Change Password</a>
                     {% endif %}
