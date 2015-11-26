@@ -4,24 +4,29 @@ import utils.models as utils
 
 class AutomatedMessageQuerySet(utils.BaseQuerySet):
 
-    def for_participant(self,participant,send_base=None,send_offset=0):
+    def for_participant(self,participant,send_base=None,send_offset=0,**kwargs):
         if send_base is None:
             send_base = 'edd' if participant.is_pregnant() else 'dd'
             send_offset = participant.delta_days()/7
 
-        message_set = self.filter(send_base=send_base, send_offset=send_offset,
-            hiv_messaging=participant.hiv_messaging == 'system')
+        hiv_messaging = kwargs.get('hiv_messaging',participant.hiv_messaging == 'system')
+        group = kwargs.get('group',participant.study_group)
+
+        message_offset = self.filter(send_base=send_base, send_offset=send_offset)
 
         # TODO: selecting the first might not be the best stratagy
-        message = message_set.filter(condition=participant.condition, group=participant.study_group).first()
+        message = message_offset.filter(
+            condition=participant.condition,
+            group=group,
+            hiv_messaging=hiv_messaging).first()
 
         if message is None: # No match for participant conditions
             # Try to grab the normal message
-            message = message_set.filter(condition='normal', group=participant.study_group).first()
+            message = message_offset.filter(condition='normal', group=group,hiv_messaging=hiv_messaging).first()
 
         if message is None:
-            # If message is is still none don't check group
-            message = message_set.filter(condition='normal').first()
+            # If message is is still none don't check group and force hiv_messaging off
+            message = message_offset.filter(condition='normal',hiv_messaging=False).first()
 
         return message
 

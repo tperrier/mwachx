@@ -1,6 +1,9 @@
 # Python Imports
 import json, datetime
 
+# Django imports
+from django.db import transaction
+
 # Rest Framework Imports
 from rest_framework import serializers
 from rest_framework import viewsets
@@ -114,37 +117,36 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 		cf = forms.ContactAdd(request.data)
 
 		if cf.is_valid():
-			#Create new contact but do not save in DB
-			contact = cf.save(commit=False)
+			with transaction.atomic():
+				#Create new contact but do not save in DB
+				contact = cf.save(commit=False)
 
-			#Set contacts facility to facility of current user
-			facility = '' # Default to blank facility if none found
-			try:
-				facility = request.user.practitioner.facility
-			except cont.Practitioner.DoesNotExist:
-				pass
+				#Set contacts facility to facility of current user
+				facility = '' # Default to blank facility if none found
+				try:
+					facility = request.user.practitioner.facility
+				except cont.Practitioner.DoesNotExist:
+					pass
 
-			contact.facility = facility
-			contact.validation_key = contact.get_validation_key()
-			#Important: save before making foreign keys
-			contact.save()
+				contact.facility = facility
+				contact.validation_key = contact.get_validation_key()
+				#Important: save before making foreign keys
+				contact.save()
 
-			phone_number = '+254%s'%cf.cleaned_data['phone_number'][1:]
-			cont.Connection.objects.create(identity=phone_number,contact=contact,is_primary=True)
+				phone_number = '+254%s'%cf.cleaned_data['phone_number'][1:]
+				cont.Connection.objects.create(identity=phone_number,contact=contact,is_primary=True)
 
-			# Set the next visits
-			if cf.cleaned_data['clinic_visit']:
-				cont.Visit.objects.create(scheduled=cf.cleaned_data['clinic_visit'],
-					participant=contact,visit_type='clinic')
-			if cf.cleaned_data['due_date']:
-				# Set first study visit to 6 weeks (42 days) after EDD
-				cont.Visit.objects.create(scheduled=cf.cleaned_data['due_date']+datetime.timedelta(days=42),
-					participant=contact,visit_type='study')
+				# Set the next visits
+				if cf.cleaned_data['clinic_visit']:
+					cont.Visit.objects.create(scheduled=cf.cleaned_data['clinic_visit'],
+						participant=contact,visit_type='clinic')
+				if cf.cleaned_data['due_date']:
+					# Set first study visit to 6 weeks (42 days) after EDD
+					cont.Visit.objects.create(scheduled=cf.cleaned_data['due_date']+datetime.timedelta(days=42),
+						participant=contact,visit_type='study')
 
-			#Send Welcome Message
-			contact.send_automated_message('signup',0,control=True)
-			# contact.send_message('Welcome to the mWaCh X Study. Please send your five letter confirmation code',
-				# control=True)
+				#Send Welcome Message
+				contact.send_automated_message('signup',0,control=True)
 
 			serialized_contact = ParticipantSerializer(contact,context={'request':request})
 			return Response(serialized_contact.data)
