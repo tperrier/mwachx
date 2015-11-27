@@ -54,7 +54,7 @@ class Message(TimeStampedModel):
 
     # Meta Data
     languages = models.CharField(max_length=50,help_text='Semi colon seperated list of languages',default='',blank=True)
-    topic = models.CharField(max_length=10,help_text='The topic of this message',default='',blank=True)
+    topic = models.CharField(max_length=25,help_text='The topic of this message',default='',blank=True)
 
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
