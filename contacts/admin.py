@@ -8,9 +8,10 @@ import models as cont
 @admin.register(cont.Contact)
 class ContactAdmin(admin.ModelAdmin):
 
-    list_display = ('study_id','nickname','study_group','status','due_date','facility')
+    list_display = ('study_id','nickname','study_group','status','due_date','facility',
+        'send_day','send_time','is_validated')
     list_display_links = ('study_id','nickname')
-    list_filter = ('study_group','status','facility')
+    list_filter = ('study_group','status','facility','send_day','is_validated')
 
     date_hierarchy = 'due_date'
     ordering = ('study_id',)
