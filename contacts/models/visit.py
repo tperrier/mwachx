@@ -53,7 +53,7 @@ class ScheduledEvent(TimeStampedModel):
     participant = models.ForeignKey(settings.MESSAGING_CONTACT)
 
     def study_id(self):
-        return self.participant.id
+        return self.participant.study_id
     study_id.short_description = 'Study ID'
     study_id.admin_order_field = 'contact__study_id'
 
