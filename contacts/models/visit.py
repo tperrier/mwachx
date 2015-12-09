@@ -52,17 +52,6 @@ class ScheduledEvent(TimeStampedModel):
 
     participant = models.ForeignKey(settings.MESSAGING_CONTACT)
 
-    def study_id(self):
-        return self.participant.study_id
-    study_id.short_description = 'Study ID'
-    study_id.admin_order_field = 'contact__study_id'
-
-    def participant_name(self):
-        return '<a href="../contact/{0.study_id}">{0.nickname}</a>'.format(self.participant)
-    participant_name.short_description = 'Nickname'
-    participant_name.admin_order_field = 'participant__nickname'
-    participant_name.allow_tags = True
-
     def days_overdue(self):
         return (utils.today()-self.scheduled).days
 

@@ -7,4 +7,4 @@ import backend.models as back
 @admin.register(back.AutomatedMessage)
 class AutomatedMessageAdmin(admin.ModelAdmin):
     list_display = ('description','english','todo')
-    list_filter = ('send_base','todo','condition')
+    list_filter = ('send_base','condition','group','todo')

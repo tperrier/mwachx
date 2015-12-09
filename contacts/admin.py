@@ -42,15 +42,29 @@ class PhoneCallAdmin(admin.ModelAdmin):
 class ConnectionAdmin(admin.ModelAdmin):
     list_display = ('identity','contact')
 
+class ScheduledEventAdmin(admin.ModelAdmin):
+
+    def participant_name(self,obj):
+        return '<a href="../contact/{0.study_id}">{0.nickname}</a>'.format(obj.participant)
+    participant_name.short_description = 'Nickname'
+    participant_name.admin_order_field = 'participant__nickname'
+    participant_name.allow_tags = True
+
+    def study_id(self,obj):
+        return obj.participant.study_id
+    study_id.short_description = 'Study ID'
+    study_id.admin_order_field = 'contact__study_id'
+
 @admin.register(cont.Visit)
-class VisitAdmin(admin.ModelAdmin):
+class VisitAdmin(ScheduledEventAdmin):
     list_display = ('study_id','participant_name','visit_type','scheduled',
         'notification_last_seen','notify_count', 'arrived','skipped')
     date_hierarchy = 'arrived'
     list_filter = ('skipped','visit_type')
+    search_fields = ('participant__study_id','^participant__nickname')
 
 @admin.register(cont.ScheduledPhoneCall)
-class ScheduledPhoneCall(admin.ModelAdmin):
+class ScheduledPhoneCall(ScheduledEventAdmin):
     list_display = ('study_id','participant_name','call_type','scheduled', 'notification_last_seen','notify_count', 'arrived','skipped')
     list_filter = ('skipped','call_type')
 
@@ -59,7 +73,7 @@ class PractitionerAdmin(admin.ModelAdmin):
     list_display = ('facility','username')
 
 @admin.register(cont.StatusChange)
-class StatusChangeAdmin(admin.ModelAdmin):
+class StatusChangeAdmin(ScheduledEventAdmin):
     list_display = ('comment','contact_name','old','new','type','created')
 
 @admin.register(cont.EventLog)
