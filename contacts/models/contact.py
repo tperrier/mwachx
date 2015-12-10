@@ -228,19 +228,19 @@ class Contact(TimeStampedModel):
         '''
         today = utils.today(today)
         if self.was_pregnant(today):
-            # Return 40*7 - days until due date
-            return 280 - (self.due_date - today).days
+            return (self.due_date - today).days
         else: #post-partum
             #TODO: Change this to delivered date when we start using that
             # Return days since due date
             return (today-self.due_date).days
 
-    def description(self,today=None,**kwargs):
+    def description(self,**kwargs):
         hiv_messaging = kwargs.get("hiv_messaging", self.hiv_messaging == "system")
         hiv = "Y" if hiv_messaging else "N"
         group = kwargs.get("group",self.study_group)
+        today = kwargs.get("today")
 
-        send_base = kwargs.get("send_base",'edd' if self.was_pregnant(today) else 'dd')
+        send_base = kwargs.get("send_base",'edd' if self.was_pregnant(today=today) else 'dd')
         send_offset = kwargs.get("send_offset",self.delta_days(today=today)/7)
 
         return "{send_base}.{group}.{condition}.{hiv}.{send_offset}".format(

@@ -15,7 +15,7 @@ class ContactAdmin(admin.ModelAdmin):
 
     ordering = ('study_id',)
 
-    search_fields = ('^study_id','^nickname')
+    search_fields = ('study_id','^nickname','connection__identity')
     readonly_fields = ('created','modified')
 
 @admin.register(cont.Message)

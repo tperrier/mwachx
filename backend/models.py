@@ -4,9 +4,9 @@ import utils.models as utils
 
 class AutomatedMessageQuerySet(utils.BaseQuerySet):
 
-    def for_participant(self,participant,today=None,**kwargs):
+    def for_participant(self,participant,**kwargs):
         ''' Return AutomatedMessage for participant and today '''
-        return self.from_description( participant.description(today,**kwargs) )
+        return self.from_description( participant.description(**kwargs) )
 
     def from_description(self,description):
         ''' Return AutomatedMessage for description

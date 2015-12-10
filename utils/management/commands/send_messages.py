@@ -32,14 +32,15 @@ class Command(BaseCommand):
 
         day = options.get('day')
         hour = options.get('hour')
+        date = options.get('date')
 
         if day is None:
             try:
-                date = options.get('date')
-                day = datetime.datetime.strptime(date if date is not None else '','%Y-%m-%d').day
+                date = datetime.datetime.strptime(date if date is not None else '','%Y-%m-%d').date()
             except ValueError as e:
                 # Invlaid date object so set to today
-                day = datetime.date.today().weekday()
+                date = datetime.date.today()
+            day = date.weekday()
 
         if hour is None:
             hour = datetime.datetime.now().hour
@@ -63,11 +64,9 @@ class Command(BaseCommand):
         participants = participants.exclude(study_group='control')
         no_messages = []
         for p in participants:
-
-            message = p.send_automated_message(send=options.get('send'))
-
+            message = p.send_automated_message(today=date,send=options.get('send'))
             if message is None:
-                no_messages.append( p.description() )
+                no_messages.append( '{} (#{})'.format( p.description(today=date),p.study_id)  )
 
         out_message = total_string+"\n\n"
         out_message += "Messages not sent: {}".format(len(no_messages))
