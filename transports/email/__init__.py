@@ -19,8 +19,10 @@ def email(subject,message,to='default'):
     from_address = email_settings.get('from')
     to = email_settings.get('to').get(to)
     password = email_settings.get('password')
-    if from_address is None or to is None or password is None:
-        print "Email Settings Options",from_address,to,password
+    username = email_settings.get('username')
+    server = email_settings.get('server')
+    if from_address is None or to is None or password is None or username is None or server is None:
+        print "Email Settings Options", from_address, to, password, username, password
         return False
 
     msg = MIMEMultipart()
@@ -29,10 +31,10 @@ def email(subject,message,to='default'):
     msg['Subject'] = "[MX Server] {}".format(subject)
     msg.attach(MIMEText(message))
 
-    mail_server = smtplib.SMTP("smtp.gmail.com",587)
+    mail_server = smtplib.SMTP(server,587)
     mail_server.ehlo(); mail_server.starttls(); mail_server.ehlo()
 
-    mail_server.login(from_address,password)
+    mail_server.login(username,password)
     mail_server.sendmail(msg['From'],msg['To'].split(','),msg.as_string())
 
     mail_server.close()
