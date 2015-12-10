@@ -36,7 +36,7 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
         # Force condition to normal and try again
         if not hiv and condition != "normal":
             try:
-                return message_offset.get(conditon="normal",group=group,hiv_messaging=False)
+                return message_offset.get(condition="normal",group=group,hiv_messaging=False)
             except AutomatedMessage.DoesNotExist as e:
                 pass
 
