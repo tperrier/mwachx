@@ -29,7 +29,7 @@ class Command(BaseCommand):
         if options.get('test'):
             self.stdout.write( 'Time: {}\nVersion: {}\nPath: {}\n'.format(datetime.datetime.now(),sys.version,sys.path) )
             return
-            
+
         day = options.get('day')
         hour = options.get('hour')
 
@@ -61,7 +61,7 @@ class Command(BaseCommand):
             .format(total=sum(total_counts.values()),dict=total_counts)
 
         participants = participants.exclude(study_group='control')
-        no_message = []
+        no_messages = []
         for p in participants:
 
             message = p.send_automated_message(send=options.get('send'))
@@ -70,8 +70,8 @@ class Command(BaseCommand):
                 no_messages.append( p.description() )
 
         out_message = total_string+"\n\n"
-        out_message += "Messages not sent: {}".format(len(no_message))
-        out_message += "\n\t{}\n".format('\n\t'.join(no_message))
+        out_message += "Messages not sent: {}".format(len(no_messages))
+        out_message += "\n\t{}\n".format('\n\t'.join(no_messages))
 
         subject = '{}Sending {} {}h00 ({})'.format(
             'Fake ' if not options.get('send') else '',
