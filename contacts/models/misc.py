@@ -9,7 +9,6 @@ from jsonfield import JSONField
 
 #Local Imports
 from utils.models import TimeStampedModel,BaseQuerySet
-from contacts.models import Contact
 
 class Connection(models.Model):
 

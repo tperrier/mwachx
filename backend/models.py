@@ -4,38 +4,44 @@ import utils.models as utils
 
 class AutomatedMessageQuerySet(utils.BaseQuerySet):
 
-    def for_participant(self,participant,send_base=None,send_offset=0,**kwargs):
-        if send_base is None:
-            send_base = 'edd' if participant.is_pregnant() else 'dd'
-            send_offset = participant.delta_days()/7
-
-        hiv_messaging = kwargs.get('hiv_messaging',participant.hiv_messaging == 'system')
-        group = kwargs.get('group',participant.study_group)
-
-        message_offset = self.filter(send_base=send_base, send_offset=send_offset)
-
-        # TODO: selecting the first might not be the best stratagy
-        message = message_offset.filter(
-            condition=participant.condition,
-            group=group,
-            hiv_messaging=hiv_messaging).first()
-
-        if message is None: # No match for participant conditions
-            # Try to grab the normal message
-            message = message_offset.filter(condition='normal', group=group,hiv_messaging=hiv_messaging).first()
-
-        if message is None:
-            # If message is is still none don't check group and force hiv_messaging off
-            message = message_offset.filter(condition='normal',hiv_messaging=False).first()
-
-        return message
+    def for_participant(self,participant,today=None,**kwargs):
+        ''' Return AutomatedMessage for participant and today '''
+        return self.from_description( participant.description(today,**kwargs) )
 
     def from_description(self,description):
-        send_base, group, condition, hiv, send_offset = description.split('.')
-        hiv = hiv == 'Y'
+        ''' Return AutomatedMessage for description
+            :param description (str): base.group.condition.hiv.offset string to look for
+            :returns: AutomatedMessage matching description or closes match if not found
+        '''
+        send_base, group, condition, hiv_messaging, send_offset = description.split('.')
+        hiv = hiv_messaging == "Y"
         send_offset = int(send_offset)
-        return self.get_or_none(send_base=send_base, send_offset=send_offset, group=group, condition=condition,
-            hiv_messaging=hiv)
+        try:
+            return self.get(send_base=send_base, send_offset=send_offset,
+                            group=group, condition=condition, hiv_messaging=hiv)
+        except AutomatedMessage.DoesNotExist as e:
+            # No match for participant conditions continue to find best match
+            pass
+
+        # Create the base query set woth send_base and offset
+        message_offset = self.filter(send_base=send_base,send_offset=send_offset)
+
+        # Try to find a non HIV message for this conditon
+        if not hiv:
+            try:
+                return message_offset.get(condition=condition,group=group,hiv_messaging=False)
+            except AutomatedMessage.DoesNotExist as e:
+                pass
+
+        # Force condition to normal and try again
+        if not hiv and condition != "normal":
+            try:
+                return message_offset.get(conditon="normal",group=group,hiv_messaging=False)
+            except AutomatedMessage.DoesNotExist as e:
+                pass
+
+        # If message is is still none don't check group and force hiv_messaging off return message or None
+        return message_offset.filter(condition='normal',hiv_messaging=False).first()
 
     def from_excel(self,msg):
         auto = self.from_description(msg.description())
@@ -45,6 +51,7 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
             auto.english = msg.english if msg.english != '' else msg.new
             auto.swahili = msg.swahili
             auto.luo = msg.luo
+            auto.todo = msg.status == 'todo'
             auto.save()
             return auto
 
@@ -102,6 +109,13 @@ class AutomatedMessage(models.Model):
     def description(self):
         return "{0}.{1}".format(self.category(),self.send_offset)
 
+    def text_for(self,participant):
+        text = self.get_language(participant.language)
+        return text.format(**participant.message_kwargs())
+
     def get_language(self,language):
         # TODO: Error checking
         return getattr(self,language)
+
+    def __repr__(self):
+        return "<AutomatedMessage: {}>".format(self.description())

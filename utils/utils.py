@@ -1,9 +1,12 @@
 import datetime
 from constance import config
 from django.conf import settings
+from django.utils import dateparse
 
-def today():
-    if not getattr(settings,'FAKE_DATE',True):
+def today(today=None):
+    if today is not None:
+        return dateparse.parse_date(today) if isinstance(today,basestring) else today
+    elif not getattr(settings,'FAKE_DATE',True):
         return datetime.date.today()
     elif isinstance(config.CURRENT_DATE,datetime.date):
         return config.CURRENT_DATE
@@ -40,4 +43,4 @@ def days_as_str(days):
     ''' Return a short string version of days '''
     if -7 <= days <= 7:
         return '{:d}d'.format(days)
-    return '{:d}w'.format(int(round(days/7.0))) 
+    return '{:d}w'.format(int(round(days/7.0)))

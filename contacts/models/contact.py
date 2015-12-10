@@ -7,11 +7,10 @@ import math
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils import dateparse
 
 #Local Imports
 from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
-from contacts.models import Message, PhoneCall
+from contacts.models import Message, PhoneCall, Practitioner
 import backend.models as back
 import utils
 import transports
@@ -218,31 +217,36 @@ class Contact(TimeStampedModel):
         '''
         Returns true if the contact was pregnant at date today
         '''
-        if today is None:
-            today = utils.today()
-        if isinstance(today,basestring):
-            today = dateparse(today)
-
         if self.delivery_date is not None:
+            today = utils.today(today)
             return today <= self.delivery_date
-        return today <= self.due_date
+        return True
 
     def delta_days(self,today=None):
         '''
         Return the number days until EDD or since delivery
         '''
-        if today is None:
-            today = utils.today()
-        if isinstance(today,basestring):
-            today = dateparse(today)
-
+        today = utils.today(today)
         if self.was_pregnant(today):
             # Return 40*7 - days until due date
             return 280 - (self.due_date - today).days
         else: #post-partum
-            #ToDO: Change this to delivered date when we start using that
+            #TODO: Change this to delivered date when we start using that
             # Return days since due date
             return (today-self.due_date).days
+
+    def description(self,today=None,**kwargs):
+        hiv_messaging = kwargs.get("hiv_messaging", self.hiv_messaging == "system")
+        hiv = "Y" if hiv_messaging else "N"
+        group = kwargs.get("group",self.study_group)
+
+        send_base = kwargs.get("send_base",'edd' if self.was_pregnant(today) else 'dd')
+        send_offset = kwargs.get("send_offset",self.delta_days(today=today)/7)
+
+        return "{send_base}.{group}.{condition}.{hiv}.{send_offset}".format(
+            group=group, condition=self.condition, hiv=hiv,
+            send_base=send_base , send_offset=send_offset
+        )
 
     def days_str(self,today=None):
         return utils.days_as_str(self.delta_days(today))
@@ -284,6 +288,14 @@ class Contact(TimeStampedModel):
             old = old_status, new = new_status, comment = comment
         )
 
+    def message_kwargs(self):
+        return {
+            'name':self.nickname.title(),
+            'nurse':Practitioner.objects.filter(facility=self.facility)
+                .exclude(user__first_name='').first().user.first_name,
+            'clinic':self.facility.title()
+        }
+
     def send_message(self,text,control=False,**kwargs):
 
         if self.study_group != 'control' or control:
@@ -312,16 +324,24 @@ class Contact(TimeStampedModel):
 
         return new_message
 
-    def send_automated_message(self,send_base=None,send_offset=0,control=False):
-        message = back.AutomatedMessage.objects.for_participant(self,send_base,send_offset)
-        if message is not None:
+    def send_automated_message(self,control=False,send=True,**kwargs):
+        message = back.AutomatedMessage.objects.for_participant(self,**kwargs)
+        if message is None:
+            return None #TODO: logging on this
+
+        text = message.text_for(self)
+        if text is None:
+            return None #TODO: logging on this
+
+        if send:
             return self.send_message(
-                text=message.get_language(self.language),
+                text=text,
                 translation_status='auto',
                 auto=message.description(),
                 control=control
             )
-
+        else:
+            return message
 
 class StatusChange(TimeStampedModel):
 
