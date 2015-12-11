@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from django.utils import html
 
 #Local Imports
 import models as cont
@@ -8,26 +9,60 @@ import models as cont
 @admin.register(cont.Contact)
 class ContactAdmin(admin.ModelAdmin):
 
-    list_display = ('study_id','nickname','description','facility',
-        'send_day','language','is_validated')
+    list_display = ('study_id','nickname','status','description','facility',
+        'phone_number','language','send_day','is_validated')
     list_display_links = ('study_id','nickname')
     list_filter = ('facility','status','study_group','hiv_messaging','is_validated','language','send_day')
 
     ordering = ('study_id',)
 
-    search_fields = ('study_id','^nickname','connection__identity')
+    search_fields = ('study_id','nickname','connection__identity','anc_num')
     readonly_fields = ('created','modified')
+
+class ParticipantAdminMixin(object):
+
+    participant_field = 'participant'
+
+    def participant_name(self,obj):
+        return html.format_html("<a href='../contact/{0.pk}'>{0.nickname}</a>".format(
+            getattr(obj,self.participant_field)
+        ) )
+    participant_name.short_description = 'Nickname'
+    participant_name.admin_order_field = '{}__nickname'.format(participant_field)
+
+    def study_id(self,obj):
+        return getattr(obj,self.participant_field).study_id
+    study_id.short_description = 'Study ID'
+    study_id.admin_order_field = '{}__study_id'.format(participant_field)
+
+    def phone_number(self,obj):
+        return html.format_html("<a href='../connection/{0.pk}'>{0.identity}</a>",
+            getattr(obj,self.participant_field).connection()
+        )
+    phone_number.short_description = 'Number'
+    phone_number.admin_order_field = '{}__connection__identity'.format(participant_field)
+
+class ContactAdminMixin(ParticipantAdminMixin):
+
+    participant_field = 'contact'
 
 @admin.register(cont.Message)
-class MessageAdmin(admin.ModelAdmin):
+class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
 
-    list_display = ('text','contact_name','is_viewed','is_system','is_outgoing','languages',
-        'translation_status', 'external_id','external_success','external_data')
+    list_display = ('text','participant_name','identity','is_viewed','is_system','is_outgoing','languages',
+        'translation_status','external_success','external_data')
     date_hierarchy = 'created'
     list_filter = ('is_viewed','is_system','is_outgoing','translation_status','is_related')
-    search_fields = ('^contact__study_id','^contact__first_name','^contact__last_name')
 
+    search_fields = ('contact__study_id','contact__nickname','connection__identity')
     readonly_fields = ('created','modified')
+
+    def identity(self,obj):
+        return html.format_html("<a href='../connection/{0.pk}'>{0.identity}</a>".format(
+            obj.connection
+        ) )
+    identity.short_description = 'Number'
+    identity.admin_order_field = 'connection__identity'
 
 @admin.register(cont.PhoneCall)
 class PhoneCallAdmin(admin.ModelAdmin):
@@ -41,29 +76,17 @@ class PhoneCallAdmin(admin.ModelAdmin):
 class ConnectionAdmin(admin.ModelAdmin):
     list_display = ('identity','contact')
 
-class ScheduledEventAdmin(admin.ModelAdmin):
-
-    def participant_name(self,obj):
-        return '<a href="../contact/{0.study_id}">{0.nickname}</a>'.format(obj.participant)
-    participant_name.short_description = 'Nickname'
-    participant_name.admin_order_field = 'participant__nickname'
-    participant_name.allow_tags = True
-
-    def study_id(self,obj):
-        return obj.participant.study_id
-    study_id.short_description = 'Study ID'
-    study_id.admin_order_field = 'contact__study_id'
 
 @admin.register(cont.Visit)
-class VisitAdmin(ScheduledEventAdmin):
+class VisitAdmin(admin.ModelAdmin,ParticipantAdminMixin):
     list_display = ('study_id','participant_name','visit_type','scheduled',
         'notification_last_seen','notify_count', 'arrived','skipped')
     date_hierarchy = 'arrived'
     list_filter = ('skipped','visit_type')
-    search_fields = ('participant__study_id','^participant__nickname')
+    search_fields = ('participant__study_id','participant__nickname')
 
 @admin.register(cont.ScheduledPhoneCall)
-class ScheduledPhoneCall(ScheduledEventAdmin):
+class ScheduledPhoneCall(admin.ModelAdmin,ParticipantAdminMixin):
     list_display = ('study_id','participant_name','call_type','scheduled', 'notification_last_seen','notify_count', 'arrived','skipped')
     list_filter = ('skipped','call_type')
 
@@ -72,8 +95,8 @@ class PractitionerAdmin(admin.ModelAdmin):
     list_display = ('facility','username')
 
 @admin.register(cont.StatusChange)
-class StatusChangeAdmin(ScheduledEventAdmin):
-    list_display = ('comment','contact_name','old','new','type','created')
+class StatusChangeAdmin(admin.ModelAdmin,ContactAdminMixin):
+    list_display = ('comment','participant_name','old','new','type','created')
 
 @admin.register(cont.EventLog)
 class EventLogAdmin(admin.ModelAdmin):

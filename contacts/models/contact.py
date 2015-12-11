@@ -188,8 +188,6 @@ class Contact(TimeStampedModel):
 
     def connection(self):
         return self.connection_set.filter(is_primary=True).first()
-        # from contacts.models import Connection
-        # return Connection.objects.filter(contact=self,is_primary=True).first()
 
     def phone_number(self):
         return self.connection().identity
@@ -357,11 +355,3 @@ class StatusChange(TimeStampedModel):
     type = models.CharField(max_length=10,default='status')
 
     comment = models.TextField(blank=True)
-
-    def contact_name(self):
-        if self.contact:
-            return '<a href="../contact/{0.study_id}">{0.nickname}</a>'.format(self.contact)
-        return None
-    contact_name.short_description = 'Contact Name'
-    contact_name.admin_order_field = 'contact__nickname'
-    contact_name.allow_tags = True
