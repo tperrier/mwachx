@@ -78,26 +78,6 @@ class Message(TimeStampedModel):
             return 'nurse'
         return 'participant'
 
-    def study_id(self):
-        if self.contact:
-            return self.contact.study_id
-        return None
-    study_id.short_description = 'Study ID'
-    study_id.admin_order_field = 'contact__study_id'
-
-    def contact_name(self):
-        if self.contact:
-            return '<a href="../contact/{0.id}">{0.nickname}</a>'.format(self.contact)
-        return None
-    contact_name.short_description = 'Contact Name'
-    contact_name.admin_order_field = 'contact__nickname'
-    contact_name.allow_tags = True
-
-    def identity(self):
-        return self.connection.identity
-    identity.short_description = 'Identity'
-    identity.admin_order_field = 'connection__identity'
-
     def days_str(self):
         return self.contact.days_str(today=self.created.date())
 

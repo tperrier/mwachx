@@ -156,7 +156,6 @@ class Contact(TimeStampedModel):
 
     class Meta:
         app_label = 'contacts'
-    participant_field = None
 
     def __init__(self, *args, **kwargs):
         ''' Override __init__ to save old status'''

@@ -24,6 +24,9 @@ class Connection(models.Model):
 
     is_primary = models.BooleanField(default=False)
 
+    def __unicode__(self):
+        return "{} ({})".format(self.contact.study_id if self.contact else '',self.identity)
+
 class Practitioner(models.Model):
     '''
     User profile for nurse practitioners to link a User profile to a Facility

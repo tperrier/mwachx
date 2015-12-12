@@ -10,7 +10,7 @@ import models as cont
 class ContactAdmin(admin.ModelAdmin):
 
     list_display = ('study_id','nickname','status','description','facility',
-        'phone_number','language','send_day','is_validated')
+        'phone_number','due_date','language','send_day','is_validated')
     list_display_links = ('study_id','nickname')
     list_filter = ('facility','status','study_group','hiv_messaging','is_validated','language','send_day')
 
