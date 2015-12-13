@@ -102,8 +102,10 @@ class Command(BaseCommand):
         luo_wb.save(self.paths.todo_luo)
 
         if self.options['copy']:
-            # TODO: finish this
-            pass
+            swahili_copy_path = path_with_date(self.paths.todo_swahili)
+            luo_copy_path = path_with_date(self.paths.todo_luo)
+            swahili_wb.save(swahili_copy_path)
+            luo_wb.save(luo_copy_path)
 
     def make_final_messages(self):
         '''Take language specific todo files and done files and make a final translations file '''
@@ -297,3 +299,8 @@ def make_language_todos(translations,language):
         ws.column_dimensions[col_letter].width = width
 
     return wb
+
+def path_with_date(path):
+    root , ext = os.path.splitext(path)
+    date_str = datetime.date.today().strftime('%Y-%m-%d')
+    return "{}_{}{}".format(root,date_str,ext)
