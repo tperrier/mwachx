@@ -41,16 +41,16 @@ class Message(TimeStampedModel):
     text = models.TextField(help_text='Text of the SMS message')
 
     #Boolean Flags on Message
-    is_outgoing = models.BooleanField(default=True)
-    is_system = models.BooleanField(default=True)
-    is_viewed = models.BooleanField(default=False)
+    is_outgoing = models.BooleanField(default=True,verbose_name="Out")
+    is_system = models.BooleanField(default=True,verbose_name="System")
+    is_viewed = models.BooleanField(default=False,verbose_name="Viewed")
     is_related = models.NullBooleanField(default=None,blank=True,null=True)
 
     parent = models.ForeignKey('contacts.Message',related_name='replies',blank=True,null=True)
 
     # translation
     translated_text = models.TextField(max_length=1000,help_text='Text of the translated message',default='',blank=True)
-    translation_status = models.CharField(max_length=5,help_text='Status of translation',choices=STATUS_CHOICES,default='todo')
+    translation_status = models.CharField(max_length=5,help_text='Status of translation',choices=STATUS_CHOICES,default='todo',verbose_name="Translated")
 
     # Meta Data
     languages = models.CharField(max_length=50,help_text='Semi colon seperated list of languages',default='',blank=True)
@@ -62,7 +62,7 @@ class Message(TimeStampedModel):
 
     #Africa's Talking Data Only for outgoing messages
     external_id = models.CharField(max_length=50,blank=True)
-    external_success = models.NullBooleanField()
+    external_success = models.NullBooleanField(verbose_name="Sent")
     external_data = JSONField()
 
     # Only for system messages

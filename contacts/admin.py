@@ -24,11 +24,18 @@ class ParticipantAdminMixin(object):
     participant_field = 'participant'
 
     def participant_name(self,obj):
-        return html.format_html("<a href='../contact/{0.pk}'>{0.nickname}</a>".format(
-            getattr(obj,self.participant_field)
-        ) )
+        participant = getattr(obj,self.participant_field)
+        if participant is not None:
+            return html.format_html("<a href='../contact/{0.pk}'>{0.nickname}</a>".format(participant) )
     participant_name.short_description = 'Nickname'
     participant_name.admin_order_field = '{}__nickname'.format(participant_field)
+
+    def facility(self,obj):
+        participant = getattr(obj,self.participant_field)
+        if participant is not None:
+            return participant.facility.capitalize()
+    facility.admin_order_field = '{}__facility'.format(participant_field)
+
 
     def study_id(self,obj):
         return getattr(obj,self.participant_field).study_id
@@ -36,9 +43,9 @@ class ParticipantAdminMixin(object):
     study_id.admin_order_field = '{}__study_id'.format(participant_field)
 
     def phone_number(self,obj):
-        return html.format_html("<a href='../connection/{0.pk}'>{0.identity}</a>",
-            getattr(obj,self.participant_field).connection()
-        )
+        connection = getattr(obj,self.participant_field).connection()
+        if connection is not None:
+            return html.format_html("<a href='../connection/{0.pk}'>{0.identity}</a>".format(connection) )
     phone_number.short_description = 'Number'
     phone_number.admin_order_field = '{}__connection__identity'.format(participant_field)
 
@@ -49,10 +56,10 @@ class ContactAdminMixin(ParticipantAdminMixin):
 @admin.register(cont.Message)
 class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
 
-    list_display = ('text','participant_name','identity','is_viewed','is_system','is_outgoing','languages',
+    list_display = ('text','participant_name','identity','facility','is_viewed','is_system','is_outgoing','languages',
         'translation_status','external_success','external_data')
     date_hierarchy = 'created'
-    list_filter = ('is_viewed','is_system','is_outgoing','translation_status','is_related')
+    list_filter = ('is_viewed','is_system','is_outgoing','translation_status','is_related','connection__contact__facility')
 
     search_fields = ('contact__study_id','contact__nickname','connection__identity')
     readonly_fields = ('created','modified')
