@@ -22,7 +22,7 @@ class Connection(models.Model):
 
     description = models.CharField(max_length=30,blank=True,null=True,help_text='Description of phone numbers relationship to contact')
 
-    is_primary = models.BooleanField(default=False)
+    is_primary = models.BooleanField(default=False,verbose_name='Primary')
 
     def __unicode__(self):
         return "{} ({})".format(self.contact.study_id if self.contact else '',self.identity)

@@ -56,8 +56,8 @@ class ContactAdminMixin(ParticipantAdminMixin):
 @admin.register(cont.Message)
 class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
 
-    list_display = ('text','participant_name','identity','facility','is_viewed','is_system','is_outgoing','languages',
-        'translation_status','external_success','external_data')
+    list_display = ('text','participant_name','study_id_link','identity','facility','is_viewed','is_system','is_outgoing','languages',
+        'translation_status','external_success','created')
     date_hierarchy = 'created'
     list_filter = ('is_viewed','is_system','is_outgoing','translation_status','is_related','connection__contact__facility')
 
@@ -71,6 +71,14 @@ class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
     identity.short_description = 'Number'
     identity.admin_order_field = 'connection__identity'
 
+    def study_id_link(self,obj):
+        if obj.contact is not None:
+            return html.format_html("<a href='../message/?contact={0.pk}'>{0.study_id}</a>".format(
+                obj.contact
+            ) )
+    study_id_link.short_description = "Study ID"
+    study_id_link.admin_order_field = "contact__study_id"
+
 @admin.register(cont.PhoneCall)
 class PhoneCallAdmin(admin.ModelAdmin):
 
@@ -80,8 +88,8 @@ class PhoneCallAdmin(admin.ModelAdmin):
     readonly_fields = ('created','modified')
 
 @admin.register(cont.Connection)
-class ConnectionAdmin(admin.ModelAdmin):
-    list_display = ('identity','contact')
+class ConnectionAdmin(admin.ModelAdmin,ContactAdminMixin):
+    list_display = ('identity','participant_name','facility','is_primary')
 
 
 @admin.register(cont.Visit)
@@ -99,7 +107,7 @@ class ScheduledPhoneCall(admin.ModelAdmin,ParticipantAdminMixin):
 
 @admin.register(cont.Practitioner)
 class PractitionerAdmin(admin.ModelAdmin):
-    list_display = ('facility','username')
+    list_display = ('facility','username','password_changed')
 
 @admin.register(cont.StatusChange)
 class StatusChangeAdmin(admin.ModelAdmin,ContactAdminMixin):
