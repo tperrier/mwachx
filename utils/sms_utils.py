@@ -90,14 +90,7 @@ class MessageRowBase(object):
         return 'Y' if self.hiv else 'N'
 
     def configure_variables(self):
-        if '<' in self.english:
-            variables = [
-                ('<participant name>','{name}'),
-                ('<nurse name>','{nurse}'),
-                ('<clinic name>','{clinic}'),
-            ]
-            for needle,string in variables:
-                self.english = self.english.replace(needle,string)
+        self.english = replace_vars(self.english)
 
         if self.english.startswith('{name}, this is {nurse} from {clinic}'):
             if not self.swahili.startswith('{name},'):
@@ -242,3 +235,14 @@ def clean_msg(msg):
     msg = msg.replace('\n',' ')
     msg = multiple_whitespace.sub(r' ',msg)
     return msg.replace('\n',' ')
+
+def replace_vars(msg):
+    if '<' in msg:
+        variables = [
+            ('<participant name>','{name}'),
+            ('<nurse name>','{nurse}'),
+            ('<clinic name>','{clinic}'),
+        ]
+        for needle,string in variables:
+            msg = msg.replace(needle,string)
+    return msg

@@ -211,7 +211,20 @@ class Command(BaseCommand):
         #
 
     def clean_messages(self):
-        self.stderr.write('Clean function not implemented!')
+        sms_bank = xl.load_workbook(self.paths.bank)
+        for ws in sms_bank.worksheets:
+            self.clean_sheet(ws)
+        sms_bank.save(os.path.join(self.options['dir'],'new_bank.xlsx'))
+
+    def clean_sheet(self,ws):
+        self.stdout.write( "Cleaning Sheet: {}".format(ws.title) )
+        for row in ws.rows[1:]:
+            self.clean_cell(row[6])
+
+    def clean_cell(self,cell):
+        cleaned = sms.clean_msg(cell.value)
+        cell.value = sms.replace_vars(cleaned)
+
 
     def import_messages(self):
         sms_bank = xl.load_workbook(self.paths.final)

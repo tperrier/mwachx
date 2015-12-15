@@ -10,9 +10,9 @@ import models as cont
 class ContactAdmin(admin.ModelAdmin):
 
     list_display = ('study_id','nickname','status','description','facility',
-        'phone_number','due_date','language','send_day','is_validated')
+        'phone_number','due_date','language','send_day','is_validated','created')
     list_display_links = ('study_id','nickname')
-    list_filter = ('facility','status','study_group','hiv_messaging','is_validated','language','send_day')
+    list_filter = ('facility','study_group', ('created',admin.DateFieldListFilter), 'hiv_messaging','status','is_validated','language','send_day')
 
     ordering = ('study_id',)
 
@@ -58,8 +58,8 @@ class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
 
     list_display = ('text','participant_name','study_id_link','identity','facility','is_viewed','is_system',
         'is_outgoing', 'is_reply', 'translation_status','external_success','created')
-    date_hierarchy = 'created'
-    list_filter = ('is_viewed','is_system','is_outgoing','translation_status','is_related','connection__contact__facility')
+    list_filter = ('is_viewed','is_system','is_outgoing', ('created', admin.DateFieldListFilter) ,'connection__contact__facility',
+    'translation_status','is_related')
 
     search_fields = ('contact__study_id','contact__nickname','connection__identity')
     readonly_fields = ('created','modified')
