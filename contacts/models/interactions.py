@@ -70,6 +70,11 @@ class Message(TimeStampedModel):
 
     def is_pending(self):
         return not self.is_viewed and not self.is_outgoing
+    is_pending.short_description = 'Pending'
+
+    def is_reply(self):
+        return self.parent is not None
+    is_reply.short_description = 'Reply'
 
     def sent_by(self):
         if self.is_outgoing:

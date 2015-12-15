@@ -1,4 +1,5 @@
 #!/usr/bin/python
+ # -*- coding: utf-8 -*-
 import datetime, openpyxl as xl, os
 from argparse import Namespace
 import code
@@ -23,6 +24,7 @@ class Command(BaseCommand):
         send_time_parser = subparsers.add_parser('print',cmd=parser.cmd,help='report send time statistics')
         send_time_parser.add_argument('-t','--times',action='store_true',default=False,help='print send times')
         send_time_parser.add_argument('-r','--registered',action='store_true',default=False,help='print registered totals per facility')
+        send_time_parser.add_argument('-c','--validation-codes',action='store_true',default=False,help='print validation stats')
         send_time_parser.set_defaults(action='print_stats')
 
         xlsx_parser = subparsers.add_parser('xlsx',cmd=parser.cmd,help='create xlsx report')
@@ -50,6 +52,8 @@ class Command(BaseCommand):
             self.registered_counts()
         if self.options['times']:
             self.send_times()
+        if self.options['validation_codes']:
+            self.validation_stats()
 
     def send_times(self):
 
@@ -109,6 +113,37 @@ class Command(BaseCommand):
             sum(total_row.values()) )
         )
 
+    def validation_stats(self):
+
+        self.print_header('Validation Stats')
+        self.printed = True
+
+        c_all = cont.Contact.objects.all()
+
+        stats = collections.OrderedDict( ( ('< 1h',0) , ('< 1d',0) ,('> 1d',0) , ('None',0) ) )
+        for c in c_all:
+            seconds = c.validation_delta()
+            if seconds is None:
+                stats['None'] += 1
+            elif seconds <= 3600:
+                stats['< 1h'] += 1
+            elif seconds <= 86400:
+                stats['< 1d'] += 1
+            elif seconds > 86400:
+                stats['> 1d'] += 1
+            else:
+                stats['None'] += 1
+
+        counts = dict( c_all.values_list('is_validated').annotate(count=models.Count('is_validated')) )
+
+        total = sum(counts.values())
+        self.stdout.write( "Total: {} Valididated: {} ({:0.3f}) Not-Validated: {} ({:0.3f})\n".format(
+            total , counts[True] , counts[True] / float(total) , counts[False] , counts[False] / float(total)
+        ) )
+
+        for key , count in stats.items():
+            self.stdout.write( "\t{}\t{} ({:0.3f})".format(key,count, count/float(total) ) )
+
     def print_header(self,header):
         if self.printed:
             self.stdout.write("")
@@ -146,6 +181,7 @@ def make_facility_sheet(ws,facility):
         ('EDD','due_date'),
         ('Send Day','send_day'),
         ('Send Time','send_time'),
+        ('Validation Δ',lambda c: seconds_as_str(c.validation_delta()) ),
         ('System', lambda c: c.message_set.filter(is_system=True).count() ),
         ('Nurse', lambda c: c.message_set.filter(is_system=False,is_outgoing=True).count() ),
         ('Client', lambda c: c.message_set.filter(is_outgoing=False).count() ),
@@ -166,5 +202,16 @@ def make_facility_sheet(ws,facility):
 
 def make_column(obj,column):
     if isinstance(column,basestring):
-        return getattr(obj,column)
+        value = getattr(obj,column)
+        if hasattr(value,'__call__'):
+            return value()
+        return value
+    # Else assume column is a function that takes the object
     return column(obj)
+
+def seconds_as_str(seconds):
+    if seconds is None:
+        return None
+    if seconds <= 3600:
+        return '{:.2f}'.format(seconds/60)
+    return '{:.2f} (h)'.format(seconds/3600)

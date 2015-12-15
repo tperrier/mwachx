@@ -56,8 +56,8 @@ class ContactAdminMixin(ParticipantAdminMixin):
 @admin.register(cont.Message)
 class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
 
-    list_display = ('text','participant_name','study_id_link','identity','facility','is_viewed','is_system','is_outgoing','languages',
-        'translation_status','external_success','created')
+    list_display = ('text','participant_name','study_id_link','identity','facility','is_viewed','is_system',
+        'is_outgoing', 'is_reply', 'translation_status','external_success','created')
     date_hierarchy = 'created'
     list_filter = ('is_viewed','is_system','is_outgoing','translation_status','is_related','connection__contact__facility')
 

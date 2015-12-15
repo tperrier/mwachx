@@ -340,6 +340,20 @@ class Contact(TimeStampedModel):
         else:
             return message
 
+    ########################################
+    # Reporting Functions
+    ########################################
+
+    def validation_delta(self):
+        ''' Return the number of seconds between welcome message and validation '''
+        if self.is_validated:
+            welcome_msg = self.message_set.filter(auto__startswith='signup',auto__endswith='0').first()
+            validation_msg = self.message_set.filter(topic='validation').last()
+            if welcome_msg and validation_msg:
+                delta = validation_msg.created - welcome_msg.created
+                return delta.total_seconds()
+
+
 class StatusChange(TimeStampedModel):
 
     objects = BaseQuerySet.as_manager()
