@@ -44,17 +44,23 @@ class ForUserQuerySet(BaseQuerySet):
         except (ObjectDoesNotExist) as e:
             return self.none()
 
+        return self.by_facility(facility)
+
+    def by_facility(self,facility):
         return self.filter(self.participant_Q(facility=facility))
 
-    def user_active(self):
+    def active_users(self):
         ''' Filter queryset based on active users.
             Active users have status not in [completed,stopped,other]
         '''
-
         status_list = ['completed','stopped','other']
         return self.exclude(self.participant_Q(status__in=status_list))
 
     def participant_Q(self,**kwargs):
+        ''' Return a Q object with participant_field appended
+        Example:  participant_Q(study_group='two-way',is_validated=False)
+            returns: Q(participant__study_group='two-way',participant__is_validated=False)
+        '''
         prefix = self.participant_field+'__' if self.participant_field is not None else ''
         kwargs = {prefix+key:value for key,value in kwargs.items()}
         return models.Q(**kwargs)

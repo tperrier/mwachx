@@ -99,7 +99,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
 	def get_queryset(self):
 		# Only return the participants for this user's facility
-		return cont.Contact.objects.for_user(self.request.user).all()
+		return cont.Contact.objects.for_user(self.request.user,superuser=True).all().order_by('study_id')
 
 	def get_serializer_class(self):
 	    # Return the correct serializer based on current action

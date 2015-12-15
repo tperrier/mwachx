@@ -15,7 +15,7 @@ import utils
 class SchedualQuerySet(ForUserQuerySet):
 
     def pending(self):
-        return self.filter(arrived=None,skipped=None).user_active()
+        return self.filter(arrived=None,skipped=None).active_users()
 
     def visit_range(self,start={'days':0},end=None,notification_start={'days':0},notification_end=None):
         today = utils.today()
