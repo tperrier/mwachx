@@ -90,7 +90,7 @@ class Command(BaseCommand):
         except IOError as e:
             old_translations = None
 
-        translations = sms.read_sms_bank(sms_bank,old_translations,'anc','special')
+        translations = sms.read_sms_bank(sms_bank,old_translations,'anc','postpartum','visits','special')
 
         print "Total Found: {} Todo: {}".format( len(translations),
             len([t for t in translations if t.is_todo()]) )

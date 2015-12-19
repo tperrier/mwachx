@@ -19,39 +19,41 @@ class ContactAdmin(admin.ModelAdmin):
     search_fields = ('study_id','nickname','connection__identity','anc_num')
     readonly_fields = ('created','modified')
 
-class ParticipantAdminMixin(object):
+def ParticipantMixinFactory(field='participant'):
+    class ParticipantAdminMixinBase(object):
 
-    participant_field = 'participant'
+        participant_field = field
 
-    def participant_name(self,obj):
-        participant = getattr(obj,self.participant_field)
-        if participant is not None:
-            return html.format_html("<a href='../contact/{0.pk}'>{0.nickname}</a>".format(participant) )
-    participant_name.short_description = 'Nickname'
-    participant_name.admin_order_field = '{}__nickname'.format(participant_field)
+        def participant_name(self,obj):
+            participant = getattr(obj,self.participant_field)
+            if participant is not None:
+                return html.format_html("<a href='../contact/{0.pk}'>{0.nickname}</a>".format(participant) )
+        participant_name.short_description = 'Nickname'
+        participant_name.admin_order_field = '{}__nickname'.format(participant_field)
 
-    def facility(self,obj):
-        participant = getattr(obj,self.participant_field)
-        if participant is not None:
-            return participant.facility.capitalize()
-    facility.admin_order_field = '{}__facility'.format(participant_field)
+        def facility(self,obj):
+            participant = getattr(obj,self.participant_field)
+            if participant is not None:
+                return participant.facility.capitalize()
+        facility.admin_order_field = '{}__facility'.format(participant_field)
 
 
-    def study_id(self,obj):
-        return getattr(obj,self.participant_field).study_id
-    study_id.short_description = 'Study ID'
-    study_id.admin_order_field = '{}__study_id'.format(participant_field)
+        def study_id(self,obj):
+            return getattr(obj,self.participant_field).study_id
+        study_id.short_description = 'Study ID'
+        study_id.admin_order_field = '{}__study_id'.format(participant_field)
 
-    def phone_number(self,obj):
-        connection = getattr(obj,self.participant_field).connection()
-        if connection is not None:
-            return html.format_html("<a href='../connection/{0.pk}'>{0.identity}</a>".format(connection) )
-    phone_number.short_description = 'Number'
-    phone_number.admin_order_field = '{}__connection__identity'.format(participant_field)
+        def phone_number(self,obj):
+            connection = getattr(obj,self.participant_field).connection()
+            if connection is not None:
+                return html.format_html("<a href='../connection/{0.pk}'>{0.identity}</a>".format(connection) )
+        phone_number.short_description = 'Number'
+        phone_number.admin_order_field = '{}__connection__identity'.format(participant_field)
 
-class ContactAdminMixin(ParticipantAdminMixin):
+    return ParticipantAdminMixinBase
 
-    participant_field = 'contact'
+ParticipantAdminMixin = ParticipantMixinFactory()
+ContactAdminMixin = ParticipantMixinFactory('contact')
 
 @admin.register(cont.Message)
 class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):

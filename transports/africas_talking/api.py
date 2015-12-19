@@ -2,7 +2,7 @@
 from django.conf import settings
 
 #Python Imports
-import requests
+import requests, os, code
 
 #Local Imports
 from at_utils import AfricasTalkingException
@@ -18,7 +18,9 @@ SHORTCODE = AFRICAS_TALKING_SETTINGS.get('SHORTCODE',None)
 
 AFRICAS_TALKING_SEND = AFRICAS_TALKING_SETTINGS.get('SEND',False)
 
-SMS_API_URL = 'http://api.africastalking.com/version1/messaging'
+AFRICAS_TALKING_API_BASE = 'http://api.africastalking.com/version1'
+SMS_API_URL = os.path.join(AFRICAS_TALKING_API_BASE,'messaging')
+
 
 HEADERS = {'Accept': 'application/json','apikey':API_KEY}
 
@@ -35,9 +37,11 @@ def send(to,message):
     if USERNAME is None:
         raise AfricasTalkingException('AFRICAS_TALKING var has not set a USERNAME')
 
-    params = dict({'to':to,'message':message}.items()+PARAMS.items())
+    params = {'to':to,'message':message}
+    params.update(PARAMS)
 
-    post = requests.post(SMS_API_URL,data=params,headers=HEADERS)
+    send_url = os.path.join(AFRICAS_TALKING_API_BASE,'messaging')
+    post = requests.post(send_url,data=params,headers=HEADERS)
     #Raise requests.exceptions.HTTPError if 4XX or 5XX
     post.raise_for_status()
 
@@ -61,3 +65,22 @@ def send(to,message):
         msg_id = recipients[0]['messageId']
         msg_success = recipients[0]['status'] == 'Success'
         return msg_id, msg_success, {'status':recipients[0]['status']}
+
+def balance():
+
+    if API_KEY is None:
+        raise AfricasTalkingException('AFRICAS_TALKING var has not set API_KEY')
+    if USERNAME is None:
+        raise AfricasTalkingException('AFRICAS_TALKING var has not set a USERNAME')
+
+    params = {'username':USERNAME}
+    params.update(PARAMS)
+
+    send_url = os.path.join(AFRICAS_TALKING_API_BASE,'user')
+    post = requests.get(send_url,params=params,headers=HEADERS)
+    #Raise requests.exceptions.HTTPError if 4XX or 5XX
+    post.raise_for_status()
+
+    data = post.json()
+
+    return data['UserData']['balance']
