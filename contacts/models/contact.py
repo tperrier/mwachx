@@ -229,7 +229,7 @@ class Contact(TimeStampedModel):
         else: #post-partum
             #TODO: Change this to delivered date when we start using that
             # Return days since due date
-            return (today-self.due_date).days
+            return (today-self.delivery_date).days
 
     def description(self,**kwargs):
         hiv_messaging = kwargs.get("hiv_messaging", self.hiv_messaging == "system")
