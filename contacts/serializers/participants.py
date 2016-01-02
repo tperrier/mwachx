@@ -69,10 +69,13 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	calls_url = serializers.HyperlinkedIdentityField(view_name='participant-calls',lookup_field='study_id')
 	notes_url = serializers.HyperlinkedIdentityField(view_name='participant-notes',lookup_field='study_id')
 
+	# TODO: Change calls to call count and remove messages and visits
 	calls = PhoneCallSerializer(source='phonecall_set',many=True)
 	messages = MessageSerializer(source='get_pending_messages',many=True)
 	visits = VisitSerializer(source='get_scheduled_visits',many=True)
-	note_count = serializers.SerializerMethodField()
+	note_count = serializers.CharField()
+	phonecall_count = serializers.CharField()
+	# note_count = serializers.SerializerMethodField()
 
 	class Meta:
 		model = cont.Contact
@@ -98,8 +101,13 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 	lookup_field = 'study_id'
 
 	def get_queryset(self):
+		qs = cont.Contact.objects.all().order_by('study_id')
 		# Only return the participants for this user's facility
-		return cont.Contact.objects.for_user(self.request.user,superuser=True).all().order_by('study_id')
+		if self.action == 'list':
+			return qs.for_user(self.request.user,superuser=True).prefetch_related('connection_set')
+		else:
+			# return qs
+			return qs.prefetch_related('phonecall_set')
 
 	def get_serializer_class(self):
 	    # Return the correct serializer based on current action
@@ -182,7 +190,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 			min_id = request.query_params.get('min_id',None)
 
 			# Create Message List and Serializer
-			contact_messages = cont.Message.objects.filter(contact__study_id=study_id)
+			contact_messages = cont.Message.objects.filter(contact__study_id=study_id).select_related('connection__contact','contact').prefetch_related('contact__connection_set')
 			if max_id:
 			    contact_messages = contact_messages.filter(pk__lt=max_id)
 			if min_id:

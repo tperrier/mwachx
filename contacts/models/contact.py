@@ -31,6 +31,15 @@ class ContactQuerySet(ForUserQuerySet):
     def has_pending(self):
         return set([message.contact for message in Message.objects.pending().prefetch_related('contact')])
 
+class ContactManager(models.Manager):
+
+    def get_queryset(self):
+        qs = super(ContactManager,self).get_queryset()
+        return qs.annotate(note_count=models.Count('note'),phonecall_count=models.Count('phonecall')).extra(
+            select={
+                'primary_identity':'select max(contacts_connection.identity) from contacts_connection where contacts_connection.contact_id == contacts_contact.id and contacts_connection.is_primary == 1'
+            }
+        )
 
 
 class Contact(TimeStampedModel):
@@ -110,7 +119,7 @@ class Contact(TimeStampedModel):
     )
 
     #Set Custom Manager
-    objects = ContactQuerySet.as_manager()
+    objects = ContactManager.from_queryset(ContactQuerySet)()
 
     #Study Attributes
     study_id = models.CharField(max_length=10,unique=True,verbose_name='Study ID',help_text="* Use Barcode Scanner")
@@ -186,10 +195,18 @@ class Contact(TimeStampedModel):
         return "(#%03s) %s - %s"%(self.study_id,self.nickname,self.facility)
 
     def connection(self):
-        return self.connection_set.filter(is_primary=True).first()
+        # Use connection_set.all() instead of .filter to take advantage of prefetch_related
+        for connection in self.connection_set.all():
+            if connection.is_primary == True:
+                return connection
 
     def phone_number(self):
-        return self.connection().identity
+        try:
+            return self.primary_identity
+        except AttributeError as e:
+            connection = self.connection()
+            if connection is not None:
+                return connection.identity
 
     def is_active(self):
         return not (self.status == 'completed' or self.status == 'stopped' or self.status == 'other')

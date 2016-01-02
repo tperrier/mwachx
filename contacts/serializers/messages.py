@@ -20,7 +20,7 @@ class ParticipantSimpleSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = cont.Contact
-		fields = ('nickname','study_id','study_group','anc_num', 'status','phone_number','href')
+		fields = ('nickname','study_id','study_group','anc_num','phone_number', 'status','href')
 
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -41,7 +41,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 	API endpoint that allows users to be viewed or edited.
 	"""
 	serializer_class = MessageSerializer
-	queryset = cont.Message.objects.all()
+	queryset = cont.Message.objects.all().select_related('connection','contact').prefetch_related('contact__connection_set')
 
 	@detail_route(methods=['put'])
 	def dismiss(self, request, pk, *args, **kwargs):

@@ -96,7 +96,7 @@ class VisitQuerySet(SchedualQuerySet):
         bookcheck_weekly = self.pending().visit_range(start={'days':8},end={'days':35},notification_start={'weeks':1})
         bookcheck_monthly = self.pending().visit_range(start={'days':36},notification_start={'weeks':4})
 
-        print visits_this_week
+        # print visits_this_week
         return visits_this_week | bookcheck_weekly | bookcheck_monthly
 
     def top(self):
