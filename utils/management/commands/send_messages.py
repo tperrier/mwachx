@@ -49,7 +49,7 @@ class Command(BaseCommand):
 
         # self.stdout.write("Finding Participants for Day: {} Hour: {}".format(day_lookup[day],hour))
 
-        participants = cont.Contact.objects.filter(send_day=day)
+        participants = cont.Contact.objects.filter(send_day=day,status__in=['pregnant','post','over','ccc'])
         if hour != 0:
             participants = participants.filter(send_time=hour)
 
