@@ -7,6 +7,7 @@ import operator, collections, re, argparse
 from django.core.management.base import BaseCommand, CommandError
 import utils.sms_utils as sms
 import backend.models as back
+import contacts.models as cont
 
 class Command(BaseCommand):
 
@@ -20,7 +21,8 @@ class Command(BaseCommand):
         # The cmd argument is required for django.core.management.base.CommandParser
         make_parser = subparsers.add_parser('make',cmd=parser.cmd,help='make final translations or todos')
         make_parser.add_argument('type',type=todo_or_final,help='type of make. one of (t)do or (f)inal')
-        make_parser.add_argument('-c','--copy',help='make copy of todo messages',action='store_true',default=False)
+        make_parser.add_argument('--copy',help='make copy of todo messages',action='store_true',default=False)
+        make_parser.add_argument('-c','--check',help='check final messages',action='store_true',default=False)
         make_parser.set_defaults(action='make_messages')
 
         check_parser = subparsers.add_parser('check',cmd=parser.cmd,help='check and print stats for final translations')
@@ -31,7 +33,11 @@ class Command(BaseCommand):
 
         import_parser = subparsers.add_parser('import',cmd=parser.cmd,help='import messages to backend')
         import_parser.add_argument('-d','--done',default=False,action='store_true',help='only import messages marked as done')
+        import_parser.add_argument('--clear',default=False,action='store_true',help='clear all existing backend messages')
         import_parser.set_defaults(action='import_messages')
+
+        participant_parser = subparsers.add_parser('part',cmd=parser.cmd,help='try to find messages for all current participants')
+        participant_parser.set_defaults(action='test_participants')
 
         test_parser = subparsers.add_parser('test',cmd=parser.cmd,help='test message row creation')
         test_parser.set_defaults(action='test')
@@ -133,7 +139,7 @@ class Command(BaseCommand):
 
         # Load sms bank
         sms_bank = xl.load_workbook(self.paths.bank)
-        translations = sms.read_sms_bank(sms_bank,None,'anc','special')
+        translations = sms.read_sms_bank(sms_bank,None,'anc','postpartum','visits','special')
 
         # Create final wb and add header
         final_wb = xl.workbook.Workbook()
@@ -145,12 +151,12 @@ class Command(BaseCommand):
 
             todo_swahili , todo_luo = todo_swahili_bank[description] , todo_luo_bank[description]
             done_swahili , done_luo = done_swahili_bank[description] , done_luo_bank[description]
-            msg.swahili , msg.luo , msg.english = done_swahili.swahili , done_luo.luo , msg.new
+            msg.swahili , msg.luo , msg.english = done_swahili.swahili , done_luo.luo , msg.english
 
             # Determine done status
             is_done_swahili = not done_swahili.is_todo() or todo_swahili.swahili != done_swahili.swahili
             is_done_luo = not done_luo.is_todo() or todo_luo.luo != done_luo.luo
-            if not done_luo.is_todo() and not done_swahili.is_todo():
+            if not ( done_luo.is_todo() and done_swahili.is_todo() ):
                 msg.status = 'clean'
             elif is_done_swahili and is_done_luo:
                 msg.status = 'done'
@@ -176,35 +182,59 @@ class Command(BaseCommand):
             for col_letter, width in column_widths.items():
                 new_ws.column_dimensions[col_letter].width = width
 
-        self.stdout.write('{} translations. {} todo.'.format( len(translations),
-            len([m for m in translations if m.is_todo()])
-        ) )
 
         final_wb.save(self.paths.final)
 
+        if self.options['check']:
+            self.check_messages()
+        else:
+            self.stdout.write('{} translations. {} todo.'.format( len(translations),
+                len([m for m in translations if m.is_todo()])
+            ) )
+
 
     def check_messages(self):
-
+        ''' Check Final Translations
+            report base_group
+                track_HIV (count) [offset]
+        '''
         sms_wb = xl.load_workbook(self.paths.final)
         messages = sms.parse_messages(sms_wb.active,sms.FinalRow)
 
         stats = recursive_dd()
+        descriptions = set()
+        duplicates = []
+        total = 0
         for msg in messages:
-            condition_hiv = stats[ '{}_HIV_{}'.format(msg.track,msg.get_hiv_messaging_str()) ]
-            condition_hiv.default_factory = list
+            total += 1
+            base_group = stats[ '{}_{}'.format(msg.send_base,msg.group) ]
+            base_group.default_factory = list
 
-            base_group = condition_hiv[ '{}_{}'.format(msg.send_base,msg.group) ]
-            base_group.append(msg)
+            condition_hiv = base_group[ '{}_HIV_{}'.format(msg.track,msg.get_hiv_messaging_str()) ]
+            condition_hiv.append(msg)
 
-        for condition_hiv, base_groups in stats.items():
-            self.stdout.write( '{}'.format(condition_hiv) )
-            for base_group,items in base_groups.items():
+            description = msg.description()
+            if description not in descriptions:
+                descriptions.add(description)
+            else:
+                duplicates.append(description)
+
+        for base_group, condition_hiv_groups in stats.items():
+            self.stdout.write( '{}'.format(base_group) )
+            for condition_hiv, items in condition_hiv_groups.items():
                 count = len(items)
-                todo = len(filter(lambda m: m.is_todo(),items))
-                self.stdout.write( '\t{}: {}({}) {}'.format(
-                    base_group,count,todo,
-                    sorted([i.offset for i in items])
+                self.stdout.write( '\t{}: {} {}'.format(
+                    condition_hiv, count, sorted([i.offset for i in items])
                 ) )
+        self.stdout.write( 'Total: {} Todo: {}'.format( total,
+            len([m for m in messages if m.is_todo()])
+        ) )
+
+        if duplicates:
+            for d in duplicates:
+                self.stdout.write( 'Duplicate: {}'.format(d) )
+        else:
+            self.stdout.write(' No Duplicates ')
 
         # self.options['ascii_msg'] = 'Warning: non-ascii chars found: {count}'
         # non_ascii_dict = self.non_ascii_count()
@@ -228,7 +258,12 @@ class Command(BaseCommand):
 
     def import_messages(self):
         sms_bank = xl.load_workbook(self.paths.final)
-        do_all = not self.options.get('done',False)
+        clear = self.options.get('clear')
+        do_all = not self.options.get('done') or clear
+
+        if clear:
+            self.stdout.write('Deleting All Backend Messages')
+            back.AutomatedMessage.objects.all().delete()
 
         todo,total = 0,0
         for row in sms_bank.active.rows[1:]:
@@ -240,6 +275,22 @@ class Command(BaseCommand):
                     self.stdout.write('Warning: message {} still todo'.format(msg.description()))
                     todo += 1
         self.stdout.write('Messages Imported: {} Messages Todo: {}'.format(total,todo))
+
+    def test_participants(self):
+
+        found , missing = 0 , []
+        for c in cont.Contact.objects.all():
+            auto = back.AutomatedMessage.objects.from_description( c.description() )
+            if auto is None:
+                missing.append(c)
+            else:
+                found += 1
+
+        self.stdout.write( "Total: {} Found: {} Missing: {}".format( found + len(missing), found, len(missing) ) )
+
+        self.stdout.write( "Missing Participants" )
+        for m in missing:
+            self.stdout.write( "\t{!r} {}".format(m,m.description()) )
 
     def non_ascii_count(self):
         sms_bank = xl.load_workbook(self.options['bank'])

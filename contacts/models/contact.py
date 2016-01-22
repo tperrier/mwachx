@@ -192,7 +192,7 @@ class Contact(TimeStampedModel):
         return self.nickname
 
     def __repr__(self):
-        return "(#%03s) %s - %s"%(self.study_id,self.nickname,self.facility)
+        return "(#%03s) %s - %s"%(self.study_id,self.nickname,self.facility.title())
 
     def connection(self):
         # Use connection_set.all() instead of .filter to take advantage of prefetch_related
@@ -242,9 +242,11 @@ class Contact(TimeStampedModel):
         '''
         today = utils.today(today)
         if self.was_pregnant(today):
-            return (self.due_date - today).days
+            if self.delivery_date is None:
+                return (self.due_date - today).days
+            else:
+                return (self.delivery_date - today).days
         else: #post-partum
-            #TODO: Change this to delivered date when we start using that
             # Return days since due date
             return (today-self.delivery_date).days
 

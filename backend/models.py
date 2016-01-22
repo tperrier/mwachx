@@ -8,7 +8,7 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
         ''' Return AutomatedMessage for participant and today '''
         return self.from_description( participant.description(**kwargs) )
 
-    def from_description(self,description):
+    def from_description(self,description,exact=False):
         ''' Return AutomatedMessage for description
             :param description (str): base.group.condition.hiv.offset string to look for
             :returns: AutomatedMessage matching description or closes match if not found
@@ -16,10 +16,21 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
         send_base, group, condition, hiv_messaging, send_offset = description.split('.')
         hiv = hiv_messaging == "Y"
         send_offset = int(send_offset)
+
+        # Sepecial case for post date messages go back and forth between week 41 and 42 mesages
+        if send_base == 'edd' and send_offset < 0:
+            send_offset = -(send_offset % 2 + 1)
+
+        return self.from_parameters(send_base,group,condition,send_offset,hiv)
+
+    def from_parameters(self,send_base,group,condition='normal',send_offset=0,hiv=False,exact=False):
+
         try:
             return self.get(send_base=send_base, send_offset=send_offset,
                             group=group, condition=condition, hiv_messaging=hiv)
         except AutomatedMessage.DoesNotExist as e:
+            if exact == True:
+                return None
             # No match for participant conditions continue to find best match
             pass
 
@@ -44,7 +55,8 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
         return message_offset.filter(condition='normal',hiv_messaging=False).first()
 
     def from_excel(self,msg):
-        auto = self.from_description(msg.description())
+        ''' Replace fields of message content with matching discription '''
+        auto = self.from_description(msg.description(),exact=True)
         if auto is None:
             return self.create(**msg.kwargs())
         else:

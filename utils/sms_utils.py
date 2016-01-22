@@ -10,6 +10,9 @@ class MessageRowBase(object):
         self.english, self.swahili, self.luo, = map(clean_msg,(english,swahili,luo))
 
         self.comment = kwargs.get('comment','')
+        if self.comment is None:
+            self.comment = ''
+            
         self.new = kwargs.get('new','')
         self.row = row[0].row
 
@@ -156,17 +159,26 @@ class MessageBankRow(MessageRowBase):
         super(MessageBankRow,self).__init__(row,status,group,track,hiv,send_base,offset,
             english,swahili,luo,comment=comment)
 
+        self.set_old(old_translations)
+
+
+    def set_old(self,old_translations=None):
+
         if old_translations is None:
-            old_translations = {}
+            return
+
         old = old_translations.get(self.description())
-
-        self.swahili = old.swahili if old is not None else self.swahili
-        self.luo = old.luo if old is not None else self.luo
-
         if self.to_translate(old):
             self.new = self.english
             self.english = old.english if old is not None else ''
             self.status = old.status if old is not None and old.is_todo() else 'todo'
+
+        if old is None:
+            return
+
+        self.swahili = old.swahili
+        self.luo = old.luo
+
 
     def to_translate(self,old):
         if old is None or \
@@ -207,7 +219,7 @@ def parse_messages(ws,cls,**kwargs):
             yield msg
 
 def read_sms_bank(bank,old=None,*args):
-    return filter(lambda x: x.is_valid(), [
+    return filter(lambda msg: msg.is_valid(), [
         MessageBankRow(row,old)
         for row in itertools.chain(
             *[bank.get_sheet_by_name(sheet).rows[1:] for sheet in args]
