@@ -37,7 +37,9 @@ class ContactManager(models.Manager):
         qs = super(ContactManager,self).get_queryset()
         return qs.annotate(note_count=models.Count('note'),phonecall_count=models.Count('phonecall')).extra(
             select={
-                'primary_identity':'select max(contacts_connection.identity) from contacts_connection where contacts_connection.contact_id == contacts_contact.id and contacts_connection.is_primary == 1'
+                'primary_identity':'select max("contacts_connection"."identity") from "contacts_connection" ' +
+                    'where "contacts_connection"."contact_id" = "contacts_contact"."id" and ' +
+                    '"contacts_connection"."is_primary" = {}'.format( 'TRUE' if settings.ON_WEBFACTION else 1)
             }
         )
 
