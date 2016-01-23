@@ -24,7 +24,8 @@ class Command(BaseCommand):
         parser.add_argument('-d','--day',help='set testing day',choices=range(7),type=int)
         parser.add_argument('-e','--email',help='send output as email',action='store_true',default=False)
         parser.add_argument('--test',help='test send_messages can be called',action='store_true',default=False)
-        parser.add_argument('-v','--visit',help='send visit messages as well',action='store_true',default=False)
+        # Can't have -v as a paramater since it conflicts with verbos   e
+        # parser.add_argument('-v','--visit',help='send visit messages as well',action='store_true',default=False)
 
     def handle(self,*args,**options):
         if options.get('test'):
