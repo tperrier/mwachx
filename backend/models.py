@@ -18,10 +18,10 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
         send_offset = int(send_offset)
 
         # Sepecial case for post date messages go back and forth between week 41 and 42 mesages
-        if send_base == 'edd' and send_offset < 0:
-            send_offset = -(send_offset % 2 + 1)
+        if send_base == 'edd' and send_offset < -2:
+            send_offset = (send_offset+1)%-2 - 1
 
-        return self.from_parameters(send_base,group,condition,send_offset,hiv)
+        return self.from_parameters(send_base,group,condition,send_offset,hiv,exact=exact)
 
     def from_parameters(self,send_base,group,condition='normal',send_offset=0,hiv=False,exact=False):
 
@@ -34,7 +34,7 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
             # No match for participant conditions continue to find best match
             pass
 
-        # Create the base query set woth send_base and offset
+        # Create the base query set with send_base and offset
         message_offset = self.filter(send_base=send_base,send_offset=send_offset)
 
         # Try to find a non HIV message for this conditon
@@ -51,21 +51,21 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
             except AutomatedMessage.DoesNotExist as e:
                 pass
 
-        # If message is is still none don't check group and force hiv_messaging off return message or None
-        return message_offset.filter(condition='normal',hiv_messaging=False).first()
+        # If message is is still no match force group to one-way and force hiv_messaging off return message or None
+        return message_offset.filter(condition='normal',group='one-way',hiv_messaging=False).first()
 
     def from_excel(self,msg):
         ''' Replace fields of message content with matching discription '''
         auto = self.from_description(msg.description(),exact=True)
         if auto is None:
-            return self.create(**msg.kwargs())
+            return self.create(**msg.kwargs()) , True
         else:
             auto.english = msg.english if msg.english != '' else msg.new
             auto.swahili = msg.swahili
             auto.luo = msg.luo
             auto.todo = msg.status == 'todo'
             auto.save()
-            return auto
+            return auto , False
 
 class AutomatedMessage(models.Model):
     """Automated Messages for sending to participants"""
@@ -73,10 +73,11 @@ class AutomatedMessage(models.Model):
     SEND_BASES_CHOICES = (
         ('edd','Before EDD'),
         ('over','Post Dates'),
-        ('post','Postpartum'),
-        ('visit','Visit Messages'),
+        ('dd','Postpartum'),
+        ('visit','Visit'),
         ('signup','From Signup'),
-        ('connect','Reconnect Messages'),
+        ('connect','Reconnect'),
+        ('bounce','Bounce'),
     )
 
     GROUP_CHOICES = (
@@ -128,6 +129,9 @@ class AutomatedMessage(models.Model):
     def get_language(self,language):
         # TODO: Error checking
         return getattr(self,language)
+
+    def __str__(self):
+        return self.__repr__()
 
     def __repr__(self):
         return "<AutomatedMessage: {}>".format(self.description())

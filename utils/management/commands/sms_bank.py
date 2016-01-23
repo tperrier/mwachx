@@ -266,16 +266,46 @@ class Command(BaseCommand):
             back.AutomatedMessage.objects.all().delete()
 
         self.stdout.write('Importing....')
-        todo,total = 0,0
+        total , add , todo, create = 0 , 0 , 0 , 0
+        diff , existing = [] , []
         for row in sms_bank.active.rows[1:]:
             msg = sms.FinalRow(row)
             total += 1
+
             if do_all or msg.status == 'done':
-                auto = back.AutomatedMessage.objects.from_excel(msg)
+                add += 1
+                auto , created = back.AutomatedMessage.objects.from_excel(msg)
+
+                if not created:
+                    existing.append( (msg,auto) )
+                else:
+                    create += 1
+
                 if msg.is_todo():
                     self.stdout.write('Warning: message {} still todo'.format(msg.description()))
                     todo += 1
-        self.stdout.write('Messages Imported: {} Messages Todo: {}'.format(total,todo))
+
+                if msg.description() != auto.description():
+                    diff.append( (msg,auto) )
+        self.stdout.write('Messages Found: {} Imported: {} Created: {} Todo: {}'.format(total,add,create,todo))
+
+        if clear:
+            if existing:
+                self.stdout.write( 'Existing:')
+                for e in existing:
+                    self.stdout.write( '\t{0[0]} - {0[1]}'.format(e) )
+            else:
+                self.stdout.write( 'Existing: None')
+
+        if diff:
+            self.stdout.write( 'Different:')
+            for d in diff:
+                self.stdout.write( '\t{0[0]} - {0[1]}'.format(d) )
+        else:
+            self.stdout.write( 'Different: None')
+
+
+
 
     def test_participants(self):
 
