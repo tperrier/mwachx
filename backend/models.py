@@ -37,22 +37,30 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
         # Create the base query set with send_base and offset
         message_offset = self.filter(send_base=send_base,send_offset=send_offset)
 
-        # Try to find a non HIV message for this conditon
-        if not hiv:
+        if hiv:
+            # Try to find a non HIV message for this conditon
             try:
                 return message_offset.get(condition=condition,group=group,hiv_messaging=False)
             except AutomatedMessage.DoesNotExist as e:
                 pass
 
-        # Force condition to normal and try again
-        if not hiv and condition != "normal":
+        if condition != "normal":
+            # Force condition to normal and try again
             try:
                 return message_offset.get(condition="normal",group=group,hiv_messaging=False)
             except AutomatedMessage.DoesNotExist as e:
                 pass
 
-        # If message is is still no match force group to one-way and force hiv_messaging off return message or None
-        return message_offset.filter(condition='normal',group='one-way',hiv_messaging=False).first()
+        if group != "one-way":
+            # Force group to one-way and try again
+            try:
+                return message_offset.get(condition=condition,group="one-way",hiv_messaging=False)
+            except AutomatedMessage.DoesNotExist as e:
+                pass
+
+        if condition != "normal" and group != "one-way":
+            # Force group to one-way and force hiv_messaging off return message or None
+            return message_offset.filter(condition='normal',group='one-way',hiv_messaging=False).first()
 
     def from_excel(self,msg):
         ''' Replace fields of message content with matching discription '''
