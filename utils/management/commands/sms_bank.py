@@ -69,16 +69,16 @@ class Command(BaseCommand):
     ########################################
 
     def custom(self):
-        sms_bank = xl.load_workbook(self.paths.bank)
-        new_wb = xl.workbook.workbook()
-        ws = new_wb.active
+        sms_bank = xl.load_workbook(self.paths.final)
 
-        for row in sms_bank.get_sheet_by_name('anc').rows:
-            if row[0].value == '#':
-                ws.append(row)
-            else:
-                msg = sms.MessageBankRow(row)
-                ws.append(msg.get_bank_row())
+        counts = collections.defaultdict(int)
+        for row in sms_bank.active.rows[1:]:
+            msg = sms.FinalRow(row)
+            counts[msg.track] += 1
+
+        for track , count in counts.items():
+            print track, count, len(track)
+
 
     def make_messages(self):
         self.stdout.write( 'Making Messages: {}'.format(self.options['type'].capitalize()) )
@@ -265,6 +265,7 @@ class Command(BaseCommand):
             self.stdout.write('Deleting All Backend Messages')
             back.AutomatedMessage.objects.all().delete()
 
+        self.stdout.write('Importing....')
         todo,total = 0,0
         for row in sms_bank.active.rows[1:]:
             msg = sms.FinalRow(row)
