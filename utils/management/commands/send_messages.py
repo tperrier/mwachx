@@ -36,16 +36,18 @@ class Command(BaseCommand):
         hour = options.get('hour')
         date = options.get('date')
 
+        try:
+            date = datetime.datetime.strptime(date if date is not None else '','%Y-%m-%d').date()
+        except ValueError as e:
+            # Invlaid date object so set to today
+            date = datetime.date.today()
+
         if day is None:
-            try:
-                date = datetime.datetime.strptime(date if date is not None else '','%Y-%m-%d').date()
-            except ValueError as e:
-                # Invlaid date object so set to today
-                date = datetime.date.today()
             day = date.weekday()
 
         if hour is None:
             hour = datetime.datetime.now().hour
+
         hour = [0,8,8,8,8,  8,8,8,8,8, 8,13,13,13,13, 13,20,20,20,20, 20,20,20,20][hour]
         day_lookup = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
 
