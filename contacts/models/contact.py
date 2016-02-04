@@ -255,14 +255,21 @@ class Contact(TimeStampedModel):
     def description(self,**kwargs):
         hiv_messaging = kwargs.get("hiv_messaging", self.hiv_messaging == "system")
         hiv = "Y" if hiv_messaging else "N"
+
         group = kwargs.get("group",self.study_group)
         today = kwargs.get("today")
 
         send_base = kwargs.get("send_base",'edd' if self.was_pregnant(today=today) else 'dd')
         send_offset = kwargs.get("send_offset",self.delta_days(today=today)/7)
+        condition = kwargs.get("condition",self.condition)
+
+        # Special cases for visit send_base
+        if send_base == 'visit':
+            hiv = False
+            send_offset = 0
 
         return "{send_base}.{group}.{condition}.{hiv}.{send_offset}".format(
-            group=group, condition=self.condition, hiv=hiv,
+            group=group, condition=condition, hiv=hiv,
             send_base=send_base , send_offset=send_offset
         )
 
@@ -309,8 +316,7 @@ class Contact(TimeStampedModel):
     def message_kwargs(self):
         return {
             'name':self.nickname.title(),
-            'nurse':Practitioner.objects.filter(facility=self.facility)
-                .exclude(user__first_name='').first().user.first_name,
+            'nurse':Practitioner.objects.for_participant(self).user.first_name.title(),
             'clinic':self.facility.title()
         }
 
@@ -342,12 +348,23 @@ class Contact(TimeStampedModel):
 
         return new_message
 
-    def send_automated_message(self,control=False,send=True,**kwargs):
+    def send_automated_message(self,control=False,send=True,extra_kwargs=None,**kwargs):
+        ''' kwargs get passed into self.description
+            :param control bool - if True allow sending to control
+            :param send bool - if True send message
+            :kwargs
+                - hiv_messaging bool - hiv_messaging or not
+                - group - string for study group
+                - today - date for sending to (default today)
+                - send_base - string send_base
+                - send_offset - int send_offset (or calculated from today)
+                - condition - defaults to self.condition
+        '''
         message = back.AutomatedMessage.objects.for_participant(self,**kwargs)
         if message is None:
             return None #TODO: logging on this
 
-        text = message.text_for(self)
+        text = message.text_for(self,extra_kwargs)
         if text is None:
             return None #TODO: logging on this
 

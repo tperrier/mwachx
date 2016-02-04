@@ -89,6 +89,9 @@ class ScheduledEvent(TimeStampedModel):
         self.skipped = True
         self.save()
 
+    def __str__(self):
+        return "{} {}".format( self.scheduled, self.participant )
+
 class VisitQuerySet(SchedualQuerySet):
 
     def get_visit_checks(self):

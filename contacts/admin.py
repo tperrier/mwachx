@@ -98,8 +98,8 @@ class ConnectionAdmin(admin.ModelAdmin,ContactAdminMixin):
 class VisitAdmin(admin.ModelAdmin,ParticipantAdminMixin):
     list_display = ('study_id','participant_name','visit_type','scheduled',
         'notification_last_seen','notify_count', 'arrived','skipped')
-    date_hierarchy = 'arrived'
-    list_filter = ('skipped','visit_type')
+    date_hierarchy = 'scheduled'
+    list_filter = ('skipped','visit_type','arrived','scheduled')
     search_fields = ('participant__study_id','participant__nickname')
 
 @admin.register(cont.ScheduledPhoneCall)

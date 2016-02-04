@@ -65,7 +65,7 @@ class Message(TimeStampedModel):
     external_success = models.NullBooleanField(verbose_name="Sent")
     external_data = JSONField()
 
-    # Only for system messages
+    # Description message of system message
     auto = models.CharField(max_length=50,blank=True)
 
     def is_pending(self):
@@ -96,6 +96,11 @@ class Message(TimeStampedModel):
 			self.topic = topic
 		self.is_viewed = True
 		self.save()
+
+    def description(self):
+        if self.is_system:
+            return self.auto
+        return 'none'
 
 class PhoneCallQuerySet(ForUserQuerySet):
 

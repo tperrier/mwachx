@@ -30,6 +30,7 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
 
     def from_parameters(self,send_base,group,condition='normal',send_offset=0,hiv=False,exact=False):
 
+        # Look for exact match of parameters
         try:
             return self.get(send_base=send_base, send_offset=send_offset,
                             group=group, condition=condition, hiv_messaging=hiv)
@@ -46,6 +47,12 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
             # Try to find a non HIV message for this conditon
             try:
                 return message_offset.get(condition=condition,group=group,hiv_messaging=False)
+            except AutomatedMessage.DoesNotExist as e:
+                pass
+
+            # Force condition to normal and try again with group and hiv=True
+            try:
+                return message_offset.get(condition="normal",group=group,hiv_messaging=hiv)
             except AutomatedMessage.DoesNotExist as e:
                 pass
 
@@ -135,9 +142,13 @@ class AutomatedMessage(models.Model):
     def description(self):
         return "{0}.{1}".format(self.category(),self.send_offset)
 
-    def text_for(self,participant):
+    def text_for(self,participant,extra_kwargs=None):
         text = self.get_language(participant.language)
-        return text.format(**participant.message_kwargs())
+
+        message_kwargs = participant.message_kwargs()
+        if extra_kwargs is not None:
+            message_kwargs.update(extra_kwargs)
+        return text.format(**message_kwargs)
 
     def get_language(self,language):
         # TODO: Error checking

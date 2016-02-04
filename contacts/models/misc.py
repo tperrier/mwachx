@@ -27,6 +27,11 @@ class Connection(models.Model):
     def __unicode__(self):
         return "{} ({})".format(self.contact.study_id if self.contact else '',self.identity)
 
+class PractitionerQuerySet(BaseQuerySet):
+
+    def for_participant(self,participant):
+        return self.filter(facility=participant.facility).exclude(user__first_name='').select_related('user').first()
+
 class Practitioner(models.Model):
     '''
     User profile for nurse practitioners to link a User profile to a Facility
@@ -34,7 +39,7 @@ class Practitioner(models.Model):
     class Meta:
         app_label = 'contacts'
 
-    objects = BaseQuerySet.as_manager()
+    objects = PractitionerQuerySet.as_manager()
 
     user = models.OneToOneField(User)
     facility = models.CharField(max_length=15,choices=settings.FACILITY_CHOICES)

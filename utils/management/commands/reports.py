@@ -154,15 +154,15 @@ class Command(BaseCommand):
     def make_xlsx(self):
 
         wb = xl.workbook.Workbook()
-        ws = wb.active
-
-        make_facility_sheet(ws,'ahero')
-        make_facility_sheet(wb.create_sheet(),'bondo')
-        make_facility_sheet(wb.create_sheet(),'mathare')
 
         today = datetime.date.today()
         xlsx_path_out = os.path.join(self.options['dir'],today.strftime('mWaChX_%Y-%m-%d.xlsx'))
         self.stdout.write( "Making xlsx file {}".format(xlsx_path_out) )
+
+        make_facility_sheet(wb.active,'ahero')
+        make_facility_sheet(wb.create_sheet(),'bondo')
+        make_facility_sheet(wb.create_sheet(),'mathare')
+
         wb.save(xlsx_path_out)
 
 ########################################
@@ -179,6 +179,9 @@ def make_facility_sheet(ws,facility):
         ('Enrolled','created'),
         ('Group','study_group'),
         ('EDD','due_date'),
+        ('Δ EDD',lambda c:delta_days(c.due_date)),
+        ('Delivery','delivery_date'),
+        ('Δ Delivery',lambda c:delta_days(c.delivery_date,past=True)),
         ('Send Day','send_day'),
         ('Send Time','send_time'),
         ('Validation Δ',lambda c: seconds_as_str(c.validation_delta()) ),
@@ -215,3 +218,8 @@ def seconds_as_str(seconds):
     if seconds <= 3600:
         return '{:.2f}'.format(seconds/60)
     return '{:.2f} (h)'.format(seconds/3600)
+
+def delta_days(date,past=False):
+    if date is not None:
+        days = (date - datetime.date.today()).days
+        return -days if past else days

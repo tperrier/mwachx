@@ -319,9 +319,12 @@ class Command(BaseCommand):
 
         self.stdout.write( "Total: {} Found: {} Missing: {}".format( found + len(missing), found, len(missing) ) )
 
-        self.stdout.write( "Missing Participants" )
-        for m in missing:
-            self.stdout.write( "\t{!r} {}".format(m,m.description()) )
+        if missing:
+            self.stdout.write( "Missing Participants:" )
+            for m in missing:
+                self.stdout.write( "\t{!r} {}".format(m,m.description()) )
+        else:
+            self.stdout.write( "Missing Participants: 0" )
 
     def non_ascii_count(self):
         sms_bank = xl.load_workbook(self.options['bank'])
