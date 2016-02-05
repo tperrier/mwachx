@@ -1,6 +1,7 @@
 #!/usr/bin/python
-import datetime, openpyxl as xl
-import sys
+import openpyxl as xl
+import sys, datetime
+from argparse import Namespace as ns
 
 from django.core.management.base import BaseCommand
 from django.utils import dateparse
@@ -59,6 +60,9 @@ class Command(BaseCommand):
         if hour is None:
             hour = datetime.datetime.now().hour
 
+        # Convert hour to 8,13 or 20
+        hour = [0,8,8,8,8,  8,8,8,8,8, 8,13,13,13,13, 13,20,20,20,20, 20,20,20,20][hour]
+
         send = options.get('send')
         email_subject = '[MX Server] {}{}'.format( date.strftime('%a %b %d (%j) %Y'), '' if options.get('send') else ' (FAKE)' )
         email_body = [ "Script started at {}".format(datetime.datetime.now()),
@@ -87,9 +91,6 @@ def weekly_messages(day,hour,date,email_body,send=False):
     email_body.append("***** Weekly Messages ******\n")
 
     participants = cont.Contact.objects.filter(send_day=day,status__in=['pregnant','post','over','ccc'])
-
-    # Convert hour to 8,13 or 20
-    hour = [0,8,8,8,8,  8,8,8,8,8, 8,13,13,13,13, 13,20,20,20,20, 20,20,20,20][hour]
 
     # Filter based on hour if needed
     if hour != 0:
@@ -121,27 +122,28 @@ def appointment_reminders(date,hour,email_body,delta_days=2,send=False):
 
     email_body.append( "***** Appointment Reminders *****\n" )
 
-    # Find visits within todays
+    # Find visits scheduled within delta_days and not attended early
     td = datetime.timedelta(days=delta_days)
     scheduled_date = date+td
-    upcoming_visits = cont.Visit.objects.filter(scheduled=scheduled_date).select_related('participant')
+    upcoming_visits = cont.Visit.objects.filter(scheduled=scheduled_date,arrived__isnull=True).select_related('participant')
 
 
     extra_kwargs = {'days':delta_days,'date':scheduled_date.strftime('%b %d')}
-    sent_to , control , duplicates = {} , 0 , 0
+    vals = ns(sent_to={}, control=0, duplicates=0 , times={8:0,13:0,20:0})
     for visit in upcoming_visits:
         if visit.participant.study_group == 'control':
-            control += 1
-        elif visit.participant.id in sent_to:
-            duplicates += 1
+            vals.control += 1
+        elif visit.participant.id in vals.sent_to:
+            vals.duplicates += 1
         else:
-            condition = '{}_pre'.format('anc' if visit.participant.is_pregnant() else 'pnc')
-            message = visit.participant.send_automated_message(send=send,send_base='visit',
-                            condition=condition,extra_kwargs=extra_kwargs)
-            sent_to[visit.participant.id] = "{} (#{})".format(message.description(),visit.participant.study_id)
+            vals.times[visit.participant.send_time] += 1
+            if hour == 0 or visit.participant.send_time == hour:
+                condition = '{}_pre'.format('anc' if visit.participant.is_pregnant() else 'pnc')
+                message = visit.participant.send_automated_message(send=send,send_base='visit',
+                                condition=condition,extra_kwargs=extra_kwargs)
+                vals.sent_to[visit.participant.id] = "{} (#{})".format(message.description(),visit.participant.study_id)
 
-
-
-    email_body.append('Found {} visits on {}'.format(upcoming_visits.count(),date))
-    email_body.append('Visit Messages Sent: {} Control: {} Duplicate: {}'.format(len(sent_to),control,duplicates) )
-    email_body.extend( "\t{}".format(d) for d in sent_to.values())
+    email_body.append('Found {} visits on {}'.format(upcoming_visits.count(),scheduled_date))
+    email_body.append('Control: {0.control} Duplicate: {0.duplicates} M: {0.times[8]} A: {0.times[13]} N: {0.times[20]} Sent: {1}'
+                .format(vals,len(vals.sent_to)) )
+    email_body.extend( "\t{}".format(d) for d in vals.sent_to.values())

@@ -25,6 +25,7 @@ class Command(BaseCommand):
         send_time_parser.add_argument('-t','--times',action='store_true',default=False,help='print send times')
         send_time_parser.add_argument('-r','--registered',action='store_true',default=False,help='print registered totals per facility')
         send_time_parser.add_argument('-c','--validation-codes',action='store_true',default=False,help='print validation stats')
+        send_time_parser.add_argument('-a','--all',action='store_true',default=False,help='all report options')
         send_time_parser.set_defaults(action='print_stats')
 
         xlsx_parser = subparsers.add_parser('xlsx',cmd=parser.cmd,help='create xlsx report')
@@ -47,12 +48,12 @@ class Command(BaseCommand):
     ########################################
 
     def print_stats(self):
-        self.stdout.write( "Printing Stats: registered={} times={}".format(self.options['registered'],self.options['times']) )
-        if self.options['registered']:
+        self.stdout.write( "Printing Stats: registered={0[registered]} times={0[times]} validation-codes={0[validation_codes]}".format(self.options) )
+        if self.options['registered'] or self.options['all']:
             self.registered_counts()
-        if self.options['times']:
+        if self.options['times'] or self.options['all']:
             self.send_times()
-        if self.options['validation_codes']:
+        if self.options['validation_codes'] or self.options['all']:
             self.validation_stats()
 
     def send_times(self):
