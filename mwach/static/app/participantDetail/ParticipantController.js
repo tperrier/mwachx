@@ -165,9 +165,11 @@
       templateUrl: "/static/app/dashboard/visits/modalVisitAttendSchedule.html",
       scope: $modalScope,
       controller: 'VisitModifyModalController',
-    }).result.then(function(put) {
-      console.log('Schedule',put);
-      $scope.participant.post('visits/',put).then(function(response){
+    }).result.then(function(scheduled) {
+      mwachxUtils.convert_dates(scheduled);
+      console.log('Schedule',scheduled);
+
+      $scope.participant.post('visits/',scheduled).then(function(response){
         $scope.participant.visits.push(
           Restangular.restangularizeElement($scope.participant,response,'visits/')
         );
@@ -180,7 +182,9 @@
       templateUrl: "/static/app/dashboard/visits/modalVisitAttendSchedule.html",
       controller: 'VisitModifyModalController',
     }).result.then(function(attended) {
+      mwachxUtils.convert_dates(attended);
       console.log('Attended',attended);
+
       visit.doPUT(attended,'attended/').then(function(response){
         console.log('Result',response);
         if(response.next) {
@@ -206,8 +210,9 @@
       scope: $modalScope,
       controller: 'VisitModifyModalController',
     }).result.then(function(put) {
+      mwachxUtils.convert_dates(put);
       console.log('Edit',put);
-      put = {scheduled:mwachxUtils.convert_form_date(put.scheduled)}
+
       visit.doPUT(put,'edit/').then(function(result) {
         console.log('Result',result);
         visit.scheduled = result.scheduled;
@@ -240,7 +245,9 @@
       templateUrl: routePrefix + 'modalDelivery.html',
       scope: $modalScope,
     }).result.then(function(delivery) {
+      mwachxUtils.convert_dates(delivery)
       console.log('Delivery',delivery);
+
       $scope.participant.doPUT(delivery,'delivery/').then(function(result) {
         console.log('Result',result);
         if ( ! result.hasOwnProperty('error') ){
@@ -249,6 +256,7 @@
           });
         }
       });
+
     });
   }; // End Record Delivery
 

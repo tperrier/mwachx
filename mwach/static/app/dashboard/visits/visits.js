@@ -22,7 +22,7 @@ angular.module('mwachx') .controller('UpcomingVisitsController',
 }]);
 
 angular.module('mwachx')
-  .directive('mwPendingVisit',[ '$modal',function($modal) {
+  .directive('mwPendingVisit',[ '$modal','mwachxUtils',function($modal,mwachxUtils) {
 
     return {
       restrict:'A',templateUrl:routePrefix + 'pendingVisitDirective.html',
@@ -47,7 +47,8 @@ angular.module('mwachx')
             });
 
             modalInstance.result.then(function(attended){
-              console.log('Save',attended);
+              mwachxUtils.convert_dates(attended);
+              console.log('Attended',attended);
               $scope.visit.doPUT(attended,'attended/').then(function(result){
                 // console.log('Attended',result);
                 $scope.visits.splice($scope.visits.indexOf($scope.visit),1);

@@ -8,6 +8,17 @@ angular.module('mwachx')
         return $filter('date')(date,'yyyy-MM-dd');
       },
 
+      convert_dates:function(form_scope) {
+        /* Check all values in form_scope and convert dates to yyyy-MM-dd format*/
+        console.log('Converting:',form_scope);
+        angular.forEach(form_scope, function(value,key) {
+          if ( value instanceof Date) {
+            console.log(value,key);
+            form_scope[key] = service.convert_form_date(value)
+          }
+        });
+      },
+
       days_str:function(days) {
         if (-7 < days && days < 7)
           return days+'d';
