@@ -13,9 +13,6 @@ import os
 #Determain if we are running on OpenShift
 ON_OPENSHIFT = True if os.environ.has_key('OPENSHIFT_REPO_DIR') else False
 
-# Determain if we are running on Webfaction
-ON_WEBFACTION = True if 'webfaction' in os.environ.get('HOSTNAME','').split('.') else False
-
 # The top directory for this project. Contains requirements/, manage.py,
 PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
 
@@ -32,9 +29,7 @@ SECRET_KEY = 'a638cezc!olqzorlxr_@kq#z5+3(v8c&31by99i$nh+o3x=jkt'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -99,14 +94,12 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 ROOT_URLCONF = 'mwach.urls'
-
 WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 SQLITE_DB_FOLDER = os.environ['OPENSHIFT_DATA_DIR'] if ON_OPENSHIFT else PROJECT_PATH
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -116,9 +109,7 @@ DATABASES = {
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'Africa/Nairobi'
 
 DATE_INPUT_FORMATS = ('%d-%m-%Y','%Y-%m-%d')
@@ -134,13 +125,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(PROJECT_ROOT,'static')
 if ON_OPENSHIFT:
     STATIC_ROOT = os.path.join(os.environ.get('OPENSHIFT_REPO_DIR'),'wsgi','static')
-elif ON_WEBFACTION:
-    STATIC_ROOT = os.path.join(PROJECT_ROOT,'..','..','mwachx_static')
-else:
-    STATIC_ROOT = os.path.join(PROJECT_ROOT, STATIC_URL.strip("/"))
-
 
 # List of finder classes that know how to find static files in
 # various locations.
