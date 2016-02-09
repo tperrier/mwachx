@@ -8,7 +8,13 @@ var uglify = require('gulp-uglify');
 var plumber = require('gulp-plumber');
 var os = require('os');
 
-var webfaction_static = '../../mwachx_static';
+var webfaction_static = ( '../../' + ( (__dirname.indexOf('mwachx') >= 0)?'mwachx':'staging') + '_static')
+
+gulp.task('test', function() {
+  console.log("Filename: " + __filename);
+  console.log("Directory Name: " + __dirname);
+  console.log(webfaction_static);
+});
 
 gulp.task('less', function() {
     return gulp.src('./mwach/static/less/main.less')
