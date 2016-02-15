@@ -46,7 +46,7 @@ class ScheduledEvent(TimeStampedModel):
 
     scheduled = models.DateField()
     arrived = models.DateField(blank=True,null=True,default=None)
-    notification_last_seen = models.DateField(null=True,default=None)
+    notification_last_seen = models.DateField(null=True,blank=True,default=None)
     notify_count = models.IntegerField(default=0)
     skipped = models.NullBooleanField(default=None)
 
@@ -90,7 +90,10 @@ class ScheduledEvent(TimeStampedModel):
         self.save()
 
     def __str__(self):
-        return "{} {}".format( self.scheduled, self.participant )
+        return str(self.scheduled)
+
+    def __repr__(self):
+        return "{} {}".format(self.scheduled,self.participant)
 
 class VisitQuerySet(SchedualQuerySet):
 

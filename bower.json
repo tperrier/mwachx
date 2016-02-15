@@ -23,7 +23,8 @@
     "angular-resource": "1.4.x",
     "angular-bootstrap-show-errors": "2.x",
     "angular-ui-router": "0.2.x",
-    "restangular": "1.5.x"
+    "restangular": "1.5.x",
+    "lodash": "3.10.1"
   },
   "resolutions": {
     "angular": "1.4.3"

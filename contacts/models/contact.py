@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #Python Imports
 from hashlib import sha256
-import math
+import math, datetime
 
 #Django Imports
 from django.conf import settings
@@ -28,21 +28,12 @@ class ContactQuerySet(ForUserQuerySet):
     def post_partum(self):
         return self.filter(models.Q(status='post')|models.Q(status='ccc'))
 
-    def has_pending(self):
-        return set([message.contact for message in Message.objects.pending().prefetch_related('contact')])
-
 class ContactManager(models.Manager):
 
     def get_queryset(self):
         qs = super(ContactManager,self).get_queryset()
-        return qs.annotate(note_count=models.Count('note'),phonecall_count=models.Count('phonecall')).extra(
-            select={
-                'primary_identity':'select max("contacts_connection"."identity") from "contacts_connection" ' +
-                    'where "contacts_connection"."contact_id" = "contacts_contact"."id" and ' +
-                    '"contacts_connection"."is_primary" = {}'.format( 'TRUE' if settings.ON_WEBFACTION else 1)
-            }
-        )
-
+        return qs.annotate(note_count=models.Count('note'),phonecall_count=models.Count('phonecall')) \
+            .prefetch_related('connection_set')
 
 class Contact(TimeStampedModel):
 
@@ -191,10 +182,10 @@ class Contact(TimeStampedModel):
         self._old_status = self.status
 
     def __str__ (self):
-        return self.nickname
+        return self.nickname.title()
 
     def __repr__(self):
-        return "(#%03s) %s - %s"%(self.study_id,self.nickname,self.facility.title())
+        return "(#%03s) %s (%s)"%(self.study_id,self.nickname.title(),self.facility.title())
 
     def connection(self):
         # Use connection_set.all() instead of .filter to take advantage of prefetch_related
@@ -203,12 +194,9 @@ class Contact(TimeStampedModel):
                 return connection
 
     def phone_number(self):
-        try:
-            return self.primary_identity
-        except AttributeError as e:
-            connection = self.connection()
-            if connection is not None:
-                return connection.identity
+        connection = self.connection()
+        if connection is not None:
+            return connection.identity
 
     def is_active(self):
         return not (self.status == 'completed' or self.status == 'stopped' or self.status == 'other')
@@ -297,11 +285,16 @@ class Contact(TimeStampedModel):
         return new_call
 
     def delivery(self, delivery_date, comment='', user=None, source=None):
-
         self.delivery_date = delivery_date
         self.delivery_source = source
+
+        # set_status calls self.save()
         self.set_status('post',comment='Post-partum set by {0}'.format(user))
         self.note_set.create(comment=comment,admin=user)
+
+        # schedual 6w and 1yr call as needed
+        self.schedule_month_call()
+        self.schedule_year_call()
 
     def set_status(self, new_status, comment=''):
         old_status = self.status
@@ -312,6 +305,84 @@ class Contact(TimeStampedModel):
         self.statuschange_set.create(
             old = old_status, new = new_status, comment = comment
         )
+
+    def schedule_month_call(self,created=False):
+        ''' Schedule 1m call post delivery
+                param: created(boolean): flag to return created,call tuple
+        '''
+
+        if self.delivery_date is None:
+            ''' No delivery date so call schedual post_edd call'''
+            return self.schedule_edd_call(created)
+
+        one_month_call = self.scheduledphonecall_set.filter(call_type='m').first()
+        was_created = one_month_call is None
+
+        if one_month_call is not None:
+            # Already set a call 2w post edd
+            if one_month_call.attended is not None:
+                # Last schedualed call was made so do nothing
+                # (assume it was the 14 day call were we learned about the delivery)
+                pass
+            else:
+                # Delivery notification happes before posd-edd call
+                # Change one month call to 30 days past delivery date
+                one_month_call.scheduled = self.delilvery_date + datetime.timedelta(days=30)
+        else:
+            # Schedual call for one_month after delivery
+            one_month_call = self.scheduledphonecall_set.create(
+                scheduled=self.delivery_date+datetime.timedelta(days=30),
+                call_type='m'
+            )
+
+        if created:
+            return was_created , one_month_call
+        return one_month_call
+
+    def schedule_edd_call(self,created=False):
+        ''' If no delivery date is set schedule a 14 day post edd call
+                param: created(boolean): flag to return created,call tuple
+        '''
+        if self.delivery_date is not None:
+            # There is a delivery date so don't schedule an edd call
+            if created:
+                return False , None
+            return None
+
+        one_month_call = self.scheduledphonecall_set.filter(call_type='m').first()
+
+        if one_month_call is not None:
+            # Allready made a 14 day pre edd call so set for 14 days from now
+            scheduled = datetime.date.today() + datetime.timedelta(days=14)
+        else:
+            # Set for 14 days from edd
+            scheduled = self.due_date + datetime.timedelta(days=14),
+
+        one_month_call = self.scheduledphonecall_set.create( scheduled=scheduled, call_type='m' )
+        if created:
+            return True , one_month_call
+        return one_month_call
+
+    def schedule_year_call(self,created=False):
+        ''' Schedule 1yr calls as needed
+                param: created(boolean): flag to return created,call tuple
+        '''
+        one_year_call = self.scheduledphonecall_set.get_or_none(call_type='y')
+        was_created = False
+
+        if self.delivery_date is not None:
+            if one_year_call is None:
+                was_created = True
+                one_year_call = self.scheduledphonecall_set.create(
+                    scheduled=self.delivery_date+datetime.timedelta(days=365),
+                    call_type='y'
+                )
+            else:
+                one_year_call.scheduled = self.delivery_date+datetime.timedelta(days=365)
+
+        if created:
+            return was_created , one_year_call
+        return one_year_call
 
     def message_kwargs(self):
         return {
