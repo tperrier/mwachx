@@ -34,6 +34,7 @@ class Command(BaseCommand):
         import_parser = subparsers.add_parser('import',cmd=parser.cmd,help='import messages to backend')
         import_parser.add_argument('-d','--done',default=False,action='store_true',help='only import messages marked as done')
         import_parser.add_argument('--clear',default=False,action='store_true',help='clear all existing backend messages')
+        import_parser.add_argument('-f','--file',help='location of translation xlsx (default translations/translations.xlsx')
         import_parser.set_defaults(action='import_messages')
 
         participant_parser = subparsers.add_parser('part',cmd=parser.cmd,help='try to find messages for all current participants')
@@ -257,7 +258,8 @@ class Command(BaseCommand):
 
 
     def import_messages(self):
-        sms_bank = xl.load_workbook(self.paths.final)
+        sms_bank_file = self.paths.final if self.options['file'] is None else self.options['file']
+        sms_bank = xl.load_workbook(sms_bank_file)
         clear = self.options.get('clear')
         do_all = not self.options.get('done') or clear
 

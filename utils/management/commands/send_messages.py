@@ -32,7 +32,7 @@ class Command(BaseCommand):
         if options.get('test'):
             self.stdout.write( 'Time: {}\nVersion: {}\nPath: {}\n'.format(datetime.datetime.now(),sys.version,sys.path) )
             self.stdout.write( str(options) )
-            return
+            return None
 
         # Check for required arguments
         required = ['weekly','appointment']

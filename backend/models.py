@@ -21,11 +21,6 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
         if send_base == 'edd' and send_offset < -2:
             send_offset = (send_offset+1)%-2 - 1
 
-        # Sepecial case for postpartum until we get the messages
-        if send_base == 'dd' and send_offset > 6:
-            send_offset = (send_offset+1) % 4 + 2
-            send_offset + (1 if send_offset > 3 else 0)
-
         return self.from_parameters(send_base,group,condition,send_offset,hiv,exact=exact)
 
     def from_parameters(self,send_base,group,condition='normal',send_offset=0,hiv=False,exact=False):
@@ -98,6 +93,7 @@ class AutomatedMessage(models.Model):
         ('signup','From Signup'),
         ('connect','Reconnect'),
         ('bounce','Bounce'),
+        ('loss','Loss'),
     )
 
     GROUP_CHOICES = (
@@ -111,6 +107,7 @@ class AutomatedMessage(models.Model):
         ('adolescent','Adolescent'),
         ('first','First Time Mother'),
         ('normal','Normal'),
+        ('nbaby','No Baby'),
     )
 
     class Meta:
