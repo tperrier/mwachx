@@ -309,6 +309,7 @@ class Contact(TimeStampedModel):
     def schedule_month_call(self,created=False):
         ''' Schedule 1m call post delivery
                 param: created(boolean): flag to return created,call tuple
+            This function is idempotent
         '''
 
         if self.delivery_date is None:
@@ -342,6 +343,7 @@ class Contact(TimeStampedModel):
     def schedule_edd_call(self,created=False):
         ''' If no delivery date is set schedule a 14 day post edd call
                 param: created(boolean): flag to return created,call tuple
+            This function is idempotent
         '''
         if self.delivery_date is not None:
             # There is a delivery date so don't schedule an edd call
@@ -352,11 +354,15 @@ class Contact(TimeStampedModel):
         one_month_call = self.scheduledphonecall_set.filter(call_type='m').first()
 
         if one_month_call is not None:
-            # Allready made a 14 day pre edd call so set for 14 days from now
-            scheduled = datetime.date.today() + datetime.timedelta(days=14)
+            # Scheduled one month call has not been marked as attended
+            if one_month_call.arrived is None:
+                return False, one_month_call
+            else:
+                # Allready made a 14 day pre edd call so set for 14 days from now
+                scheduled = datetime.date.today() + datetime.timedelta(days=14)
         else:
             # Set for 14 days from edd
-            scheduled = self.due_date + datetime.timedelta(days=14),
+            scheduled = self.due_date + datetime.timedelta(days=14)
 
         one_month_call = self.scheduledphonecall_set.create( scheduled=scheduled, call_type='m' )
         if created:
@@ -366,6 +372,7 @@ class Contact(TimeStampedModel):
     def schedule_year_call(self,created=False):
         ''' Schedule 1yr calls as needed
                 param: created(boolean): flag to return created,call tuple
+            This function is idempotent
         '''
         one_year_call = self.scheduledphonecall_set.get_or_none(call_type='y')
         was_created = False

@@ -34,17 +34,33 @@ class Command(BaseCommand):
         self.stdout.write( "{0} Initializing Phonecalls {0}\n".format('*'*5) )
 
         post = cont.Contact.objects.filter(status='post').order_by('delivery_date')
+        total_post , total_created = 0 , 0
         for c in post:
+            total_post += 1
             month_created , month_call = None , None
             if c.delta_days() < 30:
                 month_created , month_call = c.schedule_month_call(created=True)
             year_created , year_call = c.schedule_year_call(created=True)
             if month_created or year_created:
+                total_created += 1
                 self.stdout.write( "{!r:35} {} ({}) M[{} {}] Y[{} {}]".format(
                     c,c.delivery_date,c.delta_days(),
                     month_created, month_call,
                     year_created, year_call
                 ) )
+        self.stdout.write( "Total Post: {} Created: {} Not-Created: {}\n".format(total_post,total_created,total_post-total_created) )
+
+        today = datetime.date.today()
+        over = cont.Contact.objects.filter(status='pregnant',due_date__lte=today).order_by('due_date')
+        total_over , total_created = 0 , 0
+        for c in over:
+            total_over += 1
+            month_created , month_call = c.schedule_edd_call(created=True)
+            if month_created:
+                total_created += 1
+                self.stdout.write ( "{!r:35} {} ({})".format(c,c.due_date,c.delta_days()) )
+
+        self.stdout.write( "Total Over: {} Created: {} Not-Created: {}\n".format(total_over,total_created,total_over-total_created) )
 
     def test(self):
         self.stdout.write( "{0} Running Test Command {0}".format('*'*5) )
