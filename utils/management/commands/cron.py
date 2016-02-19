@@ -18,7 +18,8 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(help='cron task to run')
 
         nightly_parser = subparsers.add_parser('nightly',cmd=parser.cmd,help='initialize phone calls and print report')
-        parser.add_argument('-e','--email',help='send output as email',action='store_true',default=False)
+        nightly_parser.add_argument('-c','--calls',default=False,action='store_true',help='schedule edd calls')
+        nightly_parser.add_argument('-e','--email',help='send output as email',action='store_true',default=False)
         nightly_parser.set_defaults(action='nightly')
 
         test_parser = subparsers.add_parser('test',cmd=parser.cmd,help='run test command')
@@ -32,13 +33,14 @@ class Command(BaseCommand):
     def nightly(self):
         ''' Nightly cron jobs to be run at 12am '''
 
-        email_subject = '[MX Server] {}'.format( date.strftime('%a %b %d (%j) %Y') )
+        email_subject = '[MX Server] {}'.format( datetime.date.today().strftime('%a %b %d (%j) %Y') )
         email_body = [ "Script started at {}".format(datetime.datetime.now()),'']
 
-        set_edd_calls(email_body)
+        if self.options.get('calls'):
+            set_edd_calls(email_body)
 
         email_body = '\n'.join(email_body)
-        if options.get('email'):
+        if self.options.get('email'):
             email(email_subject,email_body)
         else:
             self.stdout.write(email_subject)

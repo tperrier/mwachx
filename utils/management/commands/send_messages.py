@@ -9,7 +9,6 @@ from django.db import models
 
 
 import contacts.models as cont
-import backend.models as back
 from transports.email import email
 
 
@@ -92,30 +91,27 @@ def weekly_messages(day,hour,date,email_body,send=False):
 
     participants = cont.Contact.objects.filter(send_day=day,status__in=['pregnant','post','over','ccc'])
 
-    # Filter based on hour if needed
-    if hour != 0:
-        participants = participants.filter(send_time=hour)
-
-    total_counts = dict( participants.values_list('study_group').annotate(models.Count('study_group')) )
-    for key in ('control','one-way','two-way'):
-        if key not in total_counts:
-            total_counts[key] = 0
-
-    email_body.append( ("Found {total} total participants. Control: {dict[control]} " +
-                        "One-Way: {dict[one-way]} Two-Way: {dict[two-way]}") \
-                        .format(total=sum(total_counts.values()),dict=total_counts)
-                    )
-
-    participants = participants.exclude(study_group='control')
-    no_messages = []
+    vals = ns(times={8:0,13:0,20:0}, control=0, no_messages=[],sent_to=[])
     for p in participants:
-        message = p.send_automated_message(today=date,send=send)
-        if message is None:
-            no_messages.append( '{} (#{})'.format( p.description(today=date),p.study_id)  )
+        if p.study_group == 'control':
+            vals.control += 1
+        else:
+            vals.times[p.send_time] += 1
+            if hour==0 or hour==p.send_time:
+                message = p.send_automated_message(today=date,send=send)
+                vals.sent_to.append( "{} (#{}) {}".format(message.description(),p.study_id,p.send_time) )
+                if message is None:
+                    vals.no_messages.append( '{} (#{})'.format( p.description(today=date),p.study_id)  )
 
-    email_body += ['Sending to {} participants'.format(participants.count()),'']
-    email_body.append( "Messages not sent: {}".format(len(no_messages)) )
-    email_body.extend( "\t{}".format(d) for d in no_messages )
+    email_body.append( "Found {} participants for {}".format(participants.count(),date.strftime("%A")) )
+    email_body.append( "Control: {0.control} 8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}".format(vals) )
+
+    email_body.append( "Sending to {} participants".format( len(vals.sent_to)) )
+    email_body.extend( "\t{}".format(d) for d in vals.sent_to )
+    email_body.append('')
+
+    email_body.append( "Messages not sent: {}".format(len(vals.no_messages)) )
+    email_body.extend( "\t{}".format(d) for d in vals.no_messages )
     email_body.append('')
 
 def appointment_reminders(date,hour,email_body,delta_days=2,send=False):
@@ -144,6 +140,6 @@ def appointment_reminders(date,hour,email_body,delta_days=2,send=False):
                 vals.sent_to[visit.participant.id] = "{} (#{})".format(message.description(),visit.participant.study_id)
 
     email_body.append('Found {} visits on {}'.format(upcoming_visits.count(),scheduled_date))
-    email_body.append('Control: {0.control} Duplicate: {0.duplicates} M: {0.times[8]} A: {0.times[13]} N: {0.times[20]} Sent: {1}'
+    email_body.append('Control: {0.control} Duplicate: {0.duplicates} 8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}\n\tSent: {1}'
                 .format(vals,len(vals.sent_to)) )
     email_body.extend( "\t{}".format(d) for d in vals.sent_to.values())
