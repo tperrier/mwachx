@@ -183,6 +183,7 @@ def make_facility_sheet(ws,facility):
         ('Δ EDD',lambda c:delta_days(c.due_date)),
         ('Delivery','delivery_date'),
         ('Δ Delivery',lambda c:delta_days(c.delivery_date,past=True)),
+        ('TCA',lambda c:c.tca_date()),
         ('Send Day','send_day'),
         ('Send Time','send_time'),
         ('Validation Δ',lambda c: seconds_as_str(c.validation_delta()) ),

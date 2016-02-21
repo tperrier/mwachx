@@ -63,7 +63,7 @@ class Command(BaseCommand):
         hour = [0,8,8,8,8,  8,8,8,8,8, 8,13,13,13,13, 13,20,20,20,20, 20,20,20,20][hour]
 
         send = options.get('send')
-        email_subject = '[MX Server] {}{}'.format( date.strftime('%a %b %d (%j) %Y'), '' if options.get('send') else ' (FAKE)' )
+        email_subject = '{}{}'.format( date.strftime('%a %b %d (%j) %Y'), '' if options.get('send') else ' (FAKE)' )
         email_body = [ "Script started at {}".format(datetime.datetime.now()),
                         "Options: {} D:{} H:{} Send:{}".format(date,day,hour,send), '' ]
 
@@ -121,7 +121,8 @@ def appointment_reminders(date,hour,email_body,delta_days=2,send=False):
     # Find visits scheduled within delta_days and not attended early
     td = datetime.timedelta(days=delta_days)
     scheduled_date = date+td
-    upcoming_visits = cont.Visit.objects.filter(scheduled=scheduled_date,arrived__isnull=True).select_related('participant')
+    upcoming_visits = cont.Visit.objects.filter(scheduled=scheduled_date,arrived__isnull=True,visit_type='clinic')\
+        .select_related('participant')
 
 
     extra_kwargs = {'days':delta_days,'date':scheduled_date.strftime('%b %d')}

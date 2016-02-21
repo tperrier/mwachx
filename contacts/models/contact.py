@@ -207,8 +207,19 @@ class Contact(TimeStampedModel):
         return int((delta.days - delta.seconds/86400.0)/365.2425)
 
     def get_scheduled_visits(self):
-        ''' Return all currently scheduled visits '''
+        ''' Return all currently scheduled visits for serializer'''
         return self.visit_set.filter(skipped__isnull=True)
+
+    def tca_date(self):
+        ''' Return To Come Again Date or None '''
+        pending = self.pending_visits().last()
+        if pending is None:
+            return None
+        return pending.scheduled
+
+    def pending_visits(self):
+        ''' Return vists that have not been skipped and have not been attended '''
+        return self.visit_set.filter(arrived__isnull=True,skipped__isnull=True)
 
     def get_pending_messages(self):
         ''' Return all currently pending messages '''

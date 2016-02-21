@@ -33,7 +33,7 @@ class Command(BaseCommand):
     def nightly(self):
         ''' Nightly cron jobs to be run at 12am '''
 
-        email_subject = '[MX Server] {}'.format( datetime.date.today().strftime('%a %b %d (%j) %Y') )
+        email_subject = '{}'.format( datetime.date.today().strftime('%a %b %d (%j) %Y') )
         email_body = [ "Script started at {}".format(datetime.datetime.now()),'']
 
         if self.options.get('calls'):

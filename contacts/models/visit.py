@@ -116,6 +116,7 @@ class Visit(ScheduledEvent):
     VISIT_TYPE_CHOICES = (
         ('clinic','Clinic Visit'),
         ('study','Study Visit'),
+        ('both','Both'),
     )
 
     # Date Fields
