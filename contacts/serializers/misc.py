@@ -27,7 +27,7 @@ class PendingViewSet(viewsets.ViewSet):
           'visits':cont.Visit.objects.for_user(request.user).get_visit_checks().count(),
           'visits_url':request.build_absolute_uri(reverse('pending-visits')),
 
-          'calls':cont.ScheduledPhoneCall.objects.for_user(request.user).get_pending_calls().count(),
+          'calls':cont.ScheduledPhoneCall.objects.for_user(request.user).pending_calls().count(),
           'calls_url':request.build_absolute_uri(reverse('pending-calls')),
 
           'translations':cont.Message.objects.for_user(request.user).to_translate().count(),
@@ -49,7 +49,7 @@ class PendingViewSet(viewsets.ViewSet):
 
     @list_route()
     def calls(self,request):
-        calls_pending = cont.ScheduledPhoneCall.objects.for_user(request.user).get_pending_calls()
+        calls_pending = cont.ScheduledPhoneCall.objects.for_user(request.user).pending_calls()
         serialized_calls = PendingCallSerializer(calls_pending,many=True,context={'request':request})
         return Response(serialized_calls.data)
 
@@ -89,7 +89,7 @@ class PendingCallSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = cont.ScheduledPhoneCall
-        fields = ('id','participant','scheduled','arrived','notification_last_seen','skipped',
+        fields = ('id','participant','scheduled','arrived','notification_last_seen','status',
                   'call_type','days_overdue','notify_count','href')
 
 class PendingCallViewSet(viewsets.ModelViewSet):

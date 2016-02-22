@@ -15,7 +15,7 @@ import utils
 class SchedualQuerySet(ForUserQuerySet):
 
     def pending(self):
-        return self.filter(arrived=None,skipped=None).active_users()
+        return self.filter(arrived=None,status='pending')
 
     def visit_range(self,start={'days':0},end=None,notification_start={'days':0},notification_end=None):
         today = utils.today()
@@ -39,6 +39,13 @@ class SchedualQuerySet(ForUserQuerySet):
 
 class ScheduledEvent(TimeStampedModel):
 
+    STATUS_CHOICES = (
+        ('pending','Pending'),
+        ('missed','Missed'),
+        ('deleted','Deleted'),
+        ('attended','Attended'),
+    )
+
     class Meta:
         abstract = True
         ordering = ('-scheduled',)
@@ -48,7 +55,8 @@ class ScheduledEvent(TimeStampedModel):
     arrived = models.DateField(blank=True,null=True,default=None)
     notification_last_seen = models.DateField(null=True,blank=True,default=None)
     notify_count = models.IntegerField(default=0)
-    skipped = models.NullBooleanField(default=None)
+    # skipped = models.NullBooleanField(default=None)
+    status = models.CharField(max_length=15,choices=STATUS_CHOICES,default='pending',help_text='current status of event')
 
     participant = models.ForeignKey(settings.MESSAGING_CONTACT)
 
@@ -79,14 +87,12 @@ class ScheduledEvent(TimeStampedModel):
         else:
             arrived = utils.angular_datepicker(arrived)
 
-        self.arrived = arrived
-        self.skipped = False
-        self.save()
+        self.set_status('attended',arrived)
 
-    def skip(self):
-        ''' Mark visit as skipped '''
-        self.arrived = None
-        self.skipped = True
+    def set_status(self,status,arrived=None):
+        ''' Mark scheduled event status '''
+        self.arrived = arrived
+        self.status = status
         self.save()
 
     def __str__(self):
@@ -98,9 +104,9 @@ class ScheduledEvent(TimeStampedModel):
 class VisitQuerySet(SchedualQuerySet):
 
     def get_visit_checks(self):
-        visits_this_week = self.pending().visit_range(start={'weeks':0},end={'days':7},notification_start={'days':1})
-        bookcheck_weekly = self.pending().visit_range(start={'days':8},end={'days':35},notification_start={'weeks':1})
-        bookcheck_monthly = self.pending().visit_range(start={'days':36},notification_start={'weeks':4})
+        visits_this_week = self.active_users().pending().visit_range(start={'weeks':0},end={'days':7},notification_start={'days':1})
+        bookcheck_weekly = self.active_users().pending().visit_range(start={'days':8},end={'days':35},notification_start={'weeks':1})
+        bookcheck_monthly = self.active_users().pending().visit_range(start={'days':36},notification_start={'weeks':4})
 
         # print visits_this_week
         return visits_this_week | bookcheck_weekly | bookcheck_monthly
@@ -130,8 +136,8 @@ class Visit(ScheduledEvent):
 
 class ScheduledPhoneCallQuerySet(SchedualQuerySet):
 
-    def get_pending_calls(self):
-        return self.pending().visit_range(notification_start={'days':2})
+    def pending_calls(self):
+        return self.active_users().pending().visit_range(notification_start={'days':2})
 
 class ScheduledPhoneCall(ScheduledEvent):
 

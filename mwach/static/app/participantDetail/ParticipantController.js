@@ -151,7 +151,7 @@
       size: 'sm',
     }).result.then(function(){
       console.log('Dismiss',visit);
-      visit.doPUT({},'skip/').then(function(response) {
+      visit.doPUT({},'missed/').then(function(response) {
         $scope.participant.visits.splice($scope.participant.visits.indexOf(visit),1);
       });
     });

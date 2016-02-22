@@ -17,6 +17,7 @@ class VisitSerializer(serializers.ModelSerializer):
     href = serializers.HyperlinkedIdentityField(view_name='visit-detail')
     participant = ParticipantSimpleSerializer()
 
+    status = serializers.SerializerMethodField()
     days_str = serializers.CharField()
     is_pregnant = serializers.BooleanField(read_only=True)
 
@@ -25,8 +26,11 @@ class VisitSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = cont.Visit
-        fields = ('id','href','participant','scheduled','arrived','notification_last_seen','skipped',
+        fields = ('id','href','participant','scheduled','arrived','notification_last_seen','status',
                   'comment','visit_type','days_overdue','days_str','is_pregnant')
+
+    def get_status(self,obj):
+        return obj.get_status_display()
 
 class VisitViewSet(viewsets.ModelViewSet):
 
@@ -72,10 +76,10 @@ class VisitViewSet(viewsets.ModelViewSet):
         return Response({'visit':instance_serialized,'next':next_visit_serialized})
 
     @detail_route(methods=['put'])
-    def skip(self, request, pk):
+    def missed(self, request, pk):
 
         instance = self.get_object()
-        instance.skip()
+        instance.set_status('missed')
         instance_serialized = VisitSerializer(instance,context={'request':request}).data
 
         return Response(instance_serialized)
@@ -93,7 +97,7 @@ class VisitViewSet(viewsets.ModelViewSet):
     def destroy(self, request, pk):
 
         instance = self.get_object()
-        print 'Destory',instance
+        instance.set_status('deleted')
 
         instance_serialized = self.get_serializer(instance)
         return Response(instance_serialized.data)

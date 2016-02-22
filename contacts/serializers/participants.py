@@ -71,8 +71,8 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
 	# TODO: Change calls to call count and remove messages and visits
 	calls = PhoneCallSerializer(source='phonecall_set',many=True)
-	messages = MessageSerializer(source='get_pending_messages',many=True)
-	visits = VisitSerializer(source='get_scheduled_visits',many=True)
+	# messages = MessageSerializer(source='get_pending_messages',many=True)
+	# visits = VisitSerializer(source='get_scheduled_visits',many=True)
 	note_count = serializers.CharField()
 	phonecall_count = serializers.CharField()
 	# note_count = serializers.SerializerMethodField()
@@ -244,7 +244,8 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 	def visits(self, request, study_id=None, *args, **kwargs):
 		if request.method == 'GET': # Return a serialized list of all visits
 
-			visits = cont.Visit.objects.filter(participant__study_id=study_id)
+			instance = self.get_object()
+			visits = instance.visit_set.exclude(status='deleted')
 			visits_serialized = VisitSerializer(visits,many=True,context={'request':request})
 			return Response(visits_serialized.data)
 
@@ -252,8 +253,8 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
 			instance = self.get_object()
 			next_visit = instance.visit_set.create(
-			scheduled=utils.angular_datepicker(request.data['next']),
-			visit_type=request.data['type']
+				scheduled=utils.angular_datepicker(request.data['next']),
+				visit_type=request.data['type']
 			)
 			return Response(VisitSerializer(next_visit,context={'request':request}).data)
 

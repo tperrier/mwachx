@@ -97,15 +97,17 @@ class ConnectionAdmin(admin.ModelAdmin,ContactAdminMixin):
 @admin.register(cont.Visit)
 class VisitAdmin(admin.ModelAdmin,ParticipantAdminMixin):
     list_display = ('study_id','participant_name','visit_type','scheduled',
-        'notification_last_seen','notify_count', 'arrived','skipped')
+        'notification_last_seen','notify_count', 'arrived','status')
     date_hierarchy = 'scheduled'
-    list_filter = ('skipped','visit_type','arrived','scheduled')
+    list_filter = ('status','visit_type','arrived','scheduled')
     search_fields = ('participant__study_id','participant__nickname')
 
 @admin.register(cont.ScheduledPhoneCall)
 class ScheduledPhoneCall(admin.ModelAdmin,ParticipantAdminMixin):
-    list_display = ('study_id','participant_name','call_type','scheduled', 'notification_last_seen','notify_count', 'arrived','skipped')
-    list_filter = ('skipped','call_type')
+    list_display = ('study_id','participant_name','call_type','scheduled',
+        'notification_last_seen','notify_count', 'arrived','status')
+    date_hierarchy = 'scheduled'
+    list_filter = ('status','call_type','arrived','scheduled')
 
 @admin.register(cont.Practitioner)
 class PractitionerAdmin(admin.ModelAdmin):

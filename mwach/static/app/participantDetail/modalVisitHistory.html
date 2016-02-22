@@ -17,7 +17,7 @@
       <td>{{visit.scheduled}} ({{visit.days_str}})</td>
       <td>{{visit.visit_type}}</td>
       <td ng-if="visit.arrived">{{visit.arrived}}</td>
-      <td ng-if="!visit.arrived">{{(visit.skipped == true)?'Skipped':'Pending'}}</td>
+      <td ng-if="!visit.arrived">{{visit.status}}</td>
     </tr>
   </tbody>
 </table>
