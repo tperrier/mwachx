@@ -72,7 +72,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	# TODO: Change calls to call count and remove messages and visits
 	calls = PhoneCallSerializer(source='phonecall_set',many=True)
 	# messages = MessageSerializer(source='get_pending_messages',many=True)
-	# visits = VisitSerializer(source='get_scheduled_visits',many=True)
+	visits = VisitSerializer(source='visit_set.pending',many=True)
 	note_count = serializers.CharField()
 	phonecall_count = serializers.CharField()
 	# note_count = serializers.SerializerMethodField()

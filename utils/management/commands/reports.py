@@ -28,7 +28,7 @@ class Command(BaseCommand):
         send_time_parser.add_argument('-a','--all',action='store_true',default=False,help='all report options')
         send_time_parser.set_defaults(action='print_stats')
 
-        xlsx_parser = subparsers.add_parser('xlsx',cmd=parser.cmd,help='create xlsx report')
+        xlsx_parser = subparsers.add_parser('xlsx',cmd=parser.cmd,help='create xlsx reports')
         xlsx_parser.add_argument('-d','--dir',default='ignore',help='directory to save report in')
         xlsx_parser.set_defaults(action='make_xlsx')
 
@@ -157,12 +157,12 @@ class Command(BaseCommand):
         wb = xl.workbook.Workbook()
 
         today = datetime.date.today()
-        xlsx_path_out = os.path.join(self.options['dir'],today.strftime('mWaChX_%Y-%m-%d.xlsx'))
+        xlsx_path_out = os.path.join(self.options['dir'],today.strftime('mWaChX_visit_%Y-%m-%d.xlsx'))
         self.stdout.write( "Making xlsx file {}".format(xlsx_path_out) )
 
-        make_facility_sheet(wb.active,'ahero')
-        make_facility_sheet(wb.create_sheet(),'bondo')
-        make_facility_sheet(wb.create_sheet(),'mathare')
+        make_facility_visit_sheet(wb.active,'ahero')
+        make_facility_visit_sheet(wb.create_sheet(),'bondo')
+        make_facility_visit_sheet(wb.create_sheet(),'mathare')
 
         wb.save(xlsx_path_out)
 
@@ -170,7 +170,7 @@ class Command(BaseCommand):
 # Utility Functions
 ########################################
 
-def make_facility_sheet(ws,facility):
+def make_facility_detail_sheet(ws,facility):
 
     contacts = cont.Contact.objects.filter(facility=facility)
     ws.title = facility.capitalize()
@@ -205,6 +205,35 @@ def make_facility_sheet(ws,facility):
     for c in contacts:
         ws.append( [make_column(c,attr) for attr in columns.values()] )
 
+def make_facility_visit_sheet(ws,facility):
+
+    contacts = cont.Contact.objects.filter(facility=facility)
+    ws.title = facility.capitalize()
+
+    columns = collections.OrderedDict([
+        ('Study ID','study_id'),
+        ('Group','study_group'),
+        ('Status','status'),
+        ('EDD','due_date'),
+        ('Δ EDD',lambda c:delta_days(c.due_date)),
+        ('Delivery','delivery_date'),
+        ('Δ Delivery',lambda c:delta_days(c.delivery_date,past=True)),
+        ('TCA',lambda c:c.tca_date()),
+        ('Δ TCA',lambda c:delta_days(c.tca_date())),
+        ('Pending Visits',lambda c:c.visit_set.pending().count()),
+    ])
+
+    # Write Header Row
+    ws.append(columns.keys())
+    ws.auto_filter.ref = 'A1:{}1'.format( xl.utils.get_column_letter(len(columns)) )
+
+    column_widths = {'B':20,'C':15, }
+    for col_letter, width in column_widths.items():
+        ws.column_dimensions[col_letter].width = width
+
+    # Write Data Rows
+    for c in contacts:
+        ws.append( [make_column(c,attr) for attr in columns.values()] )
 def make_column(obj,column):
     if isinstance(column,basestring):
         value = getattr(obj,column)
