@@ -131,7 +131,7 @@
           });
         });
 
-    }
+    };
 
     $scope.openPhoneModal = function() {
 
@@ -145,17 +145,33 @@
         });
     }
 
-    $scope.visitDismiss = function(visit) {
-      var modalInstance = $modal.open({
-        templateUrl: routePrefix + 'modalVisitDismiss.html',
-        size: 'sm',
-      }).result.then(function(){
-        console.log('OK now dismiss',visit);
-        visit.doPUT({},'skip/').then(function(response) {
-          $scope.participant.visits.splice($scope.participant.visits.indexOf(visit),1);
-        });
+  $scope.visitDismiss = function(visit) {
+    var modalInstance = $modal.open({
+      templateUrl: routePrefix + 'modalVisitDismiss.html',
+      size: 'sm',
+    }).result.then(function(){
+      console.log('Dismiss',visit);
+      visit.doPUT({},'skip/').then(function(response) {
+        $scope.participant.visits.splice($scope.participant.visits.indexOf(visit),1);
+      });
     });
-  }
+  };
+
+  $scope.visitDelete = function(visit) {
+    // Open Delete Visit Modal
+    var modalInstance = $modal.open({
+      templateUrl: routePrefix + 'modalVisitDelete.html',
+      size: 'sm',
+    })
+    // Action on Delete
+    .result.then(function(){
+      console.log('Deleting',visit);
+      visit.remove().then(function(response) {
+        console.log('Deleted',response);
+        $scope.participant.visits.splice($scope.participant.visits.indexOf(visit),1);
+      });
+    });
+  };
 
   $scope.scheduleVisit = function() {
 
@@ -175,7 +191,7 @@
         );
       });
     });
-  }
+  };
 
   $scope.visitAttended = function(visit) {
     var modalInstance = $modal.open({
@@ -196,7 +212,7 @@
         $scope.participant.visits.splice($scope.participant.visits.indexOf(visit),1);
       });
     });
-  }
+  };
 
   $scope.visitEdit = function(visit) {
 
@@ -218,7 +234,7 @@
         visit.scheduled = result.scheduled;
       });
     });
-  }
+  };
 
   $scope.showVisitHistory = function() {
     var modalInstance = $modal.open({
@@ -228,7 +244,7 @@
         participant:function(){return $scope.participant},
       },
     });
-  }
+  };
 
   $scope.recordDelivery = function() {
 

@@ -81,14 +81,15 @@
             <th>Date</th>
             <th>Type</th>
             <th>When</th>
-            <th></th>
           </thead>
           <tbody>
           <tr ng-repeat="visit in participant.visits | orderBy : 'scheduled'">
             <td>{{visit.scheduled}}</td>
             <td>{{visit.visit_type}}</td>
             <td>{{days_str(visit.days_overdue)}}</td>
-            <td><button class='btn btn-info btn-sm' ng-click='visitAttended(visit)' tooltip="{{participant.nickname}} came for this visit">Attended</btn></td>
+            <td><button class='btn btn-info btn-sm' ng-click='visitAttended(visit)'
+                tooltip="{{participant.nickname}} came for this visit">Attended</button></td>
+            <td><button class='btn btn-danger btn-sm' ng-click='visitDelete(visit)' tooltip='Delete Visit'>Del <i class="mw mw-cancel-circled"></i></button></td>
             <td><button class='btn btn-danger btn-sm' ng-click='visitEdit(visit)' tooltip="Edit visit" >
               Edit <i class="mw mw-pencil"></i>
             </button></td>

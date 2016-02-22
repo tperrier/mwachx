@@ -89,3 +89,11 @@ class VisitViewSet(viewsets.ModelViewSet):
 
         instance_serialized = self.get_serializer(instance)
         return Response(instance_serialized.data)
+
+    def destroy(self, request, pk):
+
+        instance = self.get_object()
+        print 'Destory',instance
+
+        instance_serialized = self.get_serializer(instance)
+        return Response(instance_serialized.data)
