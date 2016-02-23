@@ -51,6 +51,7 @@ class Message(TimeStampedModel):
     # translation
     translated_text = models.TextField(max_length=1000,help_text='Text of the translated message',default='',blank=True)
     translation_status = models.CharField(max_length=5,help_text='Status of translation',choices=STATUS_CHOICES,default='todo',verbose_name="Translated")
+    translation_time = models.DateTimeField(blank=True,null=True)
 
     # Meta Data
     languages = models.CharField(max_length=50,help_text='Semi colon seperated list of languages',default='',blank=True)

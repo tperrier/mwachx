@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route
+from django.utils import timezone
 
 #Local Imports
 import contacts.models as cont
@@ -71,7 +72,11 @@ class MessageViewSet(viewsets.ModelViewSet):
 
 		if instance.translation_status == 'done':
 			instance.translated_text = request.data['text']
-		instance.save()
 
+		# Set translation time to now if it is currently none
+		if instance.translation_time is None:
+			instance.translation_time = timezone.now()
+
+		instance.save()
 		msg = MessageSerializer(instance,context={'request':request})
 		return Response(msg.data)
