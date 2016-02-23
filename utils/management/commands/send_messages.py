@@ -121,12 +121,12 @@ def appointment_reminders(date,hour,email_body,delta_days=2,send=False):
     # Find visits scheduled within delta_days and not attended early
     td = datetime.timedelta(days=delta_days)
     scheduled_date = date+td
-    upcoming_visits = cont.Visit.objects.filter(scheduled=scheduled_date,arrived__isnull=True,visit_type='clinic')\
-        .select_related('participant')
+    upcoming_visits = cont.Visit.objects.filter(scheduled=scheduled_date,arrived__isnull=True)\
+        .exclude(visit_type='study').select_related('participant')
 
 
     extra_kwargs = {'days':delta_days,'date':scheduled_date.strftime('%b %d')}
-    vals = ns(sent_to={}, control=0, duplicates=0 , times={8:0,13:0,20:0})
+    vals = ns(sent_to={}, no_messages=[], control=0, duplicates=0 , times={8:0,13:0,20:0})
     for visit in upcoming_visits:
         if visit.participant.study_group == 'control':
             vals.control += 1
@@ -135,12 +135,28 @@ def appointment_reminders(date,hour,email_body,delta_days=2,send=False):
         else:
             vals.times[visit.participant.send_time] += 1
             if hour == 0 or visit.participant.send_time == hour:
-                condition = '{}_pre'.format('anc' if visit.participant.is_pregnant() else 'pnc')
+                condition = 'pnc'
+                if visit.participant.is_pregnant():
+                    condition = 'anc'
+                elif visit.visit_type == 'both':
+                    condition = 'both'
+                condition += '_pre'
+                print visit.visit_type,condition
                 message = visit.participant.send_automated_message(send=send,send_base='visit',
                                 condition=condition,extra_kwargs=extra_kwargs)
-                vals.sent_to[visit.participant.id] = "{} (#{})".format(message.description(),visit.participant.study_id)
+                if message is None:
+                    vals.no_messages.append('{}-{}'.format(visit.participant.description(),condition))
+                else:
+                    vals.sent_to[visit.participant.id] = "{} (#{})".format(
+                        message.description(),visit.participant.study_id
+                    )
 
     email_body.append('Found {} visits on {}'.format(upcoming_visits.count(),scheduled_date))
     email_body.append('Control: {0.control} Duplicate: {0.duplicates} 8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}\n\tSent: {1}'
                 .format(vals,len(vals.sent_to)) )
     email_body.extend( "\t{}".format(d) for d in vals.sent_to.values())
+    email_body.append('')
+
+    email_body.append( "Messages not sent: {}".format(len(vals.no_messages)) )
+    email_body.extend( "\t{}".format(d) for d in vals.no_messages )
+    email_body.append('')
