@@ -67,7 +67,7 @@ class Command(BaseCommand):
 
 def set_edd_calls(email_body):
     ''' Set 14 day post edd call if still pregnant on edd
-    To be run every night at 12am'''
+    To be run every night at 1am'''
 
     email_body.append( "***** Set EDD Calls *****\n" )
 

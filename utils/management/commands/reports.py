@@ -29,6 +29,7 @@ class Command(BaseCommand):
         send_time_parser.set_defaults(action='print_stats')
 
         xlsx_parser = subparsers.add_parser('xlsx',cmd=parser.cmd,help='create xlsx reports')
+        xlsx_parser.add_argument('report_type',choices=('visit','detail',),help='name of report to make')
         xlsx_parser.add_argument('-d','--dir',default='ignore',help='directory to save report in')
         xlsx_parser.set_defaults(action='make_xlsx')
 
@@ -155,14 +156,18 @@ class Command(BaseCommand):
     def make_xlsx(self):
 
         wb = xl.workbook.Workbook()
+        report_type = self.options['report_type']
 
         today = datetime.date.today()
-        xlsx_path_out = os.path.join(self.options['dir'],today.strftime('mWaChX_visit_%Y-%m-%d.xlsx'))
+        file_name = today.strftime('mWaChX_{}_%Y-%m-%d.xlsx').format(report_type)
+        xlsx_path_out = os.path.join(self.options['dir'],file_name)
         self.stdout.write( "Making xlsx file {}".format(xlsx_path_out) )
 
-        make_facility_visit_sheet(wb.active,'ahero')
-        make_facility_visit_sheet(wb.create_sheet(),'bondo')
-        make_facility_visit_sheet(wb.create_sheet(),'mathare')
+        ws_function = globals()['make_facility_{}_sheet'.format(report_type)]
+
+        ws_function(wb.active,'ahero')
+        ws_function(wb.create_sheet(),'bondo')
+        ws_function(wb.create_sheet(),'mathare')
 
         wb.save(xlsx_path_out)
 
