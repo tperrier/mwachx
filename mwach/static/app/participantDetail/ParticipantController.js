@@ -56,11 +56,6 @@
 // Public Methods
 //
 
-  $scope.days_str = function(days) {
-    return mwachxUtils.days_str(-1*days);
-  }
-
-
 // *************************************
 // Modal Open Functions
 // *************************************

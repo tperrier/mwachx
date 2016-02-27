@@ -61,10 +61,15 @@ class ScheduledEvent(TimeStampedModel):
     participant = models.ForeignKey(settings.MESSAGING_CONTACT)
 
     def days_overdue(self):
-        return (utils.today()-self.scheduled).days
+        if self.status == 'pending':
+            return (utils.today() - self.scheduled).days
+        return 0
 
     def days_str(self):
-        return self.participant.days_str(today=self.scheduled)
+        delta_days = -1 * (utils.today() - self.scheduled).days
+        if self.status == 'attended':
+            delta_days = (utils.today() - self.arrived).days
+        return utils.days_as_str(delta_days)
 
     def is_pregnant(self):
         return self.participant.was_pregnant(today=self.scheduled)
@@ -125,14 +130,9 @@ class Visit(ScheduledEvent):
         ('both','Both'),
     )
 
-    # Date Fields
-
+    # Custom Visit Fields
     comment = models.TextField(blank=True,null=True)
     visit_type = models.CharField(max_length=25,choices=VISIT_TYPE_CHOICES,default='clinic')
-
-    def is_bookcheck(self):
-        ''' Bookcheck is true for any visit more than 7 days overdue '''
-        return self.days_overdue() >= 7
 
 class ScheduledPhoneCallQuerySet(SchedualQuerySet):
 
