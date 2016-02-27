@@ -17,7 +17,7 @@ class ContactAdmin(admin.ModelAdmin):
     ordering = ('study_id',)
 
     search_fields = ('study_id','nickname','connection__identity','anc_num')
-    readonly_fields = ('created','modified')
+    readonly_fields = ('last_msg_client','last_msg_system','created','modified')
 
 def ParticipantMixinFactory(field='participant'):
     class ParticipantAdminMixinBase(object):

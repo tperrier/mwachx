@@ -1,3 +1,4 @@
+import datetime
 # Django imports
 from django.conf import settings
 
@@ -35,7 +36,12 @@ def receive(identity,message,external_id=None,**kwargs):
         valid, msg_args, message = validator(contact,message)
         if valid:
             validator.action(contact,message)
-            
+
+    # Set last_msg_client
+    if contact:
+        contact.last_msg_client = datetime.date.today()
+        contact.save()
+
     return cont.Message.objects.create(
         is_system=False,
         is_outgoing=False,

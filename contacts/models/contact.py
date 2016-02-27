@@ -445,6 +445,10 @@ class Contact(TimeStampedModel):
         if text is None:
             return None #TODO: logging on this
 
+        # Set last_msg_system
+        self.last_msg_system = utils.today()
+        self.save()
+
         if send:
             return self.send_message(
                 text=text,
