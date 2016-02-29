@@ -180,29 +180,30 @@ def make_facility_detail_sheet(ws,facility):
     contacts = cont.Contact.objects.filter(facility=facility)
     ws.title = facility.capitalize()
 
+    last_week = datetime.date.today() - datetime.timedelta(days=7)
     columns = collections.OrderedDict([
         ('Study ID','study_id'),
-        ('Enrolled','created'),
+        ('Enrolled',lambda c: c.created.date()),
         ('Group','study_group'),
         ('EDD','due_date'),
         ('Δ EDD',lambda c:delta_days(c.due_date)),
         ('Delivery','delivery_date'),
         ('Δ Delivery',lambda c:delta_days(c.delivery_date,past=True)),
         ('TCA',lambda c:c.tca_date()),
-        ('Send Day','send_day'),
-        ('Send Time','send_time'),
         ('Validation Δ',lambda c: seconds_as_str(c.validation_delta()) ),
-        ('System', lambda c: c.message_set.filter(is_system=True).count() ),
-        ('Nurse', lambda c: c.message_set.filter(is_system=False,is_outgoing=True).count() ),
         ('Client', lambda c: c.message_set.filter(is_outgoing=False).count() ),
-
+        ('Δ C', lambda c: c.message_set.filter(is_outgoing=False,created__gte=last_week).count() ),
+        ('System', lambda c: c.message_set.filter(is_system=True).count() ),
+        ('Δ S', lambda c: c.message_set.filter(is_system=True,created__gte=last_week).count() ),
+        ('Nurse', lambda c: c.message_set.filter(is_system=False,is_outgoing=True).count() ),
+        ('Δ N', lambda c: c.message_set.filter(is_system=False,is_outgoing=True,created__gte=last_week).count() ),
     ])
 
     # Write Header Row
     ws.append(columns.keys())
     ws.auto_filter.ref = 'A1:{}1'.format( xl.utils.get_column_letter(len(columns)) )
 
-    column_widths = {'B':20,'C':15, }
+    column_widths = {'K':5,'M':5,'O':5}
     for col_letter, width in column_widths.items():
         ws.column_dimensions[col_letter].width = width
 
