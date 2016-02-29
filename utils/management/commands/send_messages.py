@@ -99,7 +99,8 @@ def weekly_messages(day,hour,date,email_body,send=False):
             vals.times[p.send_time] += 1
             if hour==0 or hour==p.send_time:
                 message = p.send_automated_message(today=date,send=send)
-                vals.sent_to.append( "{} (#{}) {}".format(message.description(),p.study_id,p.send_time) )
+                if message is not None:
+                    vals.sent_to.append( "{} (#{}) {}".format(message.description(),p.study_id,p.send_time) )
                 if message is None:
                     vals.no_messages.append( '{} (#{})'.format( p.description(today=date),p.study_id)  )
 
