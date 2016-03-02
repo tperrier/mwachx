@@ -7,6 +7,7 @@ import operator, collections, re, argparse
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import models
+from django.utils import timezone
 
 import utils.sms_utils as sms
 import backend.models as back
@@ -32,6 +33,9 @@ class Command(BaseCommand):
         xlsx_parser.add_argument('report_type',choices=('visit','detail',),help='name of report to make')
         xlsx_parser.add_argument('-d','--dir',default='ignore',help='directory to save report in')
         xlsx_parser.set_defaults(action='make_xlsx')
+
+        message_parser = subparsers.add_parser('msg',cmd=parser.cmd,help='print messages per week')
+        message_parser.set_defaults(action='print_messages')
 
         custom_parser = subparsers.add_parser('custom',cmd=parser.cmd,help='run custom command')
         custom_parser.set_defaults(action='custom')
@@ -171,6 +175,29 @@ class Command(BaseCommand):
 
         wb.save(xlsx_path_out)
 
+    def print_messages(self):
+
+        m_all = cont.Message.objects.all()
+        start_date = timezone.make_aware(datetime.datetime(2015,11,23))
+        counts = []
+        totals = (0,0,0,0)
+
+        now = timezone.now()
+        while start_date < now:
+            end_date = start_date + datetime.timedelta(days=7)
+            m_range = m_all.filter(created__range=(start_date,end_date))
+            counts.append((
+                m_range.count(),
+                m_range.filter(is_system=True).count(), # System
+                m_range.filter(is_system=False,is_outgoing=False).count(), # Participant
+                m_range.filter(is_system=False,is_outgoing=True).count(), # Nurse
+            ))
+            totals = map(sum,zip(totals,counts[-1]))
+            self.stdout.write( "{1}  {0[0]:<6}{0[1]:<6}{0[2]:<6}{0[3]:<6}".format(counts[-1], start_date.strftime('%Y-%m-%d') ) )
+            start_date = end_date
+        self.stdout.write( "Total       {0[0]:<6}{0[1]:<6}{0[2]:<6}{0[3]:<6}".format(totals) )
+
+
 ########################################
 # Utility Functions
 ########################################
@@ -240,6 +267,7 @@ def make_facility_visit_sheet(ws,facility):
     # Write Data Rows
     for c in contacts:
         ws.append( [make_column(c,attr) for attr in columns.values()] )
+
 def make_column(obj,column):
     if isinstance(column,basestring):
         value = getattr(obj,column)
