@@ -6,6 +6,10 @@ from django.utils import html
 #Local Imports
 import models as cont
 
+class ConnectionInline(admin.TabularInline):
+    model = cont.Connection
+    extra = 0
+
 @admin.register(cont.Contact)
 class ContactAdmin(admin.ModelAdmin):
 
@@ -19,6 +23,8 @@ class ContactAdmin(admin.ModelAdmin):
     search_fields = ('study_id','nickname','connection__identity','anc_num')
     readonly_fields = ('last_msg_client','last_msg_system','created','modified')
 
+    inlines = (ConnectionInline,)
+
 def ParticipantMixinFactory(field='participant'):
     class ParticipantAdminMixinBase(object):
 
@@ -27,16 +33,15 @@ def ParticipantMixinFactory(field='participant'):
         def participant_name(self,obj):
             participant = getattr(obj,self.participant_field)
             if participant is not None:
-                return html.format_html("<a href='../contact/{0.pk}'>{0.nickname}</a>".format(participant) )
+                return html.format_html("<a href='../contact/{0.pk}'>({0.study_id}) {0.nickname}</a>".format(participant) )
         participant_name.short_description = 'Nickname'
-        participant_name.admin_order_field = '{}__nickname'.format(participant_field)
+        participant_name.admin_order_field = '{}__study_id'.format(participant_field)
 
         def facility(self,obj):
             participant = getattr(obj,self.participant_field)
             if participant is not None:
                 return participant.facility.capitalize()
         facility.admin_order_field = '{}__facility'.format(participant_field)
-
 
         def study_id(self,obj):
             return getattr(obj,self.participant_field).study_id
@@ -58,7 +63,7 @@ ContactAdminMixin = ParticipantMixinFactory('contact')
 @admin.register(cont.Message)
 class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
 
-    list_display = ('text','participant_name','study_id_link','identity','facility','is_viewed','is_system',
+    list_display = ('text','participant_name','identity','is_viewed','is_system',
         'is_outgoing', 'is_reply', 'translation_status','external_success','created')
     list_filter = ('is_viewed','is_system','is_outgoing', ('created', admin.DateFieldListFilter) ,'connection__contact__facility',
     'translation_status','is_related')
@@ -73,14 +78,6 @@ class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
     identity.short_description = 'Number'
     identity.admin_order_field = 'connection__identity'
 
-    def study_id_link(self,obj):
-        if obj.contact is not None:
-            return html.format_html("<a href='../message/?contact={0.pk}'>{0.study_id}</a>".format(
-                obj.contact
-            ) )
-    study_id_link.short_description = "Study ID"
-    study_id_link.admin_order_field = "contact__study_id"
-
 @admin.register(cont.PhoneCall)
 class PhoneCallAdmin(admin.ModelAdmin):
 
@@ -92,6 +89,7 @@ class PhoneCallAdmin(admin.ModelAdmin):
 @admin.register(cont.Connection)
 class ConnectionAdmin(admin.ModelAdmin,ContactAdminMixin):
     list_display = ('identity','participant_name','facility','is_primary')
+    search_fields = ('contact__study_id','contact__nickname','identity')
 
 
 @admin.register(cont.Visit)
