@@ -21,6 +21,18 @@
       </div>
   </div>
 
+  {{visit.type}}
+  <div class="form-group" id="visit_type_block">
+    <label class="col-sm-3 control-label" for="">Type of next visit:</label>
+    <div class="col-sm-9">
+        <div class="btn-group">
+            <label class="btn btn-language" ng-model='visit.visit_type' btn-radio="'clinic'"> Clinic Visit </label>
+            <label class="btn btn-language" ng-model='visit.visit_type' btn-radio="'study'"> Study Visit </label>
+            <label class="btn btn-language" ng-model='visit.visit_type' btn-radio="'both'"> Both </label>
+        </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="modal-footer">

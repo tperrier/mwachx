@@ -21,13 +21,13 @@ class VisitSerializer(serializers.ModelSerializer):
     days_str = serializers.CharField()
     is_pregnant = serializers.BooleanField(read_only=True)
 
-    visit_type = serializers.CharField(source='get_visit_type_display')
+    visit_type_display = serializers.CharField(source='get_visit_type_display')
 
 
     class Meta:
         model = cont.Visit
         fields = ('id','href','participant','scheduled','arrived','notification_last_seen','status',
-                  'comment','visit_type','days_overdue','days_str','is_pregnant')
+                  'comment','visit_type','visit_type_display','days_overdue','days_str','is_pregnant')
 
     def get_status(self,obj):
         return obj.get_status_display()
@@ -89,6 +89,7 @@ class VisitViewSet(viewsets.ModelViewSet):
 
         instance = self.get_object()
         instance.scheduled = utils.angular_datepicker(request.data['scheduled'])
+        instance.visit_type = request.data['visit_type']
         instance.save()
 
         instance_serialized = self.get_serializer(instance)

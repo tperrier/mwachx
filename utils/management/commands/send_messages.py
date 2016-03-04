@@ -142,7 +142,7 @@ def appointment_reminders(date,hour,email_body,delta_days=2,send=False):
                 elif visit.visit_type == 'both':
                     condition = 'both'
                 condition += '_pre'
-                print visit.visit_type,condition
+                
                 message = visit.participant.send_automated_message(send=send,send_base='visit',
                                 condition=condition,extra_kwargs=extra_kwargs)
                 if message is None:

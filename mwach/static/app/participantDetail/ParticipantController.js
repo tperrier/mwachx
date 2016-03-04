@@ -170,7 +170,8 @@
 
   $scope.scheduleVisit = function() {
 
-    var $modalScope = $rootScope.$new(); $modalScope.scheduleOnly = true;
+    var $modalScope = $rootScope.$new();
+    $modalScope.scheduleOnly = true;
 
     var modalInstance = $modal.open({
       templateUrl: "/static/app/dashboard/visits/modalVisitAttendSchedule.html",
@@ -227,6 +228,7 @@
       visit.doPUT(put,'edit/').then(function(result) {
         console.log('Result',result);
         visit.scheduled = result.scheduled;
+        visit.visit_type_display = result.visit_type;
       });
     });
   };

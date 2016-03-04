@@ -15,7 +15,7 @@
         <i class="mw mw-2x" ng-class="visit.is_pregnant ? 'mw-mwach-phone pregnant' : 'mw-mwach-baby-phone postpartum'"></i>
       </td>
       <td>{{visit.scheduled}} ({{visit.days_str}})</td>
-      <td>{{visit.visit_type}}</td>
+      <td>{{visit.visit_type_display}}</td>
       <td ng-if="visit.arrived">{{visit.arrived}}</td>
       <td ng-if="!visit.arrived">{{visit.status}}</td>
     </tr>

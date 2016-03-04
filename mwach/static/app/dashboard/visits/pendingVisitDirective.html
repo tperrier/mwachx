@@ -5,14 +5,14 @@
     <i class='mw mw-2x ' ng-class="{'mw-eye-off':visit.days_overdue <= 7, 'mw-book':visit.days_overdue > 7}"></i>
   </a>
   <a class='btn btn-info'
-     tooltip='{{visit.participant.nickname}} came for a {{visit.visit_type}} visit'
+     tooltip='{{visit.participant.nickname}} came for a {{visit.visit_type_display}} visit'
      ng-click='attendedVisit($event)'>
     <i class='mw mw-2x mw-hospital-o '></i>
   </a>
 </td>
 <td>{{visit.participant.study_id}}</td>
 <td>{{visit.participant.nickname}}</td>
-<td>{{visit.visit_type}}</td>
+<td>{{visit.visit_type_display}}</td>
 <td>{{visit.participant.study_group}}</td>
 <td>{{visit.participant.anc_num}}</td>
 <td>{{visit.scheduled | date : 'MMM d, yyyy'}}</td>
