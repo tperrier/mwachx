@@ -5,9 +5,11 @@ import code
 import operator, collections, re, argparse
 
 from django.core.management.base import BaseCommand, CommandError
+
 import contacts.models as cont
 from scheduled_calls import set_edd_calls
 from transports.email import email
+import transports.africas_talking.api as at
 
 class Command(BaseCommand):
     '''Cron commands to manage project '''
@@ -20,6 +22,7 @@ class Command(BaseCommand):
         nightly_parser = subparsers.add_parser('nightly',cmd=parser.cmd,help='initialize phone calls and print report')
         nightly_parser.add_argument('-c','--calls',default=False,action='store_true',help='schedule edd calls')
         nightly_parser.add_argument('-e','--email',help='send output as email',action='store_true',default=False)
+        nightly_parser.add_argument('-b','--balance',help='include gateway blance',action='store_true',default=False)
         nightly_parser.set_defaults(action='nightly')
 
         test_parser = subparsers.add_parser('test',cmd=parser.cmd,help='run test command')
@@ -31,10 +34,14 @@ class Command(BaseCommand):
         getattr(self,options['action'])()
 
     def nightly(self):
-        ''' Nightly cron jobs to be run at 12am '''
+        ''' Nightly cron jobs to be run at 1am '''
 
         email_subject = '{}'.format( datetime.date.today().strftime('%a %b %d (%j) %Y') )
         email_body = [ "Script started at {}".format(datetime.datetime.now()),'']
+
+        if self.options.get('balance'):
+            balance = at.balance()
+            email_body.extend( ['Africas Talking Balance: {}'.format(balance),''] )
 
         if self.options.get('calls'):
             set_edd_calls(email_body)
