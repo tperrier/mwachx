@@ -26,16 +26,15 @@ class Command(BaseCommand):
         send_time_parser.add_argument('-t','--times',action='store_true',default=False,help='print send times')
         send_time_parser.add_argument('-r','--registered',action='store_true',default=False,help='print registered totals per facility')
         send_time_parser.add_argument('-c','--validation-codes',action='store_true',default=False,help='print validation stats')
+        send_time_parser.add_argument('-m','--messages',action='store_true',default=False,help='print message statistics')
         send_time_parser.add_argument('-a','--all',action='store_true',default=False,help='all report options')
+        send_time_parser.add_argument('--weeks',default=5,type=int,help='message history weeks (default 5)')
         send_time_parser.set_defaults(action='print_stats')
 
         xlsx_parser = subparsers.add_parser('xlsx',cmd=parser.cmd,help='create xlsx reports')
         xlsx_parser.add_argument('report_type',choices=('visit','detail',),help='name of report to make')
         xlsx_parser.add_argument('-d','--dir',default='ignore',help='directory to save report in')
         xlsx_parser.set_defaults(action='make_xlsx')
-
-        message_parser = subparsers.add_parser('msg',cmd=parser.cmd,help='print messages per week')
-        message_parser.set_defaults(action='print_messages')
 
         custom_parser = subparsers.add_parser('custom',cmd=parser.cmd,help='run custom command')
         custom_parser.set_defaults(action='custom')
@@ -60,11 +59,12 @@ class Command(BaseCommand):
             self.send_times()
         if self.options['validation_codes'] or self.options['all']:
             self.validation_stats()
+        if self.options['messages'] or self.options['all']:
+            self.message_stats()
 
     def send_times(self):
 
         self.print_header("Participant Send Times")
-        self.printed = True
 
         c_all = cont.Contact.objects.all().order_by('send_day','send_time')
         time_counts = c_all.exclude(study_group='control').values('send_day','send_time') \
@@ -93,7 +93,6 @@ class Command(BaseCommand):
     def registered_counts(self):
 
         self.print_header("Participant By Facility")
-        self.printed = True
 
         c_all = cont.Contact.objects.all().order_by('study_group')
         group_counts = c_all.values('facility','study_group') \
@@ -122,7 +121,6 @@ class Command(BaseCommand):
     def validation_stats(self):
 
         self.print_header('Validation Stats')
-        self.printed = True
 
         c_all = cont.Contact.objects.all()
 
@@ -150,9 +148,83 @@ class Command(BaseCommand):
         for key , count in stats.items():
             self.stdout.write( "\t{}\t{} ({:0.3f})".format(key,count, count/float(total) ) )
 
+    def message_stats(self):
+
+
+        self.print_header('Message Statistics (system-participant-nurse)')
+
+        # Get messages grouped by facility, system and outgoing
+        m_all = cont.Message.objects.all()
+        group_counts = m_all.order_by().values(
+            'contact__facility','contact__study_group','is_system','is_outgoing'
+        ).annotate(count=models.Count('contact__facility'))
+
+        # Piviot Group Counts based on facility
+        counts = collections.defaultdict(CountRow)
+        for g in group_counts:
+            facility = g['contact__facility']
+            if facility is None:
+                continue
+
+            study_group = g['contact__study_group']
+            sender = 'system'
+            if not g['is_system']:
+                sender = 'nurse' if g['is_outgoing'] else 'participant'
+            counts[facility][study_group][sender] = g['count']
+
+        # Print Message Totals Table
+        self.stdout.write( "{:^10}{:^18}{:^18}{:^18}{:^18}".format("","Control","One-Way","Two-Way","Total") )
+        total_row = CountRow()
+        for facility , row in counts.items():
+            total_row += row
+            row['two-way'].replies = m_all.filter(parent__isnull=False,contact__facility=facility).count()
+            self.stdout.write( '{:<10}{}  {} ({})'.format(facility,row,row.total(),sum(row.total()) ) )
+
+        none_count = m_all.filter(contact__isnull=True).count()
+        total_count = total_row.total()
+        total_row['two-way'].replies = m_all.filter(parent__isnull=False).count()
+        self.stdout.write( '{:<10}{}  {} ({})'.format('total',total_row,total_count,sum(total_count) ) )
+        self.stdout.write( '{:<10}{:04d} ({})'.format('none',none_count,none_count+sum(total_count)) )
+
+        # Print last 5 weeks of messaging
+        self.stdout.write('')
+        self.print_messages(self.options['weeks'])
+    def print_messages(self,weeks=None):
+
+        # Get all two-way messages
+        m_all = cont.Message.objects.filter(contact__study_group='two-way')
+
+        # Get start date
+        study_start_date = timezone.make_aware(datetime.datetime(2015,11,23))
+        now = timezone.now()
+        weeks_start_date = timezone.make_aware(
+            datetime.datetime(now.year,now.month,now.day) - datetime.timedelta(days=now.weekday())
+        ) # Last Sunday
+        start_date = study_start_date
+        if weeks is not None and weeks_start_date > study_start_date:
+            start_date = weeks_start_date - datetime.timedelta(days=weeks*7)
+
+        total_row = CountRowItem()
+        while start_date < now:
+            end_date = start_date + datetime.timedelta(days=7)
+            m_range = m_all.filter(created__range=(start_date,end_date))
+            row = CountRowItem()
+            row['system'] = m_range.filter(is_system=True).count()
+            row['participant'] = m_range.filter(is_system=False,is_outgoing=False).count()
+            row['nurse'] = m_range.filter(is_system=False,is_outgoing=True).count()
+            row.replies = m_range.filter(parent__isnull=False).count()
+
+            total_row += row
+            self.stdout.write( '{}  {} ({})'.format(start_date.strftime('%Y-%m-%d'),row,sum(row) ) )
+            start_date = end_date
+        self.stdout.write( "Total       {} ({})".format(total_row,sum(total_row)) )
+
+
     def print_header(self,header):
         if self.printed:
             self.stdout.write("")
+        self.printed = True
+
         self.stdout.write( "-"*30 )
         self.stdout.write( "{:^30}".format(header) )
         self.stdout.write( "-"*30 )
@@ -175,28 +247,55 @@ class Command(BaseCommand):
 
         wb.save(xlsx_path_out)
 
-    def print_messages(self):
+########################################
+# Message Row Counting Classes
+########################################
 
-        m_all = cont.Message.objects.all()
-        start_date = timezone.make_aware(datetime.datetime(2015,11,23))
-        counts = []
-        totals = (0,0,0,0)
+class CountRowItem(dict):
 
-        now = timezone.now()
-        while start_date < now:
-            end_date = start_date + datetime.timedelta(days=7)
-            m_range = m_all.filter(created__range=(start_date,end_date))
-            counts.append((
-                m_range.count(),
-                m_range.filter(is_system=True).count(), # System
-                m_range.filter(is_system=False,is_outgoing=False).count(), # Participant
-                m_range.filter(is_system=False,is_outgoing=True).count(), # Nurse
-            ))
-            totals = map(sum,zip(totals,counts[-1]))
-            self.stdout.write( "{1}  {0[0]:<6}{0[1]:<6}{0[2]:<6}{0[3]:<6}".format(counts[-1], start_date.strftime('%Y-%m-%d') ) )
-            start_date = end_date
-        self.stdout.write( "Total       {0[0]:<6}{0[1]:<6}{0[2]:<6}{0[3]:<6}".format(totals) )
+    columns = ['system','participant','nurse']
 
+    def __init__(self):
+        self.replies = 0
+        for c in self.columns:
+            self[c] = 0
+
+    def __iter__(self):
+        for v in self.values():
+            yield v
+
+    def __add__(self,other):
+        new = CountRowItem()
+        for c in self.columns:
+            new[c] = self[c] + other[c]
+        return new
+
+    def __str__(self):
+        reply_str = '' if not self.replies else '/{:04d}'.format(self.replies)
+        return '{0[system]:04d}--{0[participant]:04d}{1}--{0[nurse]:04d}'.format(self,reply_str)
+
+class CountRow(dict):
+
+    columns = ['control','one-way','two-way']
+
+    def __init__(self):
+        for c in self.columns:
+            self[c] = CountRowItem()
+
+    def total(self):
+        new = CountRowItem()
+        for c in self.columns:
+            new += self[c]
+        return new
+
+    def __add__(self,other):
+        new = CountRow()
+        for c in self.columns:
+            new[c] = self[c] + other[c]
+        return new
+
+    def __str__(self):
+        return '{0[control]}  {0[one-way]}  {0[two-way]}'.format(self)
 
 ########################################
 # Utility Functions

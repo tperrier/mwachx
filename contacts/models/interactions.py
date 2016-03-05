@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from jsonfield import JSONField
+from django.utils import timezone
 
 from constance import config
 
@@ -47,6 +48,7 @@ class Message(TimeStampedModel):
     is_related = models.NullBooleanField(default=None,blank=True,null=True)
 
     parent = models.ForeignKey('contacts.Message',related_name='replies',blank=True,null=True)
+    action_time = models.DateTimeField(default=None,blank=True,null=True)
 
     # translation
     translated_text = models.TextField(max_length=1000,help_text='Text of the translated message',default='',blank=True)
@@ -91,12 +93,17 @@ class Message(TimeStampedModel):
         return self.contact.was_pregnant(today=self.created.date())
 
     def dismiss(self,is_related=None,topic='',**kwargs):
-		if is_related is not None:
-			self.is_related = is_related
-		if topic != '':
-			self.topic = topic
-		self.is_viewed = True
-		self.save()
+        if is_related is not None:
+            self.is_related = is_related
+        if topic != '':
+            self.topic = topic
+        self.is_viewed = True
+        self.set_action_time()
+        self.save()
+
+    def set_action_time(self):
+        if self.action_time is None:
+            self.action_time = timezone.now()
 
     def description(self):
         if self.is_system:

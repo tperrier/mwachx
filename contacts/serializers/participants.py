@@ -2,6 +2,7 @@
 import json, datetime
 
 # Django imports
+from django.utils import timezone
 from django.db import transaction
 
 # Rest Framework Imports
@@ -218,13 +219,14 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
 			if request.data.has_key('reply'):
 				message['parent'] = cont.Message.objects.get(pk=request.data['reply']['id'])
-				# print 'Reply To',message['parent']
+				message['parent'].action_time = timezone.now()
 
 				if message['parent'].is_pending:
 					message['parent'].dismiss(**request.data['reply'])
-					# print 'Dismiss',request.data['reply']
+				message['parent'].save()
 
 			new_message = participant.send_message(**message)
+
 
 			return Response(MessageSerializer(new_message,context={'request': request}).data)
 
