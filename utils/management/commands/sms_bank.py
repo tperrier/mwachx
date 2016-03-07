@@ -269,27 +269,27 @@ class Command(BaseCommand):
 
         self.stdout.write('Importing....')
         total , add , todo, create = 0 , 0 , 0 , 0
+        counts = collections.defaultdict(int)
         diff , existing = [] , []
         for row in sms_bank.active.rows[1:]:
             msg = sms.FinalRow(row)
-            total += 1
+            counts['total'] += 1
 
             if do_all or msg.status == 'done':
-                add += 1
-                auto , created = back.AutomatedMessage.objects.from_excel(msg)
+                auto , status = back.AutomatedMessage.objects.from_excel(msg)
+                counts['add'] += 1
+                counts[status] += 1
 
-                if not created:
+                if status != 'created':
                     existing.append( (msg,auto) )
-                else:
-                    create += 1
+                if status == 'changed':
+                    diff.append( (msg,auto) )
 
                 if msg.is_todo():
                     self.stdout.write('Warning: message {} still todo'.format(msg.description()))
-                    todo += 1
+                    counts['todo'] += 1
 
-                if msg.description() != auto.description():
-                    diff.append( (msg,auto) )
-        self.stdout.write('Messages Found: {} Imported: {} Created: {} Todo: {}'.format(total,add,create,todo))
+        self.stdout.write('Messages Found: {0[total]} Imported: {0[add]} Created: {0[created]} Changed: {0[changed]} Todo: {0[todo]}'.format(counts))
 
         if clear:
             if existing:

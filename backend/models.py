@@ -73,14 +73,18 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
         ''' Replace fields of message content with matching discription '''
         auto = self.from_description(msg.description(),exact=True)
         if auto is None:
-            return self.create(**msg.kwargs()) , True
+            return self.create(**msg.kwargs()) , 'created'
         else:
-            auto.english = msg.english if msg.english != '' else msg.new
+            msg_english = msg.english if msg.english != '' else msg.new
+            changed = msg_english != auto.english or msg.swahili != auto.swahili or msg.luo != auto.luo
+
+            auto.english = msg_english
             auto.swahili = msg.swahili
             auto.luo = msg.luo
             auto.todo = msg.status == 'todo'
             auto.save()
-            return auto , False
+
+            return auto , 'changed' if changed else 'same'
 
 class AutomatedMessage(models.Model):
     """Automated Messages for sending to participants"""
