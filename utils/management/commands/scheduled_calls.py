@@ -31,6 +31,7 @@ class Command(BaseCommand):
         getattr(self,options['action'])()
 
     def initialize(self):
+        """ Find all postpartum participants and schedule 1mo and 1yr call """
         self.stdout.write( "{0} Initializing Phonecalls {0}\n".format('*'*5) )
 
         post = cont.Contact.objects.filter(status='post').order_by('delivery_date')
@@ -50,6 +51,7 @@ class Command(BaseCommand):
                 ) )
         self.stdout.write( "Total Post: {} Created: {} Not-Created: {}\n".format(total_post,total_created,total_post-total_created) )
 
+        # Schedule calls for postdate participants
         today = datetime.date.today()
         over = cont.Contact.objects.filter(status='pregnant',due_date__lte=today).order_by('due_date')
         total_over , total_created = 0 , 0
@@ -64,18 +66,3 @@ class Command(BaseCommand):
 
     def test(self):
         self.stdout.write( "{0} Running Test Command {0}".format('*'*5) )
-
-def set_edd_calls(email_body):
-    ''' Set 14 day post edd call if still pregnant on edd
-    To be run every night at 1am'''
-
-    email_body.append( "***** Set EDD Calls *****\n" )
-
-    yesterday = datetime.date.today() - datetime.timedelta(days=1)
-    edd_today = cont.Contact.objects.filter(due_date=yesterday,status='edd',delivery_date__isnull=True)
-
-    email_body.append( "Found {} post edd participants on {}".format(len(edd_today),yesterday) )
-
-    for post in edd_today:
-        post.schedule_edd_call()
-        email_body.append( "\t{!r}".format(post) )

@@ -7,7 +7,7 @@ import operator, collections, re, argparse
 from django.core.management.base import BaseCommand, CommandError
 
 import contacts.models as cont
-from scheduled_calls import set_edd_calls
+import command_utils
 from transports.email import email
 import transports.africas_talking.api as at
 
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             email_body.extend( ['Africas Talking Balance: {}'.format(balance),''] )
 
         if self.options.get('calls'):
-            set_edd_calls(email_body)
+            command_utils.set_edd_calls(email_body)
 
         email_body = '\n'.join(email_body)
         if self.options.get('email'):

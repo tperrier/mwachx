@@ -14,8 +14,13 @@ import utils
 
 class SchedualQuerySet(ForUserQuerySet):
 
-    def pending(self):
-        return self.filter(arrived=None,status='pending')
+    def pending(self,**kwargs):
+        pending = self.filter(arrived__isnull=True,status='pending')
+        if not kwargs:
+            return pending
+        pending_Q = Q(**kwargs)
+        return pending.filter(pending_Q)
+
 
     def visit_range(self,start={'days':0},end=None,notification_start={'days':0},notification_end=None):
         today = utils.today()
@@ -96,7 +101,8 @@ class ScheduledEvent(TimeStampedModel):
 
     def set_status(self,status,arrived=None):
         ''' Mark scheduled event status '''
-        self.arrived = arrived
+        if arrived is not None:
+            self.arrived = arrived
         self.status = status
         self.save()
 
@@ -109,12 +115,34 @@ class ScheduledEvent(TimeStampedModel):
 class VisitQuerySet(SchedualQuerySet):
 
     def get_visit_checks(self):
-        visits_this_week = self.active_users().pending().visit_range(start={'weeks':0},end={'days':7},notification_start={'days':1})
-        bookcheck_weekly = self.active_users().pending().visit_range(start={'days':8},end={'days':35},notification_start={'weeks':1})
-        bookcheck_monthly = self.active_users().pending().visit_range(start={'days':36},notification_start={'weeks':4})
+        """ Return upcoming visits
+            - this_week: not seen today and visit is this week
+            - weekly: between 1-5 weeks away and not seen this week
+            - monthly: after 5 weeks and not seen for four weeks
+        """
+        visits_this_week = self.pending().visit_range(
+            start={'weeks':0},end={'days':7},notification_start={'days':1}
+        )
+        bookcheck_weekly = self.pending().visit_range(
+            start={'days':8},end={'days':35},notification_start={'weeks':1}
+        )
+        # # Don't think we need this since visits will be missed
+        # bookcheck_monthly = self.pending().visit_range(
+        #     start={'days':36},notification_start={'weeks':4}
+        # )
 
         # print visits_this_week
         return visits_this_week | bookcheck_weekly | bookcheck_monthly
+
+    def get_missed_visits(self,date=None,delta_days=3):
+        """ Return pending visits that are 3 days late and have been seen or it has been 3 days
+            since an SMS reminder was sent and has been seen more than three times"""
+        today = utils.today(date)
+        late = today - datetime.timedelta(days=delta_days)
+
+        first_reminder_Q = Q(scheduled__lte=late,notify_count__gt=0,missed_sms_count=0)
+        second_reminder_Q = Q(missed_sms_last_sent__lte=late,notify_count__gt=3,missed_sms_count__gt=0)
+        return self.pending().filter(first_reminder_Q | second_reminder_Q)
 
     def top(self):
         return self[:2]
@@ -133,6 +161,42 @@ class Visit(ScheduledEvent):
     # Custom Visit Fields
     comment = models.TextField(blank=True,null=True)
     visit_type = models.CharField(max_length=25,choices=VISIT_TYPE_CHOICES,default='clinic')
+
+    missed_sms_last_sent = models.DateField(null=True,blank=True,default=None)
+    missed_sms_count = models.IntegerField(default=0)
+
+    def send_visit_reminder(self,send=True,extra_kwargs=None):
+        if extra_kwargs is None:
+            scheduled_date = datetime.date.today() + datetime.timedelta(days=2)
+            extra_kwargs = {'days':2,'date':scheduled_date.strftime('%b %d')}
+        condition = self.get_condition('pre')
+
+        return self.participant.send_automated_message(send=send,send_base='visit',
+                    condition=condition,extra_kwargs=extra_kwargs)
+
+    def send_missed_visit_reminder(self,send=True):
+        condition = self.get_condition('missed')
+
+        if send is True:
+            self.missed_sms_count += 1
+            self.missed_sms_last_sent = datetime.date.today()
+            if self.missed_sms_count >= 2:
+                self.status = 'missed'
+            self.save()
+
+        return self.participant.send_automated_message(send=send,send_base='visit',condition=condition)
+
+    def get_condition(self,postfix='pre'):
+        if self.is_pregnant():
+            prefix = 'anc'
+        elif self.visit_type == 'both':
+            prefix = 'both'
+        else:
+            prefix = 'pnc'
+        return '{}_{}'.format(prefix,postfix)
+
+    def is_pregnant(self):
+        return self.participant.was_pregnant(self.scheduled)
 
 class ScheduledPhoneCallQuerySet(SchedualQuerySet):
 
