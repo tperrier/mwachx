@@ -20,13 +20,13 @@ class ContactQuerySet(ForUserQuerySet):
     participant_field = None
 
     def pregnant(self):
-        return self.filter(models.Q(status='pregnant')|models.Q(status='over'))
+        return self.filter(status__in=('pregnant','over'))
 
     def active(self):
-        return self.exclude(models.Q(status='completed')|models.Q(status='stopped')|models.Q('other'))
+        return self.exclude(status__in=('completed','stopped','other'))
 
     def post_partum(self):
-        return self.filter(models.Q(status='post')|models.Q(status='ccc'))
+        return self.filter(status__in=('post','ccc'))
 
 class ContactManager(models.Manager):
 
@@ -44,6 +44,7 @@ class Contact(TimeStampedModel):
         ('ccc','CCC'),
         ('completed','Completed'),
         ('stopped','Withdrew'),
+        ('loss','SAE opt-in'),
         ('other','Stopped Other')
     )
 
@@ -64,6 +65,7 @@ class Contact(TimeStampedModel):
         ('adolescent','2 - Adolescent'),
         ('first','3 - First Time Mother'),
         ('normal','4 -  Normal'),
+        ('nbaby','SAE Track'),
     )
 
     FAMILY_PLANNING_CHOICES = (
@@ -149,6 +151,7 @@ class Contact(TimeStampedModel):
     hiv_messaging = models.CharField(max_length=15,choices=MESSAGING_CHOICES,default='none',verbose_name='HIV Messaging')
     child_hiv_status = models.NullBooleanField(blank=True,verbose_name='Child HIV Status')
     family_planning = models.CharField(max_length=10,blank=True,choices=FAMILY_PLANNING_CHOICES,verbose_name='Family Planning')
+    loss_date = models.DateField(blank=True,null=True,help_text='SAE date if applicable')
 
     #State attributes to be edited by the system
     last_msg_client = models.DateField(blank=True,null=True,help_text='Date of last client message received',editable=False)
@@ -240,20 +243,31 @@ class Contact(TimeStampedModel):
             return (today-self.delivery_date).days
 
     def description(self,**kwargs):
-        hiv_messaging = kwargs.get("hiv_messaging", self.hiv_messaging == "system")
-        hiv = "Y" if hiv_messaging else "N"
-
-        group = kwargs.get("group",self.study_group)
         today = kwargs.get("today")
+
+        send_base = kwargs.get("send_base")
+        send_offset = kwargs.get("send_offset")
+
+        condition = kwargs.get("condition",self.condition)
+        group = kwargs.get("group",self.study_group)
 
         send_base = kwargs.get("send_base",'edd' if self.was_pregnant(today=today) else 'dd')
         send_offset = kwargs.get("send_offset",self.delta_days(today=today)/7)
-        condition = kwargs.get("condition",self.condition)
 
-        # Special cases for visit send_base
+        hiv_messaging = kwargs.get("hiv_messaging", self.hiv_messaging == "system")
+        hiv = "Y" if hiv_messaging else "N"
+
+        # Modify discription for special cases
         if send_base == 'visit':
             hiv = False
             send_offset = 0
+
+        elif self.status == 'loss' and condition == 'nbaby':
+            today = utils.today(today)
+            loss_offset = ((today - self.loss_date).days - 1)/7  + 1
+            if loss_offset <= 4:
+                send_base = 'loss'
+                send_offset = loss_offset
 
         return "{send_base}.{group}.{condition}.{hiv}.{send_offset}".format(
             group=group, condition=condition, hiv=hiv,
@@ -261,7 +275,7 @@ class Contact(TimeStampedModel):
         )
 
     def days_str(self,today=None):
-        return utils.days_as_str(self.delta_days(today))
+        return utils.days_as_str(self.delta_days(today) )
 
     def get_validation_key(self):
         sha = sha256('%s%s%s%s'%(self.study_id,self.nickname,self.anc_num,self.birthdate)).hexdigest()[:5]
