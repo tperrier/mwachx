@@ -2,21 +2,55 @@
   <button type="button" class="close" ng-click="$dismiss()" aria-label="Close">
     <span aria-hidden="true">×</span>
   </button>
-  <h3 class="modal-title">Stop Messages To {{participant.nickname}}</h3>
+  <h3 ng-show="participant.active" class="modal-title">Stop Messages To {{participant.nickname}}</h3>
+  <h3 ng-hide="participant.active" class="modal-title">Start Messages To {{participant.nickname}}</h3>
 </div>
 
 <div class="modal-body">
 <form name="stopMessageForm" class="form-horizontal" >
   <div class="form-group">
-    <label for="reason" class="col-sm-3 text-right">Reason</label>
-    <div class="col-sm-6">
-    <textarea name="reason" ng-model="form.reason" placeholder="Reason..." required rows="5" cols="25"></textarea>
-  </div>
+    <div class="row" ng-hide="participant.status == 'sae' || participant.status == 'loss'" >
+      <label for="reason" class="col-sm-3 text-right">Reason</label>
+      <div class="col-sm-6">
+      <textarea name="reason" ng-model="form.reason" placeholder="Reason..."
+        class="form-control" ng-required="!(participant.status == 'sae' || participant.status == 'loss')" rows="5" cols="25"></textarea>
+      </div>
+    </div>
+
+    <div class="row" ng-show="participant.active || participant.loss_date">
+      <label for="sae" class="col-sm-3 text-right">SAE</label>
+      <div class="col-sm-6">
+        <input type="checkbox" ng-model="form.sae" name="sae" ng-disabled="participant.status == 'sae' || participant.status == 'loss'"/>
+      </div>
+    </div>
+
+    <div class="row" ng-show="form.sae">
+      <label for="loss_date" class="col-sm-3 text-right">SAE Date</label>
+        <p class='input-group col-sm-6'>
+          <input name="loss_date" ng-model="form.loss_date" type="text" class="form-control" ng-disabled="participant.status == 'sae' || participant.status == 'loss'"
+               datepicker-popup is-open="loss_date_open" ng-required="form.sae" max-date="today">
+         <span class="input-group-btn">
+           <button type="button" class="btn btn-default" ng-click="loss_date_open = !loss_date_open" ng-disabled="participant.status == 'sae' || participant.status == 'loss'">
+             <i class="glyphicon glyphicon-calendar"></i>
+          </button></span> </p>
+    </div>
+
+    <div class="row" ng-show="form.sae">
+      <label for="receive_sms" class="col-sm-3 text-right">Continue Messaging</label>
+      <div class="col-sm-6 btn-group">
+        <label class="btn btn-primary" ng-model="form.receive_sms" btn-radio="true">Yes</label>
+        <label class="btn btn-primary" ng-model="form.receive_sms" btn-radio="false">No</label>
+      </div>
+    </div>
   </div>
 </form>
 </div>
 
 <div class="modal-footer">
-  <button class="btn btn-primary" ng-disabled="stopMessageForm.$invalid" ng-click="$close(form)">Stop Messaging</button>
+  <button class="btn btn-primary" ng-disabled="stopMessageForm.$invalid || stopMessageForm.$pristine" ng-click="$close(form)">
+    <span ng-show="participant.active && !participant.loss_date">Stop Messaging</span>
+    <span ng-show="!participant.active && !participant.loss_date">Start Messaging</span>
+    <span ng-show="participant.loss_date">Change Messaging</span>
+  </button>
   <button class="btn btn-default" ng-click="$dismiss()">Cancel</button>
 </div>

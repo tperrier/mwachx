@@ -58,6 +58,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	facility = serializers.CharField(source='get_facility_display')
 	age = serializers.CharField(read_only=True)
 	is_pregnant = serializers.BooleanField(read_only=True)
+	active = serializers.BooleanField(read_only=True,source='is_active')
 
 	hiv_disclosed_display = serializers.SerializerMethodField()
 	hiv_disclosed = serializers.SerializerMethodField()
@@ -291,11 +292,37 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
 	@detail_route(methods=['put'])
 	def stop_messaging(self, request, study_id=None):
+		reason = request.data.get('reason','')
+		sae = request.data.get('sae',False)
 
 		instance = self.get_object()
-		reason = request.data.get('reason','')
-		comment = "{}\nStopped in web interface by {}".format(reason,request.user.practitioner)
-		instance.set_status('other', comment=comment)
+
+		if sae is True:
+			receive_sms = request.data.get('receive_sms',False)
+			loss_date = utils.angular_datepicker(request.data.get('loss_date'))
+			note=False
+
+			status = 'loss' if receive_sms else 'sae'
+			comment = "Changed loss opt-in status: {}".format(receive_sms)
+			if instance.loss_date is None:
+				# Set loss date if not set
+				instance.loss_date = loss_date
+				if instance.delivery_date is None:
+					# Set delivery date to loss date if not already set
+					instance.delivery_date = loss_date
+				comment = "{}\nSAE event recorded by {}. Opt-In: {}".format(reason,request.user.practitioner,receive_sms)
+				note=True
+
+			print "SAE {} continue {}".format(loss_date,receive_sms)
+			instance.set_status(status,comment=comment,note=note,user=request.user)
+
+		elif instance.status == 'other':
+			comment = "{}\nMessaging changed in web interface by {}".format(reason,request.user.practitioner)
+			status = 'pregnant' if instance.delivery_date is None else 'post'
+			instance.set_status(status, comment=comment)
+		else:
+			comment = "{}\nStopped in web interface by {}".format(reason,request.user.practitioner)
+			instance.set_status('other', comment=comment)
 
 		serializer = self.get_serializer(instance)
 		return Response(serializer.data)

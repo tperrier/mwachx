@@ -19,15 +19,6 @@ class ContactQuerySet(ForUserQuerySet):
 
     participant_field = None
 
-    def pregnant(self):
-        return self.filter(status__in=('pregnant','over'))
-
-    def active(self):
-        return self.exclude(status__in=('completed','stopped','other'))
-
-    def post_partum(self):
-        return self.filter(status__in=('post','ccc'))
-
 class ContactManager(models.Manager):
 
     def get_queryset(self):
@@ -45,8 +36,11 @@ class Contact(TimeStampedModel):
         ('completed','Completed'),
         ('stopped','Withdrew'),
         ('loss','SAE opt-in'),
+        ('sae','SAE opt-out'),
         ('other','Stopped Other')
     )
+
+    NO_SMS_STATUS = ForUserQuerySet.NO_SMS_STATUS
 
     GROUP_CHOICES = (
         ('control','Control'),
@@ -65,7 +59,6 @@ class Contact(TimeStampedModel):
         ('adolescent','2 - Adolescent'),
         ('first','3 - First Time Mother'),
         ('normal','4 -  Normal'),
-        ('nbaby','SAE Track'),
     )
 
     FAMILY_PLANNING_CHOICES = (
@@ -202,7 +195,8 @@ class Contact(TimeStampedModel):
             return connection.identity
 
     def is_active(self):
-        return not (self.status == 'completed' or self.status == 'stopped' or self.status == 'other')
+        # True if contact is receiving SMS messages
+        return self.status not in Contact.NO_SMS_STATUS
 
     def age(self):
         today = utils.today()
@@ -257,14 +251,16 @@ class Contact(TimeStampedModel):
         hiv_messaging = kwargs.get("hiv_messaging", self.hiv_messaging == "system")
         hiv = "Y" if hiv_messaging else "N"
 
-        # Modify discription for special cases
+        # Special Case: Visit Messages
         if send_base == 'visit':
             hiv = False
             send_offset = 0
 
-        elif self.status == 'loss' and condition == 'nbaby':
+        # Special Case: SAE opt in messaging
+        elif self.status == 'loss':
             today = utils.today(today)
             loss_offset = ((today - self.loss_date).days - 1)/7  + 1
+            condition = 'nbaby'
             if loss_offset <= 4:
                 send_base = 'loss'
                 send_offset = loss_offset
@@ -309,7 +305,7 @@ class Contact(TimeStampedModel):
         self.schedule_month_call()
         self.schedule_year_call()
 
-    def set_status(self, new_status, comment=''):
+    def set_status(self, new_status, comment='',note=False,user=None):
         old_status = self.status
         self.status = new_status
         self._old_status = new_status # Disable auto status change message
@@ -318,6 +314,9 @@ class Contact(TimeStampedModel):
         self.statuschange_set.create(
             old = old_status, new = new_status, comment = comment
         )
+
+        if note is True:
+            self.note_set.create(comment=comment,admin=user)
 
     def schedule_month_call(self,created=False):
         ''' Schedule 1m call post delivery

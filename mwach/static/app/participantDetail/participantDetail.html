@@ -70,7 +70,7 @@
         <i class="mw mw-2x mw-clock"></i>&nbsp; Visit History
       </a></td>
 
-      <td ng-if="participant.is_pregnant"><a class="btn btn-info" tooltip="{{participant.nickname}} delivered" ng-click="recordDelivery()">
+      <td ng-hide="participant.delivery_date"><a class="btn btn-info" tooltip="{{participant.nickname}} delivered" ng-click="recordDelivery()">
         <i class="mw mw-2x mw-baby-noun"></i>
       </a></td>
 
@@ -110,8 +110,13 @@
         Notes <span class='badge'>{{participant.note_count}}</span>
       </button>
 
-      <button class="btn btn-danger" tooltip="Stop messaging for {{participant.nickname}}" ng-click="stopMessaging()">
+      <button ng-show="participant.active" class="btn btn-danger"
+        tooltip="Stop messaging for {{participant.nickname}}" ng-click="stopMessaging()">
         Stop
+      </button>
+      <button ng-hide="participant.active" class="btn btn-danger"
+        tooltip="Start messaging for {{participant.nickname}}" ng-click="stopMessaging()">
+        Activate
       </button>
     </div>
 

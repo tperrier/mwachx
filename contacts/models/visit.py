@@ -201,7 +201,7 @@ class Visit(ScheduledEvent):
 class ScheduledPhoneCallQuerySet(SchedualQuerySet):
 
     def pending_calls(self):
-        return self.active_users().pending().visit_range(notification_start={'days':2})
+        return self.pending().visit_range(notification_start={'days':2})
 
 class ScheduledPhoneCall(ScheduledEvent):
 

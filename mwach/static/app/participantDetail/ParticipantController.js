@@ -278,13 +278,19 @@
     var $modalScope = $rootScope.$new();
     angular.extend($modalScope,{
       participant:$scope.participant,
+      form:{
+        receive_sms:$scope.participant.status == 'loss',
+        sae:$scope.participant.status == 'loss' || $scope.participant.status == 'sae',
+        loss_date:$scope.participant.loss_date,
+      },
+      today:new Date(),
     })
     var modalInstance = $modal.open({
       templateUrl: routePrefix + 'modalStopMessaging.html',
       scope:$modalScope,
-    }).result.then(function(reason){
-      console.log('Stop',reason);
-      $scope.participant.doPUT(reason,'stop_messaging/').then(function(result) {
+    }).result.then(function(response_form){
+      console.log('Stop',response_form);
+      $scope.participant.doPUT(response_form,'stop_messaging/').then(function(result) {
         if ( !result.hasOwnProperty('error') ) {
           ['status','status_display'].forEach(function(ele) {
             $scope.participant[ele] = result[ele];

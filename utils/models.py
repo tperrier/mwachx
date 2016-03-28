@@ -32,6 +32,7 @@ class BaseQuerySet(models.QuerySet):
 
 class ForUserQuerySet(BaseQuerySet):
 
+    NO_SMS_STATUS = ('stopped','other','completed','sae')
     participant_field = 'participant'
 
     def for_user(self,user, superuser=False):
@@ -50,11 +51,17 @@ class ForUserQuerySet(BaseQuerySet):
         return self.filter(self.participant_Q(facility=facility))
 
     def active_users(self):
-        ''' Filter queryset based on active users.
-            Active users have status not in [completed,stopped,other]
-        '''
-        status_list = ['completed','stopped','other']
-        return self.exclude(self.participant_Q(status__in=status_list))
+        ''' Filter queryset based on active users who should receive SMS messages.'''
+        q = self.participant_Q(status__in=ForUserQuerySet.NO_SMS_STATUS)
+        return self.exclude(q)
+
+    def pregnant(self):
+        q = self.participant_Q(status__in=('pregnant','over'))
+        return self.filter(q)
+
+    def post_partum(self):
+        q = self.participant_Q(status__in=('post','ccc'))
+        return self.filter(q)
 
     def participant_Q(self,**kwargs):
         ''' Return a Q object with participant_field appended
