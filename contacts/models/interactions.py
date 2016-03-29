@@ -140,14 +140,6 @@ class PhoneCall(TimeStampedModel):
     # Link to scheduled phone call field
     scheduled = models.ForeignKey(ScheduledPhoneCall,blank=True,null=True)
 
-    def contact_name(self):
-        if self.contact:
-            return '<a href="../contact/{0.id}">{0.nickname}</a>'.format(self.contact)
-        return None
-    contact_name.short_description = 'Contact Name'
-    contact_name.admin_order_field = 'contact__nickname'
-    contact_name.allow_tags = True
-
 class Note(TimeStampedModel):
 
     class Meta:

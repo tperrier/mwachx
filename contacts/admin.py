@@ -68,6 +68,8 @@ class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
     list_filter = ('is_viewed','is_system','is_outgoing', ('created', admin.DateFieldListFilter) ,'connection__contact__facility',
     'translation_status','is_related')
 
+    date_hierarchy = 'created'
+
     search_fields = ('contact__study_id','contact__nickname','connection__identity')
     readonly_fields = ('created','modified')
 
@@ -79,12 +81,13 @@ class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
     identity.admin_order_field = 'connection__identity'
 
 @admin.register(cont.PhoneCall)
-class PhoneCallAdmin(admin.ModelAdmin):
+class PhoneCallAdmin(admin.ModelAdmin,ContactAdminMixin):
 
-    list_display = ('comment','contact_name','outcome','is_outgoing','created')
+    list_display = ('comment','participant_name','phone_number','outcome','is_outgoing','created')
     date_hierarchy = 'created'
     list_filter = ('outcome','is_outgoing')
     readonly_fields = ('created','modified')
+    search_fields = ('contact__study_id','contact__nickname')
 
 @admin.register(cont.Connection)
 class ConnectionAdmin(admin.ModelAdmin,ContactAdminMixin):
@@ -106,6 +109,7 @@ class ScheduledPhoneCall(admin.ModelAdmin,ParticipantAdminMixin):
         'notification_last_seen','notify_count', 'arrived','status')
     date_hierarchy = 'scheduled'
     list_filter = ('status','call_type','arrived','scheduled')
+    search_fields = ('participant__study_id','participant__nickname')
 
 @admin.register(cont.Practitioner)
 class PractitionerAdmin(admin.ModelAdmin):
@@ -114,6 +118,7 @@ class PractitionerAdmin(admin.ModelAdmin):
 @admin.register(cont.StatusChange)
 class StatusChangeAdmin(admin.ModelAdmin,ContactAdminMixin):
     list_display = ('comment','participant_name','old','new','type','created')
+    search_fields = ('participant__study_id','participant__nickname')
 
 @admin.register(cont.EventLog)
 class EventLogAdmin(admin.ModelAdmin):
