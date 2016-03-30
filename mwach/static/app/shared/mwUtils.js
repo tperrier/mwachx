@@ -41,11 +41,12 @@ angular.module('mwachx')
     link: function(scope, element, attrs, ngModel) {
 
       function read() {
-        ngModel.$setViewValue(element.html());
+        console.log(element,element.html(),element.text());
+        ngModel.$setViewValue(element.text());
       }
 
       ngModel.$render = function() {
-        element.html(ngModel.$viewValue || "");
+        element.text(ngModel.$viewValue || "");
       };
 
       element.bind("blur keyup change", function() {
