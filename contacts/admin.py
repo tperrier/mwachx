@@ -10,6 +10,10 @@ class ConnectionInline(admin.TabularInline):
     model = cont.Connection
     extra = 0
 
+class NoteInline(admin.TabularInline):
+    model = cont.Note
+    extra = 1
+
 @admin.register(cont.Contact)
 class ContactAdmin(admin.ModelAdmin):
 
@@ -23,7 +27,7 @@ class ContactAdmin(admin.ModelAdmin):
     search_fields = ('study_id','nickname','connection__identity','anc_num')
     readonly_fields = ('last_msg_client','last_msg_system','created','modified')
 
-    inlines = (ConnectionInline,)
+    inlines = (ConnectionInline,NoteInline)
 
 def ParticipantMixinFactory(field='participant'):
     class ParticipantAdminMixinBase(object):
@@ -88,6 +92,12 @@ class PhoneCallAdmin(admin.ModelAdmin,ContactAdminMixin):
     list_filter = ('outcome','is_outgoing')
     readonly_fields = ('created','modified')
     search_fields = ('contact__study_id','contact__nickname')
+
+@admin.register(cont.Note)
+class NoteAdmin(admin.ModelAdmin,ParticipantAdminMixin):
+
+    list_display = ('participant_name','comment','created')
+    date_hierarchy = 'created'
 
 @admin.register(cont.Connection)
 class ConnectionAdmin(admin.ModelAdmin,ContactAdminMixin):

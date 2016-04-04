@@ -82,9 +82,6 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = cont.Contact
 
-	def get_note_count(self,obj):
-		return obj.note_set.count()
-
 	def get_hiv_disclosed_display(self,obj):
 		return utils.null_boolean_display(obj.hiv_disclosed)
 

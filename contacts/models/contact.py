@@ -23,7 +23,7 @@ class ContactManager(models.Manager):
 
     def get_queryset(self):
         qs = super(ContactManager,self).get_queryset()
-        return qs.annotate(note_count=models.Count('note'),phonecall_count=models.Count('phonecall')) \
+        return qs.annotate(note_count=models.Count('note',distinct=True),phonecall_count=models.Count('phonecall',distinct=True)) \
             .prefetch_related('connection_set')
 
 class Contact(TimeStampedModel):
