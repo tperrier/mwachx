@@ -132,7 +132,7 @@ class VisitQuerySet(SchedualQuerySet):
         # )
 
         # print visits_this_week
-        return visits_this_week | bookcheck_weekly | bookcheck_monthly
+        return visits_this_week | bookcheck_weekly 
 
     def get_missed_visits(self,date=None,delta_days=3):
         """ Return pending visits that are 3 days late and have been seen or it has been 3 days
