@@ -21,11 +21,11 @@ def validator_action(message):
         send_base='stop',
         send_offset=0,
         group='one-way',
-        condition='normal',
         hiv_messaging=False
     )
+    return False
 
-############
+###############
 validation_validator = Validator('validation')
 validators.append(validation_validator)
 
@@ -48,3 +48,20 @@ def validator_action(message):
     # print 'VALIDATION ACTION for {}'.format(contact)
     message.contact.is_validated = True
     message.contact.save()
+
+###############
+study_group_validator = Validator('study_group')
+validators.append(study_group_validator)
+
+@study_group_validator.set('check')
+def validator_action(message):
+    if message.contact.study_group in ('one-way','control'):
+        message.text = "WARNGING: {} {}".format(message.contact.study_group.upper(), message.text)
+        message.is_viewed = True
+        return True
+    return False
+
+@study_group_validator.set('action')
+def validator_action(message):
+    # Send contact bounce message
+    message.contact.send_automated_message(send_base='bounce',send_offset=0,hiv_messaging=False)

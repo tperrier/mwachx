@@ -44,7 +44,8 @@ def receive(identity,message_text,external_id='',**kwargs):
         for validator in validation.validators:
             valid = validator(message)
             if valid:
-                validator.action(message)
+                if validator.action(message) is False:
+                    break
 
         # Set last_msg_client
         contact.last_msg_client = datetime.date.today()
