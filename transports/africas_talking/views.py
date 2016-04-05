@@ -26,7 +26,7 @@ def receive(request):
 		if form.is_valid():
 			message = transports.receive(
 				identity=form.cleaned_data['from'],
-				message=form.cleaned_data['text'],
+				message_text=form.cleaned_data['text'],
 				external_id=form.cleaned_data['id'],
 				time_received=form.cleaned_data['date'],
 				external_linkId=form.cleaned_data['linkId']

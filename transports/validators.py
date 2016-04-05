@@ -5,8 +5,8 @@ class Validator(object):
         self.check = check
         self.action = action
 
-    def __call__(self,contact,message):
-        return self.check(contact,message)
+    def __call__(self,message):
+        return self.check(message)
 
     def set(self,action):
         if not (action == 'check' or action == 'action'):
@@ -19,6 +19,6 @@ class Validator(object):
 class KeywordValidator(Validator):
 
     def __init__(self,name,action=None):
-        def keyword_check(contact,message):
-            return name.lower() == message.lower(), {}, message
+        def keyword_check(message):
+            return name.lower() == message.text.lower()
         super(KeywordValidator,self).__init__(name,keyword_check,action)

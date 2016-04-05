@@ -21,7 +21,7 @@ def send_message(request):
             if participant_send_form.is_valid():
                 identity = participant_send_form.cleaned_data['contact'].phone_number()
                 text = participant_send_form.cleaned_data['text']
-                transports.receive(identity=identity,message=text)
+                transports.receive(identity=identity,message_text=text)
 
                 #reset form on valid
                 participant_send_form = forms.ParticipantSendForm()

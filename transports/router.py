@@ -19,39 +19,40 @@ def send(identity, message, transport_name=None):
     id, success, data = transport.send(identity,message)
     return id, success, data
 
-def receive(identity,message,external_id=None,**kwargs):
+def receive(identity,message_text,external_id='',**kwargs):
     '''
     Main hook for receiving messages
         * identity: the phone number of the incoming message
-        * message: the text of the incoming message
+        * message_text: the text of the incoming message
         * external_id: id associated with external transport
         * kwargs: dict of extra data associated with transport
     '''
     #Get incoming connection or create if not found
     connection,created = cont.Connection.objects.get_or_create(identity=identity)
     contact = None if created else connection.contact
-    message = message.strip()
-
-    for validator in validation.validators:
-        valid, msg_args, message = validator(contact,message)
-        if valid:
-            validator.action(contact,message)
-
-    # Set last_msg_client
-    if contact:
-        contact.last_msg_client = datetime.date.today()
-        contact.save()
-
-    return cont.Message.objects.create(
+    message = cont.Message(
         is_system=False,
         is_outgoing=False,
-        text=message,
+        text=message_text.strip(),
         connection=connection,
         contact=contact,
         external_id=external_id,
         external_data=kwargs,
-        **msg_args
     )
+
+    if contact:
+        for validator in validation.validators:
+            valid = validator(message)
+            if valid:
+                validator.action(message)
+
+        # Set last_msg_client
+        contact.last_msg_client = datetime.date.today()
+        contact.save()
+
+    message.save()
+    return message
+
 
 class TransportError(Exception):
     pass

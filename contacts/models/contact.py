@@ -279,7 +279,7 @@ class Contact(TimeStampedModel):
         return key[:5]
 
     def choice_label(self):
-        return '%s (%s)'%(self.nickname,self.facility)
+        return '{} {}'.format(self.study_id,self.nickname)
 
     def add_call(self,outcome='answered',comment=None,length=None,is_outgoing=True,
                  created=None,admin_user=None,scheduled=None):
