@@ -78,7 +78,7 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
             msg_english = msg.english if msg.english != '' else msg.new
             changed = msg_english != auto.english or msg.swahili != auto.swahili or msg.luo != auto.luo
 
-            auto.english = new_english
+            auto.english = msg_english
             auto.swahili = msg.swahili
             auto.luo = msg.luo
             auto.todo = msg.status == 'todo'
