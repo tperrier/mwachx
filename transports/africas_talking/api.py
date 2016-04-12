@@ -19,8 +19,6 @@ SHORTCODE = AFRICAS_TALKING_SETTINGS.get('SHORTCODE',None)
 AFRICAS_TALKING_SEND = AFRICAS_TALKING_SETTINGS.get('SEND',False)
 
 AFRICAS_TALKING_API_BASE = 'http://api.africastalking.com/version1'
-SMS_API_URL = os.path.join(AFRICAS_TALKING_API_BASE,'messaging')
-
 
 HEADERS = {'Accept': 'application/json','apikey':API_KEY}
 
@@ -74,7 +72,6 @@ def balance():
         raise AfricasTalkingException('AFRICAS_TALKING var has not set a USERNAME')
 
     params = {'username':USERNAME}
-    params.update(PARAMS)
 
     send_url = os.path.join(AFRICAS_TALKING_API_BASE,'user')
     post = requests.get(send_url,params=params,headers=HEADERS)
@@ -84,3 +81,17 @@ def balance():
     data = post.json()
 
     return data['UserData']['balance']
+
+def fetch(last_received_id=0):
+
+    if API_KEY is None:
+        raise AfricasTalkingException('AFRICAS_TALKING var has not set API_KEY')
+    if USERNAME is None:
+        raise AfricasTalkingException('AFRICAS_TALKING var has not set a USERNAME')
+
+    params = {'username':USERNAME,'lastReceivedId':last_received_id}
+
+    send_url = os.path.join(AFRICAS_TALKING_API_BASE,'messaging')
+    post = requests.get(send_url,params=params,headers=HEADERS)
+
+    return post
