@@ -103,6 +103,7 @@ class Contact(TimeStampedModel):
         ('phone','Phone'),
         ('sms','SMS'),
         ('visit','Clinic Visit'),
+        ('m2m',"Mothers' to Mothers'"),
         ('other','Other'),
     )
 
@@ -304,6 +305,10 @@ class Contact(TimeStampedModel):
         # schedual 6w and 1yr call as needed
         self.schedule_month_call()
         self.schedule_year_call()
+
+        # Add 6wk visits
+        six_wk_date = delivery_date + datetime.timedelta(days=42)
+        self.visit_set.create(scheduled=six_wk_date,visit_type='study')
 
     def set_status(self, new_status, comment='',note=False,user=None):
         old_status = self.status

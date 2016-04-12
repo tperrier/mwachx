@@ -251,7 +251,7 @@
       participant:$scope.participant,
       // 5356800000 = 62 days
       minDate: (new Date()).setTime(today - 5356800000),
-      maxDate: (new Date()).setTime(today + 5356800000),
+      maxDate: (new Date()).setTime(today),
     });
 
     var modalInstance = $modal.open({
