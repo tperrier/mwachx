@@ -195,6 +195,7 @@ class Contact(TimeStampedModel):
         if connection is not None:
             return connection.identity
 
+    @property
     def is_active(self):
         # True if contact is receiving SMS messages
         return self.status not in Contact.NO_SMS_STATUS

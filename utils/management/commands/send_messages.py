@@ -125,12 +125,14 @@ def appointment_reminders(date,hour,email_body,send=False):
     upcoming_visits = cont.Visit.objects.pending(scheduled=scheduled_date)\
         .exclude(visit_type='study').select_related('participant')
 
-    vals = ns(sent_to={}, no_messages=[], control=0, duplicates=0 , times={8:0,13:0,20:0})
+    vals = ns(sent_to={}, no_messages=[], control=0, duplicates=0, not_active=0 , times={8:0,13:0,20:0})
     for visit in upcoming_visits:
         if visit.participant.study_group == 'control':
             vals.control += 1
         elif visit.participant.id in vals.sent_to:
             vals.duplicates += 1
+        elif not visit.participant.is_active:
+            vals.not_active += 1
         else:
             vals.times[visit.participant.send_time] += 1
             if hour == 0 or visit.participant.send_time == hour:
@@ -144,10 +146,11 @@ def appointment_reminders(date,hour,email_body,send=False):
                         message.description(),visit.participant.study_id
                     )
 
-    email_body.append('Found {} visits on {}'.format(upcoming_visits.count(),scheduled_date))
-    email_body.append(
-        ('Control: {0.control} Duplicate: {0.duplicates} 8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}' \
-        + '\n\tSent: {1}').format(vals,len(vals.sent_to))
+    email_body.append( '\n'.join( (
+        'Found {} visits on {}'.format(upcoming_visits.count(),scheduled_date),
+        'Control: {0.control} Duplicate: {0.duplicates} Not-Active: {0.not_active} ',
+        '\t8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}',
+        '\tSent: {1}') ).format(vals,len(vals.sent_to))
     )
     email_body.extend( "\t{}".format(d) for d in vals.sent_to.values())
     email_body.append('')
@@ -161,10 +164,12 @@ def missed_visit_reminders(hour,email_body,send=False):
     email_body.append( "***** Missed Visit Reminders *****\n" )
     missed_visits = cont.Visit.objects.get_missed_visits()
 
-    vals = ns(sent_to=[], no_messages=[], control=0, times={8:0,13:0,20:0})
+    vals = ns(sent_to=[], no_messages=[], control=0, not_active=0, times={8:0,13:0,20:0})
     for visit in missed_visits:
         if visit.participant.study_group == 'control':
             vals.control += 1
+        elif not visit.participant.is_active:
+            vals.not_active += 1
         else:
             vals.times[visit.participant.send_time] += 1
             if hour == 0 or visit.participant.send_time == hour:
@@ -176,11 +181,11 @@ def missed_visit_reminders(hour,email_body,send=False):
                 else:
                     vals.sent_to.append( "{} (#{})".format(message.description(),visit.participant.study_id) )
 
-    email_body.append(
-        'Total: {0} Control: {1.control} 8h: {1.times[8]} 13h: {1.times[13]} 20h: {1.times[20]}\n\tSent: {2}'.format(
-            len(missed_visits),vals,len(vals.sent_to)
-        )
-    )
+    email_body.append( '\n'.join( (
+        'Total: {0} Control: {1.control} Not-Active: {1.not_active}',
+        '\t8h: {1.times[8]} 13h: {1.times[13]} 20h: {1.times[20]}',
+        '\tSent: {2}') ).format( len(missed_visits),vals,len(vals.sent_to))
+    ) 
     email_body.extend( "\t{}".format(d) for d in vals.sent_to)
     email_body.append('')
 
