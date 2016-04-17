@@ -32,7 +32,8 @@ class BaseQuerySet(models.QuerySet):
 
 class ForUserQuerySet(BaseQuerySet):
 
-    NO_SMS_STATUS = ('stopped','other','completed','sae')
+    NO_SMS_STATUS = ('stopped','other','sae','quit')
+    NOT_ACTIVE_STATUS = NO_SMS_STATUS + ('completed',)
     participant_field = 'participant'
 
     def for_user(self,user, superuser=False):

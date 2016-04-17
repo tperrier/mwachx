@@ -37,10 +37,12 @@ class Contact(TimeStampedModel):
         ('stopped','Withdrew'),
         ('loss','SAE opt-in'),
         ('sae','SAE opt-out'),
-        ('other','Stopped Other')
+        ('other','Admin Stop'),
+        ('quit','Left Study'),
     )
 
     NO_SMS_STATUS = ForUserQuerySet.NO_SMS_STATUS
+    NOT_ACTIVE_STATUS = ForUserQuerySet.NOT_ACTIVE_STATUS
 
     GROUP_CHOICES = (
         ('control','Control'),
@@ -198,7 +200,7 @@ class Contact(TimeStampedModel):
     @property
     def is_active(self):
         # True if contact is receiving SMS messages
-        return self.status not in Contact.NO_SMS_STATUS
+        return self.status not in Contact.NOT_ACITVE_STATUS
 
     def age(self):
         today = utils.today()
@@ -418,8 +420,21 @@ class Contact(TimeStampedModel):
 
     def send_message(self,text,control=False,**kwargs):
 
-        if self.study_group != 'control' or control:
-            # Make sure we don't send messages to the control group
+        # Control check - don't send messages to participants in the control
+        if self.study_group == 'control' and control is False:
+            text = 'CONTROL NOT SENT: ' + text
+            msg_id = 'control'
+            msg_success = False
+            external_data = {}
+
+        # Status check - don't send messages to participants with NO_SMS_STATUS
+        elif self.status in Contact.NO_SMS_STATUS:
+            text = 'STATUS {} NOT SENT: '.format(self.status.upper()) + text
+            msg_id = self.status
+            msg_success = False
+            external_data = {}
+
+        else:
             # Send message over system transport
             try:
                 msg_id, msg_success, external_data = transports.send(self.phone_number(),text)
@@ -427,11 +442,6 @@ class Contact(TimeStampedModel):
                 msg_id = ''
                 msg_success = False
                 external_data = {'error':str(e)}
-        else:
-            text = 'CONTROL NOT SENT: ' + text
-            msg_id = 'control'
-            msg_success = False
-            external_data = {}
 
         # Create new message
         new_message = self.message_set.create(

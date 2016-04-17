@@ -29,8 +29,8 @@ def send_message(request):
         elif request.POST.get('system-send',False):
             system_send_form = forms.SystemSendForm(request.POST)
             if system_send_form.is_valid():
-                contact = participant_send_form.cleaned_data['contact']
-                text = participant_send_form.cleaned_data['text']
+                contact = system_send_form .cleaned_data['contact']
+                text = system_send_form .cleaned_data['text']
                 message = contact.send_message(text)
 
                 #reset form on valid
