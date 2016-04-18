@@ -17,11 +17,15 @@ class ParticipantSimpleSerializer(serializers.ModelSerializer):
 	status = serializers.CharField(source='get_status_display')
 	study_group = serializers.CharField(source='get_study_group_display')
 	phone_number = serializers.CharField()
+	study_base_date = serializers.SerializerMethodField()
 	href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
 
 	class Meta:
 		model = cont.Contact
-		fields = ('nickname','study_id','study_group','anc_num','phone_number', 'status','href')
+		fields = ('nickname','study_id','study_group','anc_num','phone_number', 'status','study_base_date','href')
+
+	def get_study_base_date(self,obj):
+		return obj.delivery_date or obj.due_date
 
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
 

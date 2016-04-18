@@ -22,7 +22,8 @@ angular.module('mwachx') .controller('UpcomingVisitsController',
 }]);
 
 angular.module('mwachx')
-  .directive('mwPendingVisit',[ '$modal','mwachxUtils',function($modal,mwachxUtils) {
+  .directive('mwPendingVisit',[ '$modal','mwachxUtils',
+  function($modal,mwachxUtils) {
 
     return {
       restrict:'A',templateUrl:routePrefix + 'pendingVisitDirective.html',
@@ -42,8 +43,13 @@ angular.module('mwachx')
 
           attendedVisit:function($event){
             $event.stopPropagation();
+
+            var $modalScope = $scope.$new(true);
+            $modalScope.study_base_date = new Date($scope.visit.participant.study_base_date);
             var modalInstance = $modal.open({
               templateUrl:routePrefix + 'modalVisitAttendSchedule.html',
+              scope:$modalScope,
+              controller: 'VisitModifyModalController',
             });
 
             modalInstance.result.then(function(attended){
@@ -71,6 +77,28 @@ angular.module('mwachx') .controller('VisitModifyModalController',
   ['$scope','$modalInstance',
   function ($scope, $modalInstance) {
     $scope.today = new Date();
+    $scope.attended = {
+      'study_visit_type':undefined,
+      'type':undefined,
+    }
+
+    $scope.$watch('attended.study_visit_type',function(newValue,oldValue) {
+      // automatically set study visit date
+      console.log('Watch Date',$scope.study_base_date);
+      if($scope.attended.type == 'study'){
+        console.log('Study Visit Type Changed: Weeks',$scope.attended.study_visit_type);
+        $scope.attended.next = new Date($scope.study_base_date);
+        $scope.attended.next.setDate($scope.attended.next.getDate() + $scope.attended.study_visit_type * 7);
+      }
+    });
+
+    $scope.$watch('attended.type',function(newValue,oldValue) {
+      // Remove automatically set study visit date
+      if(oldValue == 'study') {
+        $scope.attended.next = undefined;
+        $scope.attended.study_visit_type = undefined;
+      }
+    });
   }]);
 
 })();

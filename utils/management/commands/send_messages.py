@@ -123,7 +123,7 @@ def appointment_reminders(date,hour,email_body,send=False):
     # Find visits scheduled within delta_days and not attended early
     scheduled_date = date + datetime.timedelta(days=2)
     upcoming_visits = cont.Visit.objects.pending(scheduled=scheduled_date)\
-        .exclude(visit_type='study').select_related('participant')
+        .to_send().select_related('participant')
 
     vals = ns(sent_to={}, no_messages=[], control=0, duplicates=0, not_active=0 , times={8:0,13:0,20:0})
     for visit in upcoming_visits:
@@ -185,7 +185,7 @@ def missed_visit_reminders(hour,email_body,send=False):
         'Total: {0} Control: {1.control} Not-Active: {1.not_active}',
         '\t8h: {1.times[8]} 13h: {1.times[13]} 20h: {1.times[20]}',
         '\tSent: {2}') ).format( len(missed_visits),vals,len(vals.sent_to))
-    ) 
+    )
     email_body.extend( "\t{}".format(d) for d in vals.sent_to)
     email_body.append('')
 

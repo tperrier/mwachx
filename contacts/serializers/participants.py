@@ -18,31 +18,13 @@ import backend.models as back
 import contacts.forms as forms
 import utils
 
-from messages import MessageSerializer
+from messages import MessageSerializer, ParticipantSimpleSerializer
 from visits import VisitSerializer
 from misc import PhoneCallSerializer, NoteSerializer
 
 #############################################
 #  Serializer Definitions
 #############################################
-
-class ParticipantListSerializer(serializers.ModelSerializer):
-	# Foreign key example.
-	# user = serializers.Field(source='user')
-	status = serializers.SerializerMethodField()
-	study_group = serializers.SerializerMethodField()
-	phone_number = serializers.CharField()
-	href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
-
-	class Meta:
-		model = cont.Contact
-		fields = ('nickname','study_id','study_group', 'anc_num', 'status','phone_number','href')
-
-	def get_status(self, obj):
-		return obj.get_status_display()
-
-	def get_study_group(self, obj):
-		return obj.get_study_group_display()
 
 class ParticipantSerializer(serializers.ModelSerializer):
 	status_display = serializers.CharField(source='get_status_display')
@@ -111,7 +93,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 	def get_serializer_class(self):
 	    # Return the correct serializer based on current action
 	    if self.action == 'list':
-	        return ParticipantListSerializer
+	        return ParticipantSimpleSerializer
 	    else:
 	        return ParticipantSerializer
 

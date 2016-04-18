@@ -72,7 +72,7 @@ class ScheduledEvent(TimeStampedModel):
 
     def days_str(self):
         delta_days = -1 * (utils.today() - self.scheduled).days
-        if self.status == 'attended':
+        if self.status == 'attended' and self.arrived is not None:
             delta_days = (utils.today() - self.arrived).days
         return utils.days_as_str(delta_days)
 
@@ -132,7 +132,7 @@ class VisitQuerySet(SchedualQuerySet):
         # )
 
         # print visits_this_week
-        return visits_this_week | bookcheck_weekly 
+        return visits_this_week | bookcheck_weekly
 
     def get_missed_visits(self,date=None,delta_days=3):
         """ Return pending visits that are 3 days late and have been seen or it has been 3 days
@@ -143,6 +143,9 @@ class VisitQuerySet(SchedualQuerySet):
         first_reminder_Q = Q(scheduled__lte=late,notify_count__gt=0,missed_sms_count=0)
         second_reminder_Q = Q(missed_sms_last_sent__lte=late,notify_count__gt=3,missed_sms_count__gt=0)
         return self.pending().filter(first_reminder_Q | second_reminder_Q)
+
+    def to_send(self):
+        return self.excude(visit_type__in=('study','delivery'))
 
     def top(self):
         return self[:2]
@@ -156,6 +159,7 @@ class Visit(ScheduledEvent):
         ('clinic','Clinic Visit'),
         ('study','Study Visit'),
         ('both','Both'),
+        ('delivery','Delivery'),
     )
 
     # Custom Visit Fields

@@ -63,7 +63,7 @@
     var routePrefix   = '/static/app/participantDetail/';
     $scope.openSendModal = function(msg) {
 
-      var $modalScope = $rootScope.$new()
+      var $modalScope = $rootScope.$new();
       if (msg) $modalScope.reply = msg;
       $modalScope.participant = $scope.participant;
 
@@ -172,6 +172,7 @@
 
     var $modalScope = $rootScope.$new();
     $modalScope.scheduleOnly = true;
+    $modalScope.study_base_date = new Date($scope.participant.delivery_date || $scope.participant.due_date);
 
     var modalInstance = $modal.open({
       templateUrl: "/static/app/dashboard/visits/modalVisitAttendSchedule.html",
