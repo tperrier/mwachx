@@ -21,6 +21,9 @@ class SchedualQuerySet(ForUserQuerySet):
         pending_Q = Q(**kwargs)
         return pending.filter(pending_Q)
 
+    def is_active(self):
+        ''' exclude those participants who's visits we should ignore '''
+        return self.exclude(participant__status__in=('completed','quit'))
 
     def visit_range(self,start={'days':0},end=None,notification_start={'days':0},notification_end=None):
         today = utils.today()
@@ -120,10 +123,10 @@ class VisitQuerySet(SchedualQuerySet):
             - weekly: between 1-5 weeks away and not seen this week
             - monthly: after 5 weeks and not seen for four weeks
         """
-        visits_this_week = self.pending().visit_range(
+        visits_this_week = self.pending().is_active().visit_range(
             start={'weeks':0},end={'days':7},notification_start={'days':1}
         )
-        bookcheck_weekly = self.pending().visit_range(
+        bookcheck_weekly = self.pending().is_active().visit_range(
             start={'days':8},end={'days':35},notification_start={'weeks':1}
         )
         # # Don't think we need this since visits will be missed
@@ -142,10 +145,10 @@ class VisitQuerySet(SchedualQuerySet):
 
         first_reminder_Q = Q(scheduled__lte=late,notify_count__gt=0,missed_sms_count=0)
         second_reminder_Q = Q(missed_sms_last_sent__lte=late,notify_count__gt=3,missed_sms_count__gt=0)
-        return self.pending().filter(first_reminder_Q | second_reminder_Q)
+        return self.pending().is_active().filter(first_reminder_Q | second_reminder_Q)
 
     def to_send(self):
-        return self.excude(visit_type__in=('study','delivery'))
+        return self.exclude(visit_type__in=Visit.NO_SMS_STATUS)
 
     def top(self):
         return self[:2]
@@ -161,6 +164,7 @@ class Visit(ScheduledEvent):
         ('both','Both'),
         ('delivery','Delivery'),
     )
+    NO_SMS_STATUS = ('study','delivery')
 
     # Custom Visit Fields
     comment = models.TextField(blank=True,null=True)
@@ -170,6 +174,9 @@ class Visit(ScheduledEvent):
     missed_sms_count = models.IntegerField(default=0)
 
     def send_visit_reminder(self,send=True,extra_kwargs=None):
+        if self.no_sms:
+            return
+
         if extra_kwargs is None:
             scheduled_date = datetime.date.today() + datetime.timedelta(days=2)
             extra_kwargs = {'days':2,'date':scheduled_date.strftime('%b %d')}
@@ -179,6 +186,9 @@ class Visit(ScheduledEvent):
                     condition=condition,extra_kwargs=extra_kwargs)
 
     def send_missed_visit_reminder(self,send=True):
+        if self.no_sms:
+            return
+
         condition = self.get_condition('missed')
 
         if send is True:
@@ -201,6 +211,10 @@ class Visit(ScheduledEvent):
 
     def is_pregnant(self):
         return self.participant.was_pregnant(self.scheduled)
+
+    @property
+    def no_sms(self):
+        return self.status in Visit.NO_SMS_STATUS
 
 class ScheduledPhoneCallQuerySet(SchedualQuerySet):
 

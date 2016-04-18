@@ -162,7 +162,7 @@ def appointment_reminders(date,hour,email_body,send=False):
 def missed_visit_reminders(hour,email_body,send=False):
 
     email_body.append( "***** Missed Visit Reminders *****\n" )
-    missed_visits = cont.Visit.objects.get_missed_visits()
+    missed_visits = cont.Visit.objects.get_missed_visits().to_send()
 
     vals = ns(sent_to=[], no_messages=[], control=0, not_active=0, times={8:0,13:0,20:0})
     for visit in missed_visits:

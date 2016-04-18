@@ -64,4 +64,4 @@ def validator_action(message):
 @study_group_validator.set('action')
 def validator_action(message):
     # Send contact bounce message
-    message.contact.send_automated_message(send_base='bounce',send_offset=0,hiv_messaging=False)
+    message.contact.send_automated_message(send_base='bounce',send_offset=0,hiv_messaging=False,control=True)

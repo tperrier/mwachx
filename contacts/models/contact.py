@@ -200,7 +200,11 @@ class Contact(TimeStampedModel):
     @property
     def is_active(self):
         # True if contact is receiving SMS messages
-        return self.status not in Contact.NOT_ACITVE_STATUS
+        return self.status not in Contact.NOT_ACTIVE_STATUS
+
+    @property
+    def no_sms(self):
+        return self.status in Contact.NO_SMS_STATUS
 
     def age(self):
         today = utils.today()

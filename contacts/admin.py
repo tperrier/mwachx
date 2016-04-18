@@ -14,6 +14,20 @@ class NoteInline(admin.TabularInline):
     model = cont.Note
     extra = 1
 
+def mark_quit(modeladmin, request, queryset):
+    ''' mark all contacts in queryset as quit and save '''
+    for c in queryset:
+        c.set_status('quit',comment='Status set from bulk quit action')
+
+mark_quit.short_description = 'Mark contact as quit'
+
+def revert_status(modeladmin, request, queryset):
+    ''' set the status for each contact in queryset to their previous status '''
+    for c in queryset:
+        old_status = c.statuschange_set.last().old
+        c.set_status(old_status,comment='Status reverted from bulk action')
+revert_status.short_description = 'Revert to last status'
+
 @admin.register(cont.Contact)
 class ContactAdmin(admin.ModelAdmin):
 
@@ -28,6 +42,7 @@ class ContactAdmin(admin.ModelAdmin):
     readonly_fields = ('last_msg_client','last_msg_system','created','modified')
 
     inlines = (ConnectionInline,NoteInline)
+    actions = (mark_quit,revert_status,)
 
 def ParticipantMixinFactory(field='participant'):
     class ParticipantAdminMixinBase(object):
