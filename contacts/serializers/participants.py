@@ -183,7 +183,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
 		elif request.method == 'POST':
 			'''A POST to participant/:study_id:/messages sends a new message to that participant'''
-			print 'Participant Message Post: ',request.data
+			# print 'Participant Message Post: ',request.data
 			participant = self.get_object()
 			message = {
 				'text':request.data['message'],
@@ -191,7 +191,8 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 				'translation_status':request.data['translation_status'],
 				'is_system':False,
 				'is_viewed':False,
-				'admin_user':request.user
+				'admin_user':request.user,
+				'control':True,
 			}
 
 			if message['translation_status'] == 'done':

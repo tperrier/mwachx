@@ -432,7 +432,7 @@ class Contact(TimeStampedModel):
             external_data = {}
 
         # Status check - don't send messages to participants with NO_SMS_STATUS
-        elif self.status in Contact.NO_SMS_STATUS:
+        elif self.status in Contact.NO_SMS_STATUS and control is False:
             text = 'STATUS {} NOT SENT: '.format(self.status.upper()) + text
             msg_id = self.status
             msg_success = False
