@@ -94,9 +94,11 @@ angular.module('mwachx') .controller('VisitModifyModalController',
 
     $scope.$watch('attended.type',function(newValue,oldValue) {
       // Remove automatically set study visit date
-      if(oldValue == 'study') {
+      if(oldValue == 'study' || oldValue == 'delivery') {
         $scope.attended.next = undefined;
         $scope.attended.study_visit_type = undefined;
+      } else if (newValue == 'delivery') {
+        $scope.attended.next = new Date($scope.study_base_date);
       }
     });
   }]);

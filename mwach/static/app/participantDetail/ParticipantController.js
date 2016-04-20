@@ -191,8 +191,12 @@
   };
 
   $scope.visitAttended = function(visit) {
+    var $modalScope = $rootScope.$new();
+    $modalScope.study_base_date = new Date($scope.participant.delivery_date || $scope.participant.due_date);
+
     var modalInstance = $modal.open({
       templateUrl: "/static/app/dashboard/visits/modalVisitAttendSchedule.html",
+      scope: $modalScope,
       controller: 'VisitModifyModalController',
     }).result.then(function(attended) {
       mwachxUtils.convert_dates(attended);
