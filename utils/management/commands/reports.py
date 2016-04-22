@@ -66,7 +66,7 @@ class Command(BaseCommand):
 
         self.print_header("Participant Send Times")
 
-        c_all = cont.Contact.objects.all().order_by('send_day','send_time')
+        c_all = cont.Contact.objects_no_link.all().order_by('send_day','send_time')
         time_counts = c_all.exclude(study_group='control').values('send_day','send_time') \
             .annotate(count=models.Count('send_day'))
 
@@ -96,7 +96,7 @@ class Command(BaseCommand):
 
         c_all = cont.Contact.objects.all().order_by('study_group')
         group_counts = c_all.values('facility','study_group') \
-            .annotate(count=models.Count('facility'))
+            .annotate(count=models.Count('study_id',distinct=True))
 
         def CountRow():
             return {'control':0,'one-way':0,'two-way':0}
@@ -122,7 +122,7 @@ class Command(BaseCommand):
 
         self.print_header('Validation Stats')
 
-        c_all = cont.Contact.objects.all()
+        c_all = cont.Contact.objects_no_link.all()
 
         stats = collections.OrderedDict( ( ('< 1h',0) , ('< 1d',0) ,('> 1d',0) , ('None',0) ) )
         for c in c_all:

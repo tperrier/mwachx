@@ -6,6 +6,7 @@ import backend.models as back
 import transports.africas_talking.api as at
 import datetime as dt
 from django.db import models
+from models import Count
 import code, os
 
 class Command(BaseCommand):
@@ -16,7 +17,7 @@ class Command(BaseCommand):
 
     def handle(self,*args,**options):
 
-        c_all = cont.Contact.objects.all()
+        c_all = cont.Contact.objects_no_link.all()
         m_all = cont.Message.objects.all()
         v_all = cont.Visit.objects.all()
 

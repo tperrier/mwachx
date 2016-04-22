@@ -23,8 +23,10 @@ class ContactManager(models.Manager):
 
     def get_queryset(self):
         qs = super(ContactManager,self).get_queryset()
-        return qs.annotate(note_count=models.Count('note',distinct=True),phonecall_count=models.Count('phonecall',distinct=True)) \
-            .prefetch_related('connection_set')
+        return qs.annotate(
+            note_count=models.Count('note',distinct=True),
+            phonecall_count=models.Count('phonecall',distinct=True)
+        ).prefetch_related('connection_set')
 
 class Contact(TimeStampedModel):
 
@@ -111,6 +113,7 @@ class Contact(TimeStampedModel):
 
     #Set Custom Manager
     objects = ContactManager.from_queryset(ContactQuerySet)()
+    objects_no_link = ContactQuerySet.as_manager()
 
     #Study Attributes
     study_id = models.CharField(max_length=10,unique=True,verbose_name='Study ID',help_text="* Use Barcode Scanner")
