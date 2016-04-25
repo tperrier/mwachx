@@ -6,7 +6,7 @@ import backend.models as back
 import transports.africas_talking.api as at
 import datetime as dt
 from django.db import models
-from models import Count
+from django.db.models import Count
 import code, os
 
 class Command(BaseCommand):
