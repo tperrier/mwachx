@@ -58,21 +58,24 @@ class VisitViewSet(viewsets.ModelViewSet):
     def attended(self, request, pk):
 
         instance = self.get_object()
+
         instance.attended(request.data.get('arrived',None))
         instance_serialized = VisitSerializer(instance,context={'request':request}).data
-
-        cont.EventLog.objects.create(user=request.user,event='visit.attended',data={'visit_id':instance.id})
 
         # Make next visit if needed
         next_visit_serialized = None
         if request.data.has_key('next'):
-            print 'Next Visit',request.data['next']
+            # print 'Next Visit',request.data['next']
             next_visit = instance.participant.visit_set.create(
                 scheduled=utils.angular_datepicker(request.data['next']),
                 visit_type=request.data['type']
             )
             next_visit_serialized = VisitSerializer(next_visit,context={'request':request}).data
 
+        # send visit attended reminder
+        instance.send_visit_attended_message()
+
+        cont.EventLog.objects.create(user=request.user,event='visit.attended',data={'visit_id':instance.id})
         return Response({'visit':instance_serialized,'next':next_visit_serialized})
 
     @detail_route(methods=['put'])

@@ -148,7 +148,7 @@ class VisitQuerySet(SchedualQuerySet):
         return self.pending().is_active().filter(first_reminder_Q | second_reminder_Q)
 
     def to_send(self):
-        return self.exclude(visit_type__in=Visit.NO_SMS_STATUS)
+        return self.exclude(visit_type__in=Visit.NO_SMS_TYPES)
 
     def top(self):
         return self[:2]
@@ -164,7 +164,7 @@ class Visit(ScheduledEvent):
         ('both','Both'),
         ('delivery','Delivery'),
     )
-    NO_SMS_STATUS = ('study','delivery')
+    NO_SMS_TYPES = ('study','delivery')
 
     # Custom Visit Fields
     comment = models.TextField(blank=True,null=True)
@@ -184,6 +184,16 @@ class Visit(ScheduledEvent):
 
         return self.participant.send_automated_message(send=send,send_base='visit',
                     condition=condition,extra_kwargs=extra_kwargs)
+
+    def send_visit_attended_message(self,send=True):
+        if self.no_sms:
+            return
+
+        condition = self.get_condition('attend')
+
+        message = self.participant.send_automated_message(send=send,send_base='visit',
+            condition=condition,exact=True)
+
 
     def send_missed_visit_reminder(self,send=True):
         if self.no_sms:
@@ -214,7 +224,7 @@ class Visit(ScheduledEvent):
 
     @property
     def no_sms(self):
-        return self.status in Visit.NO_SMS_STATUS
+        return self.visit_type in Visit.NO_SMS_TYPES
 
 class ScheduledPhoneCallQuerySet(SchedualQuerySet):
 

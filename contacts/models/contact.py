@@ -264,7 +264,7 @@ class Contact(TimeStampedModel):
 
         # Special Case: Visit Messages
         if send_base == 'visit':
-            hiv = False
+            hiv = "N"
             send_offset = 0
 
         # Special Case: SAE opt in messaging
@@ -475,6 +475,7 @@ class Contact(TimeStampedModel):
                 - send_base - string send_base
                 - send_offset - int send_offset (or calculated from today)
                 - condition - defaults to self.condition
+                - exact - use participant's description only
         '''
         message = back.AutomatedMessage.objects.for_participant(self,**kwargs)
         if message is None:

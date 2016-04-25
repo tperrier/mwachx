@@ -4,9 +4,11 @@ import utils.models as utils
 
 class AutomatedMessageQuerySet(utils.BaseQuerySet):
 
-    def for_participant(self,participant,**kwargs):
+    def for_participant(self,participant,exact=False,**kwargs):
         ''' Return AutomatedMessage for participant and today '''
-        return self.from_description( participant.description(**kwargs) )
+        description = participant.description(**kwargs)
+        # print "Description:",description
+        return self.from_description(description,exact)
 
     def from_description(self,description,exact=False):
         ''' Return AutomatedMessage for description
@@ -58,7 +60,7 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
             except AutomatedMessage.DoesNotExist as e:
                 pass
 
-        if group != "one-way":
+        if group == "two-way":
             # Force group to one-way and try again
             try:
                 return message_offset.get(condition=condition,group="one-way",hiv_messaging=False)
