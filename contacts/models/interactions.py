@@ -110,6 +110,17 @@ class Message(TimeStampedModel):
             return self.auto
         return 'none'
 
+    @property
+    def auto_type(self):
+        if self.auto:
+            split = self.auto.split('.')
+            if split[0] in ('edd','dd','signup','loss','stop'):
+                return '{0[0]}.{0[4]}'.format(split)
+            elif split[0] == 'visit':
+                return '{0[0]}.{0[2]}'.format(split)
+            elif split[0] == 'bounce':
+                return '{0[0]}.{0[1]}'.format(split)
+
 class PhoneCallQuerySet(ForUserQuerySet):
 
     participant_field = 'contact'
