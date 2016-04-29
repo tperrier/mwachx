@@ -48,6 +48,7 @@ def validator_action(message):
     # print 'VALIDATION ACTION for {}'.format(contact)
     message.contact.is_validated = True
     message.contact.save()
+    return False # Don't continue validation check  s
 
 ###############
 study_group_validator = Validator('study_group')
