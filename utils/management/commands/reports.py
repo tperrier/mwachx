@@ -32,8 +32,11 @@ class Command(BaseCommand):
         send_time_parser.set_defaults(action='print_stats')
 
         xlsx_parser = subparsers.add_parser('xlsx',cmd=parser.cmd,help='create xlsx reports')
-        xlsx_parser.add_argument('report_type',choices=('visit','detail','all'),help='name of report to make')
-        xlsx_parser.add_argument('-d','--dir',default='ignore',help='directory to save report in')
+        xlsx_parser.add_argument('-t','--visit',action='store_true',default=False,help='create visit report')
+        xlsx_parser.add_argument('-d','--detail',action='store_true',default=False,help='create detail report')
+        xlsx_parser.add_argument('-a','--all',action='store_true',default=False,help='create all reports')
+        xlsx_parser.add_argument('-c','--custom',action='store_true',default=False,help='create custom report')
+        xlsx_parser.add_argument('--dir',default='ignore',help='directory to save report in')
         xlsx_parser.set_defaults(action='make_xlsx')
 
         custom_parser = subparsers.add_parser('custom',cmd=parser.cmd,help='run custom command')
@@ -150,7 +153,6 @@ class Command(BaseCommand):
 
     def message_stats(self):
 
-
         self.print_header('Message Statistics (system-participant-nurse)')
 
         # Get messages grouped by facility, system and outgoing
@@ -189,6 +191,7 @@ class Command(BaseCommand):
         # Print last 5 weeks of messaging
         self.stdout.write('')
         self.print_messages(self.options['weeks'])
+
     def print_messages(self,weeks=None):
 
         # Get all two-way messages
@@ -231,24 +234,102 @@ class Command(BaseCommand):
 
     def make_xlsx(self):
 
-        wb = xl.workbook.Workbook()
-        report_type = self.options['report_type']
-        report_type_list = ['visit','detail'] if report_type == 'all' else [report_type]
+        workbook_columns = {}
+        if self.options['visit'] or self.options['all']:
+            workbook_columns['visit'] =  visit_columns
+        if self.options['detail'] or self.options['all']:
+            workbook_columns['detail'] =  detail_columns
+        if self.options['custom']:
+            workbook_columns['custom'] =  detail_columns
 
-        today = datetime.date.today()
+        for name , columns in workbook_columns.items():
 
-        for report_type in report_type_list:
-            file_name = today.strftime('mWaChX_{}_%Y-%m-%d.xlsx').format(report_type)
+            wb = xl.workbook.Workbook()
+            today = datetime.date.today()
+            file_name = today.strftime('mWaChX_{}_%Y-%m-%d.xlsx').format(name)
             xlsx_path_out = os.path.join(self.options['dir'],file_name)
             self.stdout.write( "Making xlsx file {}".format(xlsx_path_out) )
 
-            ws_function = globals()['make_facility_{}_sheet'.format(report_type)]
-
-            ws_function(wb.active,'ahero')
-            ws_function(wb.create_sheet(),'bondo')
-            ws_function(wb.create_sheet(),'mathare')
+            make_worksheet(columns,wb.active,'ahero')
+            make_worksheet(columns,wb.create_sheet(),'bondo')
+            make_worksheet(columns,wb.create_sheet(),'mathare')
 
             wb.save(xlsx_path_out)
+
+########################################
+# XLSX Helper Functions
+########################################
+
+
+last_week = datetime.date.today() - datetime.timedelta(days=7)
+detail_columns = collections.OrderedDict([
+    ('Study ID','study_id'),
+    ('Enrolled',lambda c: c.created.date()),
+    ('Group','study_group'),
+    ('EDD','due_date'),
+    ('Δ EDD',lambda c:delta_days(c.due_date)),
+    ('Delivery','delivery_date'),
+    ('Δ Delivery',lambda c:delta_days(c.delivery_date,past=True)),
+    ('TCA',lambda c:c.tca_date()),
+    ('Validation Δ',lambda c: seconds_as_str(c.validation_delta()) ),
+    ('Client', lambda c: c.message_set.filter(is_outgoing=False).count() ),
+    ('Δ C', lambda c: c.message_set.filter(is_outgoing=False,created__gte=last_week).count() ),
+    ('System', lambda c: c.message_set.filter(is_system=True).count() ),
+    ('Δ S', lambda c: c.message_set.filter(is_system=True,created__gte=last_week).count() ),
+    ('Nurse', lambda c: c.message_set.filter(is_system=False,is_outgoing=True).count() ),
+    ('Δ N', lambda c: c.message_set.filter(is_system=False,is_outgoing=True,created__gte=last_week).count() ),
+])
+
+visit_columns = collections.OrderedDict([
+    ('Study ID','study_id'),
+    ('Group','study_group'),
+    ('Status','status'),
+    ('EDD','due_date'),
+    ('Δ EDD',lambda c:delta_days(c.due_date)),
+    ('Delivery','delivery_date'),
+    ('Δ Delivery',lambda c:delta_days(c.delivery_date,past=True)),
+    ('TCA',lambda c:c.tca_date()),
+    ('Δ TCA',lambda c:delta_days(c.tca_date())),
+    ('Pending Visits',lambda c:c.visit_set.pending().count()),
+])
+
+
+def make_worksheet(columns,ws,facility,column_widths=None):
+    contacts = cont.Contact.objects.filter(facility=facility)
+    ws.title = facility.capitalize()
+
+    # Write Header Row
+    ws.append(columns.keys())
+    ws.auto_filter.ref = 'A1:{}1'.format( xl.utils.get_column_letter(len(columns)) )
+
+    if isinstance(column_widths,dict):
+        for col_letter, width in column_widths.items():
+            ws.column_dimensions[col_letter].width = width
+
+    # Write Data Rows
+    for c in contacts:
+        ws.append( [make_column(c,attr) for attr in columns.values()] )
+
+def make_column(obj,column):
+    if isinstance(column,basestring):
+        value = getattr(obj,column)
+        if hasattr(value,'__call__'):
+            return value()
+        return value
+    # Else assume column is a function that takes the object
+    return column(obj)
+
+def seconds_as_str(seconds):
+    if seconds is None:
+        return None
+    if seconds <= 3600:
+        return '{:.2f}'.format(seconds/60)
+    return '{:.2f} (h)'.format(seconds/3600)
+
+def delta_days(date,past=False):
+    if date is not None:
+        days = (date - datetime.date.today()).days
+        return -days if past else days
 
 ########################################
 # Message Row Counting Classes
@@ -299,94 +380,3 @@ class CountRow(dict):
 
     def __str__(self):
         return '{0[control]}  {0[one-way]}  {0[two-way]}'.format(self)
-
-########################################
-# Utility Functions
-########################################
-
-def make_facility_detail_sheet(ws,facility):
-
-    contacts = cont.Contact.objects.filter(facility=facility)
-    ws.title = facility.capitalize()
-
-    last_week = datetime.date.today() - datetime.timedelta(days=7)
-    columns = collections.OrderedDict([
-        ('Study ID','study_id'),
-        ('Enrolled',lambda c: c.created.date()),
-        ('Group','study_group'),
-        ('EDD','due_date'),
-        ('Δ EDD',lambda c:delta_days(c.due_date)),
-        ('Delivery','delivery_date'),
-        ('Δ Delivery',lambda c:delta_days(c.delivery_date,past=True)),
-        ('TCA',lambda c:c.tca_date()),
-        ('Validation Δ',lambda c: seconds_as_str(c.validation_delta()) ),
-        ('Client', lambda c: c.message_set.filter(is_outgoing=False).count() ),
-        ('Δ C', lambda c: c.message_set.filter(is_outgoing=False,created__gte=last_week).count() ),
-        ('System', lambda c: c.message_set.filter(is_system=True).count() ),
-        ('Δ S', lambda c: c.message_set.filter(is_system=True,created__gte=last_week).count() ),
-        ('Nurse', lambda c: c.message_set.filter(is_system=False,is_outgoing=True).count() ),
-        ('Δ N', lambda c: c.message_set.filter(is_system=False,is_outgoing=True,created__gte=last_week).count() ),
-    ])
-
-    # Write Header Row
-    ws.append(columns.keys())
-    ws.auto_filter.ref = 'A1:{}1'.format( xl.utils.get_column_letter(len(columns)) )
-
-    column_widths = {'K':5,'M':5,'O':5}
-    for col_letter, width in column_widths.items():
-        ws.column_dimensions[col_letter].width = width
-
-    # Write Data Rows
-    for c in contacts:
-        ws.append( [make_column(c,attr) for attr in columns.values()] )
-
-def make_facility_visit_sheet(ws,facility):
-
-    contacts = cont.Contact.objects.filter(facility=facility)
-    ws.title = facility.capitalize()
-
-    columns = collections.OrderedDict([
-        ('Study ID','study_id'),
-        ('Group','study_group'),
-        ('Status','status'),
-        ('EDD','due_date'),
-        ('Δ EDD',lambda c:delta_days(c.due_date)),
-        ('Delivery','delivery_date'),
-        ('Δ Delivery',lambda c:delta_days(c.delivery_date,past=True)),
-        ('TCA',lambda c:c.tca_date()),
-        ('Δ TCA',lambda c:delta_days(c.tca_date())),
-        ('Pending Visits',lambda c:c.visit_set.pending().count()),
-    ])
-
-    # Write Header Row
-    ws.append(columns.keys())
-    ws.auto_filter.ref = 'A1:{}1'.format( xl.utils.get_column_letter(len(columns)) )
-
-    column_widths = {'B':20,'C':15, }
-    for col_letter, width in column_widths.items():
-        ws.column_dimensions[col_letter].width = width
-
-    # Write Data Rows
-    for c in contacts:
-        ws.append( [make_column(c,attr) for attr in columns.values()] )
-
-def make_column(obj,column):
-    if isinstance(column,basestring):
-        value = getattr(obj,column)
-        if hasattr(value,'__call__'):
-            return value()
-        return value
-    # Else assume column is a function that takes the object
-    return column(obj)
-
-def seconds_as_str(seconds):
-    if seconds is None:
-        return None
-    if seconds <= 3600:
-        return '{:.2f}'.format(seconds/60)
-    return '{:.2f} (h)'.format(seconds/3600)
-
-def delta_days(date,past=False):
-    if date is not None:
-        days = (date - datetime.date.today()).days
-        return -days if past else days

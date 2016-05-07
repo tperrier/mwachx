@@ -216,7 +216,7 @@ class Contact(TimeStampedModel):
 
     def tca_date(self):
         ''' Return To Come Again Date or None '''
-        pending = self.visit_set.filter(status__in=('pending','missed')).last()
+        pending = self.visit_set.filter(status='pending').last()
         if pending is None:
             return None
         return pending.scheduled
