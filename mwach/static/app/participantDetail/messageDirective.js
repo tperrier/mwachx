@@ -15,10 +15,7 @@
         templateUrl:           routePrefix + 'participantDetail/messageDirective.html',
         link: function($scope, element, attrs) {
           // console.log('Message',$scope.message);
-          if ($scope.message.translation_status == 'done') {
-            $scope.message.show_translation = true;
-          }
-
+          $scope.message.show_translation = $scope.message.translation_status == 'done';
           $scope.isDisabled = function(){
             return  ($scope.message.is_pending &&
               ($scope.message.is_related === null || $scope.message.topic === ''));

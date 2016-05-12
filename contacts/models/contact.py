@@ -490,11 +490,13 @@ class Contact(TimeStampedModel):
         self.save()
 
         if send:
+            translated_text = message.english if self.language != 'english' else ''
             return self.send_message(
                 text=text,
                 translation_status='auto',
                 auto=message.description(),
-                control=control
+                control=control,
+                transated_text=translated_text
             )
         else:
             return message

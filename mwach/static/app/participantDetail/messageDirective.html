@@ -28,21 +28,21 @@
       {{message.is_translated && message.translation_skipped ? '(Translation skipped)' : ''}}
 
       <!-- toggle buttons to a shared directive? -->
-      <span ng-if="message.translation_status != 'todo'">
-        {{message.show_translation == 'done' ? 'Displaying translated' : 'Displaying original&nbsp;&nbsp;&nbsp;'}}
-      </span>
-      <label
-        ng-if="message.translation_status == 'done'"
-        class="btn btn-xs mw-toggle-btn"
-        ng-class="{'active': message.show_translation}"
-        ng-click="message.show_translation = !message.show_translation"
-        tooltip="Toggle between original text and translation">
-          <i class="mw mw-language"></i>
-      </label>
+        <span>
+          Displaying {{message.show_translation ? 'Translated' : 'Original'}}
+        </span>
+        <label
+          ng-if="message.translated_text != ''"
+          class="btn btn-xs mw-toggle-btn"
+          ng-class="{'active': message.show_translation}"
+          ng-click="message.show_translation = !message.show_translation"
+          tooltip="Toggle between original text and translation">
+            <i class="mw mw-language"></i>
+        </label>
 
-      <button ng-if="message.translation_status != 'todo'" ng-click='retranslate()' class="btn btn-xs btn-default" tooltip="Mark for Retranslation">
-        <i class="mw mw-redo"></i>
-      </button>
+        <button ng-if="message.translation_status == 'done'" ng-click='retranslate()' class="btn btn-xs btn-default" tooltip="Mark for Retranslation">
+          <i class="mw mw-redo"></i>
+        </button>
 
     </div>
   </div>
