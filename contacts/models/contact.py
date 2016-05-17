@@ -182,6 +182,7 @@ class Contact(TimeStampedModel):
 
         super(Contact,self).save(force_insert,force_update,*args,**kwargs)
         self._old_status = self.status
+        self._old_hiv_messaging = self.hiv_messaging
 
     def __str__ (self):
         return self.nickname.title()
@@ -496,7 +497,7 @@ class Contact(TimeStampedModel):
                 translation_status='auto',
                 auto=message.description(),
                 control=control,
-                transated_text=translated_text
+                translated_text=translated_text
             )
         else:
             return message

@@ -57,9 +57,9 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	calls = PhoneCallSerializer(source='phonecall_set',many=True)
 	# messages = MessageSerializer(source='get_pending_messages',many=True)
 	visits = VisitSerializer(source='visit_set.pending',many=True)
-	note_count = serializers.CharField()
-	phonecall_count = serializers.CharField()
-	# note_count = serializers.SerializerMethodField()
+
+	phonecall_count = serializers.SerializerMethodField()
+	note_count = serializers.SerializerMethodField()
 
 	class Meta:
 		model = cont.Contact
@@ -69,6 +69,19 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
 	def get_hiv_disclosed(self,obj):
 		return utils.null_boolean_form_value(obj.hiv_disclosed)
+
+	def get_note_count(self,obj):
+		try:
+			return getattr(obj,'note_count')
+		except AttributeError as e:
+			return obj.note_set.count()
+
+	def get_phonecall_count(self,obj):
+		try:
+			return getattr(obj,'phonecall_count')
+		except AttributeError as e:
+			return obj.phonecall_set.count()
+
 
 #############################################
 #  ViewSet Definitions
