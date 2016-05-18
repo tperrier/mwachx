@@ -31,6 +31,26 @@ angular.module('mwachx')
   }]);
 
 // *************************************
+// Participant Filter Service
+// *************************************
+
+angular.module('mwachx')
+  .factory('mwParticipantFilterService',['$filter',function($filter){
+
+    var service = {
+      query:{
+        text:'',
+        study_group:{control:false,one_way:true,two_way:true},
+        status:{pregnant:true,post_partum:true,other:false},
+        sortName:'study_id',
+        sortDirection:false,
+      }
+    }
+
+    return service;
+  }]);
+
+// *************************************
 // Directive for making DIV's editable
 // *************************************
 angular.module('mwachx')

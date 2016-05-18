@@ -11,6 +11,9 @@ angular.module('mwachx')
       if (participant.visits) {
         Restangular.restangularizeCollection(participant,participant.visits,'visits');
       }
+      if (participant.last_msg_client == null) {
+        participant.last_msg_client = "";
+      }
       return participant;
     });
 

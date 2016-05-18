@@ -22,7 +22,8 @@ class ParticipantSimpleSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = cont.Contact
-		fields = ('nickname','study_id','study_group','anc_num','phone_number', 'status','study_base_date','href')
+		fields = ('nickname','study_id','study_group','anc_num','phone_number', 'status',
+			'study_base_date','last_msg_client','href')
 
 	def get_study_base_date(self,obj):
 		return obj.delivery_date or obj.due_date
