@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #Python Imports
 from hashlib import sha256
-import math, datetime
+import math, datetime, numbers
 
 #Django Imports
 from django.conf import settings
@@ -516,9 +516,25 @@ class Contact(TimeStampedModel):
                 return delta.total_seconds()
 
 
+class StatusChangeQuerySet(ForUserQuerySet):
+
+    participant_field = 'contact'
+
+    def get_hiv_changes(self,td_kwargs=None):
+
+        if td_kwargs is None:
+            td_kwargs = {'hours':1}
+        elif isinstance(td_kwargs,numbers.Number):
+            td_kwargs = {'hours':td_kwargs}
+
+        td = datetime.timedelta(**td_kwargs)
+        hiv_status = self.filter(type='hiv').prefetch_related('contact')
+
+        return [ s for s in hiv_status if s.created - s.contact.created > td ]
+
 class StatusChange(TimeStampedModel):
 
-    objects = BaseQuerySet.as_manager()
+    objects = StatusChangeQuerySet.as_manager()
 
     class Meta:
         app_label = 'contacts'

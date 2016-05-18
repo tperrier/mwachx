@@ -20,6 +20,7 @@ class Command(BaseCommand):
         c_all = cont.Contact.objects_no_link.all()
         m_all = cont.Message.objects.all()
         v_all = cont.Visit.objects.all()
+        s_all = cont.StatusChange.objects.all()
 
         # Set up a dictionary to serve as the environment for the shell, so
         # that tab completion works on objects that are imported at runtime.
