@@ -22,14 +22,16 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(help='make reports')
 
         # The cmd argument is required for django.core.management.base.CommandParser
-        send_time_parser = subparsers.add_parser('print',cmd=parser.cmd,help='report send time statistics')
-        send_time_parser.add_argument('-t','--times',action='store_true',default=False,help='print send times')
-        send_time_parser.add_argument('-r','--registered',action='store_true',default=False,help='print registered totals per facility')
-        send_time_parser.add_argument('-c','--validation-codes',action='store_true',default=False,help='print validation stats')
-        send_time_parser.add_argument('-m','--messages',action='store_true',default=False,help='print message statistics')
-        send_time_parser.add_argument('-a','--all',action='store_true',default=False,help='all report options')
-        send_time_parser.add_argument('--weeks',default=5,type=int,help='message history weeks (default 5)')
-        send_time_parser.set_defaults(action='print_stats')
+        print_parser = subparsers.add_parser('print',cmd=parser.cmd,help='report send time statistics')
+        print_parser.add_argument('-t','--times',action='store_true',default=False,help='print send times')
+        print_parser.add_argument('-f','--facilities',action='store_true',default=False,help='print registered totals per facility')
+        print_parser.add_argument('-c','--validation-codes',action='store_true',default=False,help='print validation stats')
+        print_parser.add_argument('-m','--messages',action='store_true',default=False,help='print message statistics')
+        print_parser.add_argument('-a','--all',action='store_true',default=False,help='all report options')
+        print_parser.add_argument('-o','--hours',action='store_true',default=False,help='print hist of message hours')
+        print_parser.add_argument('-i','--hiv',action='store_true',default=False,help='print hiv messaging status')
+        print_parser.add_argument('--weeks',default=5,type=int,help='message history weeks (default 5)')
+        print_parser.set_defaults(action='print_stats')
 
         xlsx_parser = subparsers.add_parser('xlsx',cmd=parser.cmd,help='create xlsx reports')
         xlsx_parser.add_argument('-t','--visit',action='store_true',default=False,help='create visit report')
@@ -55,15 +57,19 @@ class Command(BaseCommand):
     ########################################
 
     def print_stats(self):
-        self.stdout.write( "Printing Stats: registered={0[registered]} times={0[times]} validation-codes={0[validation_codes]}".format(self.options) )
-        if self.options['registered'] or self.options['all']:
-            self.registered_counts()
+
+        if self.options['facilities'] or self.options['all']:
+            self.participants_by_facility()
         if self.options['times'] or self.options['all']:
             self.send_times()
         if self.options['validation_codes'] or self.options['all']:
             self.validation_stats()
         if self.options['messages'] or self.options['all']:
             self.message_stats()
+        if self.options['hiv'] or self.options['all']:
+            self.hiv_messaging()
+        if self.options['hours']:
+            self.message_hours()
 
     def send_times(self):
 
@@ -93,32 +99,30 @@ class Command(BaseCommand):
             self.stdout.write( "{} {} {}".format(day_lookup[i],t,sum(t)) )
         self.stdout.write( "Tot {} {}".format(totals,sum(totals)) )
 
-    def registered_counts(self):
+    def participants_by_facility(self):
 
         self.print_header("Participant By Facility")
 
-        c_all = cont.Contact.objects.all().order_by('study_group')
-        group_counts = c_all.values('facility','study_group') \
+        group_counts = cont.Contact.objects.values('facility','study_group') \
             .annotate(count=models.Count('study_id',distinct=True))
 
-        def CountRow():
-            return {'control':0,'one-way':0,'two-way':0}
-        counts = collections.defaultdict(CountRow)
         # Piviot Group Counts
+        counts = collections.defaultdict(GroupRowCount)
+
         for g in group_counts:
             counts[g['facility']][g['study_group']] = g['count']
 
+        # Print Group Counts
         self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format("","Control","One-Way","Two-Way","Total") )
-        total_row = CountRow()
+        total_row = GroupRowCount()
         for facility, row in counts.items():
-            self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format(facility.capitalize(), row['control'], row['one-way'], row['two-way'],
-                sum(row.values()) )
+            self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format(
+                facility.capitalize(), row['control'], row['one-way'], row['two-way'], row.total())
             )
-            for group , count in row.items():
-                total_row[group] += count
+            total_row += row
 
-        self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format("Total", total_row['control'], total_row['one-way'], total_row['two-way'],
-            sum(total_row.values()) )
+        self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format(
+            "Total", total_row['control'], total_row['one-way'], total_row['two-way'], total_row.total() )
         )
 
     def validation_stats(self):
@@ -162,7 +166,7 @@ class Command(BaseCommand):
         ).annotate(count=models.Count('contact__facility'))
 
         # Piviot Group Counts based on facility
-        counts = collections.defaultdict(CountRow)
+        counts = collections.defaultdict(MessageRow)
         for g in group_counts:
             facility = g['contact__facility']
             if facility is None:
@@ -176,17 +180,17 @@ class Command(BaseCommand):
 
         # Print Message Totals Table
         self.stdout.write( "{:^10}{:^18}{:^18}{:^18}{:^18}".format("","Control","One-Way","Two-Way","Total") )
-        total_row = CountRow()
+        total_row = MessageRow()
         for facility , row in counts.items():
             total_row += row
             row['two-way'].replies = m_all.filter(parent__isnull=False,contact__facility=facility).count()
-            self.stdout.write( '{:<10}{}  {} ({})'.format(facility,row,row.total(),sum(row.total()) ) )
+            self.stdout.write( '{:<10}{}  {} ({})'.format(facility.capitalize(),row,row.total(),row.total().total() ) )
 
         none_count = m_all.filter(contact__isnull=True).count()
         total_count = total_row.total()
         total_row['two-way'].replies = m_all.filter(parent__isnull=False).count()
-        self.stdout.write( '{:<10}{}  {} ({})'.format('total',total_row,total_count,sum(total_count) ) )
-        self.stdout.write( '{:<10}{:04d} ({})'.format('none',none_count,none_count+sum(total_count)) )
+        self.stdout.write( '{:<10}{}  {} ({})'.format('Total',total_row,total_count,sum(total_count) ) )
+        self.stdout.write( '{:<10}{:04d} ({})'.format('None',none_count,none_count+sum(total_count)) )
 
         # Print last 5 weeks of messaging
         self.stdout.write('')
@@ -207,11 +211,11 @@ class Command(BaseCommand):
         if weeks is not None and weeks_start_date > study_start_date:
             start_date = weeks_start_date - datetime.timedelta(days=weeks*7)
 
-        total_row = CountRowItem()
+        total_row = MessageRowItem()
         while start_date < now:
             end_date = start_date + datetime.timedelta(days=7)
             m_range = m_all.filter(created__range=(start_date,end_date))
-            row = CountRowItem()
+            row = MessageRowItem()
             row['system'] = m_range.filter(is_system=True).count()
             row['participant'] = m_range.filter(is_system=False,is_outgoing=False).count()
             row['nurse'] = m_range.filter(is_system=False,is_outgoing=True).count()
@@ -222,6 +226,51 @@ class Command(BaseCommand):
             start_date = end_date
         self.stdout.write( "Total       {} ({})".format(total_row,sum(total_row)) )
 
+    def message_hours(self):
+
+        self.print_header('Histogram of message send hour (two-way only)')
+
+        messages , hour_counts = {} , {}
+        messages['p'] = cont.Message.objects.filter(is_outgoing=False,contact__study_group='two-way')
+        messages['s'] = cont.Message.objects.filter(is_outgoing=True,is_system=True,contact__study_group='two-way')
+        messages['n'] = cont.Message.objects.filter(is_outgoing=True,is_system=False,contact__study_group='two-way')
+
+        for k in messages.keys():
+            hours = [0 for _ in range(24)]
+            for m in messages[k]:
+                hours[m.created.hour] += 1
+            hour_counts[k] = hours
+
+        print "     C    S    N"
+        for h in range(24):
+            print "{0:<5}{1:<5}{2:<5}{3:<5}".format((h+3)%24,hour_counts['p'][h],hour_counts['s'][h],hour_counts['n'][h])
+        print "     {0:<5}{1:<5}{2:<5}".format(*map(sum,[hour_counts[k] for k in ('p','s','n')]))
+
+    def hiv_messaging(self):
+
+        self.print_header('HIV Messaging Preference (none-initiated-system)')
+
+        hiv_messaging_groups = cont.Contact.objects.order_by().values('facility','study_group','hiv_messaging') \
+            .annotate(count=models.Count('study_id',distinct=True))
+
+        # Piviot Group Counts
+        group_counts = collections.defaultdict(HivRowCount)
+
+        for g in hiv_messaging_groups:
+            group_counts[g['facility']][g['study_group']][g['hiv_messaging']] = g['count']
+
+        # Print Group Counts
+        self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format("","Control","One-Way","Two-Way","Total") )
+        total_row = HivRowCount()
+        for facility, row in group_counts.items():
+            self.stdout.write( "{0:^12}{1[control]:^12}{1[one-way]:^12}{1[two-way]:^12}{2:^12}".format(
+                facility.capitalize(), row, row.total()
+            ) )
+            total_row += row
+
+        self.stdout.write( "{0:^12}{1[control]:^12}{1[one-way]:^12}{1[two-way]:^12} {2:^12}".format(
+            "Total", total_row, total_row.total()
+        ) )
 
     def print_header(self,header):
         if self.printed:
@@ -335,7 +384,41 @@ def delta_days(date,past=False):
 # Message Row Counting Classes
 ########################################
 
-class CountRowItem(dict):
+class CountRowBase(dict):
+
+    columns = " DEFINE COLUMN LIST IN SUBCLASS "
+    child_class = int
+
+    def __init__(self):
+        for c in self.columns:
+            self[c] = self.child_class()
+
+    def __add__(self,other):
+        new = self.__class__()
+        for c in self.columns:
+            new[c] = self[c] + other[c]
+        return new
+
+    def __iadd__(self,other):
+        for c in self.columns:
+            self[c] += other[c]
+        return self
+
+    def __iter__(self):
+        """ Iterate over values instead of keys """
+        for v in self.values():
+            yield v
+
+    def total(self):
+        new = self.child_class()
+        for c in self.columns:
+            new += self[c]
+        return new
+
+    def __str__(self):
+        return '  '.join( str(self[c]) for c in self.columns )
+
+class MessageRowItem(CountRowBase):
 
     columns = ['system','participant','nurse']
 
@@ -344,39 +427,23 @@ class CountRowItem(dict):
         for c in self.columns:
             self[c] = 0
 
-    def __iter__(self):
-        for v in self.values():
-            yield v
-
-    def __add__(self,other):
-        new = CountRowItem()
-        for c in self.columns:
-            new[c] = self[c] + other[c]
-        return new
-
     def __str__(self):
         reply_str = '' if not self.replies else '/{:04d}'.format(self.replies)
         return '{0[system]:04d}--{0[participant]:04d}{1}--{0[nurse]:04d}'.format(self,reply_str)
 
-class CountRow(dict):
+class MessageRow(CountRowBase):
+    columns = ['control','one-way','two-way']
+    child_class = MessageRowItem
 
+class GroupRowCount(CountRowBase):
     columns = ['control','one-way','two-way']
 
-    def __init__(self):
-        for c in self.columns:
-            self[c] = CountRowItem()
-
-    def total(self):
-        new = CountRowItem()
-        for c in self.columns:
-            new += self[c]
-        return new
-
-    def __add__(self,other):
-        new = CountRow()
-        for c in self.columns:
-            new[c] = self[c] + other[c]
-        return new
+class HivRowItem(CountRowBase):
+    columns = ['none','initiated','system']
 
     def __str__(self):
-        return '{0[control]}  {0[one-way]}  {0[two-way]}'.format(self)
+        return '--'.join( '{:02d}'.format(self[c]) for c in self.columns )
+
+class HivRowCount(CountRowBase):
+    columns = ['control','one-way','two-way']
+    child_class = HivRowItem
