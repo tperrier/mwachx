@@ -49,15 +49,13 @@
 
       $scope.participantFilter = function(participant) {
 
-          var filter_buttons = ['study_group','status'].every( function(query) {
-            return compare_participant(participant,query);
-          })
-          var filter_text = compare_participant(participant,'text');
-
           if ($scope.query.text == '') {
+            var filter_buttons = ['study_group','status'].every( function(query) {
+              return compare_participant(participant,query);
+            })
             return filter_buttons;
           } else {
-            return filter_text || (filter_buttons && filter_text);
+            return compare_participant(participant,'text');
           }
       }
 
@@ -68,9 +66,17 @@
         $scope.query.sortName = sortName;
       }
 
+      $scope.getSortClass = function() {
+        return ($scope.query.sortDirection)?'mw-angle-down':'mw-angle-up';
+      }
+
+      // Get participants from API
       $scope.participants = mwachxAPI.participants.getList().$object;
-      if ($stateParams.message) $scope.alerts = [$stateParams.message];
+
       $scope.closeAlert = function(i){$scope.alerts.splice(i,1)}
+      if ($stateParams.message) {
+        $scope.alerts = [$stateParams.message];
+      }
     }]);
 
 })();
