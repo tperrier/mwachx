@@ -30,6 +30,7 @@ class Command(BaseCommand):
         print_parser.add_argument('-a','--all',action='store_true',default=False,help='all report options')
         print_parser.add_argument('-o','--hours',action='store_true',default=False,help='print hist of message hours')
         print_parser.add_argument('-i','--hiv',action='store_true',default=False,help='print hiv messaging status')
+        print_parser.add_argument('-l','--language',action='store_true',default=False,help='print language histogram')
         print_parser.add_argument('--weeks',default=5,type=int,help='message history weeks (default 5)')
         print_parser.set_defaults(action='print_stats')
 
@@ -70,6 +71,8 @@ class Command(BaseCommand):
             self.hiv_messaging()
         if self.options['hours']:
             self.message_hours()
+        if self.options['language']:
+            self.print_languages()
 
     def send_times(self):
 
@@ -272,6 +275,56 @@ class Command(BaseCommand):
             "Total", total_row, total_row.total()
         ) )
 
+    def print_languages(self):
+
+        self.print_header('Language Statistics (english,swahili,luo)')
+
+        language_groups = cont.Contact.objects.order_by().values('facility','study_group','language') \
+            .annotate(count=models.Count('study_id',distinct=True))
+
+
+        # Piviot Group Counts
+        language_counts = collections.defaultdict(LanguageRow)
+        for g in language_groups:
+            language_counts[g['facility']][g['study_group']][g['language']] = g['count']
+
+        # Print Group Counts
+        self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format("","Control","One-Way","Two-Way","Total") )
+        total_row = LanguageRow()
+        for facility, row in language_counts.items():
+            self.stdout.write( "{0:^12}{1[control]:^12}{1[one-way]:^12}{1[two-way]:^12}{2:^12}".format(
+                facility.capitalize(), row, row.total()
+            ) )
+            total_row += row
+
+        self.stdout.write( "{0:^12}{1[control]:^12}{1[one-way]:^12}{1[two-way]:^12} {2:^12}".format(
+            "Total", total_row, total_row.total()
+        ) )
+
+        print ''
+        self.print_header('Language of Messages (participant,nurse)')
+
+        message_groups = cont.Message.objects.order_by().filter(is_system=False,contact__isnull=False)\
+            .prefetch_related('contact').values('languages','contact__language','is_outgoing')\
+            .exclude(languages='').annotate(count=models.Count('id',distinct=True))
+
+        # Piviot Group Counts
+        language_counts = collections.defaultdict(LanguageMessageRow)
+        for g in message_groups:
+            language_counts[g['languages']][g['contact__language']][g['is_outgoing']] = g['count']
+
+        # Print Group Counts
+        self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format("","English","Swahili","Luo","Total") )
+        total_row = LanguageMessageRow()
+        for language, row in language_counts.items():
+            self.stdout.write( "{0:^12}{1[english]:^12}{1[swahili]:^12}{1[luo]:^12}{2:^12}".format(
+                ','.join(s[0] for s in language.split(';')), row, row.total()
+            ) )
+            total_row += row
+
+        self.stdout.write( "{0:^12}{1[english]:^12}{1[swahili]:^12}{1[luo]:^12}{2:^12}".format(
+            "Total", total_row, total_row.total()
+        ) )
     def print_header(self,header):
         if self.printed:
             self.stdout.write("")
@@ -447,3 +500,23 @@ class HivRowItem(CountRowBase):
 class HivRowCount(CountRowBase):
     columns = ['control','one-way','two-way']
     child_class = HivRowItem
+
+class LanguageRowItem(CountRowBase):
+    columns = ['english','swahili','luo']
+
+    def __str__(self):
+        return '--'.join( '{:02d}'.format(self[c]) for c in self.columns )
+
+class LanguageRow(CountRowBase):
+    columns = ['control','one-way','two-way']
+    child_class = LanguageRowItem
+
+class LanguageMessageRowItem(CountRowBase):
+    columns = [True,False]
+
+    def __str__(self):
+        return '--'.join( '{:02d}'.format(self[c]) for c in self.columns )
+
+class LanguageMessageRow(CountRowBase):
+    columns = ['english','swahili','luo']
+    child_class = LanguageMessageRowItem
