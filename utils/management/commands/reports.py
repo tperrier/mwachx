@@ -397,6 +397,7 @@ detail_columns = collections.OrderedDict([
     ('Study ID','study_id'),
     ('Enrolled',lambda c: c.created.date()),
     ('Group','study_group'),
+    ('HIV','hiv_messaging'),
     ('EDD','due_date'),
     ('Δ EDD',lambda c:delta_days(c.due_date)),
     ('Delivery','delivery_date'),
