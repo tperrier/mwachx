@@ -3,7 +3,7 @@
 import datetime, openpyxl as xl, os
 from argparse import Namespace
 import code
-import operator, collections, re, argparse
+import operator, collections, re, argparse, csv
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import models
@@ -32,6 +32,7 @@ class Command(BaseCommand):
         print_parser.add_argument('-i','--hiv',action='store_true',default=False,help='print hiv messaging status')
         print_parser.add_argument('-l','--language',action='store_true',default=False,help='print language histogram')
         print_parser.add_argument('-s','--status',action='store_true',default=False,help='print status histogram')
+        print_parser.add_argument('-e','--enrollment',action='store_true',default=False,help='print enrollment by site')
         print_parser.add_argument('--weeks',default=5,type=int,help='message history weeks (default 5)')
         print_parser.set_defaults(action='print_stats')
 
@@ -42,6 +43,10 @@ class Command(BaseCommand):
         xlsx_parser.add_argument('-c','--custom',action='store_true',default=False,help='create custom report')
         xlsx_parser.add_argument('--dir',default='ignore',help='directory to save report in')
         xlsx_parser.set_defaults(action='make_xlsx')
+
+        csv_parser = subparsers.add_parser('csv',cmd=parser.cmd,help='create csv reports')
+        csv_parser.add_argument('--dir',default='ignore',help='directory to save csv in')
+        csv_parser.set_defaults(action='make_csv')
 
         custom_parser = subparsers.add_parser('custom',cmd=parser.cmd,help='run custom command')
         custom_parser.set_defaults(action='custom')
@@ -76,6 +81,8 @@ class Command(BaseCommand):
             self.message_hours()
         if self.options['language']:
             self.print_languages()
+        if self.options['enrollment']:
+            self.print_enrollment()
 
     def send_times(self):
 
@@ -354,6 +361,30 @@ class Command(BaseCommand):
             "Total", total_row, total_row.total()
         ) )
 
+    def print_enrollment(self):
+
+        self.print_header('Participant Enrollment By Week')
+
+        c_all = cont.Contact.objects.all()
+
+        enrollment_counts = collections.OrderedDict()
+
+        for c in c_all:
+            key = c.created.strftime('%Y-%U')
+            try:
+                enrollment_counts[key][c.facility] += 1
+            except KeyError as e:
+                enrollment_counts[key] = FacilityRow()
+                enrollment_counts[key][c.facility] += 1
+
+
+        self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format("Week","Ahero","Bondo","Mathare","Total") )
+        total_row = FacilityRow()
+        for week , enrollment in enrollment_counts.items():
+            print week, enrollment, enrollment.total()
+            total_row += enrollment
+        print 'Total  ' , total_row , total_row.total()
+
     def print_header(self,header):
         if self.printed:
             self.stdout.write("")
@@ -387,6 +418,28 @@ class Command(BaseCommand):
 
             wb.save(xlsx_path_out)
 
+    def make_csv(self):
+
+        hiv_disclosed_values = {True:1,False:0,None:99}
+        columns = collections.OrderedDict([
+            ('study_id','study_id'),
+            ('hiv_messaging','hiv_messaging'),
+            ('hiv_disclosed', null_boolean_factory('hiv_disclosed')),
+            ('phone_shared', null_boolean_factory('phone_shared')),
+        ])
+
+        contacts = cont.Contact.objects.all().order_by('study_id')
+        csv_file_path = os.path.join(self.options['dir'],'mx_data_dump.csv')
+        with open( csv_file_path , 'wb') as csvfile:
+            csv_writer = csv.writer(csvfile)
+
+            # Header Row
+            csv_writer.writerow( columns.keys() )
+
+            for c in contacts:
+                csv_writer.writerow( [ make_column(c,value) for value in columns.values()] )
+
+
 ########################################
 # XLSX Helper Functions
 ########################################
@@ -397,7 +450,7 @@ detail_columns = collections.OrderedDict([
     ('Study ID','study_id'),
     ('Enrolled',lambda c: c.created.date()),
     ('Group','study_group'),
-    ('HIV','hiv_messaging'),
+    ('HIV','hiv_messaging') ,
     ('EDD','due_date'),
     ('Δ EDD',lambda c:delta_days(c.due_date)),
     ('Delivery','delivery_date'),
@@ -441,6 +494,18 @@ def make_worksheet(columns,ws,facility,column_widths=None):
     # Write Data Rows
     for c in contacts:
         ws.append( [make_column(c,attr) for attr in columns.values()] )
+
+def null_boolean_factory(attribute):
+
+    def null_boolean(obj):
+        value = getattr(obj,attribute)
+        if value is None:
+            return 99
+        if value is True:
+            return 1
+        return 0
+
+    return null_boolean
 
 def make_column(obj,column):
     if isinstance(column,basestring):
@@ -540,6 +605,12 @@ class LanguageRowItem(CountRowBase):
 class LanguageRow(CountRowBase):
     columns = ['control','one-way','two-way']
     child_class = LanguageRowItem
+
+class FacilityRow(CountRowBase):
+    columns = ['ahero','bondo','mathare']
+
+    def __str__(self):
+        return '   ' + ''.join( '{:^12}'.format(self[c]) for c in self.columns )
 
 class LanguageMessageRowItem(CountRowBase):
     columns = [True,False]
