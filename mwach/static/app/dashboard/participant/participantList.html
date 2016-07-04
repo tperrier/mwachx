@@ -2,21 +2,21 @@
   <strong>{{alert}}</strong>
 </alert>
 
-<div class="row vertical-align">
+<div class="row vertical-align participant-buttons">
   <div class="col-md-3 col-sm-8"> <h2>
     <input type="text" ng-model="query.text" placeholder="Search by any field" aria-label="Filter" style="width:100%"/>
   </h2> </div>
 
   <div class="col-md-3 btn-group" role="group" aria-label="Group Filter">
-    <button onclick="this.blur()" type="button" class="btn btn-info" ng-disabled="query.text!=''" ng-model="query.study_group.control" btn-checkbox>Control</button>
-    <button onclick="this.blur()" type="button" class="btn btn-info" ng-disabled="query.text!=''" ng-model="query.study_group.one_way" btn-checkbox>One Way</button>
-    <button onclick="this.blur()" type="button" class="btn btn-info" ng-disabled="query.text!=''" ng-model="query.study_group.two_way" btn-checkbox>Two Way</button>
+    <button onclick="this.blur()" type="button" class="btn btn-success" ng-disabled="query.text!=''" ng-model="query.study_group.control" btn-checkbox>Control</button>
+    <button onclick="this.blur()" type="button" class="btn btn-success" ng-disabled="query.text!=''" ng-model="query.study_group.one_way" btn-checkbox>One Way</button>
+    <button onclick="this.blur()" type="button" class="btn btn-success" ng-disabled="query.text!=''" ng-model="query.study_group.two_way" btn-checkbox>Two Way</button>
   </div>
 
   <div class="col-md-3 btn-group" role="group" aria-label="Status Filter">
-    <button onclick="this.blur()" type="button" class="btn btn-info" ng-disabled="query.text!=''" ng-model="query.status.pregnant" btn-checkbox>Pregnant</button>
-    <button onclick="this.blur()" type="button" class="btn btn-info" ng-disabled="query.text!=''" ng-model="query.status.post_partum" btn-checkbox>Post-Partum</button>
-    <button onclick="this.blur()" type="button" class="btn btn-info" ng-disabled="query.text!=''" ng-model="query.status.other" btn-checkbox>Other</button>
+    <button onclick="this.blur()" type="button" class="btn btn-success" ng-disabled="query.text!=''" ng-model="query.status.pregnant" btn-checkbox>Pregnant</button>
+    <button onclick="this.blur()" type="button" class="btn btn-success" ng-disabled="query.text!=''" ng-model="query.status.post_partum" btn-checkbox>Post-Partum</button>
+    <button onclick="this.blur()" type="button" class="btn btn-success" ng-disabled="query.text!=''" ng-model="query.status.other" btn-checkbox>Other</button>
   </div>
 
   <div class="col-md-1" style="text-align:center">

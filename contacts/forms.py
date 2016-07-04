@@ -33,26 +33,9 @@ class ContactAdd(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ContactAdd, self).__init__(*args, **kwargs)
 
-        #Moved this here so that current date can be calculated for each new form
-
-        birth_BO = [{
-                'from': (today() - datetime.timedelta(days=14*365)).strftime("%Y-%m-%d"),
-                'to': (datetime.datetime(2100,1,1)).strftime("%Y-%m-%d"),
-            }]
-        due_date_BO = [{
-                'from': (datetime.datetime(1970,1,1)).strftime("%Y-%m-%d"),
-                'to': (today() + datetime.timedelta(weeks=4)).strftime("%Y-%m-%d"), # between 4 ....
-            }, {
-                'from': (today() + datetime.timedelta(weeks=36)).strftime("%Y-%m-%d"), # ...and 36 weeks in the future
-                'to': (datetime.datetime(2100,1,1)).strftime("%Y-%m-%d"),
-            }]
-        art_BO = [{
-            'from': today().strftime("%Y-%m-%d"),
-            'to': (datetime.datetime(2100,1,1)).strftime("%Y-%m-%d"),
-        }]
-        self.fields['due_date'].widget = util.AngularPopupDatePicker({'required':True},min=28)
+        self.fields['due_date'].widget = util.AngularPopupDatePicker({'required':True},min=3)
         self.fields['birthdate'].widget = util.AngularPopupDatePicker(
-            {'required':True,'datepicker-position-right':True},max=-5110 # 14 years or older 
+            {'required':True,'datepicker-position-right':True},max=-5110 # 14 years or older
         )
         self.fields['art_initiation'].widget = util.AngularPopupDatePicker(max=0)
         self.fields['clinic_visit'].widget = util.AngularPopupDatePicker({'required':True}, min=7)

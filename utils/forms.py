@@ -8,20 +8,6 @@ import utils
 class Html5DateInput(forms.DateInput):
 		input_type = 'date'
 
-
-class FuelDatePicker(forms.Widget):
-	def __init__(self, myid, attrs=None, allow_past=False, blackout=None):
-		self.myid = myid
-		self.allow_past = str(allow_past).lower()
-		self.blackout = json.dumps(blackout)
-		if attrs is None:
-			attrs = {'readonly': ''}
-		super(FuelDatePicker, self).__init__()
-
-	def render(self, name, value, attrs=None):
-		return formate_html('<div class="datepicker" id="{}" data-allow-past-dates="{}" data-blackout=\'{}\'></div>',
-			self.myid,self.allow_past,self.blackout)
-
 class AngularPopupDatePicker(forms.DateInput):
 
 	def __init__(self,attrs=None,max=None,min=None):

@@ -63,6 +63,7 @@ class Contact(TimeStampedModel):
         ('adolescent','2 - Adolescent'),
         ('first','3 - First Time Mother'),
         ('normal','4 -  Normal'),
+        ('multiple','5 - Twins'),
     )
 
     FAMILY_PLANNING_CHOICES = (
