@@ -217,9 +217,13 @@ class Contact(TimeStampedModel):
 
     def tca_date(self):
         ''' Return To Come Again Date or None '''
-        pending = self.visit_set.filter(status='pending').last()
+        pending = self.visit_set.filter(scheduled__gte=datetime.date.today(),status='pending').last()
         if pending is None:
-            return None
+            # Check for a pending past date
+            pending = self.visit_set.filter(status='pending').last()
+            if pending is None:
+                return None
+        # Return the scheduled pending date
         return pending.scheduled
 
     def is_pregnant(self):

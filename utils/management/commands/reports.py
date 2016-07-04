@@ -314,7 +314,7 @@ class Command(BaseCommand):
         print ''
         self.print_header('Language of Messages (participant,nurse)')
 
-        message_groups = cont.Message.objects.order_by().filter(is_system=False,contact__isnull=False)\
+        message_groups = cont.Message.objects.order_by().filter(contact__study_group='two-way',is_system=False)\
             .prefetch_related('contact').values('languages','contact__language','is_outgoing')\
             .exclude(languages='').annotate(count=models.Count('id',distinct=True))
 
@@ -613,7 +613,8 @@ class FacilityRow(CountRowBase):
         return '   ' + ''.join( '{:^12}'.format(self[c]) for c in self.columns )
 
 class LanguageMessageRowItem(CountRowBase):
-    columns = [True,False]
+    # Is Ougtgoing
+    columns = [False,True]
 
     def __str__(self):
         return '--'.join( '{:02d}'.format(self[c]) for c in self.columns )

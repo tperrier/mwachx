@@ -113,7 +113,7 @@ class ScheduledEvent(TimeStampedModel):
         return str(self.scheduled)
 
     def __repr__(self):
-        return "{} {}".format(self.scheduled,self.participant)
+        return "{} {} {}".format(self.participant,self.scheduled,self.status)
 
 class VisitQuerySet(SchedualQuerySet):
 
