@@ -256,10 +256,11 @@ class Command(BaseCommand):
         cleaned = sms.clean_msg(cell.value)
         cell.value = sms.replace_vars(cleaned)
 
-
     def import_messages(self):
         sms_bank_file = self.paths.final if self.options['file'] is None else self.options['file']
         sms_bank = xl.load_workbook(sms_bank_file)
+        messages = sms.parse_messages(sms_bank.active,sms.FinalRow)
+
         clear = self.options.get('clear')
         do_all = not self.options.get('done') or clear
 
@@ -271,8 +272,7 @@ class Command(BaseCommand):
         total , add , todo, create = 0 , 0 , 0 , 0
         counts = collections.defaultdict(int)
         diff , existing = [] , []
-        for row in sms_bank.active.rows[1:]:
-            msg = sms.FinalRow(row)
+        for msg in messages:
             counts['total'] += 1
 
             if do_all or msg.status == 'done':

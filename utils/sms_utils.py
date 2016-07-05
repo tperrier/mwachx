@@ -12,7 +12,7 @@ class MessageRowBase(object):
         self.comment = kwargs.get('comment','')
         if self.comment is None:
             self.comment = ''
-            
+
         self.new = kwargs.get('new','')
         self.row = row[0].row
 
