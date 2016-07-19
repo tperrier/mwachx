@@ -121,6 +121,14 @@ class Message(TimeStampedModel):
             elif split[0] == 'bounce':
                 return '{0[0]}.{0[1]}'.format(split)
 
+    @property
+    def previous_outgoing(self):
+        try:
+            return self._previous_outgoing
+        except AttributeError as e:
+            self._previous_outgoing = self.contact.message_set.filter(created__lt=self.created,is_outgoing=True).first()
+            return self._previous_outgoing
+
 class PhoneCallQuerySet(ForUserQuerySet):
 
     participant_field = 'contact'
