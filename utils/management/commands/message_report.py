@@ -21,12 +21,12 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(help='make reports')
 
         # The cmd argument is required for django.core.management.base.CommandParser
-        one_way_parser = subparsers.add_parser('one-way',cmd=parser.cmd,help='report send time statistics')
-        one_way_parser.add_argument('-f','--file',default='one_way_messages.xlsx',help='file name (one_way_messages.xlsx)')
-        one_way_parser.add_argument('-s','--start',default=None,help='date to start from (one week ago)')
-        one_way_parser.add_argument('-e','--end',default=None,help='date to end from (now)')
-        one_way_parser.add_argument('-a','--all',default=False,action='store_true',help='ignore time filters all messages')
-        one_way_parser.set_defaults(action='make_one_way')
+        message_parser = subparsers.add_parser('msgs',cmd=parser.cmd,help='report send time statistics by study group')
+        message_parser.add_argument('-g','--study-group',default='one-way',choices=('one-way','control','both'),help='study group to select')
+        message_parser.add_argument('-s','--start',default=None,help='date to start from (one week ago)')
+        message_parser.add_argument('-e','--end',default=None,help='date to end from (now)')
+        message_parser.add_argument('-a','--all',default=False,action='store_true',help='ignore time filters all messages')
+        message_parser.set_defaults(action='make_messages')
 
         weekly_parser = subparsers.add_parser('weekly',cmd=parser.cmd,help='report weekly message stats')
         weekly_parser.add_argument('-f','--file',default='weekly_messages.xlsx',help='file name (weekly_messages.xlsx)')
@@ -47,10 +47,10 @@ class Command(BaseCommand):
     # Commands
     ########################################
 
-    def make_one_way(self):
+    def make_message_ws(self,ws,study_group='one-way'):
 
         messages = cont.Message.objects.filter(
-            contact__study_group='one-way',
+            contact__study_group=study_group,
             is_outgoing=False
         ).exclude(
             topic='validation'
@@ -68,16 +68,30 @@ class Command(BaseCommand):
             start , end = to_datetime(start) , to_datetime(end)
             messages = messages.filter(created__range=(start,end))
 
-        self.stdout.write( 'Creating One Way Report: {}'.format(self.file_name) )
+        self.stdout.write( 'Creating Report: {}'.format(study_group) )
         self.stdout.write( 'Found {} messages from {} to {}'.format(messages.count(),start,end))
 
-        wb = xl.Workbook()
-        ws = wb.active
-        ws.title = 'one-way'
         ws.append( ("Study ID","Message","Date","Previous","Date","Type","Delta") )
         for msg in messages:
             ws.append( make_one_way_row(msg) )
-        wb.save(self.file_name)
+
+    def make_messages(self):
+
+        wb = xl.Workbook()
+        ws = wb.active
+        if self.options['study_group'] == 'one-way':
+            ws.title = 'one-way'
+            self.make_message_ws(ws,'one-way')
+        elif self.options['study_group'] == 'control':
+            ws.title = 'control'
+            self.make_message_ws(ws,'control')
+        elif self.options['study_group'] == 'both':
+            ws.title = 'one-way'
+            make_message_ws(ws,'one-way')
+            ws = wb.create_sheet('control')
+            self.make_message_ws(ws,'control')
+        wb.save('ignore/{}_messages.xlsx'.format(self.options['study_group']))
+
 
     def make_weekly(self):
 
