@@ -33,6 +33,7 @@ class Command(BaseCommand):
         print_parser.add_argument('-l','--language',action='store_true',default=False,help='print language histogram')
         print_parser.add_argument('-s','--status',action='store_true',default=False,help='print status histogram')
         print_parser.add_argument('-e','--enrollment',action='store_true',default=False,help='print enrollment by site')
+        print_parser.add_argument('-d','--delivery',action='store_true',default=False,help='print delivery statistics')
         print_parser.add_argument('--weeks',default=5,type=int,help='message history weeks (default 5)')
         print_parser.set_defaults(action='print_stats')
 
@@ -83,6 +84,8 @@ class Command(BaseCommand):
             self.print_languages()
         if self.options['enrollment']:
             self.print_enrollment()
+        if self.options['delivery']:
+            self.print_delivery_stats()
 
     def send_times(self):
 
@@ -360,6 +363,70 @@ class Command(BaseCommand):
         self.stdout.write( "{0:^12}{1[pregnant]:^12}{1[post]:^12}{1[loss]:^12}{1[sae]:^12}{2:^12}".format(
             "Total", total_row, total_row.total()
         ) )
+
+    def print_delivery_stats(self):
+
+        self.print_header('Participant Delivery Stats')
+
+        today = datetime.date.today()
+        c_all = cont.Contact.objects.all()
+        edd = c_all.filter(status='pregnant').order_by('due_date')
+        post = edd.filter(due_date__lt=today)
+        self.stdout.write( 'Found {:d} pregnant participants with {:d} post edd'.format(
+            edd.count(), post.count()
+        ) )
+
+        future_edd = edd.last()
+        self.stdout.write( 'Furthest EDD for #{:s} on {:s} ({:.0f} weeks)'.format(
+            future_edd.study_id, future_edd.due_date.isoformat(), (today - future_edd.due_date).total_seconds()/604800
+        ) )
+        past_edd = edd.first()
+        self.stdout.write( 'Furthest past delivery date')
+        for p in edd[:5]:
+            self.stdout.write( "\t{0.study_id} {0.due_date} (weeks {1:.0f})".format(p,
+                (today - p.due_date).total_seconds()/604800
+            ) )
+        self.stdout.write( '\n')
+
+        dd = c_all.filter(delivery_date__isnull=False).order_by('delivery_date')
+        self.stdout.write( 'Found {:d} post-partum participants'.format(dd.count()) )
+        self.stdout.write( 'Furthest from delivery date')
+        for p in dd[:5]:
+            self.stdout.write( "\t{0.study_id} {0.due_date} {0.delivery_date} (weeks {1:.0f})".format(p,
+                (today - p.delivery_date).total_seconds()/604800
+            ) )
+        self.stdout.write( '\n')
+
+        # Add edd to dd delta seconds
+        dd_min , dd_max , dd_total , dd_count = None , None , 0 , dd.count()
+        dd_hist = [0 for _ in range(-10,11)]
+        for p in dd:
+            p.delivery_delta = (p.delivery_date - p.due_date).total_seconds()
+            if dd_min is None or dd_min.delivery_delta > p.delivery_delta:
+                dd_min = p
+            if dd_max is None or dd_max.delivery_delta < p.delivery_delta:
+                dd_max = p
+            dd_total += p.delivery_delta
+            dd_weeks = int(p.delivery_delta / 604800) + 10
+            if dd_weeks < 0:
+                dd_weeks = 0
+            elif dd_weeks > 20:
+                dd_weeks = 20
+            dd_hist[dd_weeks] += 1
+
+        self.stdout.write( 'Min {:s} (weeks {:.0f})  Max: {:s} (weeks {:.0f}) Average: {:f}'.format(
+            dd_min.study_id , dd_min.delivery_delta/604800 ,
+            dd_max.study_id , dd_max.delivery_delta/604800,
+            dd_total/(dd_count*604800)
+        ) )
+
+        table = ""
+        for c in range(-10,11):
+            table += ' {:2.0f} '.format(c)
+        table += '\n' + '----'*21 + '\n'
+        for c in dd_hist:
+            table += ' {:2.0f} '.format(c)
+        self.stdout.write(table)
 
     def print_enrollment(self):
 
