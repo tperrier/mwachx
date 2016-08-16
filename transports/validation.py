@@ -21,7 +21,8 @@ def validator_action(message):
         send_base='stop',
         send_offset=0,
         group='one-way',
-        hiv_messaging=False
+        hiv_messaging=False,
+        control=True
     )
     return False
 
