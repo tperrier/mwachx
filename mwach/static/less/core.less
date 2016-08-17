@@ -78,8 +78,12 @@ input[datepicker-position-right] + ul {
     background-color: @brand-primary;
     color: white;
 
-    &:hover,
-    &:active {
+    &[disabled] {
+      color:@btn-default-color;
+      background-color: lighten(@brand-primary,20%);
+    }
+
+    &:hover{
       background-color: darken(@brand-primary, 10%);
     }
   }

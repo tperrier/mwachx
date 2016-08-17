@@ -4,9 +4,12 @@
     <i class="mw" ng-class="participant.status == 'post' ? 'mw-mwach-baby-phone' : 'mw-mwach-phone'" ></i>
     {{participant.nickname}}
   </span>
-  <small>Study ID: <strong>{{participant.study_id}}</strong></small>
-  <small>ANC #: <strong>{{participant.anc_num}}</strong></small>
-  <small>CCC #: <strong>{{participant.ccc_num}}</strong></small>
+  <small><strong ng-class="participant.status == 'post' || participant.status == 'pregnant' ? 'text-info' : 'text-danger'">
+    {{participant.status_display}}
+  </strong></small>
+  <small><strong>{{participant.study_id}}</strong></small>
+  <small>ANC: <strong>{{participant.anc_num}}</strong></small>
+  <small>CCC: <strong>{{participant.ccc_num}}</strong></small>
   <small><strong class='text-uppercase'>{{participant.study_group}}</strong></small>
 </h1>
 

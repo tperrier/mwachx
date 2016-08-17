@@ -20,10 +20,10 @@
 
       $scope.detailsList      = [
       //  {'label': 'Nickname',               'value': 'nickname',},
-      //  {'label': 'Study ID',               'value': 'study_id',},
       //  {'label': 'ANC Number',             'value': 'anc_num',},
        {'label': 'Phone number',           'value': 'phone_number',},
-       {'label': 'Status',                 'value': 'status_display',},
+      //  {'label': 'Status',                 'value': 'status_display',},
+      //  {'label': 'Study ID',               'value': 'study_id',},
        {'label': 'Estimated Delivery Date','value': 'due_date',}
        ];
 
