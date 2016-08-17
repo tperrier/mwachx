@@ -22,7 +22,7 @@ class Command(BaseCommand):
 
         # The cmd argument is required for django.core.management.base.CommandParser
         message_parser = subparsers.add_parser('msgs',cmd=parser.cmd,help='report send time statistics by study group')
-        message_parser.add_argument('-g','--study-group',default='one-way',choices=('one-way','control','both'),help='study group to select')
+        message_parser.add_argument('-g','--study-group',default='all',choices=('anonymous','one-way','control','all'),help='study group to select')
         message_parser.add_argument('-s','--start',default=None,help='date to start from (one week ago)')
         message_parser.add_argument('-e','--end',default=None,help='date to end from (now)')
         message_parser.add_argument('-a','--all',default=False,action='store_true',help='ignore time filters all messages')
@@ -47,14 +47,39 @@ class Command(BaseCommand):
     # Commands
     ########################################
 
+    def make_messages(self):
+
+        wb = xl.Workbook()
+        ws = wb.active
+        if self.options['study_group'] == 'one-way':
+            ws.title = 'one-way'
+            self.make_message_ws(ws,'one-way')
+        elif self.options['study_group'] == 'control':
+            ws.title = 'control'
+            self.make_message_ws(ws,'control')
+        elif self.options['study_group'] == 'anonymous':
+            ws.title = 'anonymous'
+            self.make_message_ws(ws,'anonymous')
+        elif self.options['study_group'] == 'all':
+            ws.title = 'one-way'
+            self.make_message_ws(ws,'one-way')
+            ws = wb.create_sheet('control')
+            self.make_message_ws(ws,'control')
+            ws = wb.create_sheet('anonymous')
+            self.make_message_ws(ws,'anonymous')
+        wb.save('ignore/{}_messages.xlsx'.format(self.options['study_group']))
+
     def make_message_ws(self,ws,study_group='one-way'):
 
-        messages = cont.Message.objects.filter(
-            contact__study_group=study_group,
-            is_outgoing=False
-        ).exclude(
-            topic='validation'
-        )
+        if study_group == 'anonymous':
+            messages = cont.Message.objects.filter(contact__isnull=True)
+        else:
+            messages = cont.Message.objects.filter(
+                contact__study_group=study_group,
+                is_outgoing=False
+            ).exclude(
+                topic='validation'
+            )
 
         start , end = "begining" , "end"
 
@@ -71,27 +96,26 @@ class Command(BaseCommand):
         self.stdout.write( 'Creating Report: {}'.format(study_group) )
         self.stdout.write( 'Found {} messages from {} to {}'.format(messages.count(),start,end))
 
-        ws.append( ("Study ID","Message","Date","Previous","Date","Type","Delta") )
-        for msg in messages:
-            ws.append( make_one_way_row(msg) )
-
-    def make_messages(self):
-
-        wb = xl.Workbook()
-        ws = wb.active
-        if self.options['study_group'] == 'one-way':
-            ws.title = 'one-way'
-            self.make_message_ws(ws,'one-way')
-        elif self.options['study_group'] == 'control':
-            ws.title = 'control'
-            self.make_message_ws(ws,'control')
-        elif self.options['study_group'] == 'both':
-            ws.title = 'one-way'
-            make_message_ws(ws,'one-way')
-            ws = wb.create_sheet('control')
-            self.make_message_ws(ws,'control')
-        wb.save('ignore/{}_messages.xlsx'.format(self.options['study_group']))
-
+        if study_group != 'anonymous':
+            ws.append( ("Study ID","Message","Date","Previous","Date","Type","Delta") )
+            for msg in messages:
+                ws.append( (
+                    msg.contact.study_id,
+                    msg.translated_text if msg.translated_text != '' else msg.text,
+                    msg.created,
+                    msg.previous_outgoing.text,
+                    msg.previous_outgoing.created,
+                    msg.previous_outgoing.auto if msg.previous_outgoing.is_system else msg.previous_outgoing.sent_by(),
+                    delta_str(msg.previous_outgoing.created,msg.created),
+                ) )
+        else:
+            ws.append( ("Phone Number","Message","Date") )
+            for msg in messages:
+                ws.append( (
+                    msg.connection.identity,
+                    msg.text,
+                    msg.created,
+                ) )
 
     def make_weekly(self):
 
@@ -140,18 +164,6 @@ class Command(BaseCommand):
 ########################################
 # Global Utility Functions
 ########################################
-
-def make_one_way_row(msg):
-    ''' Make a message row one_way.text one_way.created system.text system.created delta '''
-    return (
-        msg.contact.study_id,
-        msg.translated_text if msg.translated_text != '' else msg.text,
-        msg.created,
-        msg.previous_outgoing.text,
-        msg.previous_outgoing.created,
-        msg.previous_outgoing.auto if msg.previous_outgoing.is_system else msg.previous_outgoing.sent_by(),
-        delta_str(msg.previous_outgoing.created,msg.created),
-    )
 
 def make_message_row(messages):
     row = collections.OrderedDict([("two-way",0),("one-way",0),("control",0),("nurse",0),("system",0),("visit",0),("signup",0)])

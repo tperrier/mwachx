@@ -352,15 +352,17 @@ class Command(BaseCommand):
             status_counts[g['facility']][g['status']][g['study_group']] = g['count']
 
         # Print Group Counts
-        self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}{:^12}".format("","Pregnant","Post-Partum","SAE OptIn","SAE OptOut","Total") )
+        self.stdout.write( "{:^12}{:^18}{:^18}{:^18}{:^18}{:^18}{:^18}".format(
+            "","Pregnant","Post-Partum","SAE OptIn","SAE OptOut","Withdrew","Total"
+        ) )
         total_row = StatusRow()
-        for status, row in status_counts.items():
-            self.stdout.write( "{0:^12}{1[pregnant]:^12}{1[post]:^12}{1[loss]:^12}{1[sae]:^12}{2:^12}".format(
-                status , row, row.total()
+        for facility, row in status_counts.items():
+            self.stdout.write( "{0:^12}{1[pregnant]:^18}{1[post]:^18}{1[loss]:^18}{1[sae]:^18}{1[stopped]:^18}{2:^18}".format(
+                facility , row, row.total()
             ) )
             total_row += row
 
-        self.stdout.write( "{0:^12}{1[pregnant]:^12}{1[post]:^12}{1[loss]:^12}{1[sae]:^12}{2:^12}".format(
+        self.stdout.write( "{0:^12}{1[pregnant]:^18}{1[post]:^18}{1[loss]:^18}{1[sae]:^18}{1[stopped]:^18}{2:^18}".format(
             "Total", total_row, total_row.total()
         ) )
 
@@ -694,7 +696,8 @@ class StatusRowItem(CountRowBase):
     columns = ['control','one-way','two-way']
 
     def __str__(self):
-        return '--'.join( '{:02d}'.format(self[c]) for c in self.columns )
+        row =  '--'.join( '{:02d}'.format(self[c]) for c in self.columns )
+        return "{} ({:03d})".format(row,sum(self.values()))
 
 class StatusRow(CountRowBase):
     columns = ['pregnant','post','loss','sae','other','stopped']
