@@ -79,22 +79,26 @@ class ContactAdd(forms.ModelForm):
                     css_class="row"
                 ),
                 Div(
-                    Div('phone_shared', css_class="col-md-4"),
                     Div('language', css_class="col-md-4"),
-                    Div('hiv_disclosed', css_class="col-md-4"),
+                    Div('condition', css_class="col-md-4"),
                     css_class="row"
                 ),
             ),
 
             Fieldset (
-                'Medical Information',
+                'Disclosure and Consent',
                 Div(
-                    Div('condition', css_class="col-md-4"),
-                    Div('art_initiation', css_class="col-md-4"),
+                    Div('hiv_disclosed', css_class="col-md-4"),
+                    Div('phone_shared', css_class="col-md-4"),
                     Div('hiv_messaging', css_class="col-md-4"),
                     css_class="row"
-                ),
+                )
+            ),
+
+            Fieldset (
+                'Important Dates',
                 Div(
+                    Div('art_initiation', css_class="col-md-4"),
                     Div('due_date', css_class="col-md-4"),
                     Div('clinic_visit', css_class="col-md-4"),
                     css_class="row"
@@ -129,7 +133,10 @@ class ContactAdd(forms.ModelForm):
             'send_time': forms.Select(attrs={'required':True}),
             'condition': forms.Select(attrs={'required':True}),
             'nickname': forms.TextInput(attrs={'required':True}),
-            'language': forms.Select(attrs={'required':True})
+            'language': forms.Select(attrs={'required':True}),
+            'hiv_disclosed': forms.NullBooleanSelect(attrs={'required':True}),
+            'phone_shared': forms.NullBooleanSelect(attrs={'required':True}),
+            'hiv_messaging': forms.Select(attrs={'required':True}),
         }
 
 class ContactUpdate(forms.ModelForm):

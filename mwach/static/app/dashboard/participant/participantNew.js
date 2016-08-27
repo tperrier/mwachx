@@ -10,11 +10,11 @@
       function ($scope, $state,mwachxAPI,mwachxUtils) {
 
       // Set NullBooleanField Fields
-      $scope.participant = {
-        hiv_disclosed:'1',
-        phone_shared:'1',
-        hiv_messaging:'none',
-      }
+      // $scope.participant = {
+      //   hiv_disclosed:'1',
+      //   phone_shared:'1',
+      //   hiv_messaging:'none',
+      // }
 
       $scope.status = {
         birthdate:false,
