@@ -107,13 +107,13 @@ def weekly_messages(day,hour,date,email_body,send=False):
                     vals.sent_to.append( "{} (#{}) {}".format(message.description(),p.study_id,p.send_time) )
 
     email_body.append( "Found {} participants for {}".format(participants.count(),date.strftime("%A")) )
-    email_body.append( "Control: {0.control} 8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}".format(vals) )
+    email_body.append( "\tControl: {0.control} 8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}".format(vals) )
 
-    email_body.append( "Sending to {} participants".format( len(vals.sent_to)) )
-    email_body.extend( "\t{}".format(d) for d in vals.sent_to )
-    email_body.append('')
+    email_body.append( "\tSent to {} participants".format( len(vals.sent_to)) )
+    # email_body.extend( "\t{}".format(d) for d in vals.sent_to )
+    # email_body.append('')
 
-    email_body.append( "Messages not sent: {}".format(len(vals.no_messages)) )
+    email_body.append( "\nMessages not sent: {}".format(len(vals.no_messages)) )
     email_body.extend( "\t{}".format(d) for d in vals.no_messages )
     email_body.append('')
 
@@ -152,10 +152,10 @@ def appointment_reminders(date,hour,email_body,send=False):
         '\t8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}',
         '\tSent: {1}') ).format(vals,len(vals.sent_to))
     )
-    email_body.extend( "\t{}".format(d) for d in vals.sent_to.values())
-    email_body.append('')
+    # email_body.extend( "\t{}".format(d) for d in vals.sent_to.values())
+    # email_body.append('')
 
-    email_body.append( "Messages not sent: {}".format(len(vals.no_messages)) )
+    email_body.append( "\nMessages not sent: {}".format(len(vals.no_messages)) )
     email_body.extend( "\t{}".format(d) for d in vals.no_messages )
     email_body.append('')
 
@@ -186,9 +186,9 @@ def missed_visit_reminders(hour,email_body,send=False):
         '\t8h: {1.times[8]} 13h: {1.times[13]} 20h: {1.times[20]}',
         '\tSent: {2}') ).format( len(missed_visits),vals,len(vals.sent_to))
     )
-    email_body.extend( "\t{}".format(d) for d in vals.sent_to)
-    email_body.append('')
+    # email_body.extend( "\t{}".format(d) for d in vals.sent_to)
+    # email_body.append('')
 
-    email_body.append( "Messages not sent: {}".format(len(vals.no_messages)) )
+    email_body.append( "\nMessages not sent: {}".format(len(vals.no_messages)) )
     email_body.extend( "\t{}".format(d) for d in vals.no_messages )
     email_body.append('')
