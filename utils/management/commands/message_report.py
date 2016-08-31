@@ -26,6 +26,7 @@ class Command(BaseCommand):
         message_parser.add_argument('-s','--start',default=None,help='date to start from (one week ago)')
         message_parser.add_argument('-e','--end',default=None,help='date to end from (now)')
         message_parser.add_argument('-a','--all',default=False,action='store_true',help='ignore time filters all messages')
+        message_parser.add_argument('-w','--weeks',default=2,type=int,help='number of weeks if start and end are None')
         message_parser.set_defaults(action='make_messages')
 
         weekly_parser = subparsers.add_parser('weekly',cmd=parser.cmd,help='report weekly message stats')
@@ -84,7 +85,7 @@ class Command(BaseCommand):
         start , end = "begining" , "end"
 
         if self.options['all'] is False:
-            start = datetime.date.today() - datetime.timedelta(weeks=1) \
+            start = datetime.date.today() - datetime.timedelta(weeks=self.options['weeks']) \
                     if self.options['start'] is None \
                     else dateparse.parse_date(self.options['start'])
             end = datetime.date.today()\

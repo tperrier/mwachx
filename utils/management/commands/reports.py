@@ -520,6 +520,8 @@ detail_columns = collections.OrderedDict([
     ('Enrolled',lambda c: c.created.date()),
     ('Group','study_group'),
     ('HIV','hiv_messaging') ,
+    ('Shared','phone_shared') ,
+    ('Disclosed','hiv_disclosed') ,
     ('EDD','due_date'),
     ('Δ EDD',lambda c:delta_days(c.due_date)),
     ('Delivery','delivery_date'),
