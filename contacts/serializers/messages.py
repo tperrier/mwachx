@@ -35,12 +35,16 @@ class ParticipantSimpleSerializer(serializers.ModelSerializer):
 			return obj.pending_visits[0].scheduled
 		except IndexError as e:
 			return None
+		except AttributeError as e:
+			return obj.tca_date()
 
 	def get_next_visit_type(self,obj):
 		try:
 			return obj.pending_visits[0].visit_type
 		except IndexError as e:
 			return 'none'
+		except AttributeError as e:
+			return obj.tca_type()
 
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
 
