@@ -546,6 +546,7 @@ visit_columns = collections.OrderedDict([
     ('Δ Delivery',lambda c:delta_days(c.delivery_date,past=True)),
     ('TCA',lambda c:c.tca_date()),
     ('Δ TCA',lambda c:delta_days(c.tca_date())),
+    ('TCA Type',lambda c:c.tca_type()),
     ('Pending Visits',lambda c:c.visit_set.pending().count()),
 ])
 

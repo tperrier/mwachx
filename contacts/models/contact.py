@@ -222,8 +222,8 @@ class Contact(TimeStampedModel):
         delta = today - self.birthdate
         return int((delta.days - delta.seconds/86400.0)/365.2425)
 
-    def tca_date(self):
-        ''' Return To Come Again Date or None '''
+    def next_visit(self):
+        ''' Return The Next Visit'''
         pending = self.visit_set.filter(scheduled__gte=datetime.date.today(),status='pending').last()
         if pending is None:
             # Check for a pending past date
@@ -231,7 +231,17 @@ class Contact(TimeStampedModel):
             if pending is None:
                 return None
         # Return the scheduled pending date
-        return pending.scheduled
+        return pending
+
+    def tca_date(self):
+        ''' Return To Come Again Date or None '''
+        pending = self.next_visit()
+        return pending.scheduled if pending is not None else None
+
+    def tca_type(self):
+        ''' Return next visit type '''
+        pending = self.next_visit()
+        return pending.visit_type.capitalize() if pending is not None else None
 
     def is_pregnant(self):
         return self.status == 'pregnant' or self.status == 'over'
