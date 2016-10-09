@@ -109,6 +109,13 @@ class Command(BaseCommand):
                     msg.previous_outgoing.auto if msg.previous_outgoing.is_system else msg.previous_outgoing.sent_by(),
                     delta_str(msg.previous_outgoing.created,msg.created),
                 ) )
+                ws.cell(row=ws.max_row,column=2).alignment = xl.styles.Alignment(wrap_text=True)
+                ws.cell(row=ws.max_row,column=4).alignment = xl.styles.Alignment(wrap_text=True)
+            ws.column_dimensions['B'].width = 40
+            ws.column_dimensions['C'].width = 20
+            ws.column_dimensions['D'].width = 40
+            ws.column_dimensions['E'].width = 20
+            ws.column_dimensions['F'].width = 20
         else:
             ws.append( ("Phone Number","Message","Date") )
             for msg in messages:
@@ -117,6 +124,10 @@ class Command(BaseCommand):
                     msg.text,
                     msg.created,
                 ) )
+                ws.cell(row=ws.max_row,column=2).alignment = xl.styles.Alignment(wrap_text=True)
+            ws.column_dimensions['A'].width = 20
+            ws.column_dimensions['B'].width = 40
+            ws.column_dimensions['C'].width = 20
 
     def make_weekly(self):
 

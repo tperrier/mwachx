@@ -9,7 +9,7 @@ import contacts.models as cont
 
 
 class Command(BaseCommand):
-    
+
     help = 'Generate an xlsx report of messages sent last week'
     option_list = BaseCommand.option_list + (
         make_option('-w','--week',type=int,help='number of weeks back',metavar='WEEKS',default=0),
@@ -49,18 +49,18 @@ class Command(BaseCommand):
 
 
         wb = xl.Workbook()
-        
+
         ws = wb.active
         ws.title = 'Bondo'
-        make_worksheet(ws,self.messages.filter(contact__facility__name='bondo'))
+        make_worksheet(ws,self.messages.filter(contact__facility='bondo'))
 
         ws = wb.create_sheet()
         ws.title = 'Mathare'
-        make_worksheet(ws,self.messages.filter(contact__facility__name='mathare'))
+        make_worksheet(ws,self.messages.filter(contact__facility='mathare'))
 
         ws = wb.create_sheet()
         ws.title = 'Ahero'
-        make_worksheet(ws,self.messages.filter(contact__facility__name='ahero'))
+        make_worksheet(ws,self.messages.filter(contact__facility='ahero'))
 
         ws = wb.create_sheet()
         ws.title = 'None'
@@ -82,4 +82,3 @@ def make_worksheet(ws,messages):
             msg.text,
             msg.translated_text
         ))
-
