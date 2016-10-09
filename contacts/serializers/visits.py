@@ -32,6 +32,24 @@ class VisitSerializer(serializers.ModelSerializer):
     def get_status(self,obj):
         return obj.get_status_display()
 
+class VisitSimpleSerializer(serializers.ModelSerializer):
+
+    href = serializers.HyperlinkedIdentityField(view_name='visit-detail')
+
+    status = serializers.SerializerMethodField()
+    days_str = serializers.CharField()
+
+    visit_type_display = serializers.CharField(source='get_visit_type_display')
+
+
+    class Meta:
+        model = cont.Visit
+        fields = ('id','href','scheduled','arrived','notification_last_seen','status',
+                  'comment','visit_type','visit_type_display','days_overdue','days_str')
+
+    def get_status(self,obj):
+        return obj.get_status_display()
+
 class VisitViewSet(viewsets.ModelViewSet):
 
     queryset =  cont.Visit.objects.all()

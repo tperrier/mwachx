@@ -19,14 +19,28 @@ class ParticipantSimpleSerializer(serializers.ModelSerializer):
 	phone_number = serializers.CharField()
 	study_base_date = serializers.SerializerMethodField()
 	href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
+	next_visit_date = serializers.SerializerMethodField()
+	next_visit_type = serializers.SerializerMethodField()
 
 	class Meta:
 		model = cont.Contact
 		fields = ('nickname','study_id','study_group','anc_num','phone_number', 'status',
-			'study_base_date','last_msg_client','href')
+			'study_base_date','last_msg_client','href','next_visit_date','next_visit_type')
 
 	def get_study_base_date(self,obj):
 		return obj.delivery_date or obj.due_date
+
+	def get_next_visit_date(self,obj):
+		try:
+			return obj.pending_visits[0].scheduled
+		except IndexError as e:
+			return None
+
+	def get_next_visit_type(self,obj):
+		try:
+			return obj.pending_visits[0].visit_type
+		except IndexError as e:
+			return 'none'
 
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -36,6 +50,14 @@ class MessageSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = cont.Message
 		fields = ('id','href','text','contact','translated_text','translation_status','is_outgoing','is_pending',
+					'sent_by','is_related','topic','created')
+
+class MessageSimpleSerializer(serializers.HyperlinkedModelSerializer):
+
+	href = serializers.HyperlinkedIdentityField(view_name='message-detail')
+	class Meta:
+		model = cont.Message
+		fields = ('id','href','text','translated_text','translation_status','is_outgoing','is_pending',
 					'sent_by','is_related','topic','created')
 
 #############################################

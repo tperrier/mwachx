@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 #Local Imports
 from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
-from contacts.models import Message, PhoneCall, Practitioner
+from contacts.models import Message, PhoneCall, Practitioner, Visit
 import backend.models as back
 import utils
 import transports
@@ -25,8 +25,14 @@ class ContactManager(models.Manager):
         qs = super(ContactManager,self).get_queryset()
         return qs.annotate(
             note_count=models.Count('note',distinct=True),
-            phonecall_count=models.Count('phonecall',distinct=True)
-        ).prefetch_related('connection_set')
+            phonecall_count=models.Count('phonecall',distinct=True),
+        ).prefetch_related('connection_set',
+            models.Prefetch(
+                'visit_set',
+                queryset=Visit.objects.order_by('scheduled').filter(arrived__isnull=True,status='pending'),
+                to_attr='pending_visits'
+            )
+        )
 
 class Contact(TimeStampedModel):
 

@@ -403,6 +403,7 @@ angular.module('mwachx') .controller('PhoneCallController',
   function ($scope, $modalInstance, $log, participant) {
     angular.extend($scope,{
       participant:participant,
+      calls: participant.all('calls').getList().$object,
       status:{call_history_open:true},
       new_call:{is_outgoing:false,created:new Date()},
       form:{},

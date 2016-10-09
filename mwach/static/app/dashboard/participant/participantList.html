@@ -20,7 +20,7 @@
   </div>
 
   <div class="col-md-1" style="text-align:center">
-    <h3>Count<br/>{{filteredParticipants.length}}</h3>
+    <h3>Count<br/>{{filteredParticipants.length}}/{{participants.length}}</h3>
   </div>
 
   <div class="col-md-2 col-sm-4">
@@ -58,6 +58,9 @@
       <th><a href ng-click="setSort('last_msg_client')">Last SMS</a>
         <span ng-if="query.sortName=='last_msg_client'"><i class='mw' ng-class='getSortClass()'></i></span>
       </th>
+      <th><a href="" ng-click="setSort('next_visit_date',$event)">Next Visit</a>
+        <span ng-if="query.sortName=='next_visit_date'"><i class='mw' ng-class='getSortClass()'></i></span>
+      </th>
     </tr>
   </thead>
   <tbody>
@@ -71,5 +74,6 @@
       <td>{{participant.status}}</td>
       <td>{{participant.study_base_date}}</td>
       <td>{{participant.last_msg_client}}</td>
+      <td>{{participant.next_visit_date}} ({{participant.next_visit_type|capitalize}})</td>
     </tr>
 </table>

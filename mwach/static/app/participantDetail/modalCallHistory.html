@@ -58,7 +58,7 @@
 </accordion-group>
 
 <accordion-group heading="Call history for {{participant.nickname}}" is-open="status.call_history_open">
-  <div ng-repeat='call in participant.calls' class='clearfix'>
+  <div ng-repeat='call in calls' class='clearfix'>
       <div class='avatar mw-4x' ng-class="{'pull-left call':!call.is_outgoing, 'pull-right nurse':call.is_outgoing}">
         <i class='mw' ng-class="{'mw-mobile-1':!call.is_outgoing, 'mw-user-md':call.is_outgoing}"></i>
     </div>

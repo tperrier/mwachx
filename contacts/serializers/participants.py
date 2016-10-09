@@ -3,7 +3,7 @@ import json, datetime
 
 # Django imports
 from django.utils import timezone
-from django.db import transaction
+from django.db import transaction, models
 
 # Rest Framework Imports
 from rest_framework import serializers
@@ -18,8 +18,8 @@ import backend.models as back
 import contacts.forms as forms
 import utils
 
-from messages import MessageSerializer, ParticipantSimpleSerializer
-from visits import VisitSerializer
+from messages import MessageSerializer, ParticipantSimpleSerializer, MessageSimpleSerializer
+from visits import VisitSimpleSerializer , VisitSerializer
 from misc import PhoneCallSerializer, NoteSerializer
 
 #############################################
@@ -54,9 +54,9 @@ class ParticipantSerializer(serializers.ModelSerializer):
 	notes_url = serializers.HyperlinkedIdentityField(view_name='participant-notes',lookup_field='study_id')
 
 	# TODO: Change calls to call count and remove messages and visits
-	calls = PhoneCallSerializer(source='phonecall_set',many=True)
+	# calls = PhoneCallSerializer(source='phonecall_set',many=True)
 	# messages = MessageSerializer(source='get_pending_messages',many=True)
-	visits = VisitSerializer(source='visit_set.pending',many=True)
+	visits = VisitSimpleSerializer(source='pending_visits',many=True)
 
 	phonecall_count = serializers.SerializerMethodField()
 	note_count = serializers.SerializerMethodField()
@@ -98,7 +98,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 		qs = cont.Contact.objects.all().order_by('study_id')
 		# Only return the participants for this user's facility
 		if self.action == 'list':
-			return qs.for_user(self.request.user,superuser=True).prefetch_related('connection_set')
+			return qs.for_user(self.request.user,superuser=True)
 		else:
 			# return qs
 			return qs.prefetch_related('phonecall_set')
@@ -191,7 +191,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 				contact_messages.filter(pk_gt=min_id)
 			if limit:
 			    contact_messages = contact_messages[:limit]
-			contact_messages = MessageSerializer(contact_messages,many=True,context={'request':request})
+			contact_messages = MessageSimpleSerializer(contact_messages,many=True,context={'request':request})
 			return Response(contact_messages.data)
 
 		elif request.method == 'POST':
