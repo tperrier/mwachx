@@ -151,6 +151,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 				contact.send_automated_message(send_base='signup',send_offset=0,
 					control=True,hiv_messaging=False)
 
+			contact.pending_visits = contact.visit_set.order_by('scheduled').filter(arrived__isnull=True,status='pending')
 			serialized_contact = ParticipantSerializer(contact,context={'request':request})
 			return Response(serialized_contact.data)
 

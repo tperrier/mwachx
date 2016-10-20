@@ -19,7 +19,7 @@
     </strong>
     <div class="pull-right">{{message.created | date:'d MMM yy H:mm':'+0300'}}</div>
 
-    <div ng-if="!message.is_system" class="center-block">
+    <div class="center-block">
 
       <a ui-sref="translations({'#':'message{{message.id}}'})" class='badge-warning' ng-if="message.translation_status == 'todo' && message.sent_by != 'system'">
           Untranslated

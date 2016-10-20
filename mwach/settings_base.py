@@ -186,4 +186,7 @@ FACILITY_CHOICES = (
     ('mathare','Mathare'),
     ('bondo','Bondo'),
     ('ahero','Ahero'),
+    ('siaya','Siaya'),
+    ('rachuonyo','Rachuonyo'),
+    ('riruta','Riruta'),
 )

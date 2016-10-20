@@ -444,9 +444,10 @@ class Contact(TimeStampedModel):
         return one_year_call
 
     def message_kwargs(self):
+        nurse_obj = Practitioner.objects.for_participant(self)
         return {
             'name':self.nickname.title(),
-            'nurse':Practitioner.objects.for_participant(self).user.first_name.title(),
+            'nurse':nurse_obj.user.first_name.title() if nurse_obj is not None else 'Nurse',
             'clinic':self.facility.title()
         }
 

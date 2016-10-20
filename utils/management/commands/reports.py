@@ -488,6 +488,7 @@ class Command(BaseCommand):
             wb.save(xlsx_path_out)
 
     def make_csv(self):
+        ''' Quick CSV of hiv messaging '''
 
         hiv_disclosed_values = {True:1,False:0,None:99}
         columns = collections.OrderedDict([
