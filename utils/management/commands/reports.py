@@ -447,7 +447,8 @@ class Command(BaseCommand):
                 enrollment_counts[key][c.facility] += 1
 
 
-        self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format("Week","Ahero","Bondo","Mathare","Total") )
+        self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}{:^12}{:^12}{:^12}".format(
+            "Week","Ahero","Bondo","Mathare","Siaya","Rachuonyo","Riruta","Total") )
         total_row = FacilityRow()
         for week , enrollment in enrollment_counts.items():
             print week, enrollment, enrollment.total()
@@ -684,7 +685,7 @@ class LanguageRow(CountRowBase):
     child_class = LanguageRowItem
 
 class FacilityRow(CountRowBase):
-    columns = ['ahero','bondo','mathare']
+    columns = ['ahero','bondo','mathare','siaya','rachuonyo','riruta']
 
     def __str__(self):
         return '   ' + ''.join( '{:^12}'.format(self[c]) for c in self.columns )
