@@ -484,6 +484,9 @@ class Command(BaseCommand):
             make_worksheet(columns,wb.active,'ahero')
             make_worksheet(columns,wb.create_sheet(),'bondo')
             make_worksheet(columns,wb.create_sheet(),'mathare')
+            make_worksheet(columns,wb.create_sheet(),'siaya')
+            make_worksheet(columns,wb.create_sheet(),'rachuonyo')
+            make_worksheet(columns,wb.create_sheet(),'riruta')
 
             wb.save(xlsx_path_out)
 
@@ -521,20 +524,21 @@ detail_columns = collections.OrderedDict([
     ('Enrolled',lambda c: c.created.date()),
     ('Group','study_group'),
     ('HIV','hiv_messaging') ,
-    ('Shared','phone_shared') ,
     ('Disclosed','hiv_disclosed') ,
+    ('Shared','phone_shared') ,
     ('EDD','due_date'),
     ('Δ EDD',lambda c:delta_days(c.due_date)),
     ('Delivery','delivery_date'),
+    ('CCC Num','ccc_num'),
+    ('ANC Num','anc_num'),
     ('Δ Delivery',lambda c:delta_days(c.delivery_date,past=True)),
-    ('TCA',lambda c:c.tca_date()),
-    ('Validation Δ',lambda c: seconds_as_str(c.validation_delta()) ),
     ('Client', lambda c: c.message_set.filter(is_outgoing=False).count() ),
     ('Δ C', lambda c: c.message_set.filter(is_outgoing=False,created__gte=last_week).count() ),
     ('System', lambda c: c.message_set.filter(is_system=True).count() ),
     ('Δ S', lambda c: c.message_set.filter(is_system=True,created__gte=last_week).count() ),
     ('Nurse', lambda c: c.message_set.filter(is_system=False,is_outgoing=True).count() ),
     ('Δ N', lambda c: c.message_set.filter(is_system=False,is_outgoing=True,created__gte=last_week).count() ),
+    ('Validation Δ',lambda c: seconds_as_str(c.validation_delta()) ),
 ])
 
 visit_columns = collections.OrderedDict([
