@@ -102,6 +102,7 @@ def weekly_messages(day,hour,date,email_body,options,send=False):
 
     vals = ns(times={8:0,13:0,20:0}, control=0,
         no_messages=[],sent_to=[],errors=[],exclude=[])
+
     for p in participants:
         if p.study_group == 'control':
             vals.control += 1
@@ -121,9 +122,6 @@ def weekly_messages(day,hour,date,email_body,options,send=False):
                         vals.sent_to.append( "{} (#{}) {}".format(message.description(),p.study_id,p.send_time) )
 
     email_body.append( "Total: {0} Control: {1}".format(participants.count(), vals.control ) )
-    email_body.append( "\t8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}".format(vals) )
-
-    email_body.append( "\tSent: {}\n".format( len(vals.sent_to)) )
 
     append_errors(email_body,vals)
 
@@ -138,6 +136,7 @@ def appointment_reminders(date,hour,email_body,options,send=False):
     vals = ns(sent_to={}, no_messages=[], control=0, duplicates=0, not_active=0 , times={8:0,13:0,20:0},
         errors=[],exclude=[]
     )
+
     for visit in upcoming_visits:
         if visit.participant.study_group == 'control':
             vals.control += 1
@@ -147,15 +146,13 @@ def appointment_reminders(date,hour,email_body,options,send=False):
             vals.not_active += 1
         else:
             vals.times[visit.participant.send_time] += 1
-            if p.study_id in options.get('exclude',[]):
-                vals.exclude.append( '{} (#{})'.format( p.description(today=date),p.study_id) )
-            elif p.study_id in options.get('exclude',[]):
-                vals.exclude.append( '{} (#{})'.format( p.description(today=date),p.study_id) )
+            if visit.participant.study_id in options.get('exclude',[]):
+                vals.exclude.append( '{} (#{})'.format( visit.participant.description(today=date),visit.participant.study_id) )
             elif hour == 0 or visit.participant.send_time == hour:
                 try:
                     message = visit.send_visit_reminder(send=send)
                 except requests.HTTPError as e:
-                    vals.errors.append( '{} (#{})'.format( p.description(today=date),p.study_id) )
+                    vals.errors.append( '{} (#{})'.format( visit.participant.description(today=date),visit.participant.study_id) )
                 else:
                     if message is None:
                         condition = visit.get_condition('pre')
@@ -165,12 +162,9 @@ def appointment_reminders(date,hour,email_body,options,send=False):
                             message.description(),visit.participant.study_id
                         )
 
-    email_body.append( '\n'.join( (
+    email_body.append(
         'Total: {0} Control: {1.control} Duplicate: {1.duplicates} Not-Active: {1.not_active}'.format(
-            upcoming_visits.count(),vals
-        ),
-        '\t8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}',
-        '\tSent: {1}\n') ).format(vals,len(vals.sent_to))
+         upcoming_visits.count(),vals)
     )
 
     append_errors(email_body,vals)
@@ -182,20 +176,21 @@ def missed_visit_reminders(hour,email_body,options,send=False):
 
     vals = ns(sent_to=[], no_messages=[], control=0, not_active=0, times={8:0,13:0,20:0},
         exclude=[],errors=[])
+
     for visit in missed_visits:
         if visit.participant.study_group == 'control':
             vals.control += 1
         elif not visit.participant.is_active:
             vals.not_active += 1
-        elif p.study_id in options.get('exclude',[]):
-            vals.exclude.append( '{} (#{})'.format( p.description(today=date),p.study_id) )
+        elif visit.participant.study_id in options.get('exclude',[]):
+            vals.exclude.append( '{} (#{})'.format( visit.participant.description(today=date),visit.participant.study_id) )
         else:
             vals.times[visit.participant.send_time] += 1
             if hour == 0 or visit.participant.send_time == hour:
                 try:
                     message = visit.send_missed_visit_reminder(send=send)
                 except requests.HTTPError as e:
-                    vals.exclude.append( '{} (#{})'.format( p.description(today=date),p.study_id) )
+                    vals.errors.append( '{} (#{})'.format( visit.participant.description(today=date),visit.participant.study_id) )
                 else:
                     if message is None:
                         condition = visit.get_condition('missed')
@@ -203,15 +198,16 @@ def missed_visit_reminders(hour,email_body,options,send=False):
                     else:
                         vals.sent_to.append( "{} (#{})".format(message.description(),visit.participant.study_id) )
 
-    email_body.append( '\n'.join( (
-        'Total: {0} Control: {1.control} Not-Active: {1.not_active}',
-        '\t8h: {1.times[8]} 13h: {1.times[13]} 20h: {1.times[20]}',
-        '\tSent: {2}\n') ).format( missed_visits.count(),vals,len(vals.sent_to))
+    email_body.append(
+        'Total: {0} Control: {1.control} Not-Active: {1.not_active}'.format( missed_visits.count(),vals,len(vals.sent_to))
     )
-
     append_errors(email_body,vals)
 
 def append_errors(email_body,vals):
+
+    email_body.append( "\t8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}".format(vals) )
+    email_body.append( "\tSent: {}\n".format( len(vals.sent_to)) )
+
     if vals.no_messages:
         email_body.append( "Messages not sent: {}".format(len(vals.no_messages)) )
         email_body.extend( "\t{}".format(d) for d in vals.no_messages )
