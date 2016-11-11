@@ -2,6 +2,7 @@
 import openpyxl as xl
 import sys, datetime
 from argparse import Namespace as ns
+from requests import HTTPError
 
 from django.core.management.base import BaseCommand
 from django.utils import dateparse
@@ -28,6 +29,8 @@ class Command(BaseCommand):
         parser.add_argument('-a','--appointment',help='send visit reminders',action='store_true',default=False)
         parser.add_argument('-m','--missed',help='send visit missed visit reminders',action='store_true',default=False)
 
+        parser.add_argument('--exclude',nargs='*',help='list of 4 digit study_ids to exclude')
+
     def handle(self,*args,**options):
         if options.get('test'):
             self.stdout.write( 'Time: {}\nVersion: {}\nPath: {}\n'.format(datetime.datetime.now(),sys.version,sys.path) )
@@ -41,6 +44,9 @@ class Command(BaseCommand):
                 break
         else:
             raise ValueError( "No required argument found. {}".format(required) )
+
+        if options.get('exclude') is None:
+            options['exclude'] = []
 
         # Try to parse the date option or use current date
         date = options.get('date')
@@ -66,14 +72,15 @@ class Command(BaseCommand):
         send = options.get('send')
         email_subject = '{}{}'.format( date.strftime('%a %b %d (%j) %Y'), '' if options.get('send') else ' (FAKE)' )
         email_body = [ "Script started at {}".format(datetime.datetime.now()),
-                        "Options: {} D:{} H:{} Send:{}".format(date,day,hour,send), '' ]
+                        "Options: {} D:{} H:{} Send:{}".format(date.strftime('%A %Y-%m-%d'),day,hour,send), 
+                        '' ]
 
         if options["weekly"]:
-            weekly_messages(day,hour,date,email_body,send=send)
+            weekly_messages(day,hour,date,email_body,options,send=send)
         if options["appointment"]:
-            appointment_reminders(date,hour,email_body,send=send)
+            appointment_reminders(date,hour,email_body,options,send=send)
         if options["missed"]:
-            missed_visit_reminders(hour,email_body,send=send)
+            missed_visit_reminders(hour,email_body,options,send=send)
 
         email_body = '\n'.join(email_body)
         if options.get('email'):
@@ -82,7 +89,7 @@ class Command(BaseCommand):
             self.stdout.write(email_subject)
             self.stdout.write(email_body)
 
-def weekly_messages(day,hour,date,email_body,send=False):
+def weekly_messages(day,hour,date,email_body,options,send=False):
     ''' Send weeky messages to participants based on day of week and time of day
         :param day(int): day of week to select participants for
         :param hour(int): hour of day (0 for all)
@@ -93,29 +100,44 @@ def weekly_messages(day,hour,date,email_body,send=False):
 
     participants = cont.Contact.objects.active_users().filter(send_day=day)
 
-    vals = ns(times={8:0,13:0,20:0}, control=0, no_messages=[],sent_to=[])
+    vals = ns(times={8:0,13:0,20:0}, control=0,
+        no_messages=[],sent_to=[],errors=[],exclude=[])
     for p in participants:
         if p.study_group == 'control':
             vals.control += 1
+        elif p.study_id in options.get('exclude',[]):
+            vals.exclude.append( '{} (#{})'.format( p.description(today=date),p.study_id) )
         else:
             vals.times[p.send_time] += 1
             if hour==0 or hour==p.send_time:
-                message = p.send_automated_message(today=date,send=send)
+                try:
+                    message = p.send_automated_message(today=date,send=send)
+                except HTTPError as e:
+                    vals.errors.append( '{} (#{})'.format( p.description(today=date),p.study_id) )
                 if message is None:
                     vals.no_messages.append( '{} (#{})'.format( p.description(today=date),p.study_id)  )
                 else:
                     vals.sent_to.append( "{} (#{}) {}".format(message.description(),p.study_id,p.send_time) )
 
-    email_body.append( "Found {} participants for {}".format(participants.count(),date.strftime("%A")) )
-    email_body.append( "\tControl: {0.control} 8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}".format(vals) )
+    email_body.append( "Total: {0} Control: {1}".format(participants.count(), vals.control ) )
+    email_body.append( "\t8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}".format(vals) )
 
     email_body.append( "\tSent to {} participants".format( len(vals.sent_to)) )
-    # email_body.extend( "\t{}".format(d) for d in vals.sent_to )
-    # email_body.append('')
 
-    email_body.append( "\nMessages not sent: {}".format(len(vals.no_messages)) )
-    email_body.extend( "\t{}".format(d) for d in vals.no_messages )
-    email_body.append('')
+    if vals.no_messages:
+        email_body.append( "\nMessages not sent: {}".format(len(vals.no_messages)) )
+        email_body.extend( "\t{}".format(d) for d in vals.no_messages )
+        email_body.append('')
+
+    if vals.errors:
+        email_body.append( "\nMessage Errors: {}".format(len(vals.errors)) )
+        email_body.extend( "\t{}".format(d) for d in vals.errors )
+        email_body.append('')
+
+    if vals.exclude:
+        email_body.append( "\nExcluded: {}".format(len(vals.exclude)) )
+        email_body.extend( "\t{}".format(d) for d in vals.exclude )
+        email_body.append('')
 
 def appointment_reminders(date,hour,email_body,send=False):
 
