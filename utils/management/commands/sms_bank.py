@@ -221,12 +221,13 @@ class Command(BaseCommand):
                 duplicates.append(description)
 
         for base_group, condition_hiv_groups in stats.items():
-            self.stdout.write( '{}'.format(base_group) )
-            for condition_hiv, items in condition_hiv_groups.items():
-                count = len(items)
-                self.stdout.write( '\t{}: {} {}'.format(
-                    condition_hiv, count, sorted([i.offset for i in items])
-                ) )
+            if base_group.startswith('dd'):
+                self.stdout.write( '{}'.format(base_group) )
+                for condition_hiv, items in condition_hiv_groups.items():
+                    self.stdout.write( '\t{}: {}'.format( condition_hiv, len(items) ) )
+                    offsets = ["{0: 3}".format(i) for i in sorted([i.offset for i in items]) ]
+                    for i in range( len(offsets)/10 + 1 ):
+                        self.stdout.write( "\t\t{}".format( "".join(offsets[15*i:15*(i+1)]) ) )
         self.stdout.write( 'Total: {} Todo: {}'.format( total,
             len([m for m in messages if m.is_todo()])
         ) )

@@ -378,15 +378,21 @@ class Command(BaseCommand):
             edd.count(), post.count()
         ) )
 
-        future_edd = edd.last()
-        self.stdout.write( 'Furthest EDD for #{:s} on {:s} ({:.0f} weeks)'.format(
-            future_edd.study_id, future_edd.due_date.isoformat(), (today - future_edd.due_date).total_seconds()/604800
-        ) )
-        past_edd = edd.first()
-        self.stdout.write( 'Furthest past delivery date')
+        future_edd = edd.order_by("-due_date")
+        self.stdout.write( 'Furthest from EDD')
+        for p in future_edd[:5]:
+            self.stdout.write( "\t{0.study_id} {0.due_date} {0.study_group} (weeks {1:.0f})".format(
+                p, p.delta_days() / 7
+            ) )
+        self.stdout.write( '\n')
+        # self.stdout.write( 'Furthest EDD for #{:s} on {:s} ({:.0f} weeks)'.format(
+        #     future_edd.study_id, future_edd.due_date.isoformat(), (today - future_edd.due_date).total_seconds()/604800
+        # ) )
+
+        self.stdout.write( 'Furthest past EDD')
         for p in edd[:5]:
-            self.stdout.write( "\t{0.study_id} {0.due_date} (weeks {1:.0f})".format(p,
-                (today - p.due_date).total_seconds()/604800
+            self.stdout.write( "\t{0.study_id} {0.due_date} {0.study_group} (weeks {1:.0f})".format(
+                p, p.delta_days() / 7
             ) )
         self.stdout.write( '\n')
 
@@ -394,8 +400,8 @@ class Command(BaseCommand):
         self.stdout.write( 'Found {:d} post-partum participants'.format(dd.count()) )
         self.stdout.write( 'Furthest from delivery date')
         for p in dd[:5]:
-            self.stdout.write( "\t{0.study_id} {0.due_date} {0.delivery_date} (weeks {1:.0f})".format(p,
-                (today - p.delivery_date).total_seconds()/604800
+            self.stdout.write( "\t{0.study_id} {0.due_date} {0.delivery_date}  {0.study_group} (weeks {1:.0f})".format(
+                p, p.delta_days() / 7
             ) )
         self.stdout.write( '\n')
 
