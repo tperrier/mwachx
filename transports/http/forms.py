@@ -16,8 +16,8 @@ class ParticipantSendForm(ModelForm):
 
     def __init__(self,*args,**kwargs):
         super(ParticipantSendForm,self).__init__(*args,**kwargs)
-        self.fields['contact'] = SpecialModelChoiceField(queryset=cont.Contact.objects.all())
-    
+        self.fields['contact'] = SpecialModelChoiceField(queryset=cont.Contact.objects.filter(study_group='two-way'))
+
     class Meta:
         model = cont.Message
         fields = ['text','contact']

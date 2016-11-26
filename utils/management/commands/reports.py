@@ -34,6 +34,7 @@ class Command(BaseCommand):
         print_parser.add_argument('-s','--status',action='store_true',default=False,help='print status histogram')
         print_parser.add_argument('-e','--enrollment',action='store_true',default=False,help='print enrollment by site')
         print_parser.add_argument('-d','--delivery',action='store_true',default=False,help='print delivery statistics')
+        print_parser.add_argument('--delivery-source',action='store_true',default=False,help='print delivery source statistics')
         print_parser.add_argument('--weeks',default=5,type=int,help='message history weeks (default 5)')
         print_parser.set_defaults(action='print_stats')
 
@@ -86,6 +87,8 @@ class Command(BaseCommand):
             self.print_enrollment()
         if self.options['delivery']:
             self.print_delivery_stats()
+        if self.options['delivery_source'] and not self.options['delivery']:
+            self.print_delivery_source()
 
     def send_times(self):
 
@@ -352,19 +355,13 @@ class Command(BaseCommand):
             status_counts[g['facility']][g['status']][g['study_group']] = g['count']
 
         # Print Group Counts
-        self.stdout.write( "{:^12}{:^18}{:^18}{:^18}{:^18}{:^18}{:^18}".format(
-            "","Pregnant","Post-Partum","SAE OptIn","SAE OptOut","Withdrew","Total"
-        ) )
+        self.stdout.write( StatusRow.header() )
         total_row = StatusRow()
         for facility, row in status_counts.items():
-            self.stdout.write( "{0:^12}{1[pregnant]:^18}{1[post]:^18}{1[loss]:^18}{1[sae]:^18}{1[stopped]:^18}{2:^18}".format(
-                facility , row, row.total()
-            ) )
+            self.stdout.write( row.row_str(facility) )
             total_row += row
 
-        self.stdout.write( "{0:^12}{1[pregnant]:^18}{1[post]:^18}{1[loss]:^18}{1[sae]:^18}{1[stopped]:^18}{2:^18}".format(
-            "Total", total_row, total_row.total()
-        ) )
+        self.stdout.write( total_row.row_str("Total") )
 
     def print_delivery_stats(self):
 
@@ -435,6 +432,33 @@ class Command(BaseCommand):
         for c in dd_hist:
             table += ' {:2.0f} '.format(c)
         self.stdout.write(table)
+
+        self.print_delivery_source()
+
+    def print_delivery_source(self):
+
+        self.print_header('Participant Delivery Source (control,one-way,two-way)')
+
+        source_groups = cont.Contact.objects_no_link.filter(delivery_date__isnull=False).order_by().values('facility',\
+            'study_group','delivery_source').annotate(count=models.Count('delivery_source'))
+
+        # for g in source_groups:
+        #     print g
+        # return
+
+        # Piviot Group Counts
+        source_counts = collections.defaultdict(DeliverySourceItem)
+        for g in source_groups:
+            source_counts[g['facility']][g['delivery_source']][g['study_group']] = g['count']
+
+        # Print Group Counts
+        self.stdout.write( DeliverySourceItem.header() )
+        total_row = DeliverySourceItem()
+        for facility, row in source_counts.items():
+            self.stdout.write( row.row_str(facility) )
+            total_row += row
+
+        self.stdout.write( total_row.row_str("Total") )
 
     def print_enrollment(self):
 
@@ -670,6 +694,14 @@ class MessageRow(CountRowBase):
 class GroupRowCount(CountRowBase):
     columns = ['control','one-way','two-way']
 
+    @property
+    def condensed(self):
+        return self.condensed_str()
+
+    def condensed_str(self):
+        row =  '--'.join( '{:02d}'.format(self[c]) for c in self.columns )
+        return "{} ({:03d})".format(row,sum(self.values()))
+
 class HivRowItem(CountRowBase):
     columns = ['none','initiated','system']
 
@@ -707,13 +739,32 @@ class LanguageMessageRow(CountRowBase):
     columns = ['english','swahili','luo']
     child_class = LanguageMessageRowItem
 
-class StatusRowItem(CountRowBase):
-    columns = ['control','one-way','two-way']
-
-    def __str__(self):
-        row =  '--'.join( '{:02d}'.format(self[c]) for c in self.columns )
-        return "{} ({:03d})".format(row,sum(self.values()))
-
 class StatusRow(CountRowBase):
     columns = ['pregnant','post','loss','sae','other','stopped']
-    child_class = StatusRowItem
+    child_class = GroupRowCount
+
+    @classmethod
+    def header(cls):
+        return "{:^12}{:^18}{:^18}{:^18}{:^18}{:^18}{:^18}".format(
+            "","Pregnant","Post-Partum","SAE OptIn","SAE OptOut","Withdrew","Total"
+        )
+
+    def row_str(self,label):
+        str_fmt = "{0:^12}{1[pregnant].condensed:^18}{1[post].condensed:^18}{1[loss].condensed:^18}"
+        str_fmt += "{1[sae].condensed:^18}{1[stopped].condensed:^18}{2:^18}"
+        return str_fmt.format( label , self, self.total().condensed_str() )
+
+class DeliverySourceItem(CountRowBase):
+    columns = ['phone','sms','visit','m2m','other','']
+    child_class = GroupRowCount
+
+    @classmethod
+    def header(cls):
+        return "{:^12}{:^18}{:^18}{:^18}{:^18}{:^18}{:^18}{:^18}".format(
+            "","Phone","SMS","Clinic Visit","Mothers to Mothers","Other","None","Total"
+        )
+
+    def row_str(self,label):
+        str_fmt = "{0:^12}{1[phone].condensed:^18}{1[sms].condensed:^18}{1[visit].condensed:^18}"
+        str_fmt += "{1[m2m].condensed:^18}{1[other].condensed:^18}{2:^18}{3:^18}"
+        return  str_fmt.format( label, self, self[''].condensed_str(), self.total().condensed_str() )
