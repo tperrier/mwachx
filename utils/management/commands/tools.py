@@ -2,7 +2,7 @@
 import datetime, openpyxl as xl, os
 from argparse import Namespace
 import code
-import operator, collections, re, argparse
+import operator, collections, re, csv
 
 #Django Imports
 from django.core.management.base import BaseCommand, CommandError
@@ -11,6 +11,7 @@ from django.db import transaction, connection
 import contacts.models as cont
 import backend.models as back
 import command_utils
+import transports
 from transports.email import email
 import transports.africas_talking.api as at
 
@@ -21,7 +22,7 @@ class Command(BaseCommand):
 
     def add_arguments(self,parser):
         parser.add_argument('-t','--time',action='store_true',default=False,help='print timing information')
-        subparsers = parser.add_subparsers(help='cron task to run')
+        subparsers = parser.add_subparsers(help='task to run')
 
         fix_trans = subparsers.add_parser('fix_trans',cmd=parser.cmd,help='fix translations html strings')
         fix_trans.add_argument('--dry-run',action='store_true',default=False,help='dry-run: no permenant changes')
@@ -30,6 +31,11 @@ class Command(BaseCommand):
         add_auto_trans = subparsers.add_parser('auto_trans',cmd=parser.cmd,help='add auto translations')
         add_auto_trans.add_argument('--dry-run',action='store_true',default=False,help='dry-run: no permenant changes')
         add_auto_trans.set_defaults(action='auto_trans')
+
+        send_from_csv = subparsers.add_parser('send_csv',cmd=parser.cmd,help='send messages from Africas Talking csv dump')
+        send_from_csv.add_argument('csv_file',help='csv file to use for sending messages from')
+        send_from_csv.add_argument('-s','--send',action='store_true',default=False,help='send messages otherwise dry-run')
+        send_from_csv.set_defaults(action='send_csv')
 
     def handle(self,*args,**options):
 
@@ -112,3 +118,38 @@ class Command(BaseCommand):
             self.stdout.write("Not Found: {}".format(len(counts.not_found)))
             for description in counts.not_found:
                 self.stdout.write("\t{}".format(description))
+
+    def send_csv(self):
+        """ Send messages from a csv file.
+
+            csv columns: Date	To	Status	Action	Message
+            If Action is not blank don't send that message
+        """
+
+        csv_file = csv.reader(open(self.options['csv_file']))
+
+        # Print CSV Header
+        print "Header:" , csv_file.next() , "Send:" , self.options['send']
+        print ""
+
+        sent , missing , skipped = 0 , 0 , 0
+        for row in csv_file:
+            _ , phone_number , _ , action , text = row
+            phone_number = "+" + phone_number
+
+            if action == "":
+                try:
+                    contact = cont.Contact.objects.get_from_phone_number(phone_number)
+                except cont.Contact.DoesNotExist as e:
+                    print "Missing:" , phone_number , " -> " , text
+                    if self.options['send']:
+                        transports.send( phone_number , text )
+                    missing += 1
+                else:
+                    if self.options['send']:
+                        contact.send_message( text )
+                    sent += 1
+            else:
+                skipped += 1
+
+        print "Sent:" , sent , "Missing:" , missing , "Skipped:" , skipped
