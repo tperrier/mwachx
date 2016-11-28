@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 #Local Imports
 from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
-from contacts.models import Message, PhoneCall, Practitioner, Visit
+from contacts.models import Message, PhoneCall, Practitioner, Visit, Connection
 import backend.models as back
 import utils
 import transports
@@ -33,6 +33,12 @@ class ContactManager(models.Manager):
                 to_attr='pending_visits'
             )
         )
+
+    def get_from_phone_number(self,phone_number):
+        try:
+            return Connection.objects.get(identity=phone_number).contact
+        except Connection.DoesNotExist as e:
+            raise Contact.DoesNotExist()
 
 class Contact(TimeStampedModel):
 
@@ -472,9 +478,9 @@ class Contact(TimeStampedModel):
             try:
                 msg_id, msg_success, external_data = transports.send(self.phone_number(),text)
             except transports.TransportError as e:
-                msg_id = ''
+                msg_id = ""
                 msg_success = False
-                external_data = {'error':str(e)}
+                external_data = {"error":str(e)}
 
         # Create new message
         new_message = self.message_set.create(
@@ -482,6 +488,7 @@ class Contact(TimeStampedModel):
             connection=self.connection(),
             external_id=msg_id,
             external_success=msg_success,
+            external_status="Sent" if msg_success else external_data.get("status","Failed"),
             external_data=external_data,
             **kwargs)
 

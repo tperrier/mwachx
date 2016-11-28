@@ -2,13 +2,14 @@
 import logging
 
 #Django Imports
-from django.views.generic.edit import FormView
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 
 #Local Imports
 import forms
-from contacts.models import Message
+import contacts.models as cont
 import transports
 
 
@@ -40,3 +41,29 @@ def can_submit(request):
 	if request.POST.has_key('web_token'):
 		return request.user.is_authenticated()
 	return True
+
+@csrf_exempt
+def delivery_report(request):
+
+	if request.method == 'POST':
+		status = request.POST['status']
+		message_id = request.POST['id']
+		failure_reason = request.POST.get('failureReason')
+
+		try:
+			message = cont.Message.objects.get_or_none(external_id=message_id)
+		except NameError as e:
+			message = None
+
+		if message is not None:
+			message.external_status = status
+			if status.lower() == "success":
+				message.external_success_time = timezone.now()
+			if failure_reason is not None:
+				message.external_data['reason'] = failure_reason
+			message.save()
+
+		output = "{} , {} , {}\n".format( status , message_id , failure_reason )
+		return HttpResponse(output)
+	else:
+		return HttpResponse("HTTP POST REQUIRED")

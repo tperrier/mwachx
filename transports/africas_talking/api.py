@@ -26,8 +26,7 @@ PARAMS = {'username':USERNAME,'bulkSMSMode':1}
 if SHORTCODE:
     PARAMS['from'] = SHORTCODE
 
-def send(to,message):
-
+def send_raw(to,message):
     if not AFRICAS_TALKING_SEND:
         raise AfricasTalkingException("Africas Talking called when send not set to True")
     if API_KEY is None:
@@ -43,7 +42,12 @@ def send(to,message):
     #Raise requests.exceptions.HTTPError if 4XX or 5XX
     post.raise_for_status()
 
-    data = post.json()
+    return post.json()
+
+def send(to,message):
+
+
+    data = send_raw(to,message)
     '''
     Example of JSON Response
     {u'SMSMessageData':
