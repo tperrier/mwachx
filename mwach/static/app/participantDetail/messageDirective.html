@@ -40,7 +40,7 @@
             <i class="mw mw-language"></i>
         </label>
 
-        <button ng-if="message.translation_status == 'done'" ng-click='retranslate()' class="btn btn-xs btn-default" tooltip="Mark for Retranslation">
+        <button ng-if="message.translation_status == 'done' || message.translation_status == 'none'" ng-click='retranslate()' class="btn btn-xs btn-default" tooltip="Mark for Retranslation">
           <i class="mw mw-redo"></i>
         </button>
 

@@ -35,6 +35,7 @@ class Command(BaseCommand):
         print_parser.add_argument('-e','--enrollment',action='store_true',default=False,help='print enrollment by site')
         print_parser.add_argument('-d','--delivery',action='store_true',default=False,help='print delivery statistics')
         print_parser.add_argument('--delivery-source',action='store_true',default=False,help='print delivery source statistics')
+        print_parser.add_argument('--topic',action='store_true',default=False,help='incoming message topics')
         print_parser.add_argument('--weeks',default=5,type=int,help='message history weeks (default 5)')
         print_parser.set_defaults(action='print_stats')
 
@@ -48,7 +49,10 @@ class Command(BaseCommand):
 
         csv_parser = subparsers.add_parser('csv',cmd=parser.cmd,help='create csv reports')
         csv_parser.add_argument('--dir',default='ignore',help='directory to save csv in')
-        csv_parser.set_defaults(action='make_csv')
+        csv_parser.add_argument('name',help='csv action name',
+            choices=('hiv_messaging','enrollment','messages','edd','delivery','sae')
+        )
+        csv_parser.set_defaults(action='make_csv_name')
 
         custom_parser = subparsers.add_parser('custom',cmd=parser.cmd,help='run custom command')
         custom_parser.set_defaults(action='custom')
@@ -89,6 +93,8 @@ class Command(BaseCommand):
             self.print_delivery_stats()
         if self.options['delivery_source'] and not self.options['delivery']:
             self.print_delivery_source()
+        if self.options['topic']:
+            self.print_message_topic()
 
     def send_times(self):
 
@@ -382,9 +388,6 @@ class Command(BaseCommand):
                 p, p.delta_days() / 7
             ) )
         self.stdout.write( '\n')
-        # self.stdout.write( 'Furthest EDD for #{:s} on {:s} ({:.0f} weeks)'.format(
-        #     future_edd.study_id, future_edd.due_date.isoformat(), (today - future_edd.due_date).total_seconds()/604800
-        # ) )
 
         self.stdout.write( 'Furthest past EDD')
         for p in edd[:5]:
@@ -395,7 +398,7 @@ class Command(BaseCommand):
 
         dd = c_all.filter(delivery_date__isnull=False).order_by('delivery_date')
         self.stdout.write( 'Found {:d} post-partum participants'.format(dd.count()) )
-        self.stdout.write( 'Furthest from delivery date')
+        self.stdout.write( 'Furthest from delivery date - (id due_date delivery_date)')
         for p in dd[:5]:
             self.stdout.write( "\t{0.study_id} {0.due_date} {0.delivery_date}  {0.study_group} (weeks {1:.0f})".format(
                 p, p.delta_days() / 7
@@ -485,6 +488,18 @@ class Command(BaseCommand):
             total_row += enrollment
         print 'Total  ' , total_row , total_row.total()
 
+    def print_message_topic(self):
+
+        self.print_header('Incoming Message Topic')
+
+        msgs = cont.Message.objects.filter(is_outgoing=False,contact__isnull=False)
+        topics = collections.Counter( m.topic for m in msgs )
+
+        print "%s\t%s" % ('Topic','Count')
+        for key , count in topics.items():
+            print "%s\t%s" % (key , count)
+        print "%s\t%s" % ('Total', msgs.count())
+
     def print_header(self,header):
         if self.printed:
             self.stdout.write("")
@@ -493,6 +508,10 @@ class Command(BaseCommand):
         self.stdout.write( "-"*30 )
         self.stdout.write( "{:^30}".format(header) )
         self.stdout.write( "-"*30 )
+
+    ########################################
+    # SEC::Start XLSX Functions
+    ########################################
 
     def make_xlsx(self):
 
@@ -521,10 +540,15 @@ class Command(BaseCommand):
 
             wb.save(xlsx_path_out)
 
-    def make_csv(self):
-        ''' Quick CSV of hiv messaging '''
+    ########################################
+    # SEC::Start CSV Functions
+    ########################################
 
-        hiv_disclosed_values = {True:1,False:0,None:99}
+    def make_csv_name(self):
+        file_path = getattr(self,'make_{}_csv'.format(self.options['name']))()
+        print "Done:" , file_path
+
+    def make_hiv_messaging_csv(self):
         columns = collections.OrderedDict([
             ('study_id','study_id'),
             ('hiv_messaging','hiv_messaging'),
@@ -533,27 +557,157 @@ class Command(BaseCommand):
         ])
 
         contacts = cont.Contact.objects.all().order_by('study_id')
-        csv_file_path = os.path.join(self.options['dir'],'mx_data_dump.csv')
-        with open( csv_file_path , 'wb') as csvfile:
+        file_path = os.path.join(self.options['dir'],'hiv_messaging.csv')
+
+        make_csv(columns,contacts,file_path)
+        return file_path
+
+    def make_enrollment_csv(self):
+        c_all = cont.Contact.objects.all()
+
+        enrollment_counts = collections.OrderedDict()
+
+        for c in c_all:
+            key = c.created.strftime('%Y-%U')
+            try:
+                enrollment_counts[key][c.facility] += 1
+            except KeyError as e:
+                enrollment_counts[key] = FacilityRow()
+                enrollment_counts[key][c.facility] += 1
+
+        file_path = os.path.join(self.options['dir'],'enrollment.csv')
+
+        with open( file_path , 'wb') as csvfile:
             csv_writer = csv.writer(csvfile)
 
             # Header Row
-            csv_writer.writerow( columns.keys() )
+            csv_writer.writerow( ["Week"] + FacilityRow.columns + ["Total"] )
+            total_row = FacilityRow()
+            for week , enrollment in enrollment_counts.items():
+                csv_writer.writerow( [week] + list(enrollment) + [enrollment.total()] )
+                total_row += enrollment
+            csv_writer.writerow( ['Total'] + list(total_row) + [total_row.total()] )
 
-            for c in contacts:
-                csv_writer.writerow( [ make_column(c,value) for value in columns.values()] )
+        return file_path
+
+    def make_messages_csv(self):
+
+        m_all = cont.Message.objects.all().order_by('created')
+
+        msg_type_counts = collections.OrderedDict()
+
+        for msg in m_all:
+            key = msg.created.strftime('%Y-%U')
+            try:
+                msg_type_counts[key][msg.msg_type] += 1
+            except KeyError as e:
+                msg_type_counts[key] = MessageTypeRow()
+                msg_type_counts[key][msg.msg_type] += 1
+
+        file_path = os.path.join(self.options['dir'],'messages.csv')
+
+        with open( file_path , 'wb') as csvfile:
+            csv_writer = csv.writer(csvfile)
+
+            # Write Header
+            csv_writer.writerow( ["Week"] + MessageTypeRow.columns + ["Total"] )
+            total_row = MessageTypeRow()
+            for week , msg_types in msg_type_counts.items():
+                csv_writer.writerow( [week] + list(msg_types) + [msg_types.total()] )
+                total_row += msg_types
+            csv_writer.writerow( ['Total'] + list(total_row) + [total_row.total()] )
+
+        return file_path
+
+    def make_edd_csv(self):
+
+        c_all = cont.Contact.objects.filter(delivery_date__isnull=False).exclude(status__in=('loss','sae'))
+
+        edd_deltas = collections.Counter( (c.delivery_date - c.due_date).days / 7 for c in c_all )
+        weeks = sorted(edd_deltas.keys())
+
+        file_path = os.path.join(self.options['dir'],'edd_deltas.csv')
+
+        with open( file_path , 'wb') as csvfile:
+            csv_writer = csv.writer(csvfile)
+
+            # Write Header
+            csv_writer.writerow( ("Week" , "Count") )
+            for week in range( weeks[0] , weeks[-1] + 1):
+                csv_writer.writerow( (week , edd_deltas[week]) )
+
+        return file_path
+
+    def make_delivery_csv(self):
+        c_all = cont.Contact.objects.filter(delivery_date__isnull=False).exclude(status__in=('loss','sae'))
+
+        delivery_deltas = collections.defaultdict( GroupRowCount )
+        max_week = 0
+        for c in c_all:
+            delta = c.delivery_delta()
+            delta_weeks = delta / 7 if delta is not None else 'none'
+            delivery_deltas[delta_weeks][c.study_group] += 1
+            if delta is not None and delta < 0:
+                print c.study_id, c, c.delivery_date , c.status
+            if delta_weeks > max_week and delta is not None:
+                max_week = delta_weeks
+
+        file_path = os.path.join(self.options['dir'],'delivery_deltas.csv')
+
+        with open( file_path , 'wb') as csvfile:
+            csv_writer = csv.writer(csvfile)
+
+            # Write Header
+            csv_writer.writerow( ("Week" , "Control" , "One-Way", "Two-Way", "Total") )
+            total_row = GroupRowCount()
+            for week in range(max_week + 1):
+                csv_writer.writerow( [week] + list(delivery_deltas[week]) + [delivery_deltas[week].total()] )
+                total_row += delivery_deltas[week]
+            csv_writer.writerow( ["Total"] + list(total_row) + [total_row.total()] )
+
+        return file_path
+
+    def make_sae_csv(self):
+
+        loss = cont.Contact.objects.filter(loss_date__isnull=False)
+
+        loss_deltas = collections.defaultdict( GroupRowCount )
+        max_week = 0
+        for c in loss:
+            loss_notify = c.statuschange_set.filter(
+                models.Q(new='loss') | models.Q(new='sae')
+            ).first().created.date()
+            delta_weeks = (loss_notify - c.loss_date).days / 7
+            loss_deltas[delta_weeks][c.study_group] += 1
+            if delta_weeks > max_week:
+                max_week = delta_weeks
+
+        file_path = os.path.join(self.options['dir'],'loss_deltas.csv')
+
+        with open( file_path , 'wb') as csvfile:
+            csv_writer = csv.writer(csvfile)
+
+            # Write Header
+            csv_writer.writerow( ("Week" , "Control" , "One-Way", "Two-Way", "Total") )
+            total_row = GroupRowCount()
+            for week in range(max_week + 1):
+                csv_writer.writerow( [week] + list(loss_deltas[week]) + [loss_deltas[week].total()] )
+                total_row += loss_deltas[week]
+            csv_writer.writerow( ["Total"] + list(total_row) + [total_row.total()] )
+
+        return file_path
 
 
 ########################################
-# XLSX Helper Functions
+# SEC::XLSX Helper Functions
 ########################################
-
 
 last_week = datetime.date.today() - datetime.timedelta(days=7)
 detail_columns = collections.OrderedDict([
     ('Study ID','study_id'),
     ('Enrolled',lambda c: c.created.date()),
     ('Group','study_group'),
+    ('Status','get_status_display'),
     ('HIV','hiv_messaging') ,
     ('Disclosed','hiv_disclosed') ,
     ('Shared','phone_shared') ,
@@ -624,6 +778,17 @@ def make_column(obj,column):
     # Else assume column is a function that takes the object
     return column(obj)
 
+def make_csv(columns,data,file_path):
+    ''' Quick CSV of hiv messaging '''
+
+    with open( file_path , 'wb') as csvfile:
+        csv_writer = csv.writer(csvfile)
+
+        # Header Row
+        csv_writer.writerow( columns.keys() )
+        for row in data:
+            csv_writer.writerow( [ make_column(row,value) for value in columns.values()] )
+
 def seconds_as_str(seconds):
     if seconds is None:
         return None
@@ -661,9 +826,9 @@ class CountRowBase(dict):
         return self
 
     def __iter__(self):
-        """ Iterate over values instead of keys """
-        for v in self.values():
-            yield v
+        """ Iterate over values in column order instead of keys """
+        for c in self.columns:
+            yield self[c]
 
     def total(self):
         new = self.child_class()
@@ -745,14 +910,19 @@ class StatusRow(CountRowBase):
 
     @classmethod
     def header(cls):
-        return "{:^12}{:^18}{:^18}{:^18}{:^18}{:^18}{:^18}".format(
-            "","Pregnant","Post-Partum","SAE OptIn","SAE OptOut","Withdrew","Total"
+        return "{:^12}{:^18}{:^18}{:^18}{:^18}{:^18}{:^18}{:^18}".format(
+            "","Pregnant","Post-Partum","SAE OptIn","SAE OptOut","Withdrew","Other","Total"
         )
 
     def row_str(self,label):
         str_fmt = "{0:^12}{1[pregnant].condensed:^18}{1[post].condensed:^18}{1[loss].condensed:^18}"
-        str_fmt += "{1[sae].condensed:^18}{1[stopped].condensed:^18}{2:^18}"
+        str_fmt += "{1[sae].condensed:^18}{1[stopped].condensed:^18}{1[other].condensed:^18}{2:^18}"
         return str_fmt.format( label , self, self.total().condensed_str() )
+
+class MessageTypeRow(CountRowBase):
+
+    columns = ['edd','dd','loss','visit','bounce','stop','signup',
+                'control','one-way','two-way','nurse','anonymous','empty_auto']
 
 class DeliverySourceItem(CountRowBase):
     columns = ['phone','sms','visit','m2m','other','']

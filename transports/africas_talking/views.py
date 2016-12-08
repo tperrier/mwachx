@@ -53,9 +53,8 @@ def delivery_report(request):
 		try:
 			message = cont.Message.objects.get_or_none(external_id=message_id)
 		except NameError as e:
-			message = None
-
-		if message is not None:
+			return HttpResponse("NO MESSAGE FOR ID FOUND")
+		else:
 			message.external_status = status
 			if status.lower() == "success":
 				message.external_success_time = timezone.now()
@@ -63,7 +62,7 @@ def delivery_report(request):
 				message.external_data['reason'] = failure_reason
 			message.save()
 
-		output = "{} , {} , {}\n".format( status , message_id , failure_reason )
-		return HttpResponse(output)
+			output = "{} , {} , {}\n".format( status , message_id , failure_reason )
+			return HttpResponse(output)
 	else:
 		return HttpResponse("HTTP POST REQUIRED")

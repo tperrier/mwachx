@@ -124,6 +124,20 @@ class Message(TimeStampedModel):
                 return '{0[0]}.{0[1]}'.format(split)
 
     @property
+    def msg_type(self):
+        if self.is_outgoing is False:
+            try:
+                return self.contact.study_group or 'empty_study_group'
+            except AttributeError as e:
+                return 'anonymous'
+        else:
+            if self.is_system is True:
+                return self.auto.split('.')[0] or 'empty_auto'
+            else:
+                return self.sent_by()
+        return 'end'
+
+    @property
     def previous_outgoing(self):
         try:
             return self._previous_outgoing

@@ -544,6 +544,15 @@ class Contact(TimeStampedModel):
                 delta = validation_msg.created - welcome_msg.created
                 return delta.total_seconds()
 
+    def delivery_delta(self):
+        ''' Return the number of days between the delivery and delivery notification '''
+        if self.delivery_date is None:
+            return None
+        else:
+            status_change = self.statuschange_set.filter(type='status',new='post').last()
+            if status_change is not None:
+                return (status_change.created.date() - self.delivery_date).days
+            return None
 
 class StatusChangeQuerySet(ForUserQuerySet):
 
@@ -575,3 +584,6 @@ class StatusChange(TimeStampedModel):
     type = models.CharField(max_length=10,default='status')
 
     comment = models.TextField(blank=True)
+
+    def __str__(self):
+        return "{0.old} {0.new} ({0.type})".format(self)

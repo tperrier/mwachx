@@ -46,7 +46,6 @@ def send_raw(to,message):
 
 def send(to,message):
 
-
     data = send_raw(to,message)
     '''
     Example of JSON Response

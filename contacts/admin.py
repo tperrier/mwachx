@@ -143,7 +143,7 @@ class PractitionerAdmin(admin.ModelAdmin):
 @admin.register(cont.StatusChange)
 class StatusChangeAdmin(admin.ModelAdmin,ContactAdminMixin):
     list_display = ('comment','participant_name','old','new','type','created')
-    search_fields = ('participant__study_id','participant__nickname')
+    search_fields = ('contact__study_id','contact__nickname')
 
 @admin.register(cont.EventLog)
 class EventLogAdmin(admin.ModelAdmin):
