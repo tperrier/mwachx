@@ -34,6 +34,7 @@ class Command(BaseCommand):
         print_parser.add_argument('-s','--status',action='store_true',default=False,help='print status histogram')
         print_parser.add_argument('-e','--enrollment',action='store_true',default=False,help='print enrollment by site')
         print_parser.add_argument('-d','--delivery',action='store_true',default=False,help='print delivery statistics')
+        print_parser.add_argument('-x', '--success-times', action='store_true', default=False, help='print success times report')
         print_parser.add_argument('--delivery-source',action='store_true',default=False,help='print delivery source statistics')
         print_parser.add_argument('--topic',action='store_true',default=False,help='incoming message topics')
         print_parser.add_argument('--weeks',default=5,type=int,help='message history weeks (default 5)')
@@ -95,6 +96,8 @@ class Command(BaseCommand):
             self.print_delivery_source()
         if self.options['topic']:
             self.print_message_topic()
+        if self.options['success_times']:
+            self.print_success_times()
 
     def send_times(self):
 
@@ -499,6 +502,69 @@ class Command(BaseCommand):
         for key , count in topics.items():
             print "%s\t%s" % (key , count)
         print "%s\t%s" % ('Total', msgs.count())
+
+    def print_success_times(self):
+
+        self.print_header('Success Times')
+
+        # Add success_dt and filter messages from start of collection: Nov 30, 2016
+        messages = cont.Message.objects.add_success_dt().filter(
+            created__gte=timezone.make_aware(datetime.datetime(2016,11,30))
+        )
+
+        # Print out message statuses
+        status = collections.Counter( m.external_status for m in messages )
+        self.stdout.write( str(status) )
+        self.stdout.write('\n')
+
+        # Get most frequently unsuccessful phone numbers
+        sent_only = messages.filter(external_status='Sent')
+        sent_only_counts = collections.Counter( m.connection.identity for m in sent_only)
+        sent_only_hist = collections.Counter( sent_only_counts.values() )
+        self.stdout.write( str(sent_only_hist) )
+
+        phone_numbers = sent_only_counts.most_common(12)
+        def display_phone_number(num):
+            phone_number = phone_numbers[num-1][0]
+            connection = cont.Connection.objects.get(identity=phone_number)
+            participant = connection.contact
+            msgs = messages.filter(connection__identity=phone_number)
+            return " |\t{!r:<40} O: {:<3} R: {:<3} M: {:<3} I: {:<3}".format(
+                participant,
+                msgs.filter(is_outgoing=True).count(),
+                msgs.filter(success_dt__isnull=False).count(),
+                msgs.filter(external_status='Sent').count(),
+                msgs.filter(is_outgoing=False).count()
+            )
+
+        self.stdout.write('\n')
+        intervals = [
+            ['',0],
+            ['<10s',10],
+            ['<30s',30],
+            ['<1m',60],
+            ['<5m',300],
+            ['<10m',600],
+            ['<30m',1800],
+            ['<1h',3600],
+            ['<2h',7200],
+            ['<4h',14400],
+            ['<8h',28800],
+            ['<16h',57600],
+            ['<24h',86400]
+        ]
+
+        for i in range(1,len(intervals)):
+            count = messages.filter(
+                success_dt__gt=intervals[i-1][1],success_dt__lte=intervals[i][1]
+            ).count()
+            intervals[i].append(count)
+            self.stdout.write( '  {:>8}: {:<4}{:>15}'.format(
+                intervals[i][0],
+                count,
+                display_phone_number(i)
+            ))
+
 
     def print_header(self,header):
         if self.printed:

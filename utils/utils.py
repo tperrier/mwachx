@@ -2,6 +2,7 @@ import datetime
 from constance import config
 from django.conf import settings
 from django.utils import dateparse
+import django.db.models as db
 
 def today(today=None):
     if today is not None:
@@ -44,3 +45,10 @@ def days_as_str(days):
     if -7 <= days <= 7:
         return '{:d}d'.format(days)
     return '{:d}w'.format(int(round(days/7.0)))
+
+class SQLiteDate(db.Func):
+    function = 'JULIANDAY'
+
+def sqlite_date_diff(start_date,end_date):
+    ''' return a DjanoORM Expression for the number of seconds between start_date and end_data '''
+    return db.ExpressionWrapper( (SQLiteDate(end_date) - SQLiteDate(start_date)) * 86400 , db.IntegerField() )

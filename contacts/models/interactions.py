@@ -11,6 +11,7 @@ from constance import config
 
 #Local Imports
 from visit import ScheduledPhoneCall
+import utils
 from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
 
 class MessageQuerySet(ForUserQuerySet):
@@ -22,6 +23,11 @@ class MessageQuerySet(ForUserQuerySet):
 
     def to_translate(self):
         return self.filter(is_system=False,translation_status='todo')
+
+    def add_success_dt(self):
+        return self.annotate(
+            success_dt=utils.sqlite_date_diff('created','external_success_time')
+        ).order_by('-success_dt')
 
 class Message(TimeStampedModel):
 
