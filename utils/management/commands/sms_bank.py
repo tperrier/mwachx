@@ -16,6 +16,7 @@ class Command(BaseCommand):
     def add_arguments(self,parser):
         # code.interact(local=locals())
         parser.add_argument('-d','--dir',help='directory to find translations in default (translations)',default='translations')
+        parser.add_argument('-f','--final',help='final xlsx name (translations.xlsx)',default='translations.xlsx')
         subparsers = parser.add_subparsers(help='sms bank commands')
 
         # The cmd argument is required for django.core.management.base.CommandParser
@@ -59,7 +60,7 @@ class Command(BaseCommand):
             done_swahili = os.path.join(options['dir'],'done_swahili.xlsx'),
             done_luo = os.path.join(options['dir'],'done_luo.xlsx'),
 
-            final = os.path.join(options['dir'],'translations.xlsx')
+            final = os.path.join(options['dir'],options['final'])
         )
 
         self.options = options
