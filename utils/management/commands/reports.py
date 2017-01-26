@@ -51,7 +51,7 @@ class Command(BaseCommand):
         csv_parser = subparsers.add_parser('csv',cmd=parser.cmd,help='create csv reports')
         csv_parser.add_argument('--dir',default='ignore',help='directory to save csv in')
         csv_parser.add_argument('name',help='csv action name',
-            choices=('hiv_messaging','enrollment','messages','edd','delivery','sae')
+            choices=('hiv_messaging','enrollment','messages','edd','delivery','sae','visits')
         )
         csv_parser.set_defaults(action='make_csv_name')
 
@@ -615,6 +615,7 @@ class Command(BaseCommand):
         print "Done:" , file_path
 
     def make_hiv_messaging_csv(self):
+        ''' Basic csv dump of hiv messaging status '''
         columns = collections.OrderedDict([
             ('study_id','study_id'),
             ('hiv_messaging','hiv_messaging'),
@@ -626,6 +627,21 @@ class Command(BaseCommand):
         file_path = os.path.join(self.options['dir'],'hiv_messaging.csv')
 
         make_csv(columns,contacts,file_path)
+        return file_path
+
+    def make_visits_csv(self):
+        ''' Basic csv dump of visit history for all participants '''
+        columns = collections.OrderedDict([
+            ('study_id',operator.attrgetter('participant.study_id')),
+            ('type','visit_type'),
+            ('scheduled','scheduled'),
+            ('status','status'),
+            ('arrived','arrived'),
+        ])
+
+        visits = cont.Visit.objects.all().order_by('participant__study_id').prefetch_related('participant')
+        file_path = os.path.join(self.options['dir'],'visit_dump.csv')
+        make_csv(columns,visits,file_path)
         return file_path
 
     def make_enrollment_csv(self):
@@ -686,6 +702,7 @@ class Command(BaseCommand):
         return file_path
 
     def make_edd_csv(self):
+        """ Make report of delivery_date to edd time delta in weeks """
 
         c_all = cont.Contact.objects.filter(delivery_date__isnull=False).exclude(status__in=('loss','sae'))
 
@@ -705,6 +722,7 @@ class Command(BaseCommand):
         return file_path
 
     def make_delivery_csv(self):
+        """ Create csv of time delta in weeks between delivery and delivery notification """
         c_all = cont.Contact.objects.filter(delivery_date__isnull=False).exclude(status__in=('loss','sae'))
 
         delivery_deltas = collections.defaultdict( GroupRowCount )
@@ -845,7 +863,7 @@ def make_column(obj,column):
     return column(obj)
 
 def make_csv(columns,data,file_path):
-    ''' Quick CSV of hiv messaging '''
+    ''' Write data to {file_path}.csv '''
 
     with open( file_path , 'wb') as csvfile:
         csv_writer = csv.writer(csvfile)
