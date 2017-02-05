@@ -86,6 +86,7 @@ class Message(TimeStampedModel):
     def is_reply(self):
         return self.parent is not None
     is_reply.short_description = 'Reply'
+    is_reply.boolean = True
 
     def sent_by(self):
         if self.is_outgoing:

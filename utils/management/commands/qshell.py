@@ -14,13 +14,10 @@ class Command(BaseCommand):
 
     help = "Quick Shell with default imports"
 
+    def add_arguments(self,parser):
+        parser.add_argument('--test',action='store_true',default=False,help='run test code first')
 
     def handle(self,*args,**options):
-
-        c_all = cont.Contact.objects_no_link.all()
-        m_all = cont.Message.objects.all()
-        v_all = cont.Visit.objects.all()
-        s_all = cont.StatusChange.objects.all()
 
         # Set up a dictionary to serve as the environment for the shell, so
         # that tab completion works on objects that are imported at runtime.
@@ -55,6 +52,19 @@ class Command(BaseCommand):
             except NameError:
                 pass
 
+        c_all = cont.Contact.objects_no_link.all()
+        m_all = cont.Message.objects.all()
+        v_all = cont.Visit.objects.all()
+        s_all = cont.StatusChange.objects.all()
+
         namespace = globals()
         namespace.update(locals())
+        if options['test'] is True:
+            namespace.update(test_handler(namespace))
         code.interact(local=namespace)
+
+def test_handler(ns):
+
+    tmp = "Hello World"
+
+    return locals()

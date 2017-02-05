@@ -83,7 +83,7 @@ ContactAdminMixin = ParticipantMixinFactory('contact')
 class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
 
     list_display = ('text','participant_name','identity','is_viewed','is_system',
-        'is_outgoing', 'is_reply', 'translation_status','external_success','created')
+        'is_outgoing', 'is_reply','external_success', 'external_status', 'translation_status','created')
     list_filter = ('is_viewed','is_system','is_outgoing', ('created', admin.DateFieldListFilter) ,'connection__contact__facility',
     'translation_status','is_related','external_success')
 

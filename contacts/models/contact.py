@@ -7,6 +7,7 @@ import math, datetime, numbers
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 #Local Imports
 from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
@@ -18,6 +19,32 @@ import transports
 class ContactQuerySet(ForUserQuerySet):
 
     participant_field = None
+
+    def get_from_phone_number(self,phone_number):
+        try:
+            return Connection.objects.get(identity=phone_number).contact
+        except Connection.DoesNotExist as e:
+            raise Contact.DoesNotExist()
+
+    def annotate_messages(self,at_only=True):
+        if at_only is True:
+            msg_start = timezone.make_aware(datetime.datetime(2016,11,30))
+        else:
+            msg_start = timezone.make_aware(datetime.datetime(2010,1,1))
+
+        def count_when(**kwargs):
+            return models.Count( models.Case(
+                models.When(message__created__gte=msg_start,then=1,**kwargs),output_field=models.IntegerField()
+            ))
+
+        return self.annotate(
+            msg_out=count_when(message__is_outgoing=True),
+            msg_in=count_when(message__is_outgoing=False),
+            msg_received=count_when(message__external_status='Success'),
+            msg_failed=count_when(message__external_status='Failed'),
+            msg_rejected=count_when(message__external_status='Message Rejected By Gateway'),
+            msg_missed=count_when(message__external_status='Sent')
+        )
 
 class ContactManager(models.Manager):
 
@@ -33,12 +60,6 @@ class ContactManager(models.Manager):
                 to_attr='pending_visits'
             )
         )
-
-    def get_from_phone_number(self,phone_number):
-        try:
-            return Connection.objects.get(identity=phone_number).contact
-        except Connection.DoesNotExist as e:
-            raise Contact.DoesNotExist()
 
 class Contact(TimeStampedModel):
 

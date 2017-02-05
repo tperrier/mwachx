@@ -50,8 +50,11 @@ class Command(BaseCommand):
 
         csv_parser = subparsers.add_parser('csv',cmd=parser.cmd,help='create csv reports')
         csv_parser.add_argument('--dir',default='ignore',help='directory to save csv in')
-        csv_parser.add_argument('name',help='csv action name',
-            choices=('hiv_messaging','enrollment','messages','edd','delivery','sae','visits')
+        csv_parser.add_argument('name',help='csv report type',
+            choices=(
+                'hiv_messaging','enrollment','messages','edd','delivery',
+                'sae','visits','msg_success'
+            )
         )
         csv_parser.set_defaults(action='make_csv_name')
 
@@ -523,18 +526,15 @@ class Command(BaseCommand):
         sent_only_hist = collections.Counter( sent_only_counts.values() )
         self.stdout.write( str(sent_only_hist) )
 
-        phone_numbers = sent_only_counts.most_common(12)
+        participant_message_counts = cont.Contact.objects_no_link.annotate_messages().order_by('-msg_missed')[:12]
         def display_phone_number(num):
-            phone_number = phone_numbers[num-1][0]
-            connection = cont.Connection.objects.get(identity=phone_number)
-            participant = connection.contact
-            msgs = messages.filter(connection__identity=phone_number)
+            participant = participant_message_counts[num-1]
             return " |\t{!r:<40} O: {:<3} R: {:<3} M: {:<3} I: {:<3}".format(
                 participant,
-                msgs.filter(is_outgoing=True).count(),
-                msgs.filter(success_dt__isnull=False).count(),
-                msgs.filter(external_status='Sent').count(),
-                msgs.filter(is_outgoing=False).count()
+                participant.msg_out,
+                participant.msg_received,
+                participant.msg_missed,
+                participant.msg_in
             )
 
         self.stdout.write('\n')
@@ -642,6 +642,23 @@ class Command(BaseCommand):
         visits = cont.Visit.objects.all().order_by('participant__study_id').prefetch_related('participant')
         file_path = os.path.join(self.options['dir'],'visit_dump.csv')
         make_csv(columns,visits,file_path)
+        return file_path
+
+    def make_msg_success_csv(self):
+        ''' Basic csv dump of message success rates '''
+        columns = collections.OrderedDict([
+            ('study_id','study_id'),
+            ('group','study_group'),
+            ('msg_out','msg_out'),
+            ('missed','msg_missed'),
+            ('received','msg_received'),
+            ('failed','msg_failed'),
+            ('rate',lambda p: round(p.msg_received / float(p.msg_out),4) if p.msg_out != 0 else 0 ),
+            ('msg_in','msg_in')
+        ])
+        p_all = cont.Contact.objects_no_link.annotate_messages().order_by('-study_group','-msg_missed','-msg_out')
+        file_path = os.path.join(self.options['dir'],'message_success.csv')
+        make_csv(columns,p_all,file_path)
         return file_path
 
     def make_enrollment_csv(self):
