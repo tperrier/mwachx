@@ -3,6 +3,7 @@ import datetime, openpyxl as xl, os
 from argparse import Namespace
 import code
 import operator, collections, re, csv
+import importlib
 
 #Django Imports
 from django.core.management.base import BaseCommand, CommandError
@@ -14,6 +15,7 @@ import command_utils
 import transports
 from transports.email import email
 import transports.africas_talking.api as at
+import tasks
 
 class Command(BaseCommand):
     '''Cron commands to manage project '''
@@ -29,13 +31,18 @@ class Command(BaseCommand):
         fix_trans.set_defaults(action='fix_trans')
 
         add_auto_trans = subparsers.add_parser('auto_trans',cmd=parser.cmd,help='add auto translations')
-        add_auto_trans.add_argument('--dry-run',action='store_true',default=False,help='dry-run: no permenant changes')
+        add_auto_trans.add_argument('--dry-run',action='store_true',default=False,help='dry-run: no permenant changes (defatul: True)')
         add_auto_trans.set_defaults(action='auto_trans')
 
         send_from_csv = subparsers.add_parser('send_csv',cmd=parser.cmd,help='send messages from Africas Talking csv dump')
         send_from_csv.add_argument('csv_file',help='csv file to use for sending messages from')
         send_from_csv.add_argument('-s','--send',action='store_true',default=False,help='send messages otherwise dry-run')
         send_from_csv.set_defaults(action='send_csv')
+
+        task_parser = subparsers.add_parser('tasks',cmd=parser.cmd,help='run one off task from task folder')
+        task_parser.add_argument('--dry-run',action='store_true',default=False,help='dry-run: no permenant changes (defatul: True)')
+        task_parser.add_argument('task',choices=tasks.task_list,help='task to run')
+        task_parser.set_defaults(action='run_task')
 
     def handle(self,*args,**options):
 
@@ -44,6 +51,11 @@ class Command(BaseCommand):
         getattr(self,options['action'])()
         if options['time']:
             self.stdout.write("Duration: {}".format( (datetime.datetime.now() - start)))
+
+    def run_task(self):
+
+        module = importlib.import_module('utils.management.commands.tasks.{}'.format(self.options['task']))
+        module.main(self.options['dry_run'])
 
     def fix_trans(self):
         """ Fix translation html messages striping <br> and &nbsp; """
@@ -123,7 +135,7 @@ class Command(BaseCommand):
         """ Send messages from a csv file.
 
             csv columns: Date	To	Status	Action	Message
-            If Action is not blank don't send that message
+            If Action is has text do not send that message
         """
 
         csv_file = csv.reader(open(self.options['csv_file']))
@@ -137,7 +149,7 @@ class Command(BaseCommand):
             _ , phone_number , _ , action , text = row
             phone_number = "+" + phone_number
 
-            if action == "":
+            if action.strip() == "":
                 try:
                     contact = cont.Contact.objects.get_from_phone_number(phone_number)
                 except cont.Contact.DoesNotExist as e:
