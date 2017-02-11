@@ -1,7 +1,7 @@
 import datetime
 from constance import config
 from django.conf import settings
-from django.utils import dateparse
+from django.utils import dateparse , timezone
 import django.db.models as db
 
 def today(today=None):
@@ -15,6 +15,13 @@ def today(today=None):
 
 def parse_date(datestr):
  	return datetime.datetime.strptime(datestr,'%d-%m-%Y').date()
+
+def make_date(date,month=0,day=0):
+    try:
+        new_date = datetime.datetime.combine(date,datetime.time())
+    except TypeError as e:
+        new_date = datetime.datetime(date,month,day)
+    return timezone.make_aware(new_date)
 
 def angular_datepicker(datestr):
     if datestr is None or hasattr(datestr,'isoformat'):
