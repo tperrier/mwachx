@@ -15,7 +15,7 @@ import command_utils
 import transports
 from transports.email import email
 import transports.africas_talking.api as at
-import tasks
+import tasks 
 
 class Command(BaseCommand):
     '''Cron commands to manage project '''
@@ -40,8 +40,9 @@ class Command(BaseCommand):
         send_from_csv.set_defaults(action='send_csv')
 
         task_parser = subparsers.add_parser('tasks',cmd=parser.cmd,help='run one off task from task folder')
-        task_parser.add_argument('--dry-run',action='store_true',default=False,help='dry-run: no permenant changes (defatul: True)')
+        task_parser.add_argument('--run',action='store_true',default=False,help='run: flag to make changes (defatul: False)')
         task_parser.add_argument('task',choices=tasks.task_list,help='task to run')
+        task_parser.add_argument('task_args',nargs="?",default="main",help="extra arguments as string for task")
         task_parser.set_defaults(action='run_task')
 
     def handle(self,*args,**options):
@@ -54,8 +55,8 @@ class Command(BaseCommand):
 
     def run_task(self):
 
-        module = importlib.import_module('utils.management.commands.tasks.{}'.format(self.options['task']))
-        module.main(self.options['dry_run'])
+        module = importlib.import_module('utils.management.commands.tasks.fix_{}'.format(self.options['task']))
+        tasks.utils.dispatch(module,self.options['task_args'],not self.options['run'])
 
     def fix_trans(self):
         """ Fix translation html messages striping <br> and &nbsp; """
