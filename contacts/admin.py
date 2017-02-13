@@ -82,9 +82,9 @@ ContactAdminMixin = ParticipantMixinFactory('contact')
 @admin.register(cont.Message)
 class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
 
-    list_display = ('text','participant_name','identity','is_viewed','is_system',
-        'is_outgoing', 'is_reply','external_success', 'external_status', 'translation_status','created')
-    list_filter = ('is_viewed','is_system','is_outgoing', ('created', admin.DateFieldListFilter) ,'connection__contact__facility',
+    list_display = ('text','participant_name','identity','is_system',
+        'is_outgoing', 'is_reply', 'external_status', 'translation_status','created')
+    list_filter = ('is_system','is_outgoing', ('created', admin.DateFieldListFilter) ,'connection__contact__facility',
     'translation_status','is_related','external_success')
 
     date_hierarchy = 'created'
@@ -93,7 +93,7 @@ class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
     readonly_fields = ('created','modified')
 
     def identity(self,obj):
-        return html.format_html("<a href='../connection/{0.pk}'>{0.identity}</a>".format(
+        return html.format_html("<a href='./?q={0.identity}'>{0.identity}</a>".format(
             obj.connection
         ) )
     identity.short_description = 'Number'

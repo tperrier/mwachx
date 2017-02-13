@@ -511,22 +511,36 @@ class Command(BaseCommand):
         self.print_header('Success Times')
 
         # Add success_dt and filter messages from start of collection: Nov 30, 2016
-        messages = cont.Message.objects.add_success_dt().filter(
-            created__gte=timezone.make_aware(datetime.datetime(2016,11,30))
-        )
+        messages = cont.Message.objects.add_success_dt()
 
         # Print out message statuses
-        status = collections.Counter( m.external_status for m in messages )
-        self.stdout.write( str(status) )
+        statuses = collections.Counter( m.external_status for m in messages )
+        total = float(sum(statuses.values()))
+        for status , value in statuses.items():
+            self.stdout.write('{}: {} ({:0.3f})'.format(status , value, value/total) )
+        self.stdout.write('{}: {} ({:0.3f})\n'.format("Total" , total, total/total) )
         self.stdout.write('\n')
 
         # Get most frequently unsuccessful phone numbers
         sent_only = messages.filter(external_status='Sent')
         sent_only_counts = collections.Counter( m.connection.identity for m in sent_only)
         sent_only_hist = collections.Counter( sent_only_counts.values() )
-        self.stdout.write( str(sent_only_hist) )
 
-        participant_message_counts = cont.Contact.objects_no_link.annotate_messages().order_by('-msg_missed')[:12]
+        sent_only_count = messages.order_by().values('connection').distinct().filter(external_status='Sent').count()
+        total_count = messages.order_by().values('connection').distinct().count()
+
+        none_tuple = (0,total_count - sent_only_count)
+
+        sorted_sent_hist = sorted( sent_only_hist.items()+[none_tuple], key=lambda t : t[0] )
+        col_delta = len(sorted_sent_hist)/3
+        for idx in range(col_delta+3):
+            self.stdout.write( '{:<20}{:<20}{:<20}'.format(
+                sorted_sent_hist[idx:idx+1],
+                sorted_sent_hist[idx+col_delta:idx+col_delta+1],
+                sorted_sent_hist[idx+2*col_delta:idx+2*col_delta+1]
+            ) )
+
+        participant_message_counts = cont.Contact.objects_no_link.annotate_messages(at_only=False).order_by('-msg_missed')[:12]
         def display_phone_number(num):
             participant = participant_message_counts[num-1]
             return " |\t{!r:<40} O: {:<3} R: {:<3} M: {:<3} I: {:<3}".format(
