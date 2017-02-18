@@ -55,6 +55,10 @@ class Command(BaseCommand):
             messages = cont.Message.objects.filter(created__range=(start,end))
             email_body.extend( ['Message Success Stats For: {}'.format(start), ''])
 
+            if self.options.get('email'):
+                # Turn on HTML pre
+                email_body.append("<pre style='font-family:monospace'>\n")
+
             msg_groups = messages.order_by().values(
                 'external_status','contact__study_group'
             ).annotate(
@@ -81,8 +85,8 @@ class Command(BaseCommand):
             email_body.append( '{:^15}{:^10}{:^10}{:^10}{:^10}{:^10}'.format('Group','Received','Missed','Sent','Other','Total') )
             total_row = collections.OrderedDict( status_counts )
             for group , status_dict in msg_dict.items():
-                email_body.append( '{:^15}{}{:^12}{:^12}{:^12}{:^12}{:^12}'.format(
-                    group, '  ' if group in ('control',None) else '',
+                email_body.append( '{:^15}{:^10}{:^10}{:^10}{:^10}{:^10}'.format(
+                    group,
                     status_dict['Success'],status_dict['Sent'],
                     status_dict[''],status_dict['Other'],
                     status_dict['Total']
@@ -90,13 +94,16 @@ class Command(BaseCommand):
                 for key in ['Success','Sent','','Other','Total']:
                     total_row[key] += status_dict[key]
 
-            email_body.append( '{:^15}  {:^10}{:^10}{:^10}{:^10}{:^10}'.format(
+            email_body.append( '{:^15}{:^10}{:^10}{:^10}{:^10}{:^10}'.format(
                 'Total', total_row['Success'],total_row['Sent'],total_row[''],total_row['Other'],total_row['Total']
             ) )
             email_body.append('')
 
         if self.options.get('calls'):
             command_utils.set_edd_calls(email_body)
+
+        if self.options.get('email'):
+            email_body.append("</pre>")
 
         email_body = '\n'.join(email_body)
         if self.options.get('email'):
