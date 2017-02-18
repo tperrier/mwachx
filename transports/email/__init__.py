@@ -25,6 +25,9 @@ def email(subject,message,to='default'):
         print "Email Settings Options", from_address, to, password, username, password
         return False
 
+    # Make Message monspace and preserve whitespace
+    message = "<pre style='font-family:monospace;font-size:12pt;'>\n{}</pre>".format(message)
+
     msg = MIMEMultipart()
     msg['From'] = from_address
     msg['To'] = to

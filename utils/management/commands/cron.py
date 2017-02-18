@@ -55,10 +55,6 @@ class Command(BaseCommand):
             messages = cont.Message.objects.filter(created__range=(start,end))
             email_body.extend( ['Message Success Stats For: {}'.format(start), ''])
 
-            if self.options.get('email'):
-                # Turn on HTML pre
-                email_body.append("<pre style='font-family:monospace'>\n")
-
             msg_groups = messages.order_by().values(
                 'external_status','contact__study_group'
             ).annotate(
@@ -101,9 +97,6 @@ class Command(BaseCommand):
 
         if self.options.get('calls'):
             command_utils.set_edd_calls(email_body)
-
-        if self.options.get('email'):
-            email_body.append("</pre>")
 
         email_body = '\n'.join(email_body)
         if self.options.get('email'):
