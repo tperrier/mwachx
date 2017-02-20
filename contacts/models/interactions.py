@@ -41,6 +41,15 @@ class Message(TimeStampedModel):
         ('auto','Auto'),
     )
 
+    EXTERNAL_CHOICES = (
+        ('','Received'),
+        ('Success','Success'),
+        ('Failed','Failed'),
+        ('Sent','Sent'),
+        ('Message Rejected By Gateway','Message Rejected By Gateway'),
+        ('Could Not Send','Could Not Send')
+    )
+
     class Meta:
         ordering = ('-created',)
         app_label = 'contacts'
@@ -72,7 +81,7 @@ class Message(TimeStampedModel):
     #Africa's Talking Data Only for outgoing messages
     external_id = models.CharField(max_length=50,blank=True)
     external_success = models.NullBooleanField(verbose_name="Sent")
-    external_status = models.CharField(max_length=50,blank=True)
+    external_status = models.CharField(max_length=50,blank=True,choices=EXTERNAL_CHOICES)
     external_success_time = models.DateTimeField(default=None,blank=True,null=True)
     external_data = JSONField(blank=True)
 
