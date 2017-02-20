@@ -33,6 +33,9 @@ class ContactQuerySet(ForUserQuerySet):
             msg_start = timezone.make_aware(datetime.datetime(2010,1,1))
 
         def count_when(**kwargs):
+            """ qargs : list of models.Q objects
+                kwargs : filter_term=value dict
+            """
             return models.Count( models.Case(
                 models.When(message__created__gte=msg_start,then=1,**kwargs),output_field=models.IntegerField()
             ))
@@ -43,7 +46,8 @@ class ContactQuerySet(ForUserQuerySet):
             msg_received=count_when(message__external_status='Success'),
             msg_failed=count_when(message__external_status='Failed'),
             msg_rejected=count_when(message__external_status='Message Rejected By Gateway'),
-            msg_missed=count_when(message__external_status='Sent')
+            msg_not_received=count_when(message__external_status='Sent'),
+            msg_missed=count_when(message__external_status__in=('Failed','Sent','Message Rejected By Gateway','Could Not Send')),
         )
 
 class ContactManager(models.Manager):

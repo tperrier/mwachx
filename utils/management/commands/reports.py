@@ -9,9 +9,9 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import models
 from django.utils import timezone
 
-import utils.sms_utils as sms
 import backend.models as back
 import contacts.models as cont
+import utils
 
 class Command(BaseCommand):
 
@@ -35,6 +35,8 @@ class Command(BaseCommand):
         print_parser.add_argument('-e','--enrollment',action='store_true',default=False,help='print enrollment by site')
         print_parser.add_argument('-d','--delivery',action='store_true',default=False,help='print delivery statistics')
         print_parser.add_argument('-x', '--success-times', action='store_true', default=False, help='print success times report')
+        print_parser.add_argument('-u', '--message-status', default=None, const='all',
+            choices=('day','week','cur_week','month','year','all'),nargs='?', help='print message status')
         print_parser.add_argument('--delivery-source',action='store_true',default=False,help='print delivery source statistics')
         print_parser.add_argument('--topic',action='store_true',default=False,help='incoming message topics')
         print_parser.add_argument('--weeks',default=5,type=int,help='message history weeks (default 5)')
@@ -99,6 +101,8 @@ class Command(BaseCommand):
             self.print_delivery_source()
         if self.options['topic']:
             self.print_message_topic()
+        if self.options['message_status'] is not None:
+            self.print_message_status()
         if self.options['success_times']:
             self.print_success_times()
 
@@ -510,36 +514,6 @@ class Command(BaseCommand):
 
         self.print_header('Success Times')
 
-        # Add success_dt and filter messages from start of collection: Nov 30, 2016
-        messages = cont.Message.objects.add_success_dt()
-
-        # Print out message statuses
-        statuses = collections.Counter( m.external_status for m in messages )
-        total = float(sum(statuses.values()))
-        for status , value in statuses.items():
-            self.stdout.write('{}: {} ({:0.3f})'.format(status , value, value/total) )
-        self.stdout.write('{}: {} ({:0.3f})\n'.format("Total" , total, total/total) )
-        self.stdout.write('\n')
-
-        # Get most frequently unsuccessful phone numbers
-        sent_only = messages.filter(external_status='Sent')
-        sent_only_counts = collections.Counter( m.connection.identity for m in sent_only)
-        sent_only_hist = collections.Counter( sent_only_counts.values() )
-
-        sent_only_count = messages.order_by().values('connection').distinct().filter(external_status='Sent').count()
-        total_count = messages.order_by().values('connection').distinct().count()
-
-        none_tuple = (0,total_count - sent_only_count)
-
-        sorted_sent_hist = sorted( sent_only_hist.items()+[none_tuple], key=lambda t : t[0] )
-        col_delta = len(sorted_sent_hist)/3
-        for idx in range(col_delta+3):
-            self.stdout.write( '{:<20}{:<20}{:<20}'.format(
-                sorted_sent_hist[idx:idx+1],
-                sorted_sent_hist[idx+col_delta:idx+col_delta+1],
-                sorted_sent_hist[idx+2*col_delta:idx+2*col_delta+1]
-            ) )
-
         participant_message_counts = cont.Contact.objects_no_link.annotate_messages(at_only=False).order_by('-msg_missed')[:12]
         def display_phone_number(num):
             participant = participant_message_counts[num-1]
@@ -568,6 +542,8 @@ class Command(BaseCommand):
             ['<24h',86400]
         ]
 
+        # Add success_dt and filter messages from start of collection: Nov 30, 2016
+        messages = cont.Message.objects.add_success_dt()
         for i in range(1,len(intervals)):
             count = messages.filter(
                 success_dt__gt=intervals[i-1][1],success_dt__lte=intervals[i][1]
@@ -579,6 +555,11 @@ class Command(BaseCommand):
                 display_phone_number(i)
             ))
 
+    def print_message_status(self):
+
+        self.print_header('All Messages By Status')
+
+        print message_status_groups(delta=self.options['message_status'])
 
     def print_header(self,header):
         if self.printed:
@@ -1053,3 +1034,89 @@ class DeliverySourceItem(CountRowBase):
         str_fmt = "{0:^12}{1[phone].condensed:^18}{1[sms].condensed:^18}{1[visit].condensed:^18}"
         str_fmt += "{1[m2m].condensed:^18}{1[other].condensed:^18}{2:^18}{3:^18}"
         return  str_fmt.format( label, self, self[''].condensed_str(), self.total().condensed_str() )
+
+########################################
+# Report Utilities
+########################################
+
+def message_status_groups(start=None,delta='day'):
+
+    if delta not in ('day','week','cur_week','month','year','all'):
+        delta = 'day'
+
+
+    if start is None:
+        start = datetime.date.today() - datetime.timedelta(days=1)
+    start = utils.make_date( start ) # Make timezone aware
+    if delta == 'day':
+        end = start + datetime.timedelta(days=1)
+    elif delta == 'week':
+        start = start - datetime.timedelta(days=start.weekday()) # Get start of week
+        end = start + datetime.timedelta(weeks=1)
+    elif delta == 'cur_week':
+        end = start
+        start = end - datetime.timedelta(weeks=1)
+    elif delta == 'month':
+        start = start.replace(day=1) # Get start of month
+        # Get last day of month
+        day_in_next_month = start.replace(day=28) + datetime.timedelta(days=4)
+        first_day_next_month = day_in_next_month.replace(day=1)
+        last_day_in_month = first_day_next_month - dtatetime.timedelta(days=1)
+        end = start.replace(day=last_day_in_month.day)
+    elif delta == 'year':
+        start = start.replace(month=1,day=1)
+        end = start.replace(month=12,day=31)
+    elif delta == 'all':
+        end = start
+        start = utils.make_date(2010,1,1)
+
+    out_string = ['Message Success Stats From: {} To: {}'.format(start.strftime('%Y-%m-%d'),end.strftime('%Y-%m-%d')), '']
+
+    messages = cont.Message.objects.filter(created__range=(start,end))
+    msg_groups = messages.order_by().values(
+        'external_status','contact__study_group'
+    ).annotate(
+        count=models.Count('external_status'),
+    )
+
+    # Create OrderedDict for Groups
+    status_counts = [('Success',0),('Sent',0),('Failed',0),('Other',0),('',0),('Total',0)]
+    msg_dict = collections.OrderedDict( [
+        ('two-way',collections.OrderedDict( status_counts ) ),
+        ('one-way',collections.OrderedDict( status_counts ) ),
+        ('control',collections.OrderedDict( status_counts ) ),
+        (None,collections.OrderedDict( status_counts ) )
+    ] )
+
+    for group in msg_groups:
+        group_dict = msg_dict[group['contact__study_group']]
+        try:
+            group_dict[group['external_status']] += group['count']
+        except KeyError as e:
+            group_dict['Other'] += group['count']
+        group_dict['Total'] += group['count']
+
+    out_string.append( '{:^15}{:^10}{:^10}{:^10}{:^10}{:^10}{:^10}'.format(
+        'Group','Success','Missed','Failed','Other','Sent','Total') )
+    total_row = collections.OrderedDict( status_counts )
+    for group , status_dict in msg_dict.items():
+        out_string.append( '{:^15}{:^10}{:^10}{:^10}{:^10}{:^10}{:^10}'.format(
+            group, *status_dict.values()
+        ) )
+        for key in ['Success','Sent','','Other','Total','Failed']:
+            total_row[key] += status_dict[key]
+
+    out_string.append( '{:^15}{:^10}{:^10}{:^10}{:^10}{:^10}{:^10}'.format(
+        'Total', *total_row.values()
+    ) )
+    total_messages = float(sum(total_row.values())/2)
+    if total_messages == 0:
+        total_precents = [0 for _ in range(len(total_row))]
+    else:
+        total_precents = [ c*100/total_messages for c in total_row.values() ]
+    out_string.append( '{:^15}  {:06.3f}    {:06.3f}    {:06.3f}    {:06.3f}    {:06.3f}    {:06.3f}'.format(
+        '%', *total_precents
+    ) )
+    out_string.append('')
+
+    return '\n'.join(out_string)

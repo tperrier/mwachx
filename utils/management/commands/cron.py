@@ -13,6 +13,7 @@ import command_utils
 from transports.email import email
 import transports.africas_talking.api as at
 import utils
+import reports
 
 class Command(BaseCommand):
     '''Cron commands to manage project '''
@@ -50,50 +51,7 @@ class Command(BaseCommand):
 
         if self.options.get('success'):
             start = utils.make_date( datetime.date.today() - datetime.timedelta(days=self.options.get('delta_days') ) )
-            end = start + datetime.timedelta(days=1)
-
-            messages = cont.Message.objects.filter(created__range=(start,end))
-            email_body.extend( ['Message Success Stats For: {}'.format(start), ''])
-
-            msg_groups = messages.order_by().values(
-                'external_status','contact__study_group'
-            ).annotate(
-                count=models.Count('external_status'),
-            )
-
-            # Create OrderedDict for Groups
-            status_counts = [('Success',0),('Sent',0),('',0),('Other',0),('Total',0)]
-            msg_dict = collections.OrderedDict( [
-                ('two-way',collections.OrderedDict( status_counts ) ),
-                ('one-way',collections.OrderedDict( status_counts ) ),
-                ('control',collections.OrderedDict( status_counts ) ),
-                (None,collections.OrderedDict( status_counts ) )
-            ] )
-
-            for group in msg_groups:
-                group_dict = msg_dict[group['contact__study_group']]
-                try:
-                    group_dict[group['external_status']] += group['count']
-                except KeyError as e:
-                    group_dict['Other'] += group['count']
-                group_dict['Total'] += group['count']
-
-            email_body.append( '{:^15}{:^10}{:^10}{:^10}{:^10}{:^10}'.format('Group','Received','Missed','Sent','Other','Total') )
-            total_row = collections.OrderedDict( status_counts )
-            for group , status_dict in msg_dict.items():
-                email_body.append( '{:^15}{:^10}{:^10}{:^10}{:^10}{:^10}'.format(
-                    group,
-                    status_dict['Success'],status_dict['Sent'],
-                    status_dict[''],status_dict['Other'],
-                    status_dict['Total']
-                ) )
-                for key in ['Success','Sent','','Other','Total']:
-                    total_row[key] += status_dict[key]
-
-            email_body.append( '{:^15}{:^10}{:^10}{:^10}{:^10}{:^10}'.format(
-                'Total', total_row['Success'],total_row['Sent'],total_row[''],total_row['Other'],total_row['Total']
-            ) )
-            email_body.append('')
+            email_body.append( reports.message_status_groups(start,delta='day') )
 
         if self.options.get('calls'):
             command_utils.set_edd_calls(email_body)
