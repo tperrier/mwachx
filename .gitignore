@@ -5,6 +5,7 @@
 *.json
 *.log
 *.xlsx
+*.csv
 
 # Node and Bower
 node_modules/

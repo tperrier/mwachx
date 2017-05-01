@@ -9,6 +9,10 @@ from django.db import models
 from django.db.models import Count
 import code, os
 
+def count_field(qs,field):
+    groups = qs.order_by().values(field).annotate(count=models.Count(field))
+    return { g[field] : g['count'] for g in groups }
+
 class Command(BaseCommand):
     '''Quick Shell'''
 
@@ -65,6 +69,6 @@ class Command(BaseCommand):
 
 def test_handler(ns):
 
-    tmp = "Hello World"
+    test = "Test Working"
 
     return locals()
