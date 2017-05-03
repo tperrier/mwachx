@@ -1,7 +1,6 @@
 #!/usr/bin/python
  # -*- coding: utf-8 -*-
 import datetime, openpyxl as xl, os
-from argparse import Namespace
 import code
 import operator, collections, re, argparse, csv
 
@@ -55,7 +54,7 @@ class Command(BaseCommand):
         csv_parser.add_argument('name',help='csv report type',
             choices=(
                 'hiv_messaging','enrollment','messages','edd','delivery',
-                'sae','visits','msg_success'
+                'sae','visits','msg_success','msg_dump','hiv_statuschange',
             )
         )
         csv_parser.set_defaults(action='make_csv_name')
@@ -514,7 +513,7 @@ class Command(BaseCommand):
 
         self.print_header('Success Times')
 
-        participant_message_counts = cont.Contact.objects_no_link.annotate_messages(at_only=False).order_by('-msg_missed')[:12]
+        participant_message_counts = cont.Contact.objects_no_link.annotate_messages(at_only=False).order_by('-msg_missed')[:13]
         def display_phone_number(num):
             participant = participant_message_counts[num-1]
             return " |\t{!r:<40} O: {:<3} R: {:<3} M: {:<3} I: {:<3}".format(
@@ -539,7 +538,8 @@ class Command(BaseCommand):
             ['<4h',14400],
             ['<8h',28800],
             ['<16h',57600],
-            ['<24h',86400]
+            ['<24h',86400],
+            ['>24h',604800]
         ]
 
         # Add success_dt and filter messages from start of collection: Nov 30, 2016
@@ -554,6 +554,10 @@ class Command(BaseCommand):
                 count,
                 display_phone_number(i)
             ))
+
+        print "\tTotal (since Nov 30, 2016): {} Longest Wait: {} (h)".format(
+            messages.filter(success_dt__isnull=False).count(),
+            messages.first().success_dt/3600.0)
 
     def print_message_status(self):
 
@@ -624,6 +628,22 @@ class Command(BaseCommand):
         make_csv(columns,contacts,file_path)
         return file_path
 
+    def make_hiv_statuschange_csv(self):
+        ''' Basic csv dump of hiv messaging status changes '''
+        columns = collections.OrderedDict([
+            ('study_id','contact.study_id'),
+            ('old','old'),
+            ('new', 'new'),
+            ('date','created'),
+            ('since_enrollment', lambda obj: obj.created - obj.contact.created ),
+        ])
+        status_changes = cont.StatusChange.objects.filter(type='hiv')
+
+        file_path = os.path.join(self.options['dir'],'hiv_status_changes.csv')
+
+        make_csv(columns,status_changes,file_path)
+        return file_path
+
     def make_visits_csv(self):
         ''' Basic csv dump of visit history for all participants '''
         columns = collections.OrderedDict([
@@ -685,6 +705,7 @@ class Command(BaseCommand):
         return file_path
 
     def make_messages_csv(self):
+        """ Messages per week csv """
 
         m_all = cont.Message.objects.all().order_by('created')
 
@@ -711,6 +732,21 @@ class Command(BaseCommand):
                 total_row += msg_types
             csv_writer.writerow( ['Total'] + list(total_row) + [total_row.total()] )
 
+        return file_path
+
+    def make_msg_dump_csv(self):
+        """ Dump stats for each message to csv """
+        columns = collections.OrderedDict([
+            ('timestamp','created'),
+            ('study_id','contact.study_id'),
+            ('group','contact.study_group'),
+            ('sent_by','sent_by'),
+            ('status','external_status'),
+            ('topic','topic'),
+        ])
+        m_all = cont.Message.objects.exclude(contact__isnull=True).order_by('contact_study_id').prefetch_related('contact')
+        file_path = os.path.join(self.options['dir'],'message_dump.csv')
+        make_csv(columns,m_all,file_path)
         return file_path
 
     def make_edd_csv(self):
@@ -867,10 +903,9 @@ def null_boolean_factory(attribute):
 
 def make_column(obj,column):
     if isinstance(column,basestring):
-        value = getattr(obj,column)
-        if hasattr(value,'__call__'):
-            return value()
-        return value
+        for name in column.split('.'):
+            obj = getattr(obj,name)
+        return obj() if hasattr(obj,'__call__') else obj
     # Else assume column is a function that takes the object
     return column(obj)
 

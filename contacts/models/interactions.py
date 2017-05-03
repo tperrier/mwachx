@@ -29,6 +29,12 @@ class MessageQuerySet(ForUserQuerySet):
             success_dt=utils.sqlite_date_diff('created','external_success_time')
         ).order_by('-success_dt')
 
+    def add_study_dt(self):
+        return self.annotate(
+            study_dt=utils.sqlite_date_diff('contact__created','created',days=True),
+            delivery_dt=utils.sqlite_date_diff('contact__delivery_date','created',days=True)
+        )
+
 class Message(TimeStampedModel):
 
     #Set Custom Manager

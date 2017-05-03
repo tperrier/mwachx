@@ -56,6 +56,7 @@ def days_as_str(days):
 class SQLiteDate(db.Func):
     function = 'JULIANDAY'
 
-def sqlite_date_diff(start_date,end_date):
-    ''' return a DjanoORM Expression for the number of seconds between start_date and end_data '''
-    return db.ExpressionWrapper( (SQLiteDate(end_date) - SQLiteDate(start_date)) * 86400 , db.IntegerField() )
+def sqlite_date_diff(start_date,end_date,days=False):
+    ''' return a DjanoORM Expression for the number of seconds/days between start_date and end_data '''
+    scale = 86400 if days is False else 1
+    return db.ExpressionWrapper( (SQLiteDate(end_date) - SQLiteDate(start_date)) * scale , db.IntegerField() )
