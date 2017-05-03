@@ -56,8 +56,7 @@ def delivery_report(request):
 			return HttpResponse("NO MESSAGE FOR ID FOUND")
 		else:
 			message.external_status = status
-			if status.lower() == "success":
-				message.external_success_time = timezone.now()
+			message.external_success_time = timezone.now()
 			if failure_reason is not None:
 				message.external_data['reason'] = failure_reason
 			message.save()

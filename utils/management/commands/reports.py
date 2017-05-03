@@ -543,10 +543,10 @@ class Command(BaseCommand):
         ]
 
         # Add success_dt and filter messages from start of collection: Nov 30, 2016
-        messages = cont.Message.objects.add_success_dt()
+        messages = cont.Message.objects.exclude(external_status='Failed').add_success_dt()
         for i in range(1,len(intervals)):
             count = messages.filter(
-                success_dt__gt=intervals[i-1][1],success_dt__lte=intervals[i][1]
+                success_dt__range=(intervals[i-1][1],intervals[i][1])
             ).count()
             intervals[i].append(count)
             self.stdout.write( '  {:>8}: {:<4}{:>15}'.format(
