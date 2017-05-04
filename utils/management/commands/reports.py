@@ -2,7 +2,7 @@
  # -*- coding: utf-8 -*-
 import datetime, openpyxl as xl, os
 import code
-import operator, collections, re, argparse, csv
+import operator, collections, csv
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import models
@@ -45,6 +45,7 @@ class Command(BaseCommand):
         xlsx_parser.add_argument('-t','--visit',action='store_true',default=False,help='create visit report')
         xlsx_parser.add_argument('-d','--detail',action='store_true',default=False,help='create detail report')
         xlsx_parser.add_argument('-a','--all',action='store_true',default=False,help='create all reports')
+        xlsx_parser.add_argument('-i','--interaction',action='store_true',default=False,help='create participant interaction report')
         xlsx_parser.add_argument('-c','--custom',action='store_true',default=False,help='create custom report')
         xlsx_parser.add_argument('--dir',default='ignore',help='directory to save report in')
         xlsx_parser.set_defaults(action='make_xlsx')
@@ -58,9 +59,6 @@ class Command(BaseCommand):
             )
         )
         csv_parser.set_defaults(action='make_csv_name')
-
-        custom_parser = subparsers.add_parser('custom',cmd=parser.cmd,help='run custom command')
-        custom_parser.set_defaults(action='custom')
 
     def handle(self,*args,**options):
 
@@ -104,6 +102,50 @@ class Command(BaseCommand):
             self.print_message_status()
         if self.options['success_times']:
             self.print_success_times()
+
+    # SEC::XLSX Helper Functions
+    def make_xlsx(self):
+
+        workbook_columns = {}
+        if self.options['visit'] or self.options['all']:
+            workbook_columns['visit'] =  visit_columns
+        if self.options['detail'] or self.options['all']:
+            workbook_columns['detail'] =  detail_columns
+        if self.options['custom']:
+            workbook_columns['custom'] =  detail_columns
+        if self.options['interaction']:
+            workbook_columns['interaction'] =  interaction_columns
+            interaction_columns.queryset = make_interaction_columns()
+
+        for name , columns in workbook_columns.items():
+
+            wb = xl.workbook.Workbook()
+            today = datetime.date.today()
+            file_name = today.strftime('mWaChX_{}_%Y-%m-%d.xlsx').format(name)
+            xlsx_path_out = os.path.join(self.options['dir'],file_name)
+            self.stdout.write( "Making xlsx file {}".format(xlsx_path_out) )
+
+            if hasattr(columns,'facility_sheet'):
+                make_facility_worksheet(columns,wb.active,'ahero')
+                make_facility_worksheet(columns,wb.create_sheet(),'bondo')
+                make_facility_worksheet(columns,wb.create_sheet(),'mathare')
+                make_facility_worksheet(columns,wb.create_sheet(),'siaya')
+                make_facility_worksheet(columns,wb.create_sheet(),'rachuonyo')
+                make_facility_worksheet(columns,wb.create_sheet(),'riruta')
+            else:
+                make_worksheet(columns,wb.active,columns.queryset)
+
+            wb.save(xlsx_path_out)
+
+    # SEC::Start CSV Functions
+    def make_csv_name(self):
+        file_path = getattr(self,'make_{}_csv'.format(self.options['name']))()
+        print "Done:" , file_path
+
+
+    ########################################
+    # Start Print Functions
+    ########################################
 
     def send_times(self):
 
@@ -513,15 +555,15 @@ class Command(BaseCommand):
 
         self.print_header('Success Times')
 
-        participant_message_counts = cont.Contact.objects_no_link.annotate_messages(at_only=False).order_by('-msg_missed')[:13]
+        participant_message_counts = cont.Contact.objects_no_link.annotate_messages().order_by('-msg_missed')[:13]
         def display_phone_number(num):
             participant = participant_message_counts[num-1]
-            return " |\t{!r:<40} O: {:<3} R: {:<3} M: {:<3} I: {:<3}".format(
+            return " |\t{!r:<40} O: {:<3} D: {:<3} M: {:<3} I: {:<3}".format(
                 participant,
-                participant.msg_out,
-                participant.msg_received,
+                participant.msg_outgoing,
+                participant.msg_delivered,
                 participant.msg_missed,
-                participant.msg_in
+                participant.msg_incoming
             )
 
         self.stdout.write('\n')
@@ -575,43 +617,8 @@ class Command(BaseCommand):
         self.stdout.write( "-"*30 )
 
     ########################################
-    # SEC::Start XLSX Functions
-    ########################################
-
-    def make_xlsx(self):
-
-        workbook_columns = {}
-        if self.options['visit'] or self.options['all']:
-            workbook_columns['visit'] =  visit_columns
-        if self.options['detail'] or self.options['all']:
-            workbook_columns['detail'] =  detail_columns
-        if self.options['custom']:
-            workbook_columns['custom'] =  detail_columns
-
-        for name , columns in workbook_columns.items():
-
-            wb = xl.workbook.Workbook()
-            today = datetime.date.today()
-            file_name = today.strftime('mWaChX_{}_%Y-%m-%d.xlsx').format(name)
-            xlsx_path_out = os.path.join(self.options['dir'],file_name)
-            self.stdout.write( "Making xlsx file {}".format(xlsx_path_out) )
-
-            make_worksheet(columns,wb.active,'ahero')
-            make_worksheet(columns,wb.create_sheet(),'bondo')
-            make_worksheet(columns,wb.create_sheet(),'mathare')
-            make_worksheet(columns,wb.create_sheet(),'siaya')
-            make_worksheet(columns,wb.create_sheet(),'rachuonyo')
-            make_worksheet(columns,wb.create_sheet(),'riruta')
-
-            wb.save(xlsx_path_out)
-
-    ########################################
     # SEC::Start CSV Functions
     ########################################
-
-    def make_csv_name(self):
-        file_path = getattr(self,'make_{}_csv'.format(self.options['name']))()
-        print "Done:" , file_path
 
     def make_hiv_messaging_csv(self):
         ''' Basic csv dump of hiv messaging status '''
@@ -857,6 +864,7 @@ detail_columns = collections.OrderedDict([
     ('Δ N', lambda c: c.message_set.filter(is_system=False,is_outgoing=True,created__gte=last_week).count() ),
     ('Validation Δ',lambda c: seconds_as_str(c.validation_delta()) ),
 ])
+detail_columns.facility_sheet = True
 
 visit_columns = collections.OrderedDict([
     ('Study ID','study_id'),
@@ -871,23 +879,168 @@ visit_columns = collections.OrderedDict([
     ('TCA Type',lambda c:c.tca_type()),
     ('Pending Visits',lambda c:c.visit_set.pending().count()),
 ])
+visit_columns.facility_sheet = True
 
+BUCKETS = 4
+interaction_columns = collections.OrderedDict([
+    ('Study ID','study_id'),
+    ('Group','study_group'),
+    ('Status','status'),
+    ('Msg Weeks','msg_weeks'),
+    ('Outgoing','msg_outgoing'),
+    ('System','msg_system'),
+    ('Nurse','msg_nurse'),
+    ('Incoming','msg_incoming'),
+    ('Delivered','msg_delivered'),
+    ('%D','precent_delivered'),
+    ('Sent','msg_sent'),
+    ('%S','precent_sent'),
+    ('Failed','msg_failed'),
+    ('%F','precent_failed'),
+    ('Rejected','count_custom'),
+    ('%R','precent_custom'),
+    ('Start Streak','start_streak'),
+    ('Longest Streak','longest_streak'),
+    ('Miss Streak','miss_streak'),
+    ('System Succes','system_success'),
+    ('Nurse Succes','nurse_success'),
+    ('Reply delivered','reply_delivered'),
+    ('Reply Sent','reply_sent'),
+    ('Reply Failed','reply_failed'),
+    ] + [ ("%s%i"%(c,i),"%s%i"%(c,i)) for c in ('d','s','f') for i in range(1,BUCKETS+1) ]
+)
 
-def make_worksheet(columns,ws,facility,column_widths=None):
+def make_interaction_columns():
+
+    contacts = { c.id:c for c in
+        cont.Contact.objects_no_link.annotate_messages().filter(msg_outgoing__gt=9)
+        # cont.Contact.objects_no_link.annotate_messages().order_by('-msg_failed')[:20]
+    }
+
+    # Add all messages to contacts.messages
+    messages = cont.Message.objects.filter(contact__in=contacts.keys()).order_by('created')
+    for m in messages:
+        c = contacts[m.contact_id]
+        if hasattr(c,'messages'):
+            c.messages.append(m)
+        else:
+            c.messages = [m]
+
+    for id , c in contacts.items():
+        start_streak, start_streak_flag = 0 , False
+        longest_streak , current_streak = 0 , 0
+        miss_streak , current_miss_streak = 0 , 0
+        system_success , nurse_success , = 0 , 0
+
+        size , rem = divmod( c.msg_outgoing , BUCKETS )
+        bucket_sizes = [ (size+1) for i in range(rem) ] + [size for i in range(BUCKETS-rem)]
+        delivered_buckets = [ 0 for _ in range(BUCKETS)]
+        sent_buckets = [ 0 for _ in range(BUCKETS)]
+        failed_buckets = [ 0 for _ in range(BUCKETS)]
+        count , bucket = 0 , 0
+
+        last_outgoing = None
+        reply_delivered , reply_sent , reply_failed = 0 , 0 , 0
+
+        for m in c.messages:
+
+            if m.is_outgoing:
+
+                if count == bucket_sizes[bucket]:
+                    bucket += 1
+                    count = 0
+                count += 1
+
+                success = m.external_status == 'Success'
+                last_outgoing = m
+
+                # Start Streak
+                if not start_streak_flag:
+                    if success:
+                        start_streak += 1
+                    else:
+                        start_streak_flag = True
+
+                if success:
+                    current_streak += 1
+                    delivered_buckets[bucket] += 1
+                    if m.is_system:
+                        system_success += 1
+                    else:
+                        nurse_success += 1
+                    if current_miss_streak > miss_streak:
+                        miss_streak = current_miss_streak
+                        miss_streak = 0
+                else:
+                    current_miss_streak += 1
+                    if current_streak > longest_streak:
+                        longest_streak = current_streak
+                        current_streak = 0
+                    if m.external_status == 'Sent':
+                        sent_buckets[bucket] += 1
+                    else:
+                        failed_buckets[bucket] += 1
+
+            elif last_outgoing is not None: # incoming message and no reply yet
+                if (last_outgoing.created - m.created).total_seconds() < 21600: #6h
+                    if last_outgoing.external_status == 'Success':
+                        reply_delivered += 1
+                    elif last_outgoing.external_status == 'Sent':
+                        reply_sent += 1
+                    else:
+                        reply_failed += 1
+                last_outgoing = None
+
+        if current_miss_streak > miss_streak:
+            miss_streak = current_miss_streak
+        if current_streak > longest_streak:
+            longest_streak = current_streak
+
+        c.start_streak = start_streak
+        c.longest_streak = longest_streak
+        c.miss_streak = miss_streak
+
+        c.precent_delivered = zero_or_precent( c.msg_delivered , c.msg_outgoing )
+        c.precent_sent = zero_or_precent( c.msg_sent , c.msg_outgoing )
+        c.precent_failed = zero_or_precent( c.msg_other , c.msg_outgoing )
+
+        custom_count = c.msg_outgoing - c.msg_delivered - c.msg_sent - c.msg_failed
+        c.count_custom = custom_count
+        c.precent_custom = zero_or_precent(custom_count , c.msg_outgoing )
+
+        c.system_success = zero_or_precent( system_success , c.msg_system )
+        c.nurse_success = zero_or_precent( nurse_success , c.msg_nurse )
+
+        c.reply_delivered = zero_or_precent( reply_delivered , c.msg_delivered )
+        c.reply_sent = zero_or_precent( reply_sent , c.msg_sent )
+        c.reply_failed = zero_or_precent( reply_failed , c.msg_other )
+
+        c.msg_weeks = (c.messages[-1].created - c.messages[0].created).total_seconds() / (3600*24*7)
+
+        for char , buckets in ( ('d',delivered_buckets) , ('s',sent_buckets) , ('f',failed_buckets) ):
+            for idx , count in enumerate(buckets):
+                setattr(c,"%s%i"%(char,idx+1), zero_or_precent(count,bucket_sizes[idx]))
+
+    return contacts.values()
+
+def make_facility_worksheet(columns,ws,facility):
     contacts = cont.Contact.objects.filter(facility=facility)
     ws.title = facility.capitalize()
+    make_worksheet(columns,ws,contacts)
 
+
+def make_worksheet(columns,ws,queryset,column_widths=None):
     # Write Header Row
     ws.append(columns.keys())
     ws.auto_filter.ref = 'A1:{}1'.format( xl.utils.get_column_letter(len(columns)) )
 
-    if isinstance(column_widths,dict):
+    if hasattr('columns','widths'):
         for col_letter, width in column_widths.items():
             ws.column_dimensions[col_letter].width = width
 
     # Write Data Rows
-    for c in contacts:
-        ws.append( [make_column(c,attr) for attr in columns.values()] )
+    for row in queryset:
+        ws.append( [make_column(row,attr) for attr in columns.values()] )
 
 def null_boolean_factory(attribute):
 
@@ -920,6 +1073,10 @@ def make_csv(columns,data,file_path):
         for row in data:
             csv_writer.writerow( [ make_column(row,value) for value in columns.values()] )
 
+########################################
+#SEC::Utility Functions
+########################################
+
 def seconds_as_str(seconds):
     if seconds is None:
         return None
@@ -932,8 +1089,12 @@ def delta_days(date,past=False):
         days = (date - datetime.date.today()).days
         return -days if past else days
 
+def zero_or_precent(frac,total):
+    if total == 0:
+        return ''
+    return round( float(frac) / total , 3 )
 ########################################
-# Message Row Counting Classes
+# Message Row Counting Classes for print stats
 ########################################
 
 class CountRowBase(dict):

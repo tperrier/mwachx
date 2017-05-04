@@ -60,3 +60,11 @@ def sqlite_date_diff(start_date,end_date,days=False):
     ''' return a DjanoORM Expression for the number of seconds/days between start_date and end_data '''
     scale = 86400 if days is False else 1
     return db.ExpressionWrapper( (SQLiteDate(end_date) - SQLiteDate(start_date)) * scale , db.IntegerField() )
+
+def sql_count_when(**kwargs):
+    """ qargs : list of models.Q objects
+        kwargs : filter_term=value dict
+    """
+    return db.Count( db.Case(
+        db.When(then=1,**kwargs),output_field=db.IntegerField()
+    ))

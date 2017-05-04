@@ -26,28 +26,20 @@ class ContactQuerySet(ForUserQuerySet):
         except Connection.DoesNotExist as e:
             raise Contact.DoesNotExist()
 
-    def annotate_messages(self,at_only=True):
-        if at_only is True:
-            msg_start = timezone.make_aware(datetime.datetime(2016,11,30))
-        else:
-            msg_start = timezone.make_aware(datetime.datetime(2010,1,1))
-
-        def count_when(**kwargs):
-            """ qargs : list of models.Q objects
-                kwargs : filter_term=value dict
-            """
-            return models.Count( models.Case(
-                models.When(message__created__gte=msg_start,then=1,**kwargs),output_field=models.IntegerField()
-            ))
+    def annotate_messages(self):
 
         return self.annotate(
-            msg_out=count_when(message__is_outgoing=True),
-            msg_in=count_when(message__is_outgoing=False),
-            msg_received=count_when(message__external_status='Success'),
-            msg_failed=count_when(message__external_status='Failed'),
-            msg_rejected=count_when(message__external_status='Message Rejected By Gateway'),
-            msg_not_received=count_when(message__external_status='Sent'),
-            msg_missed=count_when(message__external_status__in=('Failed','Sent','Message Rejected By Gateway','Could Not Send')),
+            msg_outgoing=utils.sql_count_when(message__is_outgoing=True),
+            msg_system=utils.sql_count_when(message__is_system=True),
+            msg_nurse=utils.sql_count_when(message__is_system=False,message__is_outgoing=True),
+            msg_incoming=utils.sql_count_when(message__is_outgoing=False),
+            msg_delivered=utils.sql_count_when(message__external_status='Success'),
+            msg_sent=utils.sql_count_when(message__external_status='Sent'),
+            msg_failed=utils.sql_count_when(message__external_status='Failed'),
+            msg_rejected=utils.sql_count_when(message__external_status='Message Rejected By Gateway'),
+        ).annotate(
+            msg_missed=models.F('msg_outgoing') - models.F('msg_delivered'),
+            msg_other=models.F('msg_outgoing') - models.F('msg_delivered') - models.F('msg_sent'),
         )
 
 class ContactManager(models.Manager):
