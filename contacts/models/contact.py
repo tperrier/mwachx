@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #Python Imports
 from hashlib import sha256
-import math, datetime, numbers
+import math, datetime, numbers, collections
 
 #Django Imports
 from django.conf import settings
@@ -41,6 +41,49 @@ class ContactQuerySet(ForUserQuerySet):
             msg_missed=models.F('msg_outgoing') - models.F('msg_delivered'),
             msg_other=models.F('msg_outgoing') - models.F('msg_delivered') - models.F('msg_sent'),
         )
+
+    def send_batch(self,english,swahili=None,luo=None,auto='',send=False,control=False):
+        """ Send a message to all participants in the query set
+            english: required text
+            swahili, luo: optional translated text
+            auto: string to tag in the auto link field, will prefix with custom.
+            send: boolean flag to send messages (default false)
+            control: boolean flag to send messages to control group (default false)
+        """
+
+        if swahili is None:
+            swahili = english
+        if luo is None:
+            luo = english
+        text_translations = {'english':english,'swahili':swahili,'luo':luo}
+
+        original_count = self.count()
+        send_to = self.active_users()
+        send_count = send_to.count()
+        print "Sending to {} of {}".format(send_count,original_count)
+
+        counts = collections.Counter()
+        for p in send_to.all():
+            # Send the correct language message to all participants
+            text = text_translations.get(p.language,english)
+            text.format( p.message_kwargs() )
+
+            if send is True:
+                msg = p.send_message(
+                    text=text,
+                    translation_status='cust',
+                    auto='custom.{}'.format(auto) if auto != '' else '',
+                    translated_text= english if p.language != english else '',
+                    control=control,
+                    is_system=False,
+                )
+                counts[msg.external_status] += 1
+            else:
+                print p , text
+
+        if send is True:
+            print "Send Status:\n", "\n\t".join( "{} -> {}".format(key,count) for key,count in counts.most_common() )
+
 
 class ContactManager(models.Manager):
 

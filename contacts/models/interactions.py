@@ -45,6 +45,7 @@ class Message(TimeStampedModel):
         ('none','None'),
         ('done','Done'),
         ('auto','Auto'),
+        ('cust','Custom'),
     )
 
     EXTERNAL_CHOICES = (
