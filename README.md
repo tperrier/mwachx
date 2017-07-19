@@ -14,6 +14,12 @@ $ git clone https://github.com/tperrier/mwachx.git
 $ cd mwachx
 ```
 
+## Install node dependencies
+
+```
+$ npm install --global gulp-cli bower
+```
+
 ## Install Javascript dependencies:
 
 ```
