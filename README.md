@@ -66,7 +66,8 @@ The default gulp command will start a [livereload] server on `localhost:8000`. T
 
 # Project Todos
 
-Support/upgrade to latest django
+Support/upgrade to latest django (currently broken)
+Support/upgrade to latest djangorestframework (currently broken)
 
 
 [nvm]:https://github.com/creationix/nvm
