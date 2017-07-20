@@ -1,11 +1,12 @@
-Django>=1.8.4
+Django==1.8.4
 pytz>=2015.6
 python-dateutil>=2.4.0
 requests>=2.2.1
 django-crispy-forms>=1.5.2
 django-constance>=1.1
-djangorestframework>=3.1.3
+djangorestframework==3.1.3
 markdown>=2.6
 django-filter>=0.10
 openpyxl>=2.2.6
 jsonfield>=1.0.3
+django-picklefield

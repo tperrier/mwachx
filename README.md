@@ -7,13 +7,21 @@ You need Gulp installed globally:
 $ npm i -g gulp
 ```
 
-Clone the repo:
+## Clone the repo:
+
 ```
 $ git clone https://github.com/tperrier/mwachx.git
 $ cd mwachx
 ```
 
-Install dependencies:
+## Install node dependencies
+
+```
+$ npm install --global gulp-cli bower
+```
+
+## Install Javascript dependencies:
+
 ```
 $ npm install
 ```
@@ -28,13 +36,38 @@ folders in your project.
 we change this location through the `.bowerrc` file.  Putting it in the `static/app` folder makes
 it easier to serve the files by a webserver.
 
-Start the backend and build the frontend with Gulp:
+
+## Setup Python virtualenv and install dependencies
+
+```
+$ mkvirtualenv --no-site-packages mwachx
+$ pip install -r requirements.txt
+```
+
+## Setup your settings files
+
+```
+$ echo "from .settings_base import *" > mwach/local_settings_2.py
+```
+
+## Setup database
+
+```
+$ ./manage.py migrate
+```
+
+## Start the backend and build the frontend with Gulp:
 ```
 $ ./manage.py runserver
 $ gulp
 ```
 
 The default gulp command will start a [livereload] server on `localhost:8000`. The [chrome extension] is very useful.
+
+# Project Todos
+
+Support/upgrade to latest django (currently broken)
+Support/upgrade to latest djangorestframework (currently broken)
 
 
 [nvm]:https://github.com/creationix/nvm
