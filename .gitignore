@@ -6,6 +6,7 @@
 *.log
 *.xlsx
 *.csv
+.idea
 
 # Node and Bower
 node_modules/
