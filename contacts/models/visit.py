@@ -45,7 +45,11 @@ class ScheduleQuerySet(ForUserQuerySet):
         notification_Q |= Q(notification_last_seen__isnull=True)
         return self.filter( scheduled_Q & notification_Q)
 
+
 class ScheduledEvent(TimeStampedModel):
+    """
+    Abstract base class for Visits and ScheduledPhoneCalls
+    """
 
     STATUS_CHOICES = (
         ('pending','Pending'),
@@ -115,6 +119,7 @@ class ScheduledEvent(TimeStampedModel):
     def __repr__(self):
         return "{} {} {}".format(self.participant,self.scheduled,self.status)
 
+
 class VisitQuerySet(ScheduleQuerySet):
 
     def get_visit_checks(self):
@@ -153,7 +158,9 @@ class VisitQuerySet(ScheduleQuerySet):
     def top(self):
         return self[:2]
 
+
 class Visit(ScheduledEvent):
+
 
     #Set Custom Manager
     objects = VisitQuerySet.as_manager()
@@ -194,7 +201,6 @@ class Visit(ScheduledEvent):
         message = self.participant.send_automated_message(send=send,send_base='visit',
             condition=condition,exact=True)
 
-
     def send_missed_visit_reminder(self,send=True):
         if self.no_sms:
             return
@@ -226,10 +232,12 @@ class Visit(ScheduledEvent):
     def no_sms(self):
         return self.visit_type in Visit.NO_SMS_TYPES
 
+
 class ScheduledPhoneCallQuerySet(ScheduleQuerySet):
 
     def pending_calls(self):
         return self.pending().visit_range(notification_start={'days':2})
+
 
 class ScheduledPhoneCall(ScheduledEvent):
 
