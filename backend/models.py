@@ -2,24 +2,32 @@ from django.db import models
 
 import utils.models as utils
 
-class AutomatedMessageQuerySet(utils.BaseQuerySet):
 
-    def for_participant(self,participant,exact=False,**kwargs):
-        ''' Return AutomatedMessage for participant and today '''
+class AutomatedMessageQuerySet(utils.BaseQuerySet):
+    """
+    Used to map a single description to an AutomatedMessage.
+    """
+
+    def for_participant(self, participant, exact=False, **kwargs):
+        """
+        Return AutomatedMessage for participant and today
+        """
         description = participant.description(**kwargs)
         # print "Description:",description
-        return self.from_description(description,exact)
+        return self.from_description(description, exact)
 
-    def from_description(self,description,exact=False):
-        ''' Return AutomatedMessage for description
-            :param description (str): base.group.condition.hiv.offset string to look for
-            :returns: AutomatedMessage matching description or closes match if not found
-        '''
+    def from_description(self, description, exact=False):
+        """
+        Return AutomatedMessage for description
+
+        :param description (str): base.group.condition.hiv.offset string to look for
+        :returns: AutomatedMessage matching description or closes match if not found
+        """
         send_base, group, condition, hiv_messaging, send_offset = description.split('.')
         hiv = hiv_messaging == "Y"
         send_offset = int(send_offset)
 
-        # Sepecial case for post date messages go back and forth between week 41 and 42 mesages
+        # Special case for post date messages go back and forth between week 41 and 42 messages
         if send_base == 'edd' and send_offset < -2:
             send_offset = (send_offset+1)%-2 - 1
 
@@ -72,7 +80,9 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
             return message_offset.filter(condition='normal',group='one-way',hiv_messaging=False).first()
 
     def from_excel(self,msg):
-        ''' Replace fields of message content with matching discription '''
+        """
+        Replace fields of message content with matching description
+        """
         auto = self.from_description(msg.description(),exact=True)
         if auto is None:
             return self.create(**msg.kwargs()) , 'created'
@@ -86,7 +96,8 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
             auto.todo = msg.status == 'todo'
             auto.save()
 
-            return auto , 'changed' if changed else 'same'
+            return auto, 'changed' if changed else 'same'
+
 
 class AutomatedMessage(models.Model):
     """Automated Messages for sending to participants"""
