@@ -331,7 +331,14 @@ class Contact(TimeStampedModel):
             # Return days since due date
             return (today-self.delivery_date).days
 
-    def description(self,**kwargs):
+    def description(self, **kwargs):
+        """
+        Description is a special formatted string that represents the state of a contact.
+        It contains a series of dot-separated fields that map to the relevant attributes of the
+        contact in determining an SMS message to send.
+
+        See the equivalent section in the `AutomatedMessageQuerySet` class.
+        """
         today = kwargs.get("today")
 
         condition = kwargs.get("condition",self.condition)
@@ -366,6 +373,7 @@ class Contact(TimeStampedModel):
         return utils.days_as_str(self.delta_days(today) )
 
     def get_validation_key(self):
+        # todo: what is this used by/for?
         sha = sha256('%s%s%s%s'%(self.study_id,self.nickname,self.anc_num,self.birthdate)).hexdigest()[:5]
         key = ''.join([str(int(i,16)) for i in sha])
         return key[:5]
