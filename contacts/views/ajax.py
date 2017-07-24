@@ -8,8 +8,8 @@ from django.conf import settings
 @ensure_csrf_cookie
 @login_required()
 def angular_view(request):
-    FAKE_DATE = getattr(settings,'FAKE_DATE',True)
-    return render(request, 'app/index.html',context={'config': {
+    FAKE_DATE = getattr(settings,'FAKE_DATE', True)
+    return render(request, 'app/index.html', context={'config': {
         'SHOW_DATE':FAKE_DATE,
         'user':request.user
         }})
