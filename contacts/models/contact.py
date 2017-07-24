@@ -246,7 +246,7 @@ class Contact(TimeStampedModel):
             self.statuschange_set.create(old=self._old_hiv_messaging,new=self.hiv_messaging,
                 comment='HIV messaging changed',type='hiv')
 
-        # Forc capitalization of nickname
+        # Force capitalization of nickname
         self.nickname = self.nickname.capitalize()
 
         super(Contact,self).save(force_insert,force_update,*args,**kwargs)
