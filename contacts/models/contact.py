@@ -15,6 +15,7 @@ import backend.models as back
 import utils
 import transports
 
+
 class ContactQuerySet(ForUserQuerySet):
 
     participant_field = None
@@ -98,6 +99,7 @@ class ContactManager(models.Manager):
                 to_attr='pending_visits'
             )
         )
+
 
 class Contact(TimeStampedModel):
 
