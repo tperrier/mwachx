@@ -57,22 +57,22 @@ class ForUserQuerySet(BaseQuerySet):
         return self.by_facility(facility)
 
     def by_facility(self,facility):
-        return self.filter(self.participant_Q(facility=facility))
+        return self.filter(self._participant_Q(facility=facility))
 
     def active_users(self):
         ''' Filter queryset based on active users who should receive SMS messages.'''
-        q = self.participant_Q(status__in=ForUserQuerySet.NO_SMS_STATUS)
+        q = self._participant_Q(status__in=ForUserQuerySet.NO_SMS_STATUS)
         return self.exclude(q)
 
     def pregnant(self):
-        q = self.participant_Q(status__in=('pregnant','over'))
+        q = self._participant_Q(status__in=('pregnant','over'))
         return self.filter(q)
 
     def post_partum(self):
-        q = self.participant_Q(status__in=('post','ccc'))
+        q = self._participant_Q(status__in=('post','ccc'))
         return self.filter(q)
 
-    def participant_Q(self,**kwargs):
+    def _participant_Q(self,**kwargs):
         ''' Return a Q object with participant_field appended
         Example:  participant_Q(study_group='two-way',is_validated=False)
             returns: Q(participant__study_group='two-way',participant__is_validated=False)
