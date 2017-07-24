@@ -3,7 +3,6 @@
 from django.db import models
 from django.db.models import Q
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 
 #Python Imports
 import datetime
@@ -12,7 +11,8 @@ import datetime
 from utils.models import TimeStampedModel,ForUserQuerySet
 import utils
 
-class SchedualQuerySet(ForUserQuerySet):
+
+class ScheduleQuerySet(ForUserQuerySet):
 
     def pending(self,**kwargs):
         pending = self.filter(arrived__isnull=True,status='pending')
@@ -115,7 +115,7 @@ class ScheduledEvent(TimeStampedModel):
     def __repr__(self):
         return "{} {} {}".format(self.participant,self.scheduled,self.status)
 
-class VisitQuerySet(SchedualQuerySet):
+class VisitQuerySet(ScheduleQuerySet):
 
     def get_visit_checks(self):
         """ Return upcoming visits
@@ -226,7 +226,7 @@ class Visit(ScheduledEvent):
     def no_sms(self):
         return self.visit_type in Visit.NO_SMS_TYPES
 
-class ScheduledPhoneCallQuerySet(SchedualQuerySet):
+class ScheduledPhoneCallQuerySet(ScheduleQuerySet):
 
     def pending_calls(self):
         return self.pending().visit_range(notification_start={'days':2})
