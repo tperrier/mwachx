@@ -1,18 +1,16 @@
 #!/usr/bin/python
 #Django Imports
 from django.db import models
-from django.db.models import Q
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 from jsonfield import JSONField
 from django.utils import timezone
 
-from constance import config
 
 #Local Imports
 from visit import ScheduledPhoneCall
 import utils
 from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
+
 
 class MessageQuerySet(ForUserQuerySet):
 
@@ -35,7 +33,11 @@ class MessageQuerySet(ForUserQuerySet):
             delivery_dt=utils.sqlite_date_diff('contact__delivery_date','created',days=True)
         )
 
+
 class Message(TimeStampedModel):
+    """
+    A Message is a message *instance*
+    """
 
     #Set Custom Manager
     objects = MessageQuerySet.as_manager()
@@ -173,6 +175,10 @@ class PhoneCallQuerySet(ForUserQuerySet):
     participant_field = 'contact'
 
 class PhoneCall(TimeStampedModel):
+    """
+    A PhoneCall represents the *log* of a call made.
+    Phone call objects are entered manually and the actual calls are made outside of the Mwach system.
+    """
 
     class Meta:
         ordering = ('-created',)
@@ -197,6 +203,7 @@ class PhoneCall(TimeStampedModel):
 
     # Link to scheduled phone call field
     scheduled = models.ForeignKey(ScheduledPhoneCall,blank=True,null=True)
+
 
 class Note(TimeStampedModel):
 
