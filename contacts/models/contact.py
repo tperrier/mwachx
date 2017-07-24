@@ -10,6 +10,7 @@ from django.db import models
 
 # Local Imports
 from contacts.models import PhoneCall, Practitioner, Visit, Connection
+from utils import enums
 from utils.models import TimeStampedModel, ForUserQuerySet
 import backend.models as back
 import utils
@@ -119,12 +120,6 @@ class Contact(TimeStampedModel):
     NO_SMS_STATUS = ForUserQuerySet.NO_SMS_STATUS
     NOT_ACTIVE_STATUS = ForUserQuerySet.NOT_ACTIVE_STATUS
 
-    GROUP_CHOICES = (
-        ('control','Control'),
-        ('one-way','One Way'),
-        ('two-way','Two Way'),
-    )
-
     LANGUAGE_CHOICES = (
         ('english','English'),
         ('luo','Luo'),
@@ -195,7 +190,7 @@ class Contact(TimeStampedModel):
     ccc_num = models.CharField(max_length=15,verbose_name='CCC #',blank=True,null=True)
     facility = models.CharField(max_length=15,choices=settings.FACILITY_CHOICES)
 
-    study_group = models.CharField(max_length=10,choices=GROUP_CHOICES,verbose_name='Group')
+    study_group = models.CharField(max_length=10,choices=enums.GROUP_CHOICES,verbose_name='Group')
     send_day = models.IntegerField(choices=DAY_CHOICES, default=0,verbose_name='Send Day')
     send_time = models.IntegerField(choices=TIME_CHOICES,default=8,verbose_name='Send Time')
 

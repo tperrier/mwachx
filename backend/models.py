@@ -1,4 +1,5 @@
 from django.db import models
+from utils import enums
 
 import utils.models as utils
 
@@ -114,12 +115,6 @@ class AutomatedMessage(models.Model):
         ('stop','Stop'),
     )
 
-    GROUP_CHOICES = (
-        ('control','Control'),
-        ('one-way','One Way'),
-        ('two-way','Two Way'),
-    )
-
     CONDITION_CHOICES = (
         ('art','Starting ART'),
         ('adolescent','Adolescent'),
@@ -141,7 +136,7 @@ class AutomatedMessage(models.Model):
 
     comment = models.TextField(blank=True)
 
-    group = models.CharField(max_length=20,choices=GROUP_CHOICES) # 2 groups
+    group = models.CharField(max_length=20,choices=enums.GROUP_CHOICES) # 2 groups
     condition = models.CharField(max_length=20,choices=CONDITION_CHOICES) # 4 conditions
     hiv_messaging = models.BooleanField() # True or False
 
