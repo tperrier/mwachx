@@ -136,8 +136,8 @@ class AutomatedMessage(models.Model):
 
     comment = models.TextField(blank=True)
 
-    group = models.CharField(max_length=20,choices=enums.GROUP_CHOICES) # 2 groups
-    condition = models.CharField(max_length=20,choices=CONDITION_CHOICES) # 4 conditions
+    group = models.CharField(max_length=20,choices=enums.GROUP_CHOICES)  # 2 groups
+    condition = models.CharField(max_length=20,choices=CONDITION_CHOICES)  # 4 conditions
     hiv_messaging = models.BooleanField() # True or False
 
     send_base = models.CharField(max_length=20,help_text='Base to send messages from',choices=SEND_BASES_CHOICES)
