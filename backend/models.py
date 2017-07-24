@@ -101,7 +101,10 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
 
 
 class AutomatedMessage(models.Model):
-    """Automated Messages for sending to participants"""
+    """
+    Automated Messages for sending to participants. These represent message _templates_
+    not message _instances_.
+    """
 
     SEND_BASES_CHOICES = (
         ('edd','Before EDD'),
