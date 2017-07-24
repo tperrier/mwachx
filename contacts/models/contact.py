@@ -1,17 +1,16 @@
 #!/usr/bin/python
-#Python Imports
+# Python Imports
 from hashlib import sha256
-import math, datetime, numbers, collections
+import collections
+import datetime, numbers
 
-#Django Imports
+# Django Imports
 from django.conf import settings
 from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils import timezone
 
-#Local Imports
-from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
-from contacts.models import Message, PhoneCall, Practitioner, Visit, Connection
+# Local Imports
+from contacts.models import PhoneCall, Practitioner, Visit, Connection
+from utils.models import TimeStampedModel, ForUserQuerySet
 import backend.models as back
 import utils
 import transports
