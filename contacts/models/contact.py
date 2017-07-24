@@ -334,9 +334,6 @@ class Contact(TimeStampedModel):
     def description(self,**kwargs):
         today = kwargs.get("today")
 
-        send_base = kwargs.get("send_base")
-        send_offset = kwargs.get("send_offset")
-
         condition = kwargs.get("condition",self.condition)
         group = kwargs.get("group",self.study_group)
 
