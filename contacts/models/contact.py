@@ -1,20 +1,21 @@
 #!/usr/bin/python
-#Python Imports
+# Python Imports
 from hashlib import sha256
-import math, datetime, numbers, collections
+import collections
+import datetime, numbers
 
-#Django Imports
+# Django Imports
 from django.conf import settings
 from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils import timezone
 
-#Local Imports
-from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
-from contacts.models import Message, PhoneCall, Practitioner, Visit, Connection
+# Local Imports
+from contacts.models import PhoneCall, Practitioner, Visit, Connection
+from utils import enums
+from utils.models import TimeStampedModel, ForUserQuerySet
 import backend.models as back
 import utils
 import transports
+
 
 class ContactQuerySet(ForUserQuerySet):
 
@@ -100,6 +101,7 @@ class ContactManager(models.Manager):
             )
         )
 
+
 class Contact(TimeStampedModel):
 
     STATUS_CHOICES = (
@@ -117,12 +119,6 @@ class Contact(TimeStampedModel):
 
     NO_SMS_STATUS = ForUserQuerySet.NO_SMS_STATUS
     NOT_ACTIVE_STATUS = ForUserQuerySet.NOT_ACTIVE_STATUS
-
-    GROUP_CHOICES = (
-        ('control','Control'),
-        ('one-way','One Way'),
-        ('two-way','Two Way'),
-    )
 
     LANGUAGE_CHOICES = (
         ('english','English'),
@@ -194,7 +190,7 @@ class Contact(TimeStampedModel):
     ccc_num = models.CharField(max_length=15,verbose_name='CCC #',blank=True,null=True)
     facility = models.CharField(max_length=15,choices=settings.FACILITY_CHOICES)
 
-    study_group = models.CharField(max_length=10,choices=GROUP_CHOICES,verbose_name='Group')
+    study_group = models.CharField(max_length=10,choices=enums.GROUP_CHOICES,verbose_name='Group')
     send_day = models.IntegerField(choices=DAY_CHOICES, default=0,verbose_name='Send Day')
     send_time = models.IntegerField(choices=TIME_CHOICES,default=8,verbose_name='Send Time')
 
@@ -250,7 +246,7 @@ class Contact(TimeStampedModel):
             self.statuschange_set.create(old=self._old_hiv_messaging,new=self.hiv_messaging,
                 comment='HIV messaging changed',type='hiv')
 
-        # Forc capitalization of nickname
+        # Force capitalization of nickname
         self.nickname = self.nickname.capitalize()
 
         super(Contact,self).save(force_insert,force_update,*args,**kwargs)
@@ -335,11 +331,15 @@ class Contact(TimeStampedModel):
             # Return days since due date
             return (today-self.delivery_date).days
 
-    def description(self,**kwargs):
-        today = kwargs.get("today")
+    def description(self, **kwargs):
+        """
+        Description is a special formatted string that represents the state of a contact.
+        It contains a series of dot-separated fields that map to the relevant attributes of the
+        contact in determining an SMS message to send.
 
-        send_base = kwargs.get("send_base")
-        send_offset = kwargs.get("send_offset")
+        See the equivalent section in the `AutomatedMessageQuerySet` class.
+        """
+        today = kwargs.get("today")
 
         condition = kwargs.get("condition",self.condition)
         group = kwargs.get("group",self.study_group)
@@ -373,6 +373,7 @@ class Contact(TimeStampedModel):
         return utils.days_as_str(self.delta_days(today) )
 
     def get_validation_key(self):
+        # todo: what is this used by/for?
         sha = sha256('%s%s%s%s'%(self.study_id,self.nickname,self.anc_num,self.birthdate)).hexdigest()[:5]
         key = ''.join([str(int(i,16)) for i in sha])
         return key[:5]
