@@ -5,6 +5,7 @@ from django.utils import html
 
 #Local Imports
 import models as cont
+import utils.admin as utils
 
 class ConnectionInline(admin.TabularInline):
     model = cont.Connection
@@ -84,8 +85,9 @@ class MessageAdmin(admin.ModelAdmin,ContactAdminMixin):
 
     list_display = ('text','participant_name','identity','is_system',
         'is_outgoing', 'is_reply', 'external_status', 'translation_status','created')
-    list_filter = ('is_system','is_outgoing', ('created', admin.DateFieldListFilter) ,'connection__contact__facility',
-    'translation_status','is_related','external_status','external_success')
+    list_filter = ('is_system','is_outgoing', 'external_status', ('contact',utils.NullFieldListFilter),
+        ('created', admin.DateFieldListFilter) ,'connection__contact__facility',
+        'translation_status','is_related','external_success')
 
     date_hierarchy = 'created'
 
