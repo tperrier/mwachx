@@ -8,8 +8,8 @@ class NullFieldListFilter(FieldListFilter):
         self.lookup_kwarg = '{0}__isnull'.format(field_path)
         super(NullFieldListFilter, self).__init__(field, request, params, model, model_admin, field_path)
         lookup_choices = self.lookups(request, model_admin)
-        self.title = "Null {}".format(self.title.title())
         self.lookup_choices = () if lookup_choices is None else list(lookup_choices)
+        self.title = "Null {}".format(self.title.title())
 
     def expected_parameters(self):
         return [self.lookup_kwarg]

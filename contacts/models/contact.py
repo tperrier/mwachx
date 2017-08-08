@@ -67,23 +67,25 @@ class ContactQuerySet(ForUserQuerySet):
         for p in send_to.all():
             # Send the correct language message to all participants
             text = text_translations.get(p.language,english)
-            text.format( p.message_kwargs() )
+            text = text.format( **p.message_kwargs() )
 
             if send is True:
                 msg = p.send_message(
                     text=text,
                     translation_status='cust',
-                    auto='custom.{}'.format(auto) if auto != '' else '',
+                    auto='custom.{}'.format(auto) if auto != '' else 'custom',
                     translated_text= english if p.language != english else '',
                     control=control,
                     is_system=False,
                 )
                 counts[msg.external_status] += 1
             else:
-                print p , text
+                print "({}) -- {}".format(p , text[:40])
 
         if send is True:
             print "Send Status:\n", "\n\t".join( "{} -> {}".format(key,count) for key,count in counts.most_common() )
+
+        return send_count
 
 
 class ContactManager(models.Manager):

@@ -89,7 +89,7 @@ class Message(TimeStampedModel):
 
     #Africa's Talking Data Only for outgoing messages
     external_id = models.CharField(max_length=50,blank=True)
-    external_success = models.NullBooleanField(verbose_name="Sent")
+    external_success = models.NullBooleanField(verbose_name="Success")
     external_status = models.CharField(max_length=50,blank=True,choices=EXTERNAL_CHOICES)
     external_success_time = models.DateTimeField(default=None,blank=True,null=True)
     external_data = JSONField(blank=True)
