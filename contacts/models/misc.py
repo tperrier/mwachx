@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from jsonfield import JSONField
 
 #Local Imports
+import transports
 from utils.models import TimeStampedModel,BaseQuerySet
 
 class Connection(models.Model):
@@ -26,6 +27,32 @@ class Connection(models.Model):
 
     def __unicode__(self):
         return "{} ({})".format(self.contact.study_id if self.contact else '',self.identity)
+
+    def send_custom(self,text,translated_text='',languages='',**kwargs):
+
+        return self.send_message(text,translation_status='cust',translated_text=translated_text,languages=languages,is_system=False,**kwargs)
+
+    def send_message(self,text,**kwargs):
+
+        # Send message over system transport
+        try:
+            msg_id, msg_success, external_data = transports.send(self.identity,text)
+        except transports.TransportError as e:
+            msg_id = ""
+            msg_success = False
+            external_data = {"error":str(e)}
+
+        # Create new message
+        new_message = self.message_set.create(
+            text=text,
+            connection=self,
+            external_id=msg_id,
+            external_success=msg_success,
+            external_status="Sent" if msg_success else external_data.get("status","Failed"),
+            external_data=external_data,
+            **kwargs)
+
+        return new_message
 
 class PractitionerQuerySet(BaseQuerySet):
 
