@@ -557,9 +557,10 @@ class Contact(TimeStampedModel):
 
         return new_message
 
-    def send_automated_message(self,control=False,send=True,extra_kwargs=None,**kwargs):
+    def send_automated_message(self,control=False,send=True,exact=False,extra_kwargs=None,**kwargs):
         ''' kwargs get passed into self.description
             :param control bool - if True allow sending to control
+            :param exact bool - if True only send exact match
             :param send bool - if True send message
             :kwargs
                 - hiv_messaging bool - hiv_messaging or not
@@ -568,9 +569,9 @@ class Contact(TimeStampedModel):
                 - send_base - string send_base
                 - send_offset - int send_offset (or calculated from today)
                 - condition - defaults to self.condition
-                - exact - use participant's description only
         '''
-        message = back.AutomatedMessage.objects.for_participant(self,**kwargs)
+        description = self.description(**kwargs)
+        message = back.AutomatedMessage.objects.from_description(description,exact=exact)
         if message is None:
             return None #TODO: logging on this
 

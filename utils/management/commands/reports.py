@@ -46,6 +46,7 @@ class Command(BaseCommand):
         xlsx_parser.add_argument('-d','--detail',action='store_true',default=False,help='create detail report')
         xlsx_parser.add_argument('-a','--all',action='store_true',default=False,help='create all reports')
         xlsx_parser.add_argument('-i','--interaction',action='store_true',default=False,help='create participant interaction report')
+        xlsx_parser.add_argument('-w','--weekly',action='store_true',default=False,help='create weakly stats report')
         xlsx_parser.add_argument('-c','--custom',action='store_true',default=False,help='create custom report')
         xlsx_parser.add_argument('--dir',default='ignore',help='directory to save report in')
         xlsx_parser.set_defaults(action='make_xlsx')
@@ -116,6 +117,8 @@ class Command(BaseCommand):
         if self.options['interaction']:
             workbook_columns['interaction'] =  interaction_columns
             interaction_columns.queryset = make_interaction_columns()
+        if self.options['weekly']:
+            make_weekly_wb()
 
         for name , columns in workbook_columns.items():
 
@@ -605,7 +608,24 @@ class Command(BaseCommand):
 
         self.print_header('All Messages By Status')
 
+        # Print message status
         print message_status_groups(delta=self.options['message_status'])
+
+        print "Other Types"
+        status_groups = cont.Message.objects.order_by().values('external_status'). \
+            exclude(external_status__in=('Success','Sent','Failed')).exclude(is_outgoing=False). \
+            annotate(count=models.Count('external_status'))
+        for group in status_groups:
+            print "\t{0[external_status]:<30}: {0[count]}".format(group)
+        print "\t{:<30}: {}".format("Total",sum( g['count'] for g in status_groups ) )
+
+        print "\nFailed Reasons"
+        reasons = collections.Counter()
+        for msg in cont.Message.objects.filter(is_outgoing=True).exclude(external_status__in=('Success','Sent')):
+            reasons[msg.external_data.get('reason','No Reason')] += 1
+        for reason , count in reasons.items():
+            print "\t{:<20}: {}".format(reason,count)
+        print "\t{:<20}: {}".format("Total",sum( reasons.values() ) )
 
     def print_header(self,header):
         if self.printed:
@@ -750,6 +770,7 @@ class Command(BaseCommand):
             ('sent_by','sent_by'),
             ('status','external_status'),
             ('topic','topic'),
+            ('related','related'),
         ])
         m_all = cont.Message.objects.exclude(contact__isnull=True).order_by('contact_study_id').prefetch_related('contact')
         file_path = os.path.join(self.options['dir'],'message_dump.csv')
@@ -836,7 +857,6 @@ class Command(BaseCommand):
 
         return file_path
 
-
 ########################################
 # SEC::XLSX Helper Functions
 ########################################
@@ -902,6 +922,7 @@ interaction_columns = collections.OrderedDict([
     ('Start Streak','start_streak'),
     ('Longest Streak','longest_streak'),
     ('Miss Streak','miss_streak'),
+    ('Last Miss Streak','last_miss_streak'),
     ('System Succes','system_success'),
     ('Nurse Succes','nurse_success'),
     ('Reply delivered','reply_delivered'),
@@ -999,6 +1020,7 @@ def make_interaction_columns():
         c.start_streak = start_streak
         c.longest_streak = longest_streak
         c.miss_streak = miss_streak
+        c.last_miss_streak = current_miss_streak
 
         c.precent_delivered = zero_or_precent( c.msg_delivered , c.msg_outgoing )
         c.precent_sent = zero_or_precent( c.msg_sent , c.msg_outgoing )
@@ -1041,6 +1063,34 @@ def make_worksheet(columns,ws,queryset,column_widths=None):
     # Write Data Rows
     for row in queryset:
         ws.append( [make_column(row,attr) for attr in columns.values()] )
+
+def make_weekly_wb():
+
+    print "Making Weekly XLSX Report"
+
+    wb = xl.Workbook()
+    ws = wb.active
+
+    week_start = timezone.make_aware(datetime.datetime(2015,11,22))
+    today = timezone.make_aware( datetime.datetime( *datetime.date.today().timetuple()[:3] ) )
+    ws.append( ('Start','End','Enrolled','System','Success','Participant','Nurse','Spam') )
+    ws.freeze_panes = 'A2'
+    while week_start < today:
+        week_end = week_start + datetime.timedelta(days=7)
+        messages = cont.Message.objects.filter(created__gte=week_start,created__lt=week_end)
+
+        count = cont.Contact.objects.filter(created__lt=week_end).count()
+        system = messages.filter(is_outgoing=True,is_system=True).count()
+        success = messages.filter(is_outgoing=True,is_system=True,external_status='Success').count()
+        nurse = messages.filter(is_outgoing=True,is_system=False).count()
+        participant = messages.filter(is_outgoing=False,is_system=False,contact__isnull=False).count()
+        spam = messages.filter(is_outgoing=False,is_system=False,contact__isnull=True).count()
+
+        ws.append( (week_start.date(),week_end.date(),count,system,success,participant,nurse,spam) )
+
+        week_start = week_end
+
+    wb.save('ignore/weely_messages.xlsx')
 
 def null_boolean_factory(attribute):
 
@@ -1236,6 +1286,7 @@ class DeliverySourceItem(CountRowBase):
 ########################################
 
 def message_status_groups(start=None,delta='day'):
+    """ Create report of message status for nightly email """
 
     if delta not in ('day','week','cur_week','month','year','all'):
         delta = 'day'
@@ -1293,7 +1344,7 @@ def message_status_groups(start=None,delta='day'):
         group_dict['Total'] += group['count']
 
     out_string.append( '{:^15}{:^10}{:^10}{:^10}{:^10}{:^10}{:^10}'.format(
-        'Group','Success','Missed','Failed','Other','Sent','Total') )
+        'Group','Delivered','Sent','Failed','Other','Sent','Total') )
     total_row = collections.OrderedDict( status_counts )
     for group , status_dict in msg_dict.items():
         out_string.append( '{:^15}{:^10}{:^10}{:^10}{:^10}{:^10}{:^10}'.format(
