@@ -521,7 +521,7 @@ class ContactBase(TimeStampedModel):
             'clinic':self.facility.title()
         }
 
-    def send_message(self,text,control=False,**kwargs):
+    def send_message(self, text, control=False, **kwargs):
 
         # Control check - don't send messages to participants in the control
         if self.study_group == 'control' and control is False:
