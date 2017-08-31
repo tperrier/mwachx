@@ -2,6 +2,7 @@ import datetime
 
 from django import test
 from django.db import models
+from django.test import override_settings
 import rest_framework as rf
 from rest_framework import test as rf_test
 import django.core.urlresolvers as url
@@ -47,10 +48,11 @@ class ParticipantBasicTests(test.TestCase):
         self.assertFalse(self.p3.is_active)
         self.assertTrue(self.p3.no_sms)
 
+    @override_settings(FAKE_DATE=False)
     def test_description(self):
         self.assertEqual(self.p1.description(), "edd.two-way.normal.N.3")
         self.assertEqual(self.p2.description(), "dd.two-way.normal.Y.3")
-        self.assertEqual(self.p3.description(send_base='signup',send_offset=0), "signup.control.art.N.0")
+        self.assertEqual(self.p3.description(send_base='signup', send_offset=0), "signup.control.art.N.0")
 
         # Test FP Methods
         def plus_td(weeks=0,days=0):
