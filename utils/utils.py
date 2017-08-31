@@ -7,11 +7,15 @@ import django.db.models as db
 def today(today=None):
     if today is not None:
         return dateparse.parse_date(today) if isinstance(today,basestring) else today
-    elif not getattr(settings,'FAKE_DATE',True):
+    elif not getattr(settings, 'FAKE_DATE', True):
         return datetime.date.today()
-    elif isinstance(config.CURRENT_DATE,datetime.date):
-        return config.CURRENT_DATE
-    return datetime.date(*[int(i) for i in config.CURRENT_DATE.split('-')])
+    elif hasattr(config, 'CURRENT_DATE'):
+        if isinstance(config.CURRENT_DATE,datetime.date):
+            return config.CURRENT_DATE
+        else:
+            return datetime.date(*[int(i) for i in config.CURRENT_DATE.split('-')])
+    else:
+        return datetime.date.today()
 
 def parse_date(datestr):
  	return datetime.datetime.strptime(datestr,'%d-%m-%Y').date()
