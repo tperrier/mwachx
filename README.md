@@ -64,6 +64,17 @@ $ gulp
 
 The default gulp command will start a [livereload] server on `localhost:8000`. The [chrome extension] is very useful.
 
+# Running tests
+
+The project uses `nose` as a test runner. The easiest way to run tests is to just run `./manage.py test`.
+
+You can also use [sniffer](https://pypi.python.org/pypi/sniffer) to run tests continually.
+
+```
+pip install sniffer
+sniffer -x contacts.tests -x -s
+```
+
 # Project Todos
 
 Support/upgrade to latest django (currently broken)
