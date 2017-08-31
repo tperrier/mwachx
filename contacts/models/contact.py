@@ -104,7 +104,7 @@ class ContactManager(models.Manager):
         )
 
 
-class Contact(TimeStampedModel):
+class ContactBase(TimeStampedModel):
 
     STATUS_CHOICES = (
         ('pregnant','Pregnant'),
@@ -231,10 +231,11 @@ class Contact(TimeStampedModel):
 
     class Meta:
         app_label = 'contacts'
+        abstract = True
 
     def __init__(self, *args, **kwargs):
         ''' Override __init__ to save old status'''
-        super(Contact,self).__init__(*args,**kwargs)
+        super(ContactBase, self).__init__(*args,**kwargs)
         self._old_status = self.status
         self._old_hiv_messaging = self.hiv_messaging
 
@@ -251,7 +252,7 @@ class Contact(TimeStampedModel):
         # Force capitalization of nickname
         self.nickname = self.nickname.capitalize()
 
-        super(Contact,self).save(force_insert,force_update,*args,**kwargs)
+        super(ContactBase,self).save(force_insert,force_update,*args,**kwargs)
         self._old_status = self.status
         self._old_hiv_messaging = self.hiv_messaging
 
@@ -617,6 +618,14 @@ class Contact(TimeStampedModel):
             if status_change is not None:
                 return (status_change.created.date() - self.delivery_date).days
             return None
+
+
+class Contact(ContactBase):
+    """
+    Default implementation of Contact Base class.
+    """
+    pass
+
 
 class StatusChangeQuerySet(ForUserQuerySet):
 
