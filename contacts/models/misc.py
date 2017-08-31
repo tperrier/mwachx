@@ -82,7 +82,14 @@ class Practitioner(models.Model):
     def __repr__(self):
         return '<{0!s}> <{1}>'.format(self.facility,self.user.username)
 
+
 class EventLog(TimeStampedModel):
+    """
+    The basic idea behind this model is to keep track of which staff accounts take which actions.
+
+    These are currently created in the "visit seen" and "attended DRF" end points, however
+    there is not currently any logic that accesses / uses the data anywhere in the codebase.
+    """
 
     class Meta:
         app_label = 'contacts'
