@@ -8,15 +8,10 @@ echo "npm --no-bin-links install"
 npm --no-bin-links install
 
 # same deal with virtualenv and symlinks
-echo "virtualenv --always-copy mwachx-virtualenv"
 virtualenv --always-copy mwachx-virtualenv
-echo "source mwachx-virtualenv/bin/activate"
+
+# use the virtualenv for the rest of the python stuff
 source mwachx-virtualenv/bin/activate
-echo "pip install -r requirements.txt"
 pip install -r requirements.txt
-echo "from .settings_base import *" > mwach/local_settings.py
 dos2unix /vagrant/manage.py
-echo "/usr/bin/python manage.py migrate"
-/usr/bin/python /vagrant/manage.py migrate
-
-
+python manage.py migrate
