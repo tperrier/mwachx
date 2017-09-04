@@ -8,6 +8,8 @@ import datetime, numbers
 from django.conf import settings
 from django.db import models
 
+import swapper
+
 # Local Imports
 from contacts.models import PhoneCall, Practitioner, Visit, Connection
 from utils import enums
@@ -624,7 +626,9 @@ class Contact(ContactBase):
     """
     Default implementation of Contact Base class.
     """
-    pass
+
+    class Meta:
+       swappable = swapper.swappable_setting('contacts', 'Contact')
 
 
 class StatusChangeQuerySet(ForUserQuerySet):
@@ -650,7 +654,7 @@ class StatusChange(TimeStampedModel):
     class Meta:
         app_label = 'contacts'
 
-    contact = models.ForeignKey(settings.MESSAGING_CONTACT)
+    contact = models.ForeignKey(swapper.get_model_name('contacts', 'Contact'))
 
     old = models.CharField(max_length=20)
     new = models.CharField(max_length=20)
@@ -660,3 +664,7 @@ class StatusChange(TimeStampedModel):
 
     def __str__(self):
         return "{0.old} {0.new} ({0.type})".format(self)
+
+
+def get_contact_model():
+    return swapper.load_model('contacts', 'Contact')
