@@ -106,6 +106,8 @@ class ContactManager(models.Manager):
         )
 
 
+
+
 class ContactBase(TimeStampedModel):
 
     STATUS_CHOICES = (
@@ -120,9 +122,6 @@ class ContactBase(TimeStampedModel):
         ('other','Admin Stop'),
         ('quit','Left Study'),
     )
-
-    NO_SMS_STATUS = ForUserQuerySet.NO_SMS_STATUS
-    NOT_ACTIVE_STATUS = ForUserQuerySet.NOT_ACTIVE_STATUS
 
     LANGUAGE_CHOICES = (
         ('english','English'),
@@ -278,11 +277,11 @@ class ContactBase(TimeStampedModel):
     @property
     def is_active(self):
         # True if contact is receiving SMS messages
-        return self.status not in Contact.NOT_ACTIVE_STATUS
+        return self.status not in enums.NOT_ACTIVE_STATUS
 
     @property
     def no_sms(self):
-        return self.status in Contact.NO_SMS_STATUS
+        return self.status in enums.NO_SMS_STATUS
 
     def age(self):
         today = utils.today()
@@ -533,7 +532,7 @@ class ContactBase(TimeStampedModel):
             external_data = {}
 
         # Status check - don't send messages to participants with NO_SMS_STATUS
-        elif self.status in Contact.NO_SMS_STATUS and control is False:
+        elif self.status in enums.NO_SMS_STATUS and control is False:
             text = 'STATUS {} NOT SENT: '.format(self.status.upper()) + text
             msg_id = self.status
             msg_success = False
@@ -628,7 +627,8 @@ class Contact(ContactBase):
     """
 
     class Meta:
-       swappable = swapper.swappable_setting('contacts', 'Contact')
+        app_label = 'contacts'
+        swappable = swapper.swappable_setting('contacts', 'Contact')
 
 
 class StatusChangeQuerySet(ForUserQuerySet):
