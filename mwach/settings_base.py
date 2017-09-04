@@ -195,3 +195,6 @@ FACILITY_CHOICES = (
     ('rachuonyo','Rachuonyo'),
     ('riruta','Riruta'),
 )
+
+
+TEST_CONTACT_SWAPPING = False

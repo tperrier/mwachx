@@ -75,6 +75,16 @@ pip install sniffer
 sniffer -x contacts.tests -x -s
 ```
 
+To fully test swappable models add the following lines to your `local_settings.py`
+
+```python
+TEST_CONTACT_SWAPPING = True
+CONTACTS_CONTACT_MODEL = 'example.ExampleContact'
+INSTALLED_APPS = INSTALLED_APPS + (
+    'implementations.example',
+)
+```
+
 # Project Todos
 
 Support/upgrade to latest django (currently broken)

@@ -1,8 +1,10 @@
 import datetime
 
 from django import test
+from django.conf import settings
 from django.db import models
 from django.test import override_settings
+from django.utils import unittest
 from rest_framework import test as rf_test
 import django.core.urlresolvers as url
 from django.core import management
@@ -138,6 +140,7 @@ class ParticipantSerializerTests(rf_test.APITestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['text'], "Message Content")
 
+    @unittest.skipUnless(not settings.TEST_CONTACT_SWAPPING, "not compatible with swapped models")
     def test_create(self):
 
         start_count = Contact.objects.count()
@@ -164,6 +167,7 @@ class ParticipantSerializerTests(rf_test.APITestCase):
         self.assertEqual(new_participant.message_set.first().text,self.signup_msg.english)
         self.assertEqual(new_participant.message_set.first().auto,self.signup_msg.description())
 
+    @unittest.skipUnless(not settings.TEST_CONTACT_SWAPPING, "not compatible with swapped models")
     def test_create_control(self):
 
         start_count = Contact.objects.count()
