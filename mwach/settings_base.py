@@ -183,7 +183,7 @@ LOGGING =   {
 #############
 # Custom Settings
 #############
-MESSAGING_CONTACT = 'contacts.Contact'
+
 MESSAGING_CONNECTION = 'contacts.Connection'
 MESSAGING_ADMIN = 'auth.User'
 
