@@ -3,6 +3,7 @@ from django.conf import settings
 from django.test import override_settings, modify_settings
 from django.utils import unittest
 from contacts import get_contact_model
+from contacts.tests import test_utils
 from implementations.example.models import ExampleContact
 
 
@@ -23,3 +24,11 @@ class SwappableModelTest(test.TestCase):
         # but for now just take the same approach that the framework does
         # (see: https://github.com/wq/django-swappable-models/blob/master/tests/test_swapper.py#L61)
         self.assertEqual(0, get_contact_model().objects.count())
+
+    @unittest.skipUnless(settings.TEST_CONTACT_SWAPPING, "requires swapped models")
+    def test_save_load(self):
+        test_utils.setup_basic_contacts(self)
+        self.assertEqual(3, get_contact_model().objects.count())
+        self.p1.a_new_field = 'test the new stuff'
+        self.p1.save()
+        self.assertEqual('test the new stuff', get_contact_model().objects.get(pk=self.p1.pk).a_new_field)
