@@ -8,6 +8,8 @@ import datetime, numbers
 from django.conf import settings
 from django.db import models
 
+import swapper
+
 # Local Imports
 from contacts.models import PhoneCall, Practitioner, Visit, Connection
 from utils import enums
@@ -104,7 +106,9 @@ class ContactManager(models.Manager):
         )
 
 
-class Contact(TimeStampedModel):
+
+
+class ContactBase(TimeStampedModel):
 
     STATUS_CHOICES = (
         ('pregnant','Pregnant'),
@@ -118,9 +122,6 @@ class Contact(TimeStampedModel):
         ('other','Admin Stop'),
         ('quit','Left Study'),
     )
-
-    NO_SMS_STATUS = ForUserQuerySet.NO_SMS_STATUS
-    NOT_ACTIVE_STATUS = ForUserQuerySet.NOT_ACTIVE_STATUS
 
     LANGUAGE_CHOICES = (
         ('english','English'),
@@ -231,10 +232,11 @@ class Contact(TimeStampedModel):
 
     class Meta:
         app_label = 'contacts'
+        abstract = True
 
     def __init__(self, *args, **kwargs):
         ''' Override __init__ to save old status'''
-        super(Contact,self).__init__(*args,**kwargs)
+        super(ContactBase, self).__init__(*args,**kwargs)
         self._old_status = self.status
         self._old_hiv_messaging = self.hiv_messaging
 
@@ -251,7 +253,7 @@ class Contact(TimeStampedModel):
         # Force capitalization of nickname
         self.nickname = self.nickname.capitalize()
 
-        super(Contact,self).save(force_insert,force_update,*args,**kwargs)
+        super(ContactBase,self).save(force_insert,force_update,*args,**kwargs)
         self._old_status = self.status
         self._old_hiv_messaging = self.hiv_messaging
 
@@ -275,11 +277,11 @@ class Contact(TimeStampedModel):
     @property
     def is_active(self):
         # True if contact is receiving SMS messages
-        return self.status not in Contact.NOT_ACTIVE_STATUS
+        return self.status not in enums.NOT_ACTIVE_STATUS
 
     @property
     def no_sms(self):
-        return self.status in Contact.NO_SMS_STATUS
+        return self.status in enums.NO_SMS_STATUS
 
     def age(self):
         today = utils.today()
@@ -520,7 +522,7 @@ class Contact(TimeStampedModel):
             'clinic':self.facility.title()
         }
 
-    def send_message(self,text,control=False,**kwargs):
+    def send_message(self, text, control=False, **kwargs):
 
         # Control check - don't send messages to participants in the control
         if self.study_group == 'control' and control is False:
@@ -530,7 +532,7 @@ class Contact(TimeStampedModel):
             external_data = {}
 
         # Status check - don't send messages to participants with NO_SMS_STATUS
-        elif self.status in Contact.NO_SMS_STATUS and control is False:
+        elif self.status in enums.NO_SMS_STATUS and control is False:
             text = 'STATUS {} NOT SENT: '.format(self.status.upper()) + text
             msg_id = self.status
             msg_success = False
@@ -618,6 +620,17 @@ class Contact(TimeStampedModel):
                 return (status_change.created.date() - self.delivery_date).days
             return None
 
+
+class Contact(ContactBase):
+    """
+    Default implementation of Contact Base class.
+    """
+
+    class Meta:
+        app_label = 'contacts'
+        swappable = swapper.swappable_setting('contacts', 'Contact')
+
+
 class StatusChangeQuerySet(ForUserQuerySet):
 
     participant_field = 'contact'
@@ -641,7 +654,7 @@ class StatusChange(TimeStampedModel):
     class Meta:
         app_label = 'contacts'
 
-    contact = models.ForeignKey(settings.MESSAGING_CONTACT)
+    contact = models.ForeignKey(swapper.get_model_name('contacts', 'Contact'))
 
     old = models.CharField(max_length=20)
     new = models.CharField(max_length=20)
@@ -651,3 +664,7 @@ class StatusChange(TimeStampedModel):
 
     def __str__(self):
         return "{0.old} {0.new} ({0.type})".format(self)
+
+
+def get_contact_model():
+    return swapper.load_model('contacts', 'Contact')

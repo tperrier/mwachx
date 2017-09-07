@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from jsonfield import JSONField
 
 #Local Imports
+import swapper
 import transports
 from utils.models import TimeStampedModel,BaseQuerySet
 
@@ -19,7 +20,7 @@ class Connection(models.Model):
     objects = BaseQuerySet.as_manager()
 
     identity = models.CharField(max_length=25,primary_key=True)
-    contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
+    contact = models.ForeignKey(swapper.get_model_name('contacts', 'Contact'), blank=True, null=True)
 
     description = models.CharField(max_length=30,blank=True,null=True,help_text='Description of phone numbers relationship to contact')
 
@@ -82,7 +83,14 @@ class Practitioner(models.Model):
     def __repr__(self):
         return '<{0!s}> <{1}>'.format(self.facility,self.user.username)
 
+
 class EventLog(TimeStampedModel):
+    """
+    The basic idea behind this model is to keep track of which staff accounts take which actions.
+
+    These are currently created in the "visit seen" and "attended DRF" end points, however
+    there is not currently any logic that accesses / uses the data anywhere in the codebase.
+    """
 
     class Meta:
         app_label = 'contacts'

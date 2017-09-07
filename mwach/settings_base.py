@@ -183,7 +183,7 @@ LOGGING =   {
 #############
 # Custom Settings
 #############
-MESSAGING_CONTACT = 'contacts.Contact'
+
 MESSAGING_CONNECTION = 'contacts.Connection'
 MESSAGING_ADMIN = 'auth.User'
 
@@ -195,3 +195,6 @@ FACILITY_CHOICES = (
     ('rachuonyo','Rachuonyo'),
     ('riruta','Riruta'),
 )
+
+
+TEST_CONTACT_SWAPPING = False
