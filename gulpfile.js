@@ -76,15 +76,17 @@ gulp.task('webfaction_libs',function(){
 
 gulp.task('watch', function() {
 	livereload.listen();
+	// interval : 500 reduces polling frequency to 500ms on file changes and significantly 
+	// lowers cpu usage on some systems
     // Recompile less -> css
-    gulp.watch('**/*.less', ['less']);
+    gulp.watch('**/*.less', {interval: 500}, ['less']);
     // Recompile js
-    gulp.watch('mwach/static/app/**/*.js',['js']);
+    gulp.watch('mwach/static/app/**/*.js', {interval: 500}, ['js']);
     /* Trigger a live reload on any Django template changes */
-    gulp.watch(['**/templates/**/*.html','**views.py','**admin.py','**/*.js','**/*.html'])
+    gulp.watch(['**/templates/**/*.html', '**views.py','**admin.py','**/*.js','**/*.html'], {interval: 500})
       .on('change', livereload.changed);
     /* Recompile libs */
-    gulp.watch('mwach/static/app/mwachx.*.js',['libs']);
+    gulp.watch('mwach/static/app/mwachx.*.js', {interval: 500}, ['libs']);
 });
 
 gulp.task('default', ['watch','less','js','libs'], function() {
@@ -93,4 +95,8 @@ gulp.task('default', ['watch','less','js','libs'], function() {
 
 gulp.task('webfaction', ['webfaction_js','webfaction_less','webfaction_libs'], function() {
   console.log('Gulp Webfaction Deploy Done');
+});
+
+gulp.task('buildonly', ['less', 'js', 'libs'], function() {
+	console.log('Gulp build task complete.');
 });
