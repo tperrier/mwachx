@@ -15,12 +15,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :shell, :inline => "curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -", run: "once"
   config.vm.provision :shell, :inline => "sudo apt-get install -y nodejs build-essential dos2unix python-virtualenv", run: "once"
 
-  config.vm.provision :shell, :inline => "sudo npm install --global gulp-cli bower", run: "once"
+#  config.vm.provision :shell, :inline => "sudo npm install --global gulp-cli bower", run: "once"
+#  config.vm.provision :shell, :inline => "cd /vagrant && npm --no-bin-links install bower", run: "once"
+#  config.vm.provision :shell, :inline => "cd /vagrant && bower install --allow-root", run: "once"
+#  config.vm.provision :shell, :inline => "cd /vagrant && npm --no-bin-links install", run: "once"
+  
   config.vm.provision :shell, :inline => "dos2unix /vagrant/vagrant-provision.sh", run: "once"
   config.vm.provision :shell, :inline => "sudo bash /vagrant/vagrant-provision.sh", run: "once"
 
-  config.vm.provision :shell, :inline => "cd /vagrant && source /vagrant/mwachx-virtualenv/bin/activate && python manage.py runserver &", run: "once"
-  config.vm.provision :shell, :inline => "cd /vagrant && gulp &", run: "once"
+#  config.vm.provision :shell, :inline => "cd /vagrant && npm --no-bin-links install", run: "once"
+  
+#  config.vm.provision :shell, :inline => "cd /vagrant && gulp buildonly", run: "once"
+
+  #  config.vm.provision :shell, :inline => "cd /vagrant && source /vagrant/mwachx-virtualenv/bin/activate && python manage.py runserver &", run: "once"
   #config.vm.provision :shell, :inline => "", run: "once"
 
   config.vm.provider "virtualbox" do |v|
