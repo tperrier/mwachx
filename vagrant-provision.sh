@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script expects the OS packages for python2, python virtualenv, nodejs, dos2unix, 
+# and gcc-c++ and make are installed
+
 MWACH_SOURCE_DIR="/vagrant"
 
 npm install --global gulp-cli bower
