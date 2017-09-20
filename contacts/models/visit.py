@@ -207,11 +207,9 @@ class Visit(ScheduledEvent):
 
         condition = self.get_condition('missed')
 
-        if send is True:
+        if send is True and self.missed_sms_count < 2:
             self.missed_sms_count += 1
             self.missed_sms_last_sent = datetime.date.today()
-            if self.missed_sms_count >= 2:
-                self.status = 'missed'
             self.save()
 
         return self.participant.send_automated_message(send=send,send_base='visit',condition=condition)

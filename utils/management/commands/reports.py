@@ -549,10 +549,10 @@ class Command(BaseCommand):
         msgs = cont.Message.objects.filter(is_outgoing=False,contact__isnull=False)
         topics = collections.Counter( m.topic for m in msgs )
 
-        print "%s\t%s" % ('Topic','Count')
-        for key , count in topics.items():
-            print "%s\t%s" % (key , count)
-        print "%s\t%s" % ('Total', msgs.count())
+        for key , count in topics.most_common():
+            related = collections.Counter( m.is_related for m in msgs.filter(topic=key))
+            print "{:<20s}{:4d}{: 10.2f}".format(key , count, related[True]*100/float(count))
+        print "{:<20s}{:4d}".format('Total', msgs.count())
 
     def print_success_times(self):
 
@@ -704,6 +704,7 @@ class Command(BaseCommand):
         return file_path
 
     def make_enrollment_csv(self):
+        """ CSV Report of enrollment per week """
         c_all = cont.Contact.objects.all()
 
         enrollment_counts = collections.OrderedDict()
