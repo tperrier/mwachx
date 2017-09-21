@@ -679,10 +679,14 @@ class Command(BaseCommand):
             ('scheduled','scheduled'),
             ('status','status'),
             ('arrived','arrived'),
+            ('sms_count','missed_sms_count'),
+            ('viewed','notify_count'),
         ])
 
         visits = cont.Visit.objects.all().order_by('participant__study_id').prefetch_related('participant')
-        file_path = os.path.join(self.options['dir'],'visit_dump.csv')
+        today = datetime.date.today()
+        file_name = today.strftime('visit_dump_%Y-%m-%d.csv')
+        file_path = os.path.join(self.options['dir'],file_name)
         make_csv(columns,visits,file_path)
         return file_path
 
