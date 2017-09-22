@@ -13,7 +13,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision :shell, :inline => "sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" upgrade", run: "once"
   config.vm.provision :shell, :inline => "curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -", run: "once"
-  config.vm.provision :shell, :inline => "sudo apt-get install -y nodejs build-essential dos2unix python-virtualenv", run: "once"
+  config.vm.provision :shell, :inline => "sudo apt-get install -y nodejs build-essential dos2unix python-virtualenv rabbitmq-server", run: "once"
   config.vm.provision :shell, :inline => "dos2unix /vagrant/vagrant-provision.sh", run: "once"
   config.vm.provision :shell, :inline => "sudo bash /vagrant/vagrant-provision.sh", run: "once"
 
