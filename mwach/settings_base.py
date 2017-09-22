@@ -58,6 +58,9 @@ INSTALLED_APPS = (
     'contacts',
     'backend',
     'utils',
+
+    # tests
+    'django_nose',
 )
 
 REST_FRAMEWORK = {
@@ -67,6 +70,8 @@ REST_FRAMEWORK = {
 
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -178,7 +183,7 @@ LOGGING =   {
 #############
 # Custom Settings
 #############
-MESSAGING_CONTACT = 'contacts.Contact'
+
 MESSAGING_CONNECTION = 'contacts.Connection'
 MESSAGING_ADMIN = 'auth.User'
 
@@ -190,3 +195,6 @@ FACILITY_CHOICES = (
     ('rachuonyo','Rachuonyo'),
     ('riruta','Riruta'),
 )
+
+
+TEST_CONTACT_SWAPPING = False

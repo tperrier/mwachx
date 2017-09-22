@@ -1,10 +1,12 @@
 # Python Imports
+from __future__ import absolute_import
 
 # Django Imports
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 # Create your models here.
+from utils import enums
 
 
 class TimeStampedModel(models.Model):
@@ -40,8 +42,6 @@ class BaseQuerySet(models.QuerySet):
 
 class ForUserQuerySet(BaseQuerySet):
 
-    NO_SMS_STATUS = ('stopped','other','sae','quit')
-    NOT_ACTIVE_STATUS = NO_SMS_STATUS + ('completed',)
     participant_field = 'participant'
 
     def for_user(self,user, superuser=False):
@@ -61,7 +61,7 @@ class ForUserQuerySet(BaseQuerySet):
 
     def active_users(self):
         ''' Filter queryset based on active users who should receive SMS messages.'''
-        q = self._participant_Q(status__in=ForUserQuerySet.NO_SMS_STATUS)
+        q = self._participant_Q(status__in=enums.NO_SMS_STATUS)
         return self.exclude(q)
 
     def pregnant(self):

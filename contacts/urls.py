@@ -1,10 +1,7 @@
 from django.conf.urls import patterns, include, url
 
-from rest_framework import routers
 
-import views
 from serializers import router
-# from views import angular_views
 
 
 urlpatterns = patterns('',

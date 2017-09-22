@@ -62,6 +62,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
     note_count = serializers.SerializerMethodField()
 
     class Meta:
+        # todo: can this be changed to a swappable version?
         model = cont.Contact
 
     def get_hiv_disclosed_display(self,obj):
@@ -95,7 +96,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
     lookup_field = 'study_id'
 
     def get_queryset(self):
-        qs = cont.Contact.objects.all().order_by('study_id')
+        qs = cont.get_contact_model().objects.all().order_by('study_id')
         # Only return the participants for this user's facility
         if self.action == 'list':
             return qs.for_user(self.request.user,superuser=True)
@@ -185,7 +186,8 @@ class ParticipantViewSet(viewsets.ModelViewSet):
         instance.hiv_messaging = request.data['hiv_messaging']
 
         instance.save()
-        instance_serialized = ParticipantSerializer(cont.Contact.objects.get(pk=instance.pk),context={'request':request}).data
+        instance_serialized = ParticipantSerializer(cont.get_contact_model().objects.get(pk=instance.pk),
+                                                    context={'request':request}).data
         return Response(instance_serialized)
 
     @detail_route(methods=['post','get'])

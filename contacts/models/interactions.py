@@ -7,6 +7,7 @@ from django.utils import timezone
 
 
 #Local Imports
+import swapper
 from visit import ScheduledPhoneCall
 import utils
 from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
@@ -85,7 +86,7 @@ class Message(TimeStampedModel):
 
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
-    contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
+    contact = models.ForeignKey(swapper.get_model_name('contacts', 'Contact'), blank=True, null=True)
 
     #Africa's Talking Data Only for outgoing messages
     external_id = models.CharField(max_length=50,blank=True)
@@ -193,7 +194,7 @@ class PhoneCall(TimeStampedModel):
     objects = PhoneCallQuerySet.as_manager()
 
     connection = models.ForeignKey(settings.MESSAGING_CONNECTION)
-    contact = models.ForeignKey(settings.MESSAGING_CONTACT)
+    contact = models.ForeignKey(swapper.get_model_name('contacts', 'Contact'))
     admin_user = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
 
     is_outgoing = models.BooleanField(default=False)
@@ -213,7 +214,7 @@ class Note(TimeStampedModel):
 
     objects = BaseQuerySet.as_manager()
 
-    participant = models.ForeignKey(settings.MESSAGING_CONTACT)
+    participant = models.ForeignKey(swapper.get_model_name('contacts', 'Contact'))
     admin = models.ForeignKey(settings.MESSAGING_ADMIN, blank=True, null=True)
     comment = models.TextField(blank=True)
 

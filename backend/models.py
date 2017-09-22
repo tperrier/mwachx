@@ -9,14 +9,6 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
     Used to map a single description to an AutomatedMessage.
     """
 
-    def for_participant(self, participant, exact=False, **kwargs):
-        """
-        Return AutomatedMessage for participant and today
-        """
-        description = participant.description(**kwargs)
-        # print "Description:",description
-        return self.from_description(description, exact)
-
     def from_description(self, description, exact=False):
         """
         Return AutomatedMessage for description

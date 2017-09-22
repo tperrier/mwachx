@@ -1,18 +1,15 @@
-import datetime
 
-#Django Imports
+# Django Imports
 from django import forms
-from django.conf import settings
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Div, Submit
 from crispy_forms.bootstrap import FormActions
 
 
-#Local App Imports
+# Local App Imports
 import contacts.models as cont
 import utils.forms as util
-from utils import today
 
 
 class ContactAdd(forms.ModelForm):
@@ -119,6 +116,7 @@ class ContactAdd(forms.ModelForm):
           })
 
     class Meta:
+        # todo: can this be changed to a swappable version?
         model = cont.Contact
         exclude = ['status','facility']
 
@@ -142,6 +140,7 @@ class ContactAdd(forms.ModelForm):
 class ContactUpdate(forms.ModelForm):
 
     class Meta:
+        # todo: can this be changed to a swappable version?
         model = cont.Contact
         fields = ['send_day','send_time','due_date','art_initiation','hiv_messaging', 'hiv_disclosed']
 

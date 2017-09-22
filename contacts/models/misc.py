@@ -8,6 +8,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from jsonfield import JSONField
 
 #Local Imports
+import swapper
+import transports
 from utils.models import TimeStampedModel,BaseQuerySet
 
 class Connection(models.Model):
@@ -18,7 +20,7 @@ class Connection(models.Model):
     objects = BaseQuerySet.as_manager()
 
     identity = models.CharField(max_length=25,primary_key=True)
-    contact = models.ForeignKey(settings.MESSAGING_CONTACT,blank=True,null=True)
+    contact = models.ForeignKey(swapper.get_model_name('contacts', 'Contact'), blank=True, null=True)
 
     description = models.CharField(max_length=30,blank=True,null=True,help_text='Description of phone numbers relationship to contact')
 
@@ -26,6 +28,32 @@ class Connection(models.Model):
 
     def __unicode__(self):
         return "{} ({})".format(self.contact.study_id if self.contact else '',self.identity)
+
+    def send_custom(self,text,translated_text='',languages='',**kwargs):
+
+        return self.send_message(text,translation_status='cust',translated_text=translated_text,languages=languages,is_system=False,**kwargs)
+
+    def send_message(self,text,**kwargs):
+
+        # Send message over system transport
+        try:
+            msg_id, msg_success, external_data = transports.send(self.identity,text)
+        except transports.TransportError as e:
+            msg_id = ""
+            msg_success = False
+            external_data = {"error":str(e)}
+
+        # Create new message
+        new_message = self.message_set.create(
+            text=text,
+            connection=self,
+            external_id=msg_id,
+            external_success=msg_success,
+            external_status="Sent" if msg_success else external_data.get("status","Failed"),
+            external_data=external_data,
+            **kwargs)
+
+        return new_message
 
 class PractitionerQuerySet(BaseQuerySet):
 
@@ -55,7 +83,14 @@ class Practitioner(models.Model):
     def __repr__(self):
         return '<{0!s}> <{1}>'.format(self.facility,self.user.username)
 
+
 class EventLog(TimeStampedModel):
+    """
+    The basic idea behind this model is to keep track of which staff accounts take which actions.
+
+    These are currently created in the "visit seen" and "attended DRF" end points, however
+    there is not currently any logic that accesses / uses the data anywhere in the codebase.
+    """
 
     class Meta:
         app_label = 'contacts'
