@@ -23,7 +23,7 @@ class ScheduleQuerySet(ForUserQuerySet):
 
     def is_active(self):
         ''' exclude those participants who's visits we should ignore '''
-        return self.exclude(participant__status__in=('completed','quit'))
+        return self.filter(participant__status__in=('pregnant','post','over','ccc'))
 
     def visit_range(self,start={'days':0},end=None,notification_start={'days':0},notification_end=None):
         today = utils.today()
@@ -147,10 +147,11 @@ class VisitQuerySet(ScheduleQuerySet):
             since an SMS reminder was sent and has been seen more than three times"""
         today = utils.today(date)
         late = today - datetime.timedelta(days=delta_days)
+        cutoff = today - datetime.timedelta(days=21)
 
         first_reminder_Q = Q(scheduled__lte=late,notify_count__gt=0,missed_sms_count=0)
-        second_reminder_Q = Q(missed_sms_last_sent__lte=late,notify_count__gt=3,missed_sms_count__gt=0)
-        return self.pending().is_active().filter(first_reminder_Q | second_reminder_Q)
+        second_reminder_Q = Q(missed_sms_last_sent__lte=late,notify_count__gt=3,missed_sms_count=1)
+        return self.pending().is_active().filter(first_reminder_Q | second_reminder_Q).filter(scheduled__gte=cutoff)
 
     def to_send(self):
         return self.exclude(visit_type__in=Visit.NO_SMS_TYPES)
@@ -205,14 +206,15 @@ class Visit(ScheduledEvent):
         if self.no_sms:
             return
 
-        condition = self.get_condition('missed')
-
         if send is True and self.missed_sms_count < 2:
             self.missed_sms_count += 1
             self.missed_sms_last_sent = datetime.date.today()
             self.save()
 
-        return self.participant.send_automated_message(send=send,send_base='visit',condition=condition)
+            condition = self.get_condition('missed')
+            return self.participant.send_automated_message(send=send,send_base='visit',condition=condition)
+        else:
+            return
 
     def get_condition(self,postfix='pre'):
         if self.is_pregnant():
