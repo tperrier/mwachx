@@ -177,6 +177,11 @@ LOGGING =   {
             'level':'DEBUG',
             'propagate':True,
         },
+        'contacts': {
+            'handlers': ['mwach_file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
 }
 

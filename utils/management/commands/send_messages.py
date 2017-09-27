@@ -17,19 +17,24 @@ class Command(BaseCommand):
 
     help = 'send daily sms messages'
 
-    def add_arguments(self,parser):
-        parser.add_argument('-s','--send',help='flag to send messages default (False)',action='store_true',default=False)
-        parser.add_argument('--date',default='',help='set testing date y-m-d')
-        parser.add_argument('-t','--hour',help='set testing hour. use 0 for all',choices=(0,8,13,20),type=int)
-        parser.add_argument('-d','--day',help='set testing day',choices=range(7),type=int)
-        parser.add_argument('-e','--email',help='send output as email',action='store_true',default=False)
-        parser.add_argument('--test',help='test send_messages can be called',action='store_true',default=False)
-        # Can't have -v as a paramater since it conflicts with verbos   e
-        parser.add_argument('-w','--weekly',help='send weekly messages',action='store_true',default=False)
-        parser.add_argument('-a','--appointment',help='send visit reminders',action='store_true',default=False)
-        parser.add_argument('-m','--missed',help='send visit missed visit reminders',action='store_true',default=False)
+    def add_arguments(self, parser):
+        parser.add_argument('-s', '--send', help='flag to send messages default (False)', action='store_true',
+                            default=False)
+        parser.add_argument('-e', '--email', help='send output as email', action='store_true', default=False)
+        parser.add_argument('-d', '--daily', help='send daily messages', action='store_true', default=False)
+        parser.add_argument('-w', '--weekly', help='send weekly messages', action='store_true', default=False)
+        parser.add_argument('-a', '--appointment', help='send visit reminders', action='store_true', default=False)
+        # Can't have -v as a parameter since it conflicts with verbose
+        parser.add_argument('-m', '--missed', help='send visit missed visit reminders', action='store_true',
+                            default=False)
 
-        parser.add_argument('--exclude',nargs='*',help='list of 4 digit study_ids to exclude')
+        parser.add_argument('--exclude', nargs='*', help='list of 4 digit study_ids to exclude')
+
+        parser.add_argument('--test', help='test send_messages can be called', action='store_true', default=False)
+        parser.add_argument('--date', default='', help='set testing date y-m-d')
+        parser.add_argument('--hour', help='set testing hour. use 0 for all', choices=(0, 8, 13, 20), type=int)
+        parser.add_argument('--day', help='set testing day of the week. applies to weekly messages', choices=range(7),
+                            type=int)
 
     def handle(self,*args,**options):
         if options.get('test'):
@@ -38,7 +43,7 @@ class Command(BaseCommand):
             return None
 
         # Check for required arguments
-        required = ['weekly','appointment','missed']
+        required = ['daily','weekly','appointment','missed']
         for key,value in options.items():
             if key in required and value == True:
                 break
@@ -75,6 +80,8 @@ class Command(BaseCommand):
                         "Options: {} D:{} H:{} Send:{}".format(date.strftime('%A %Y-%m-%d'),day,hour,send),
                         '' ]
 
+        if options["daily"]:
+            daily_messages(hour, date, email_body, options, send=send)
         if options["weekly"]:
             weekly_messages(day,hour,date,email_body,options,send=send)
         if options["appointment"]:
@@ -89,16 +96,13 @@ class Command(BaseCommand):
             self.stdout.write(email_subject)
             self.stdout.write(email_body)
 
-def weekly_messages(day,hour,date,email_body,options,send=False):
-    ''' Send weeky messages to participants based on day of week and time of day
-        :param day(int): day of week to select participants for
-        :param hour(int): hour of day (0 for all)
+
+def regularly_scheduled_messages(participants, hour, date, email_body, options, send=False):
+    """ Send regularly scheduled messages to participants based on day of week and time of day
+        :day(int): day of week to select participants for
+        :hour(int): hour of day (0 for all)
         :email_body(array): array of strings for email body
-    '''
-
-    email_body.append("***** Weekly Messages ******\n")
-
-    participants = cont.Contact.objects.active_users().filter(send_day=day)
+    """
 
     vals = ns(times={8:0,13:0,20:0}, control=0,
         no_messages=[],sent_to=[],errors=[],exclude=[])
@@ -124,6 +128,26 @@ def weekly_messages(day,hour,date,email_body,options,send=False):
     email_body.append( "Total: {0} Control: {1}".format(participants.count(), vals.control ) )
 
     append_errors(email_body,vals)
+
+
+def daily_messages(hour, date, email_body, options, send=False):
+
+    email_body.append("***** Daily Messages ******\n")
+
+    regularly_scheduled_messages(cont.Contact.objects.active_users(), hour, date, email_body, options, send)
+
+
+def weekly_messages(day, hour, date, email_body, options, send=False):
+    """ Send weekly messages to participants based on day of week and time of day
+        :day(int): day of week to select participants for
+        :hour(int): hour of day (0 for all)
+        :email_body(array): array of strings for email body
+    """
+
+    email_body.append("***** Weekly Messages ******\n")
+
+    regularly_scheduled_messages(cont.Contact.objects.active_users().filter(send_day=day), hour,
+                                 date - datetime.timedelta(days=day), email_body, options, send)
 
 def appointment_reminders(date,hour,email_body,options,send=False):
 

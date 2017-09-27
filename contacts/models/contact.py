@@ -18,6 +18,9 @@ import backend.models as back
 import utils
 import transports
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class ContactQuerySet(ForUserQuerySet):
 
@@ -349,7 +352,7 @@ class ContactBase(TimeStampedModel):
         group = kwargs.get("group",self.study_group)
 
         send_base = kwargs.get("send_base",'edd' if self.was_pregnant(today=today) else 'dd')
-        send_offset = kwargs.get("send_offset",self.delta_days(today=today)/7)
+        send_offset = kwargs.get("send_offset",self.delta_days(today=today))
 
         hiv_messaging = kwargs.get("hiv_messaging", self.hiv_messaging == "system")
         hiv = "Y" if hiv_messaging else "N"
@@ -362,7 +365,7 @@ class ContactBase(TimeStampedModel):
         # Special Case: SAE opt in messaging
         elif self.status == 'loss':
             today = utils.today(today)
-            loss_offset = ((today - self.loss_date).days - 1)/7  + 1
+            loss_offset = (today - self.loss_date).days
             condition = 'nbaby'
             if loss_offset <= 4:
                 send_base = 'loss'
@@ -575,11 +578,13 @@ class ContactBase(TimeStampedModel):
         description = self.description(**kwargs)
         message = back.AutomatedMessage.objects.from_description(description,exact=exact)
         if message is None:
-            return None #TODO: logging on this
+            logger.warning('No message for {}'.format(description))
+            return None
 
         text = message.text_for(self,extra_kwargs)
         if text is None:
-            return None #TODO: logging on this
+            logger.warning('No text for {} - {} kwargs: "{}"'.format(description, message, extra_kwargs))
+            return None
 
         # Set last_msg_system
         self.last_msg_system = utils.today()
