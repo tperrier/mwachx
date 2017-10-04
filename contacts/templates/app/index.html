@@ -59,6 +59,11 @@
                      <li>
                         <a ui-sref="participant-list"><i class="mw mw-mwach-phone"></i> Participants</a>
                     </li>
+                    {% if user.is_superuser %}
+                    <li>
+                        <a href="/admin"><i class="mw mw-admin"></i> Administration</a>
+                    </li>
+                    {% endif %}
                 </ul>
                 <h3 class='pull-right'>
                     {% if not user.is_anonymous %}
