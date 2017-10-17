@@ -145,6 +145,7 @@ STATICFILES_DIRS = (
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_CONFIG = {
     'CURRENT_DATE':('2015-8-1','Current Date for training'),
+    'SHOW_VISITS':('1', 'Show visit tab and data. -- 1: show visits -- 0: do not show visits'),
 }
 
 ################
