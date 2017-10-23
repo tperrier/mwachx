@@ -15,6 +15,10 @@
 
   <div class="msg-header clearfix">
     <strong class="pull-left capitalize">
+      <span ng-switch='message.external_status'>
+        <span ng-switch-when='Success'>|</span>
+        <span ng-switch-when='Sent'>:</span>
+      </span>
       {{message.is_outgoing ? message.sent_by : participant.nickname}}
     </strong>
     <div class="pull-right">{{message.created | date:'d MMM yy H:mm':'+0300'}}</div>
