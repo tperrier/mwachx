@@ -57,12 +57,13 @@ class MessageSerializer(serializers.HyperlinkedModelSerializer):
 					'sent_by','is_related','topic','created')
 
 class MessageSimpleSerializer(serializers.HyperlinkedModelSerializer):
+	
+    href = serializers.HyperlinkedIdentityField(view_name='message-detail')
 
-	href = serializers.HyperlinkedIdentityField(view_name='message-detail')
-	class Meta:
-		model = cont.Message
-		fields = ('id','href','text','translated_text','translation_status','is_outgoing','is_pending',
-					'sent_by','is_related','topic','created','external_status')
+    class Meta:
+        model = cont.Message
+        fields = ('id', 'href', 'text', 'translated_text', 'translation_status', 'is_outgoing', 'is_pending',
+                  'sent_by', 'is_related', 'topic', 'created', 'external_status','auto')
 
 #############################################
 #  ViewSet Definitions
