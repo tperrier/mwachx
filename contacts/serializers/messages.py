@@ -64,8 +64,7 @@ class MessageSimpleSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = cont.Message
         fields = ('id', 'href', 'text', 'translated_text', 'translation_status', 'is_outgoing', 'is_pending',
-                  'sent_by', 'is_related', 'topic', 'created')
-
+                  'sent_by', 'is_related', 'topic', 'created', 'external_status','auto')
 
 #############################################
 #  ViewSet Definitions
