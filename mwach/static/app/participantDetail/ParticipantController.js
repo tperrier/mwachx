@@ -40,6 +40,7 @@
          {'label': 'Family Planning',        'value': 'family_planning',},
          {'label': 'HIV Disclosure',         'value': 'hiv_disclosed_display',},
          {'label': 'HIV Messaging',          'value': 'hiv_messaging_display',},
+         {'label': 'Second Pregancy',        'value': 'second_preg_display',},
        ]);
 
        if ( !participant.is_validated)
@@ -118,6 +119,7 @@
             due_date:mwachxUtils.convert_form_date(result.due_date),
             hiv_disclosed:result.hiv_disclosed,
             hiv_messaging:result.hiv_messaging,
+            second_preg:result.second_preg,
           }
           console.log('Update',result,patch);
           $scope.participant.patch(patch).then(function(result){

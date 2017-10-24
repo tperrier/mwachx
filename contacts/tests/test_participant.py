@@ -10,6 +10,10 @@ from django.core import management
 import contacts.models as cont
 import test_utils
 
+# Test FP Methods
+def plus_td(weeks=0,days=0):
+    return datetime.date.today() + datetime.timedelta(days=days,weeks=weeks)
+
 class SystemCheckTest(test.TestCase):
 
     def test_check(self):
@@ -48,24 +52,21 @@ class ParticipantBasicTests(test.TestCase):
         self.assertTrue(self.p3.no_sms)
 
     def test_description(self):
-        self.assertEqual(self.p1.description(), "edd.two-way.normal.N.3")
-        self.assertEqual(self.p2.description(), "dd.two-way.normal.Y.3")
-        self.assertEqual(self.p3.description(send_base='signup',send_offset=0), "signup.control.art.N.0")
+        self.assertEqual(self.p1.description(), "edd.two-way.normal.N.N.3")
+        self.assertEqual(self.p2.description(), "dd.two-way.art.Y.N.3")
+        self.assertEqual(self.p3.description(send_base='signup',send_offset=0), "signup.control.art.N.N.0")
+        self.assertEqual(self.p4.description(), "dd.two-way.art.N.Y.3")
 
-        # Test FP Methods
-        def plus_td(weeks=0,days=0):
-            return datetime.date.today() + datetime.timedelta(days=days,weeks=weeks)
-
-        self.assertEqual(self.p2.description(today=plus_td(days=2)), "dd.two-way.normal.Y.3")
-        self.assertEqual(self.p2.description(today=plus_td(days=8)), "dd.two-way.normal.Y.4")
-        self.assertEqual(self.p2.description(today=plus_td(2)), "dd.two-way.normal.Y.5")
-        self.assertEqual(self.p2.description(today=plus_td(3)), "dd.two-way.normal.Y.6")
-        self.assertEqual(self.p2.description(today=plus_td(7)), "dd.two-way.normal.Y.10")
+        self.assertEqual(self.p2.description(today=plus_td(days=2)), "dd.two-way.art.Y.N.3")
+        self.assertEqual(self.p2.description(today=plus_td(days=8)), "dd.two-way.art.Y.N.4")
+        self.assertEqual(self.p2.description(today=plus_td(2)), "dd.two-way.art.Y.N.5")
+        self.assertEqual(self.p2.description(today=plus_td(3)), "dd.two-way.art.Y.N.6")
+        self.assertEqual(self.p2.description(today=plus_td(7)), "dd.two-way.art.Y.N.10")
 
     def test_send_batch(self):
 
         participants = cont.Contact.objects.annotate(msg_count=models.Count('message'))
-        self.assertEqual( participants.count() , 3 )
+        self.assertEqual( participants.count() , 4 )
 
         before_count = sum( p.msg_count for p in participants )
 
@@ -97,6 +98,40 @@ class ParticipantBasicTests(test.TestCase):
         new_message = self.p2.message_set.first()
         self.assertEqual( new_message.auto , 'custom' )
         self.assertEqual( new_message.translation_status , 'cust' )
+
+    def test_send_auto(self):
+
+        p1_count = self.p1.message_set.count()
+        new_message = self.p1.send_automated_message()
+
+        self.assertEqual(new_message.text,self.auto_edd_message.english.format(name=self.p1.nickname.title()))
+        self.assertEqual(self.p1.message_set.count(),p1_count+1)
+        self.assertEqual(new_message.external_id,"Default Transport")
+        self.assertEqual(new_message.external_status,"Sent")
+
+        p2_count = self.p2.message_set.count()
+        print self.p2.description()
+        new_message = self.p2.send_automated_message()
+
+        self.assertEqual(new_message.text,self.auto_dd_message.luo.format(name=self.p2.nickname.title()))
+        self.assertEqual(self.p2.message_set.count(),p2_count+1)
+        self.assertEqual(new_message.external_id,"Default Transport")
+        self.assertEqual(new_message.external_status,"Sent")
+
+        p4_count = self.p4.message_set.count()
+        new_message = self.p4.send_automated_message()
+
+        self.assertEqual(new_message.text,self.auto_dd_message.english.format(name=self.p4.nickname.title()))
+        self.assertEqual(self.p4.message_set.count(),p4_count+1)
+        self.assertEqual(new_message.external_id,"Default Transport")
+        self.assertEqual(new_message.external_status,"Sent")
+
+        new_message = self.p4.send_automated_message(today=plus_td(days=7))
+
+        self.assertEqual(new_message.text,self.auto_second_message.english.format(name=self.p4.nickname.title()))
+        self.assertEqual(self.p4.message_set.count(),p4_count+2)
+        self.assertEqual(new_message.external_id,"Default Transport")
+        self.assertEqual(new_message.external_status,"Sent")
 
 class ParticipantSerializerTests(rf_test.APITestCase):
 
@@ -137,7 +172,7 @@ class ParticipantSerializerTests(rf_test.APITestCase):
     def test_create(self):
 
         start_count = cont.Contact.objects.count()
-        data = { "previous_pregnancies":0,"study_id":"0004","anc_num":"0004","study_group":"two-way",
+        data = { "previous_pregnancies":0,"study_id":"0005","anc_num":"0005","study_group":"two-way",
                  "language":"english","phone_number":"0700000004","nickname":"Test","birthdate":"1990-02-05",
                  "relationship_status":"single","due_date":"2016-07-29","hiv_messaging":"none","condition":"normal",
                  "clinic_visit":"2016-07-22","send_day":0,"send_time":8}
@@ -145,7 +180,7 @@ class ParticipantSerializerTests(rf_test.APITestCase):
         # import code;code.interact(local=locals())
 
         try:
-            new_participant = cont.Contact.objects.get(study_id="0004")
+            new_participant = cont.Contact.objects.get(study_id="0005")
         except cont.Contact.DoesNotExist as e:
             self.fail( response )
 
@@ -163,7 +198,7 @@ class ParticipantSerializerTests(rf_test.APITestCase):
     def test_create_control(self):
 
         start_count = cont.Contact.objects.count()
-        data = { "previous_pregnancies":0,"study_id":"0004","anc_num":"0004","study_group":"control",
+        data = { "previous_pregnancies":0,"study_id":"0005","anc_num":"0005","study_group":"control",
                  "language":"english","nickname":"Test","phone_number":"0700000004","birthdate":"1990-02-05",
                  "relationship_status":"single","partner_invited":"invited","due_date":"2016-07-29",
                  "clinic_visit":"2016-07-22","send_day":0,"send_time":8,"hiv_messaging":"none","condition":"normal"
@@ -172,7 +207,7 @@ class ParticipantSerializerTests(rf_test.APITestCase):
         # import code;code.interact(local=locals())
 
         try:
-            new_participant = cont.Contact.objects.get(study_id="0004")
+            new_participant = cont.Contact.objects.get(study_id="0005")
         except cont.Contact.DoesNotExist as e:
             self.fail( response )
 

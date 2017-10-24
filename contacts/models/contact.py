@@ -222,6 +222,7 @@ class Contact(TimeStampedModel):
     child_hiv_status = models.NullBooleanField(blank=True,verbose_name='Child HIV Status')
     family_planning = models.CharField(max_length=10,blank=True,choices=FAMILY_PLANNING_CHOICES,verbose_name='Family Planning')
     loss_date = models.DateField(blank=True,null=True,help_text='SAE date if applicable')
+    second_preg = models.BooleanField(blank=True,choices=enums.BOOL_CHOICES,verbose_name='Second Pregnancy',default=False)
 
     #State attributes to be edited by the system
     last_msg_client = models.DateField(blank=True,null=True,help_text='Date of last client message received',editable=False)
@@ -339,6 +340,8 @@ class Contact(TimeStampedModel):
         It contains a series of dot-separated fields that map to the relevant attributes of the
         contact in determining an SMS message to send.
 
+        Order of description: send_base.study_group.condition.hiv.second.offset
+
         See the equivalent section in the `AutomatedMessageQuerySet` class.
         """
         today = kwargs.get("today")
@@ -351,24 +354,28 @@ class Contact(TimeStampedModel):
 
         hiv_messaging = kwargs.get("hiv_messaging", self.hiv_messaging == "system")
         hiv = "Y" if hiv_messaging else "N"
+        second_preg = kwargs.get('second_preg',self.second_preg)
+        second = 'Y' if second_preg is True else 'N'
 
         # Special Case: Visit Messages
         if send_base == 'visit':
             hiv = "N"
             send_offset = 0
+            second = 'N'
 
         # Special Case: SAE opt in messaging
         elif self.status == 'loss':
             today = utils.today(today)
             loss_offset = ((today - self.loss_date).days - 1)/7  + 1
             condition = 'nbaby'
+            second = 'N'
             if loss_offset <= 4:
                 send_base = 'loss'
                 send_offset = loss_offset
 
-        return "{send_base}.{group}.{condition}.{hiv}.{send_offset}".format(
-            group=group, condition=condition, hiv=hiv,
-            send_base=send_base , send_offset=send_offset
+        return "{send_base}.{group}.{condition}.{hiv}.{second}.{send_offset}".format(
+            group=group, condition=condition, hiv=hiv, second=second,
+            send_base=send_base , send_offset=send_offset,
         )
 
     def days_str(self,today=None):

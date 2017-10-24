@@ -364,20 +364,20 @@ class Command(BaseCommand):
         for g in language_groups:
             language_counts[g['facility']][g['study_group']][g['language']] = g['count']
 
-        # Print Group Counts
-        self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format("","Control","One-Way","Two-Way","Total") )
-        total_row = LanguageRow()
-        for facility, row in language_counts.items():
-            self.stdout.write( "{0:^12}{1[control]:^12}{1[one-way]:^12}{1[two-way]:^12}{2:^12}".format(
-                facility.capitalize(), row, row.total()
-            ) )
-            total_row += row
-
-        self.stdout.write( "{0:^12}{1[control]:^12}{1[one-way]:^12}{1[two-way]:^12} {2:^12}".format(
-            "Total", total_row, total_row.total()
-        ) )
-
-        print ''
+        # # Print Group Counts
+        # self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format("","Control","One-Way","Two-Way","Total") )
+        # total_row = LanguageRow()
+        # for facility, row in language_counts.items():
+        #     self.stdout.write( "{0:^12}{1[control]:^12}{1[one-way]:^12}{1[two-way]:^12}{2:^12}".format(
+        #         facility.capitalize(), row, row.total()
+        #     ) )
+        #     total_row += row
+        #
+        # self.stdout.write( "{0:^12}{1[control]:^12}{1[one-way]:^12}{1[two-way]:^12} {2:^12}".format(
+        #     "Total", total_row, total_row.total()
+        # ) )
+        #
+        # print ''
         self.print_header('Language of Messages (participant,nurse)')
 
         message_groups = cont.Message.objects.order_by().filter(contact__study_group='two-way',is_system=False)\
@@ -387,14 +387,16 @@ class Command(BaseCommand):
         # Piviot Group Counts
         language_counts = collections.defaultdict(LanguageMessageRow)
         for g in message_groups:
-            language_counts[g['languages']][g['contact__language']][g['is_outgoing']] = g['count']
+            language_str = ','.join( set( s[0] if s!= 'sheng' else 'h' for s in g['languages'].split(';') ) )
+            # language_counts[g['languages']][g['contact__language']][g['is_outgoing']] += g['count']
+            language_counts[language_str][g['contact__language']][g['is_outgoing']] += g['count']
 
         # Print Group Counts
         self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format("","English","Swahili","Luo","Total") )
         total_row = LanguageMessageRow()
         for language, row in language_counts.items():
             self.stdout.write( "{0:^12}{1[english]:^12}{1[swahili]:^12}{1[luo]:^12}{2:^12}".format(
-                ','.join(s[0] for s in language.split(';')), row, row.total()
+                language, row, row.total()
             ) )
             total_row += row
 
@@ -644,6 +646,7 @@ class Command(BaseCommand):
         ''' Basic csv dump of hiv messaging status '''
         columns = collections.OrderedDict([
             ('study_id','study_id'),
+            ('status','status'),
             ('hiv_messaging','hiv_messaging'),
             ('hiv_disclosed', null_boolean_factory('hiv_disclosed')),
             ('phone_shared', null_boolean_factory('phone_shared')),
@@ -659,6 +662,7 @@ class Command(BaseCommand):
         ''' Basic csv dump of hiv messaging status changes '''
         columns = collections.OrderedDict([
             ('study_id','contact.study_id'),
+            ('status','contact.status'),
             ('old','old'),
             ('new', 'new'),
             ('date','created'),

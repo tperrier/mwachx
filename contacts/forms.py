@@ -143,7 +143,7 @@ class ContactUpdate(forms.ModelForm):
 
     class Meta:
         model = cont.Contact
-        fields = ['send_day','send_time','due_date','art_initiation','hiv_messaging', 'hiv_disclosed']
+        fields = ['send_day','send_time','due_date','art_initiation','hiv_messaging', 'hiv_disclosed','second_preg']
 
     def __init__(self, *args, **kwargs):
         super(ContactUpdate, self).__init__(*args, **kwargs)

@@ -222,13 +222,12 @@ class Command(BaseCommand):
                 duplicates.append(description)
 
         for base_group, condition_hiv_groups in stats.items():
-            if base_group.startswith('dd'):
-                self.stdout.write( '{}'.format(base_group) )
-                for condition_hiv, items in condition_hiv_groups.items():
-                    self.stdout.write( '\t{}: {}'.format( condition_hiv, len(items) ) )
-                    offsets = ["{0: 3}".format(i) for i in sorted([i.offset for i in items]) ]
-                    for i in range( len(offsets)/10 + 1 ):
-                        self.stdout.write( "\t\t{}".format( "".join(offsets[15*i:15*(i+1)]) ) )
+            self.stdout.write( '{}'.format(base_group) )
+            for condition_hiv, items in condition_hiv_groups.items():
+                self.stdout.write( '\t{}: {}'.format( condition_hiv, len(items) ) )
+                offsets = ["{0: 3}".format(i) for i in sorted([i.offset for i in items]) ]
+                for i in range( len(offsets)/10 + 1 ):
+                    self.stdout.write( "\t\t{}".format( "".join(offsets[15*i:15*(i+1)]) ) )
         self.stdout.write( 'Total: {} Todo: {}'.format( total,
             len([m for m in messages if m.is_todo()])
         ) )
@@ -314,7 +313,7 @@ class Command(BaseCommand):
     def test_participants(self):
 
         found , missing = 0 , []
-        for c in cont.Contact.objects.all():
+        for c in cont.Contact.objects.exclude(study_group='control'):
             auto = back.AutomatedMessage.objects.from_description( c.description() )
             if auto is None:
                 missing.append(c)

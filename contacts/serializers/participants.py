@@ -47,6 +47,9 @@ class ParticipantSerializer(serializers.ModelSerializer):
     hiv_messaging_display = serializers.CharField(source='get_hiv_messaging_display')
     hiv_messaging = serializers.CharField()
 
+    second_preg_display = serializers.SerializerMethodField()
+    second_preg = serializers.CharField()
+
     href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
     messages_url = serializers.HyperlinkedIdentityField(view_name='participant-messages',lookup_field='study_id')
     visits_url = serializers.HyperlinkedIdentityField(view_name='participant-visits',lookup_field='study_id')
@@ -69,6 +72,9 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
     def get_hiv_disclosed(self,obj):
         return utils.null_boolean_form_value(obj.hiv_disclosed)
+
+    def get_second_preg_display(self,obj):
+        return utils.null_boolean_display(obj.second_preg)
 
     def get_note_count(self,obj):
         try:
@@ -183,6 +189,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
         instance.due_date = utils.angular_datepicker(request.data['due_date'])
         instance.hiv_disclosed = request.data['hiv_disclosed']
         instance.hiv_messaging = request.data['hiv_messaging']
+        instance.second_preg = request.data['second_preg'] == 'True'
 
         instance.save()
         instance_serialized = ParticipantSerializer(cont.Contact.objects.get(pk=instance.pk),context={'request':request}).data

@@ -13,20 +13,30 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
         """
         Return AutomatedMessage for description
 
-        :param description (str): base.group.condition.hiv.offset string to look for
+        :param description (str): base.group.condition.hiv.<second>.offset string to look for
         :returns: AutomatedMessage matching description or closes match if not found
         """
-        send_base, group, condition, hiv_messaging, send_offset = description.split('.')
-        hiv = hiv_messaging == "Y"
+        options = description.split('.')
+        sp = False
+        if len(options) == 6: # using second pregnancy format
+            send_base, group, condition, hiv_messaging, second_pregnancy, send_offset = options
+            sp = second_pregnancy == 'Y'
+        else: # using base.group.condition.hiv.offset format
+            send_base, group, condition, hiv_messaging, send_offset = options
+        hiv = hiv_messaging == 'Y'
         send_offset = int(send_offset)
 
         # Special case for post date messages go back and forth between week 41 and 42 messages
         if send_base == 'edd' and send_offset < -2:
             send_offset = (send_offset+1)%-2 - 1
 
-        return self.from_parameters(send_base,group,condition,send_offset,hiv,exact=exact)
+        return self.from_parameters(send_base,group,condition,send_offset,hiv,sp,exact=exact)
 
-    def from_parameters(self,send_base,group,condition='normal',send_offset=0,hiv=False,exact=False):
+    def from_parameters(self,send_base,group,condition='normal',send_offset=0,hiv=False,sp=False,exact=False):
+
+        if sp is True:
+            old_condition = condition
+            condition = 'preg2'
 
         # Look for exact match of parameters
         try:
@@ -41,7 +51,18 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
         # Create the base query set with send_base and offset
         message_offset = self.filter(send_base=send_base,send_offset=send_offset)
 
-        if hiv:
+        if condition == 'preg2':
+            if hiv is True:
+                # Find alternative second pregnancy message if hiv is true
+                try:
+                    return message_offset.get(condition=condition,group=group,hiv_messaging=False)
+                except AutomatedMessage.DoesNotExist as e:
+                    pass
+
+            # recursive call to find non-second pregnancy message
+            return self.from_parameters(send_base,group,old_condition,send_offset,hiv)
+
+        if hiv is True:
             # Try to find a non HIV message for this conditon
             try:
                 return message_offset.get(condition=condition,group=group,hiv_messaging=False)
@@ -116,6 +137,7 @@ class AutomatedMessage(models.Model):
         ('first','First Time Mother'),
         ('normal','Normal'),
         ('nbaby','No Baby'),
+        ('preg2','Second'),
     )
 
     class Meta:
