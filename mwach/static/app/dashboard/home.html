@@ -1,3 +1,4 @@
+
 <mw-action-btn
   class="btn-xxl"
   ui-sref="pending-messages"
@@ -15,6 +16,7 @@
   ui-sref="pending-visits"
   mw-icon="mw-hospital-o"
   mw-style="{{pending.visits}}"
+  ng-show="{{showVisits}}"
   style="margin: 20px 0; width: 100%;">
   <span ng-if='pending.visits == 0'> No pending visits! </span>
   <span ng-if='pending.visits != 0'> You have <strong> {{pending.visits}}</strong> new visits to view</span>
@@ -47,7 +49,7 @@
   <mw-action-btn ui-sref="participant-list" class="btn-lg" mw-icon="mw-mwach-phone" mw-style="info" >
     Find Participant
   </mw-action-btn>
-  <mw-action-btn ui-sref="visits-upcoming" class="btn-lg" mw-icon="mw-list" mw-style="info">
+  <mw-action-btn ui-sref="visits-upcoming" class="btn-lg" mw-icon="mw-list" mw-style="info" ng-show="{{showVisits}}">
     Upcoming Visits
   </mw-action-btn>
 </div>

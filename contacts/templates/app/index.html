@@ -16,7 +16,8 @@
       console.log('django');
       return {
         isAdmin:'{{config.user.is_superuser|default:""}}',
-        user:'{{config.user.id|default:""}}'
+        user:'{{config.user.id|default:""}}',
+        showVisits:'{{config.SHOW_VISITS|default:"1"}}'
       }
     });
     </script>
@@ -46,9 +47,11 @@
                     <li>
                         <a ui-sref="pending-messages"><i class='mw mw-comment'></i> Messages</a>
                     </li>
+                    {% if config.SHOW_VISITS %}
                     <li>
                         <a ui-sref="pending-visits"><i class='mw mw-hospital-o'></i> Visits</a>
                     </li>
+                    {% endif %}
                     <li>
                         <a ui-sref="pending-calls"><i class='mw mw-mobile-1'></i> Calls</a>
                     </li>
@@ -59,7 +62,7 @@
                      <li>
                         <a ui-sref="participant-list"><i class="mw mw-mwach-phone"></i> Participants</a>
                     </li>
-                    {% if user.is_superuser %}
+                    {% if config.user.is_superuser %}
                     <li>
                         <a href="/admin"><i class="mw mw-admin"></i> Administration</a>
                     </li>

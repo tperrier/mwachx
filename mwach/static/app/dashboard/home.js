@@ -12,6 +12,7 @@
 
         $scope.pending = mwachxAPI.pending.get().$object;
         $scope.isAdmin = mwachxDjango.isAdmin;
+        $scope.showVisits = mwachxDjango.showVisits;
 
       }]);
 })();
