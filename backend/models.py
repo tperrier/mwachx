@@ -136,7 +136,7 @@ class AutomatedMessage(models.Model):
     hiv_messaging = models.BooleanField() # True or False
 
     send_base = models.CharField(max_length=20,help_text='Base to send messages from',choices=SEND_BASES_CHOICES)
-    send_offset = models.IntegerField(default=0,help_text='Offset from base in weeks')
+    send_offset = models.IntegerField(default=0,help_text='Offset from base in days')
 
     todo = models.BooleanField()
 
