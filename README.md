@@ -47,7 +47,7 @@ $ pip install -r requirements.txt
 ## Setup your settings files
 
 ```
-$ echo "from .settings_base import *" > mwach/local_settings_2.py
+$ echo "from .settings_base import *" > mwach/local_settings.py
 ```
 
 ## Setup database
