@@ -13,5 +13,6 @@ def angular_view(request):
     return render(request, 'app/index.html', context={'config': {
         'SHOW_DATE':FAKE_DATE,
         'SHOW_VISITS':config.SHOW_VISITS,
-        'user':request.user
+        'user':request.user,
+        'APP_NAME':getattr(settings, 'APP_NAME', 'mWaChX')
         }})

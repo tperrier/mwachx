@@ -8,6 +8,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
+# This is the name of the application shown in the title and on login and various other pages
+APP_NAME = 'mWaChX'
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 #Determain if we are running on OpenShift

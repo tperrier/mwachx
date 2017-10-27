@@ -3,10 +3,12 @@
 import datetime, openpyxl as xl, os
 import code
 import operator, collections, csv
+import re
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 
 import backend.models as back
 import contacts.models as cont
@@ -120,11 +122,12 @@ class Command(BaseCommand):
         if self.options['weekly']:
             make_weekly_wb()
 
-        for name , columns in workbook_columns.items():
+        for name, columns in workbook_columns.items():
 
             wb = xl.workbook.Workbook()
             today = datetime.date.today()
-            file_name = today.strftime('mWaChX_{}_%Y-%m-%d.xlsx').format(name)
+            appname = re.sub(r"[\s+]", '_', getattr(settings, 'APP_NAME', 'mWaChX'))
+            file_name = appname + '_' + today.strftime('{}_%Y-%m-%d.xlsx').format(name)
             xlsx_path_out = os.path.join(self.options['dir'],file_name)
             self.stdout.write( "Making xlsx file {}".format(xlsx_path_out) )
 
