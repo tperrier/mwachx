@@ -912,31 +912,39 @@ visit_columns.facility_sheet = True
 
 BUCKETS = 4
 interaction_columns = collections.OrderedDict([
-    ('Study ID','study_id'),
-    ('Group','study_group'),
-    ('Status','status'),
-    ('Msg Weeks','msg_weeks'),
-    ('Outgoing','msg_outgoing'),
-    ('System','msg_system'),
-    ('Nurse','msg_nurse'),
-    ('Incoming','msg_incoming'),
-    ('Delivered','msg_delivered'),
-    ('%D','precent_delivered'),
-    ('Sent','msg_sent'),
-    ('%S','precent_sent'),
-    ('Failed','msg_failed'),
-    ('%F','precent_failed'),
-    ('Rejected','count_custom'),
-    ('%R','precent_custom'),
-    ('Start Streak','start_streak'),
-    ('Longest Streak','longest_streak'),
-    ('Miss Streak','miss_streak'),
-    ('Last Miss Streak','last_miss_streak'),
-    ('System Succes','system_success'),
-    ('Nurse Succes','nurse_success'),
-    ('Reply delivered','reply_delivered'),
-    ('Reply Sent','reply_sent'),
-    ('Reply Failed','reply_failed'),
+    ('id','study_id'),
+    ('group','study_group'),
+    ('facility','facility'),
+    ('status','status'),
+    ('weeks','msg_weeks'),
+
+    ('p_d','precent_delivered'),
+    ('p_s','precent_sent'),
+    ('p_f','precent_other'),
+
+    ('success_system','system_success'),
+    ('success_nurse','nurse_success'),
+    ('ss_p','system_success_percent'),
+    ('sn_p','nurse_success_percent'),
+
+    ('reply_d','reply_delivered'),
+    ('reply_s','reply_sent'),
+    ('reply_f','reply_failed'),
+
+    ('outgoing','msg_outgoing'),
+    ('system','msg_system'),
+    ('nurse','msg_nurse'),
+    ('incoming','msg_incoming'),
+    ('delivered','msg_delivered'),
+    ('sent','msg_sent'),
+    ('failed','msg_other'),
+
+    ('streak_success','success_streak'),
+    ('streak_sent','sent_streak'),
+    ('streak_missed','miss_streak'),
+    ('streak_start','start_streak'),
+    ('streak_last','last_miss_streak'),
+
     ] + [ ("%s%i"%(c,i),"%s%i"%(c,i)) for c in ('d','s','f') for i in range(1,BUCKETS+1) ]
 )
 
@@ -944,25 +952,29 @@ def make_interaction_columns():
 
     contacts = { c.id:c for c in
         cont.Contact.objects_no_link.annotate_messages().filter(msg_outgoing__gt=9)
-        # cont.Contact.objects_no_link.annotate_messages().order_by('-msg_failed')[:20]
+        # cont.Contact.objects_no_link.filter(study_group='two-way').annotate_messages().order_by('-msg_failed')[:20]
     }
 
     # Add all messages to contacts.messages
     messages = cont.Message.objects.filter(contact__in=contacts.keys()).order_by('created')
     for m in messages:
-        c = contacts[m.contact_id]
-        if hasattr(c,'messages'):
-            c.messages.append(m)
-        else:
-            c.messages = [m]
+        if m.contact_id in contacts:
+            c = contacts[m.contact_id]
+            if hasattr(c,'messages'):
+                c.messages.append(m)
+            else:
+                c.messages = [m]
 
     for id , c in contacts.items():
         start_streak, start_streak_flag = 0 , False
-        longest_streak , current_streak = 0 , 0
+        success_streak ,  current_streak = 0 , 0
+        sent_streak, current_sent_streak = 0 , 0
         miss_streak , current_miss_streak = 0 , 0
         system_success , nurse_success , = 0 , 0
+        reply_delivered , reply_sent , reply_failed = 0 , 0 , 0
 
-        size , rem = divmod( c.msg_outgoing , BUCKETS )
+        # Set up bucket sizes based on how many system messages there are
+        size , rem = divmod( c.msg_system , BUCKETS )
         bucket_sizes = [ (size+1) for i in range(rem) ] + [size for i in range(BUCKETS-rem)]
         delivered_buckets = [ 0 for _ in range(BUCKETS)]
         sent_buckets = [ 0 for _ in range(BUCKETS)]
@@ -970,49 +982,56 @@ def make_interaction_columns():
         count , bucket = 0 , 0
 
         last_outgoing = None
-        reply_delivered , reply_sent , reply_failed = 0 , 0 , 0
 
         for m in c.messages:
 
             if m.is_outgoing:
-
-                if count == bucket_sizes[bucket]:
-                    bucket += 1
-                    count = 0
-                count += 1
-
-                success = m.external_status == 'Success'
                 last_outgoing = m
 
                 # Start Streak
                 if not start_streak_flag:
-                    if success:
+                    if m.external_status == 'Success':
                         start_streak += 1
                     else:
                         start_streak_flag = True
 
-                if success:
+                if m.external_status == 'Success':
                     current_streak += 1
-                    delivered_buckets[bucket] += 1
                     if m.is_system:
                         system_success += 1
-                    else:
+                    elif m.translation_status != 'cust':
                         nurse_success += 1
                     if current_miss_streak > miss_streak:
                         miss_streak = current_miss_streak
-                        miss_streak = 0
+                    current_miss_streak = 0
                 else:
                     current_miss_streak += 1
-                    if current_streak > longest_streak:
-                        longest_streak = current_streak
-                        current_streak = 0
-                    if m.external_status == 'Sent':
+                    if current_streak > success_streak:
+                        success_streak = current_streak
+                    current_streak = 0
+
+                if m.external_status == 'Sent':
+                    current_sent_streak += 1
+                else:
+                    if current_sent_streak > sent_streak:
+                        sent_streak = current_sent_streak
+                    current_sent_streak = 0
+
+                if m.is_system:
+                    if count == bucket_sizes[bucket]:
+                        # increment bucket if bucket is full
+                        bucket += 1
+                        count = 0
+                    count += 1
+                    if m.external_status == 'Success':
+                        delivered_buckets[bucket] += 1
+                    elif m.external_status == 'Sent':
                         sent_buckets[bucket] += 1
                     else:
                         failed_buckets[bucket] += 1
 
             elif last_outgoing is not None: # incoming message and no reply yet
-                if (last_outgoing.created - m.created).total_seconds() < 21600: #6h
+                if (m.created - last_outgoing.created).total_seconds() < 172800: # 43200 = 12h 21600 = 6h
                     if last_outgoing.external_status == 'Success':
                         reply_delivered += 1
                     elif last_outgoing.external_status == 'Sent':
@@ -1023,24 +1042,25 @@ def make_interaction_columns():
 
         if current_miss_streak > miss_streak:
             miss_streak = current_miss_streak
-        if current_streak > longest_streak:
-            longest_streak = current_streak
+        if current_streak > success_streak:
+            success_streak = current_streak
+        if current_sent_streak > sent_streak:
+            sent_streak = current_sent_streak
 
         c.start_streak = start_streak
-        c.longest_streak = longest_streak
+        c.success_streak = success_streak
         c.miss_streak = miss_streak
+        c.sent_streak = sent_streak
         c.last_miss_streak = current_miss_streak
 
         c.precent_delivered = zero_or_precent( c.msg_delivered , c.msg_outgoing )
         c.precent_sent = zero_or_precent( c.msg_sent , c.msg_outgoing )
-        c.precent_failed = zero_or_precent( c.msg_other , c.msg_outgoing )
+        c.precent_other = zero_or_precent( c.msg_other , c.msg_outgoing )
 
-        custom_count = c.msg_outgoing - c.msg_delivered - c.msg_sent - c.msg_failed
-        c.count_custom = custom_count
-        c.precent_custom = zero_or_precent(custom_count , c.msg_outgoing )
-
-        c.system_success = zero_or_precent( system_success , c.msg_system )
-        c.nurse_success = zero_or_precent( nurse_success , c.msg_nurse )
+        c.system_success = system_success
+        c.nurse_success = nurse_success
+        c.system_success_percent = zero_or_precent( system_success , c.msg_system )
+        c.nurse_success_percent = zero_or_precent( nurse_success , c.msg_nurse )
 
         c.reply_delivered = zero_or_precent( reply_delivered , c.msg_delivered )
         c.reply_sent = zero_or_precent( reply_sent , c.msg_sent )

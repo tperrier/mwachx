@@ -32,12 +32,12 @@ class ContactQuerySet(ForUserQuerySet):
         return self.annotate(
             msg_outgoing=utils.sql_count_when(message__is_outgoing=True),
             msg_system=utils.sql_count_when(message__is_system=True),
-            msg_nurse=utils.sql_count_when(message__is_system=False,message__is_outgoing=True),
+            msg_nurse=utils.sql_count_when(~models.Q(message__translation_status='cust'),
+                message__is_system=False,message__is_outgoing=True),
             msg_incoming=utils.sql_count_when(message__is_outgoing=False),
             msg_delivered=utils.sql_count_when(message__external_status='Success'),
             msg_sent=utils.sql_count_when(message__external_status='Sent'),
             msg_failed=utils.sql_count_when(message__external_status='Failed'),
-            msg_rejected=utils.sql_count_when(message__external_status='Message Rejected By Gateway'),
         ).annotate(
             msg_missed=models.F('msg_outgoing') - models.F('msg_delivered'),
             msg_other=models.F('msg_outgoing') - models.F('msg_delivered') - models.F('msg_sent'),

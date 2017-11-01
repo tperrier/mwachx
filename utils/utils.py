@@ -61,10 +61,13 @@ def sqlite_date_diff(start_date,end_date,days=False):
     scale = 86400 if days is False else 1
     return db.ExpressionWrapper( (SQLiteDate(end_date) - SQLiteDate(start_date)) * scale , db.IntegerField() )
 
-def sql_count_when(**kwargs):
+def sql_count_when(*qargs,**kwargs):
     """ qargs : list of models.Q objects
         kwargs : filter_term=value dict
     """
+    condition = db.Q(**kwargs)
+    for q in qargs:
+        condition &= q
     return db.Count( db.Case(
-        db.When(then=1,**kwargs),output_field=db.IntegerField()
+        db.When(condition,then=1),output_field=db.IntegerField()
     ))
