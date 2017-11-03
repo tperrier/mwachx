@@ -11,9 +11,11 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 # This is the name of the application shown in the title and on login and various other pages
 APP_NAME = 'mWaChX'
 
-# The APP_STYLE currently informs the registration page which fields to render
+# The APP_FLAVOR currently informs the registration page which fields to render, and could be used to identify future
+# functionality
+
 # possible values are 'x' and 'neo'
-APP_STYLE = 'x'
+APP_FLAVOR = 'x'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os

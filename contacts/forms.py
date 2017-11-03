@@ -12,8 +12,8 @@ import utils.forms as util
 
 
 def contact_add_form_factory(*args, **kwargs):
-    if hasattr(settings, 'APP_STYLE'):
-        if settings.APP_STYLE.lower() == 'neo':
+    if hasattr(settings, 'APP_FLAVOR'):
+        if settings.APP_FLAVOR.lower() == 'neo':
             return ContactAddMwachNeo(*args, **kwargs)
         else:
             return ContactAddMwachX(*args, **kwargs)
@@ -22,8 +22,8 @@ def contact_add_form_factory(*args, **kwargs):
 
 
 def contact_update_form_factory(*args, **kwargs):
-    if hasattr(settings, 'APP_STYLE'):
-        if settings.APP_STYLE.lower() == 'neo':
+    if hasattr(settings, 'APP_FLAVOR'):
+        if settings.APP_FLAVOR.lower() == 'neo':
             return ContactUpdateMwachNeo(args, kwargs)
         else:
             return ContactUpdateMwachX(args, kwargs)
@@ -55,7 +55,7 @@ class ContactUpdateGeneric(forms.ModelForm):
     # Do not implement Meta in this class, subclasses override it completely
 
     def __init__(self, *args, **kwargs):
-        super(ContactAddGeneric, self).__init__(*args, **kwargs)
+        super(ContactUpdateGeneric, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.form_id = 'participant-details-form'
