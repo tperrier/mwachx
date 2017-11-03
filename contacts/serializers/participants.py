@@ -117,7 +117,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         ''' POST - create a new participant using the the participant ModelForm'''
-        cf = forms.ContactAdd(request.data)
+        cf = forms.contact_add_form_factory(request.data)
 
         if cf.is_valid():
             with transaction.atomic():

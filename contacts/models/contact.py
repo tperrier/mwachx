@@ -196,7 +196,7 @@ class ContactBase(TimeStampedModel):
     ccc_num = models.CharField(max_length=15,verbose_name='CCC #',blank=True,null=True)
     facility = models.CharField(max_length=15,choices=settings.FACILITY_CHOICES)
 
-    study_group = models.CharField(max_length=10,choices=enums.GROUP_CHOICES,verbose_name='Group')
+    study_group = models.CharField(max_length=10,choices=enums.GROUP_CHOICES,verbose_name='Group',blank=True)
     send_day = models.IntegerField(choices=DAY_CHOICES, default=0,verbose_name='Send Day')
     send_time = models.IntegerField(choices=TIME_CHOICES,default=8,verbose_name='Send Time')
 
@@ -213,7 +213,7 @@ class ContactBase(TimeStampedModel):
     # Required Medical Information
     status = models.CharField(max_length=15,choices=STATUS_CHOICES, default='pregnant')
     language = models.CharField(max_length=10,choices=LANGUAGE_CHOICES,default='english')
-    condition = models.CharField(max_length=15,choices=CONDITION_CHOICES,default='normal')
+    condition = models.CharField(max_length=15,choices=CONDITION_CHOICES,default='normal',blank=True)
     due_date = models.DateField(verbose_name='Estimated Delivery Date')
 
     delivery_date = models.DateField(verbose_name='Delivery Date',blank=True,null=True)
@@ -222,7 +222,7 @@ class ContactBase(TimeStampedModel):
     # Optional Medical Informaton
     art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART Initiation',verbose_name='ART Initiation')
     hiv_disclosed = models.NullBooleanField(blank=True,verbose_name='HIV Disclosed')
-    hiv_messaging = models.CharField(max_length=15,choices=MESSAGING_CHOICES,default='none',verbose_name='HIV Messaging')
+    hiv_messaging = models.CharField(max_length=15,choices=MESSAGING_CHOICES,default='none',verbose_name='HIV Messaging',blank=True)
     child_hiv_status = models.NullBooleanField(blank=True,verbose_name='Child HIV Status')
     family_planning = models.CharField(max_length=10,blank=True,choices=FAMILY_PLANNING_CHOICES,verbose_name='Family Planning')
     loss_date = models.DateField(blank=True,null=True,help_text='SAE date if applicable')
