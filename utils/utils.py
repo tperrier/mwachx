@@ -18,7 +18,7 @@ def today(today=None):
         return datetime.date.today()
 
 def parse_date(datestr):
- 	return datetime.datetime.strptime(datestr,'%d-%m-%Y').date()
+    return datetime.datetime.strptime(datestr,'%d-%m-%Y').date()
 
 def make_date(date,month=0,day=0):
     try:
