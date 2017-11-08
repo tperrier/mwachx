@@ -46,6 +46,7 @@ class Command(BaseCommand):
         xlsx_parser.add_argument('-d','--detail',action='store_true',default=False,help='create detail report')
         xlsx_parser.add_argument('-a','--all',action='store_true',default=False,help='create all reports')
         xlsx_parser.add_argument('-i','--interaction',action='store_true',default=False,help='create participant interaction report')
+        xlsx_parser.add_argument('-m','--messages',action='store_true',default=False,help='create system message dump')
         xlsx_parser.add_argument('-w','--weekly',action='store_true',default=False,help='create weakly stats report')
         xlsx_parser.add_argument('-c','--custom',action='store_true',default=False,help='create custom report')
         xlsx_parser.add_argument('--dir',default='ignore',help='directory to save report in')
@@ -56,7 +57,7 @@ class Command(BaseCommand):
         csv_parser.add_argument('name',help='csv report type',
             choices=(
                 'hiv_messaging','enrollment','messages','edd','delivery',
-                'sae','visits','msg_success','msg_dump','hiv_statuschange',
+                'sae','visits','msg_dump','hiv_statuschange',
             )
         )
         csv_parser.set_defaults(action='make_csv_name')
@@ -117,6 +118,9 @@ class Command(BaseCommand):
         if self.options['interaction']:
             workbook_columns['interaction'] =  interaction_columns
             interaction_columns.queryset = make_interaction_columns()
+        if self.options['messages']:
+            workbook_columns['messages'] = system_message_columns
+            # system_message_columns.queryset = make_system_message_columns()
         if self.options['weekly']:
             make_weekly_wb()
 
@@ -694,23 +698,6 @@ class Command(BaseCommand):
         make_csv(columns,visits,file_path)
         return file_path
 
-    def make_msg_success_csv(self):
-        ''' Basic csv dump of message success rates '''
-        columns = collections.OrderedDict([
-            ('study_id','study_id'),
-            ('group','study_group'),
-            ('msg_out','msg_out'),
-            ('missed','msg_missed'),
-            ('received','msg_received'),
-            ('failed','msg_failed'),
-            ('rate',lambda p: round(p.msg_received / float(p.msg_out),4) if p.msg_out != 0 else 0 ),
-            ('msg_in','msg_in')
-        ])
-        p_all = cont.Contact.objects_no_link.annotate_messages().order_by('-study_group','-msg_missed','-msg_out')
-        file_path = os.path.join(self.options['dir'],'message_success.csv')
-        make_csv(columns,p_all,file_path)
-        return file_path
-
     def make_enrollment_csv(self):
         """ CSV Report of enrollment per week """
         c_all = cont.Contact.objects.all()
@@ -1074,19 +1061,55 @@ def make_interaction_columns():
 
     return contacts.values()
 
+def external_delta(m):
+    if m.external_success_time is not None:
+        return (m.external_success_time - m.created).total_seconds()
+
+def reply_time(m):
+    next_participant = m.contact.message_set.filter(created__gt=m.created,is_outgoing=False).last()
+    next_outgoing = m.contact.message_set.filter(created__gt=m.created,is_outgoing=True).last()
+    if next_participant and next_outgoing and next_participant.created < next_outgoing.created:
+        reply_time = (next_participant.created - m.created).total_seconds() / 3600
+        m.next_outgoing = next_outgoing
+        return reply_time
+    return None
+
+def replies(m):
+    if hasattr(m,'next_outgoing'):
+        replies = m.contact.message_set.filter(created__gt=m.created,created__lt=m.next_outgoing.created).count()
+        return replies
+    return None
+
+system_message_columns = collections.OrderedDict([
+    ('id','contact.study_id'),
+    ('group','contact.study_group'),
+    ('facility','contact.facility'),
+    ('status','contact.status'),
+    ('timestamp','created'),
+    ('sent_by','sent_by'),
+    ('auto','auto'),
+    ('external_status',lambda row: row.external_status if row.external_status in ('Success','Sent') else 'Failed'),
+    ('external_delta', external_delta ),
+    ('reply_time',reply_time),
+    ('replies',replies),
+])
+system_message_columns.queryset = cont.Message.objects.filter(is_outgoing=True,contact__isnull=False)\
+    .exclude(contact__study_group='control').select_related('contact').order_by('contact__study_group','contact')
+system_message_columns.widths = {'E':25,'G':20}
+
 def make_facility_worksheet(columns,ws,facility):
     contacts = cont.Contact.objects.filter(facility=facility)
     ws.title = facility.capitalize()
     make_worksheet(columns,ws,contacts)
 
 
-def make_worksheet(columns,ws,queryset,column_widths=None):
+def make_worksheet(columns,ws,queryset):
     # Write Header Row
     ws.append(columns.keys())
     ws.auto_filter.ref = 'A1:{}1'.format( xl.utils.get_column_letter(len(columns)) )
 
-    if hasattr('columns','widths'):
-        for col_letter, width in column_widths.items():
+    if hasattr(columns,'widths'):
+        for col_letter, width in columns.widths.items():
             ws.column_dimensions[col_letter].width = width
 
     # Write Data Rows
