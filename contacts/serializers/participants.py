@@ -4,6 +4,7 @@ import json, datetime
 # Django imports
 from django.utils import timezone
 from django.db import transaction, models
+from django.conf import settings
 
 # Rest Framework Imports
 from rest_framework import serializers
@@ -25,6 +26,13 @@ from misc import PhoneCallSerializer, NoteSerializer
 #############################################
 #  Serializer Definitions
 #############################################
+
+DEFAULT_VISIT_DAYS_DELTA = 6 * 7  # 6 weeks after delivery date
+
+if hasattr(settings, 'APP_FLAVOR'):
+    if settings.APP_FLAVOR.lower() == 'neo':
+        DEFAULT_VISIT_DAYS_DELTA = 7 * 14  # 14 weeks after delivery date
+
 
 class ParticipantSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display')
@@ -143,10 +151,6 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                 if cf.cleaned_data['clinic_visit']:
                     cont.Visit.objects.create(scheduled=cf.cleaned_data['clinic_visit'],
                         participant=contact,visit_type='clinic')
-                if cf.cleaned_data['due_date']:
-                    # Set first study visit to 6 weeks (42 days) after EDD
-                    cont.Visit.objects.create(scheduled=cf.cleaned_data['due_date']+datetime.timedelta(days=42),
-                        participant=contact,visit_type='study')
 
                 # If edd is more than 35 weeks away reset and make note
                 if contact.due_date - datetime.date.today() > datetime.timedelta(weeks=35):
@@ -160,6 +164,13 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                     )
                     contact.due_date = new_edd
                     contact.save()
+
+                if contact.due_date:
+                    # Set first study visit after EDD
+
+                    cont.Visit.objects.create(
+                        scheduled=contact.due_date + datetime.timedelta(days=DEFAULT_VISIT_DAYS_DELTA),
+                        participant=contact, visit_type='study')
 
                 #Send Welcome Message
                 contact.send_automated_message(send_base='signup',send_offset=0,
