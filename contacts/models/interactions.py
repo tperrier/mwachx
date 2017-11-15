@@ -138,11 +138,18 @@ class Message(TimeStampedModel):
         return 'none'
 
     @property
+    def display_text(self):
+        if self.translation_status == 'done':
+            return self.translated_text
+        else:
+            return self.text
+
+    @property
     def auto_type(self):
         if self.auto:
             split = self.auto.split('.')
             if split[0] in ('edd','dd','signup','loss','stop'):
-                return '{0[0]}.{0[4]}'.format(split)
+                return '{0[0]}.{0[-1]}'.format(split)
             elif split[0] == 'visit':
                 return '{0[0]}.{0[2]}'.format(split)
             elif split[0] == 'bounce':

@@ -10,7 +10,7 @@ from django.db.models import Count
 import code, os
 
 def count_field(qs,field):
-    groups = qs.order_by().values(field).annotate(count=models.Count(field))
+    groups = qs.order_by().values(field).annotate(count=models.Count('id'))
     return { g[field] : g['count'] for g in groups }
 
 class Command(BaseCommand):

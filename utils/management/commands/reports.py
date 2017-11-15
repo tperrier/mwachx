@@ -2,7 +2,8 @@
  # -*- coding: utf-8 -*-
 import datetime, openpyxl as xl, os
 import code
-import operator, collections, csv
+import operator, collections
+import unicodecsv as csv
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import models
@@ -11,6 +12,7 @@ from django.utils import timezone
 import backend.models as back
 import contacts.models as cont
 import utils
+import report_utils
 
 class Command(BaseCommand):
 
@@ -37,7 +39,8 @@ class Command(BaseCommand):
         print_parser.add_argument('-u', '--message-status', default=None, const='all',
             choices=('day','week','cur_week','month','year','all'),nargs='?', help='print message status')
         print_parser.add_argument('--delivery-source',action='store_true',default=False,help='print delivery source statistics')
-        print_parser.add_argument('--topic',action='store_true',default=False,help='incoming message topics')
+        print_parser.add_argument('--topics',action='store_true',default=False,help='incoming message topics')
+        print_parser.add_argument('--msg-counts',action='store_true',default=False,help='print counts by auto type')
         print_parser.add_argument('--weeks',default=5,type=int,help='message history weeks (default 5)')
         print_parser.set_defaults(action='print_stats')
 
@@ -98,12 +101,18 @@ class Command(BaseCommand):
             self.print_delivery_stats()
         if self.options['delivery_source'] and not self.options['delivery']:
             self.print_delivery_source()
-        if self.options['topic']:
-            self.print_message_topic()
+        if self.options['topics']:
+            self.print_report('msg_topics')
+        if self.options['msg_counts']:
+            self.print_report('msg_counts')
         if self.options['message_status'] is not None:
             self.print_message_status()
         if self.options['success_times']:
             self.print_success_times()
+
+    def print_report(self,report):
+        report_modual = getattr(report_utils,report)
+        report_modual.print_report(self)
 
     # SEC::XLSX Helper Functions
     def make_xlsx(self):
@@ -548,18 +557,6 @@ class Command(BaseCommand):
             total_row += enrollment
         print 'Total  ' , total_row , total_row.total()
 
-    def print_message_topic(self):
-
-        self.print_header('Incoming Message Topic')
-
-        msgs = cont.Message.objects.filter(is_outgoing=False,contact__isnull=False)
-        topics = collections.Counter( m.topic for m in msgs )
-
-        for key , count in topics.most_common():
-            related = collections.Counter( m.is_related for m in msgs.filter(topic=key))
-            print "{:<20s}{:4d}{: 10.2f}".format(key , count, related[True]*100/float(count))
-        print "{:<20s}{:4d}".format('Total', msgs.count())
-
     def print_success_times(self):
 
         self.print_header('Success Times')
@@ -762,13 +759,17 @@ class Command(BaseCommand):
         columns = collections.OrderedDict([
             ('timestamp','created'),
             ('study_id','contact.study_id'),
-            ('group','contact.study_group'),
-            ('sent_by','sent_by'),
-            ('status','external_status'),
+            ('week','days_str'),
+            # ('group','contact.study_group'),
+            # ('sent_by','sent_by'),
+            # ('status','external_status'),
             ('topic','topic'),
-            ('related','related'),
+            ('related','is_related'),
+            ('text','display_text'),
         ])
-        m_all = cont.Message.objects.exclude(contact__isnull=True).order_by('contact_study_id').prefetch_related('contact')
+        # m_all = cont.Message.objects.exclude(contact__isnull=True).order_by('contact_study_id').prefetch_related('contact')
+        m_all = cont.Message.objects.filter(is_outgoing=False,contact__study_group='two-way') \
+            .order_by('contact__study_id').prefetch_related('contact')
         file_path = os.path.join(self.options['dir'],'message_dump.csv')
         make_csv(columns,m_all,file_path)
         return file_path

@@ -334,6 +334,9 @@ class Contact(TimeStampedModel):
             # Return days since due date
             return (today-self.delivery_date).days
 
+    def days_str(self,today=None):
+        return utils.days_as_str(self.delta_days(today) )
+
     def description(self, **kwargs):
         """
         Description is a special formatted string that represents the state of a contact.
@@ -377,9 +380,6 @@ class Contact(TimeStampedModel):
             group=group, condition=condition, hiv=hiv, second=second,
             send_base=send_base , send_offset=send_offset,
         )
-
-    def days_str(self,today=None):
-        return utils.days_as_str(self.delta_days(today) )
 
     def get_validation_key(self):
         # todo: what is this used by/for?
