@@ -54,19 +54,19 @@ class ParticipantBasicTests(test.TestCase):
 
     @override_settings(FAKE_DATE=False)
     def test_description(self):
-        self.assertEqual(self.p1.description(), "edd.two-way.normal.N.3")
-        self.assertEqual(self.p2.description(), "dd.two-way.normal.Y.3")
-        self.assertEqual(self.p3.description(send_base='signup', send_offset=0), "signup.control.art.N.0")
+        self.assertEqual(self.p1.description(), "edd.two-way.normal.21")
+        self.assertEqual(self.p2.description(), "dd.two-way.normal.21")
+        self.assertEqual(self.p3.description(send_base='signup', send_offset=0), "signup.control.art.0")
 
         # Test FP Methods
         def plus_td(weeks=0,days=0):
             return datetime.date.today() + datetime.timedelta(days=days,weeks=weeks)
 
-        self.assertEqual(self.p2.description(today=plus_td(days=2)), "dd.two-way.normal.Y.3")
-        self.assertEqual(self.p2.description(today=plus_td(days=8)), "dd.two-way.normal.Y.4")
-        self.assertEqual(self.p2.description(today=plus_td(2)), "dd.two-way.normal.Y.5")
-        self.assertEqual(self.p2.description(today=plus_td(3)), "dd.two-way.normal.Y.6")
-        self.assertEqual(self.p2.description(today=plus_td(7)), "dd.two-way.normal.Y.10")
+        self.assertEqual(self.p2.description(today=plus_td(days=2)), "dd.two-way.normal.23")
+        self.assertEqual(self.p2.description(today=plus_td(days=8)), "dd.two-way.normal.29")
+        self.assertEqual(self.p2.description(today=plus_td(2)), "dd.two-way.normal.35")
+        self.assertEqual(self.p2.description(today=plus_td(3)), "dd.two-way.normal.42")
+        self.assertEqual(self.p2.description(today=plus_td(7)), "dd.two-way.normal.70")
 
     def test_send_batch(self):
 
@@ -146,7 +146,7 @@ class ParticipantSerializerTests(rf_test.APITestCase):
         start_count = Contact.objects.count()
         data = { "previous_pregnancies":0,"study_id":"0004","anc_num":"0004","study_group":"two-way",
                  "language":"english","phone_number":"0700000004","nickname":"Test","birthdate":"1990-02-05",
-                 "relationship_status":"single","due_date":"2016-07-29","hiv_messaging":"none","condition":"normal",
+                 "relationship_status":"single","due_date":"2016-07-29","condition":"normal",
                  "clinic_visit":"2016-07-22","send_day":0,"send_time":8}
         response = self.client.post(url.reverse("participant-list"), data, format="json")
         # import code;code.interact(local=locals())
@@ -174,7 +174,7 @@ class ParticipantSerializerTests(rf_test.APITestCase):
         data = { "previous_pregnancies":0,"study_id":"0004","anc_num":"0004","study_group":"control",
                  "language":"english","nickname":"Test","phone_number":"0700000004","birthdate":"1990-02-05",
                  "relationship_status":"single","partner_invited":"invited","due_date":"2016-07-29",
-                 "clinic_visit":"2016-07-22","send_day":0,"send_time":8,"hiv_messaging":"none","condition":"normal"
+                 "clinic_visit":"2016-07-22","send_day":0,"send_time":8,"condition":"normal"
                 }
         response = self.client.post(url.reverse("participant-list"), data, format="json")
         # import code;code.interact(local=locals())
