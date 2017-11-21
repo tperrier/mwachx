@@ -765,7 +765,8 @@ class Command(BaseCommand):
             # ('status','external_status'),
             ('topic','topic'),
             ('related','is_related'),
-            ('text','display_text'),
+            # ('text','display_text'),
+            ('text','text'),
         ])
         # m_all = cont.Message.objects.exclude(contact__isnull=True).order_by('contact_study_id').prefetch_related('contact')
         m_all = cont.Message.objects.filter(is_outgoing=False,contact__study_group='two-way') \

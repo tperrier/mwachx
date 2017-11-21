@@ -67,6 +67,33 @@ def send(to,message):
         msg_success = recipients[0]['status'] == 'Success'
         return msg_id, msg_success, {'status':recipients[0]['status']}
 
+def forward(identity,message_text,external_id,**kwargs):
+    ''' Mimick a post request from AT and forward to the system forward URL
+
+        Post Request: settings.sms_forward_url
+            from: phone number message is from
+            to: shortcode sent to - ignored for now
+            text: text of message
+            date: external data and time received
+            id: interal AT ID
+            linkId: not sure what this is used for - it's mostly empty for us
+    '''
+    sms_forward_url = getattr(settings,'SMS_FORWARD_URL',None)
+    params = {
+        'from':identity,
+        'to':'fwrd',
+        'text':message_text,
+        'id':external_id,
+        'date':kwargs.get('time_received',''),
+        'linkId':kwargs.get('external_linkId',''),
+    }
+    try:
+        post = requests.post(sms_forward_url,data=params)
+        fwrd_status = 'success'
+    except requests.exceptions.RequestException as e:
+        fwrd_status = 'failed'
+    return fwrd_status
+
 def balance():
 
     if API_KEY is None:
