@@ -4,8 +4,8 @@ import operator, collections, re, itertools
 
 class MessageRowBase(object):
 
-    def __init__(self,row,status,group,track,hiv,send_base,offset,english,swahili,luo,**kwargs):
-        self.group, self.track, self.hiv = group, track, hiv
+    def __init__(self,row,status,group,track,send_base,offset,english,swahili,luo,**kwargs):
+        self.group, self.track = group if group else '', track
         self.send_base, self.offset = send_base, offset
         self.english, self.swahili, self.luo, = map(clean_msg,(english,swahili,luo))
 
@@ -16,27 +16,28 @@ class MessageRowBase(object):
         self.new = kwargs.get('new','')
         self.row = row[0].row
 
-        if any( [s is None for s in group,track,hiv,send_base,offset ] ):
+        if any( [s is None for s in group,track,send_base,offset ] ):
             status = '#'
+        if any( [s is None for s in swahili, english ] ):
+            status = '!'
         self.set_status(status)
 
         if self.status != 'comment':
             self.group = self.group.replace('_','-')
             self.configure_variables()
-            self.set_hiv_messaging()
 
             if self.offset is None:
                 self.offset = self.get_offset()
 
 
     def description(self):
-        ''' Return base_group_track_hiv_offset '''
-        return "{0.send_base}.{0.group}.{0.track}.{1}.{0.offset}".format(
-            self, self.get_hiv_messaging_str())
+        ''' Return base_group_track_offset '''
+        return "{0.send_base}.{0.group}.{0.track}.{0.offset}".format(
+            self)
 
     def kwargs(self):
         return {'send_base':self.send_base,'send_offset':self.offset,'group':self.group,
-                'condition':self.track,'comment':self.comment,'hiv_messaging':self.hiv,
+                'condition':self.track,'comment':self.comment,
                 'english':self.english if self.english != '' else self.new,
                 'swahili':self.swahili,'luo':self.luo,
                 'todo':self.is_todo()}
@@ -75,7 +76,9 @@ class MessageRowBase(object):
         if status is None:
             self.status =  'clean'
         else:
-            self.status =  {'':'clean','x':'done','s':'swahili','l':'luo','!':'todo','#':'comment'}.get(status.lower()[0],'clean')
+            self.status =  {
+            '':'clean','x':'done','s':'swahili','l':'luo','!':'todo','#':'comment'
+            }.get(status.lower()[0],'clean')
 
     def get_status_str(self):
         return {'clean':'','done':'x','todo':'!','comment':'#','swahili':'s','luo':'l'}.get(self.status,'')
@@ -83,22 +86,13 @@ class MessageRowBase(object):
     def is_todo(self):
         return self.status in ['todo','swahili','luo']
 
-    def set_hiv_messaging(self):
-        if isinstance(self.hiv,basestring):
-            self.hiv = self.hiv.strip().lower().startswith('y')
-        else:
-            self.hiv = bool(self.hiv)
-
-    def get_hiv_messaging_str(self):
-        return 'Y' if self.hiv else 'N'
-
     def configure_variables(self):
         self.english = replace_vars(self.english)
 
         if self.english.startswith('{name}, this is {nurse} from {clinic}'):
-            if not self.swahili.startswith('{name},'):
+            if not self.swahili.startswith('{name},') and self.swahili:
                 self.swahili = '{name}, huyu ni {nurse} kutoka {clinic}. ' + self.swahili
-            if not self.luo.startswith('{name},'):
+            if not self.luo.startswith('{name},') and self.luo:
                 self.luo = '{name}, mae en {nurse} mawuok {clinic}.' + self.luo
 
     def __repr__(self):
@@ -109,7 +103,6 @@ class MessageRowBase(object):
             '!' if self.is_todo() and self.status != language else '',
             self.group,
             self.track,
-            self.get_hiv_messaging_str(),
             self.send_base,
             self.offset,
             self.english,
@@ -122,7 +115,6 @@ class MessageRowBase(object):
             self.get_status_str(),
             self.group,
             self.track,
-            self.get_hiv_messaging_str(),
             self.send_base,
             self.offset,
             self.english,
@@ -133,17 +125,17 @@ class MessageRowBase(object):
 
     @classmethod
     def from_bank_row(cls,row):
-        status, group, track, hiv, send_base, offset, english, comment= \
+        status, group, track, send_base, offset, english, comment= \
             cell_values( *operator.itemgetter(0,1,2,3,4,5,6,8)(row))
 
 class FinalRow(MessageRowBase):
 
-    header = ('Todo','Group','Track','HIV','Base','Offset','English','Swahili','Luo','Comment')
+    header = ('Todo','Group','Track','Base','Offset','English','Swahili','Luo','Comment')
 
     def __init__(self,row):
-        status, group, track, hiv, send_base, offset, english, swahili, luo, comment= \
-            cell_values( *operator.itemgetter(0,1,2,3,4,5,6,7,8,9)(row))
-        super(FinalRow,self).__init__(row,status,group,track,hiv,send_base,offset,
+        status, group, track, send_base, offset, english, swahili, luo, comment= \
+            cell_values( *operator.itemgetter(0,1,2,3,4,5,6,7,8)(row))
+        super(FinalRow,self).__init__(row,status,group,track,send_base,offset,
             english,swahili,luo,comment=comment)
 
         # If message is translated make old equal new

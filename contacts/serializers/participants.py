@@ -131,6 +131,8 @@ class ParticipantViewSet(viewsets.ModelViewSet):
             with transaction.atomic():
                 #Create new contact but do not save in DB
                 contact = cf.save(commit=False)
+                if contact.study_group == '':
+                    contact.study_group = 'two-way'
 
                 #Set contacts facility to facility of current user
                 facility = '' # Default to blank facility if none found
@@ -173,8 +175,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                         participant=contact, visit_type='study')
 
                 #Send Welcome Message
-                contact.send_automated_message(send_base='signup',send_offset=0,
-                    control=True,hiv_messaging=False)
+                contact.send_automated_message(send_base='signup',send_offset=0,control=True)
 
             contact.pending_visits = contact.visit_set.order_by('scheduled').filter(arrived__isnull=True,status='pending')
             serialized_contact = ParticipantSerializer(contact,context={'request':request})

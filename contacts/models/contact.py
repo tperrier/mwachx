@@ -196,7 +196,7 @@ class ContactBase(TimeStampedModel):
     ccc_num = models.CharField(max_length=15,verbose_name='CCC #',blank=True,null=True)
     facility = models.CharField(max_length=15,choices=settings.FACILITY_CHOICES)
 
-    study_group = models.CharField(max_length=10,choices=enums.GROUP_CHOICES,verbose_name='Group',blank=True)
+    study_group = models.CharField(max_length=10,choices=enums.GROUP_CHOICES,default='two-way',verbose_name='Group',blank=True)
     send_day = models.IntegerField(choices=DAY_CHOICES, default=0,verbose_name='Send Day')
     send_time = models.IntegerField(choices=TIME_CHOICES,default=8,verbose_name='Send Time')
 
@@ -371,7 +371,7 @@ class ContactBase(TimeStampedModel):
                 send_base = 'loss'
                 send_offset = loss_offset
 
-        return "{send_base}.{group}.{condition}.{hiv}.{send_offset}".format(
+        return "{send_base}.{group}.{condition}.{send_offset}".format(
             group=group, condition=condition, hiv=hiv,
             send_base=send_base , send_offset=send_offset
         )

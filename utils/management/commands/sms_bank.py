@@ -203,17 +203,13 @@ class Command(BaseCommand):
         sms_wb = xl.load_workbook(self.paths.final)
         messages = sms.parse_messages(sms_wb.active,sms.FinalRow)
 
-        stats = recursive_dd()
+        stats = collections.defaultdict(list)
         descriptions = set()
         duplicates = []
         total = 0
         for msg in messages:
             total += 1
-            base_group = stats[ '{}_{}'.format(msg.send_base,msg.group) ]
-            base_group.default_factory = list
-
-            condition_hiv = base_group[ '{}_HIV_{}'.format(msg.track,msg.get_hiv_messaging_str()) ]
-            condition_hiv.append(msg)
+            stats[ '{}_{}'.format(msg.send_base,msg.group) ].append(msg)
 
             description = msg.description()
             if description not in descriptions:
@@ -221,14 +217,11 @@ class Command(BaseCommand):
             else:
                 duplicates.append(description)
 
-        for base_group, condition_hiv_groups in stats.items():
-            if base_group.startswith('dd'):
-                self.stdout.write( '{}'.format(base_group) )
-                for condition_hiv, items in condition_hiv_groups.items():
-                    self.stdout.write( '\t{}: {}'.format( condition_hiv, len(items) ) )
-                    offsets = ["{0: 3}".format(i) for i in sorted([i.offset for i in items]) ]
-                    for i in range( len(offsets)/10 + 1 ):
-                        self.stdout.write( "\t\t{}".format( "".join(offsets[15*i:15*(i+1)]) ) )
+        for base_group, msgs in stats.items():
+            self.stdout.write( '{}'.format(base_group) )
+            offsets = ["{0: 3}".format(i) for i in sorted([i.offset for i in msgs]) ]
+            for i in range( len(offsets)/10 + 1 ):
+                self.stdout.write( "\t\t{}".format( "".join(offsets[15*i:15*(i+1)]) ) )
         self.stdout.write( 'Total: {} Todo: {}'.format( total,
             len([m for m in messages if m.is_todo()])
         ) )

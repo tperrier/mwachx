@@ -32,14 +32,14 @@
 
        Array.prototype.push.apply($scope.detailsList,[
          {'label': 'Age',                    'value': 'age',},
-         {'label': 'Send Day',               'value': 'send_day_display',},
+        //  {'label': 'Send Day',               'value': 'send_day_display',},
          {'label': 'Send Time',              'value': 'send_time_display',},
-         {'label': 'SMS Track',              'value': 'condition',},
-         {'label': 'ART Initiation',         'value': 'art_initiation',},
+        //  {'label': 'SMS Track',              'value': 'condition',},
+        //  {'label': 'ART Initiation',         'value': 'art_initiation',},
          {'label': 'Previous pregnancies',   'value': 'previous_pregnancies',},
-         {'label': 'Family Planning',        'value': 'family_planning',},
-         {'label': 'HIV Disclosure',         'value': 'hiv_disclosed_display',},
-         {'label': 'HIV Messaging',          'value': 'hiv_messaging_display',},
+        //  {'label': 'Family Planning',        'value': 'family_planning',},
+        //  {'label': 'HIV Disclosure',         'value': 'hiv_disclosed_display',},
+        //  {'label': 'HIV Messaging',          'value': 'hiv_messaging_display',},
        ]);
 
        if ( !participant.is_validated)

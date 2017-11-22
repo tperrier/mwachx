@@ -18,7 +18,6 @@ def setup_auto_messages(cls):
     cls.signup_control_msg = auto.AutomatedMessage.objects.create(
         send_base="signup",
         english="Control English Signup Message",
-        hiv_messaging=False,
         todo=False,
         group='control',
         condition='normal',
@@ -27,7 +26,6 @@ def setup_auto_messages(cls):
     cls.signup_msg = auto.AutomatedMessage.objects.create(
         send_base="signup",
         english="English Signup Message",
-        hiv_messaging=False,
         todo=False,
         group='two-way',
         condition='normal',
@@ -37,7 +35,6 @@ def setup_auto_messages(cls):
         send_base="edd",
         send_offset=3,
         english="Hi {name} Hi",
-        hiv_messaging=False,
         todo=False
     )
 
@@ -45,7 +42,6 @@ def setup_auto_messages(cls):
         send_base="fp",
         send_offset=2,
         english="DD {name} DD",
-        hiv_messaging=False,
         todo=False
     )
 
@@ -78,7 +74,6 @@ def setup_basic_contacts(cls):
         due_date=datetime.date.today() - datetime.timedelta(weeks=3),
         delivery_date=datetime.date.today() - datetime.timedelta(weeks=3),
         status="post",
-        hiv_messaging="system"
     )
 
     cls.p2_connection = cont.Connection.objects.create(
