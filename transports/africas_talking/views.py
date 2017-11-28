@@ -51,8 +51,8 @@ def delivery_report(request):
 		failure_reason = request.POST.get('failureReason')
 
 		try:
-			message = cont.Message.objects.get_or_none(external_id=message_id)
-		except NameError as e:
+			message = cont.Message.objects.get(external_id=message_id)
+		except cont.Message.DoesNotExist as e:
 			return HttpResponse("NO MESSAGE FOR ID FOUND")
 		else:
 			message.external_status = status
