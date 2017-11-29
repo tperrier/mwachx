@@ -214,7 +214,9 @@ class ContactBase(TimeStampedModel):
     status = models.CharField(max_length=15,choices=STATUS_CHOICES, default='pregnant')
     language = models.CharField(max_length=10,choices=LANGUAGE_CHOICES,default='english')
     condition = models.CharField(max_length=15,choices=CONDITION_CHOICES,default='normal',blank=True)
-    due_date = models.DateField(verbose_name='Estimated Delivery Date')
+    due_date = models.DateField(verbose_name='Estimated Delivery Date',blank=True,null=True)
+
+    prep_initiation = models.DateField(verbose_name='PrEP Initiation Date',blank=True,null=True)
 
     delivery_date = models.DateField(verbose_name='Delivery Date',blank=True,null=True)
     delivery_source = models.CharField(max_length=10,verbose_name="Delivery Notification Source",choices=DELIVERY_SOURCE_CHOICES,blank=True)
@@ -331,7 +333,10 @@ class ContactBase(TimeStampedModel):
         today = utils.today(today)
         if self.was_pregnant(today):
             if self.delivery_date is None:
-                return (self.due_date - today).days
+                if self.due_date is None:
+                    return 0
+                else:
+                    return (self.due_date - today).days
             else:
                 return (self.delivery_date - today).days
         else: #post-partum

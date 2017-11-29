@@ -40,6 +40,7 @@
 
         $scope.participant.study_visit = mwachxUtils.convert_form_date($scope.participant.study_visit );
         $scope.participant.clinic_visit = mwachxUtils.convert_form_date($scope.participant.clinic_visit );
+        $scope.participant.prep_initiation = mwachxUtils.convert_form_date($scope.participant.prep_initiation );
 
         if($scope.participant.study_id.length > 4) { // Study ID in form 25SSDDDD0
           $scope.participant.study_id = $scope.participant.study_id.substr(4,4); // Extract 4 digit id

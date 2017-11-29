@@ -155,7 +155,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                         participant=contact,visit_type='clinic')
 
                 # If edd is more than 35 weeks away reset and make note
-                if contact.due_date - datetime.date.today() > datetime.timedelta(weeks=35):
+                if contact.due_date and (contact.due_date - datetime.date.today() > datetime.timedelta(weeks=35)):
                     new_edd = datetime.date.today() + datetime.timedelta(weeks=35)
                     contact.note_set.create(
                         participant=contact,
