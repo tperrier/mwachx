@@ -885,6 +885,7 @@ detail_columns = collections.OrderedDict([
     ('HIV','hiv_messaging') ,
     ('Disclosed','hiv_disclosed') ,
     ('Shared','phone_shared') ,
+    ('Sec Preg','second_preg'),
     ('EDD','due_date'),
     ('Δ EDD',lambda c:delta_days(c.due_date)),
     ('Delivery','delivery_date'),
