@@ -78,7 +78,8 @@ def forward(identity,message_text,external_id,**kwargs):
             id: interal AT ID
             linkId: not sure what this is used for - it's mostly empty for us
     '''
-    sms_forward_url = getattr(settings,'SMS_FORWARD_URL',None)
+    sms_forward_base_url = getattr(settings,'SMS_FORWARD_BASE_URL','')
+    sms_forward_url = os.path.join(sms_forward_base_url,'africas_talking','receive')
     params = {
         'from':identity,
         'to':'fwrd',

@@ -1,4 +1,5 @@
 import datetime
+import os
 # Django imports
 from django.conf import settings
 
@@ -30,8 +31,8 @@ def receive(identity,message_text,external_id='',**kwargs):
 
     Returns: a Message or FowardMessage object
     '''
-    sms_forward_url = getattr(settings,'SMS_FORWARD_URL',None)
-    if sms_forward_url is not None:
+    sms_forward_base_url = getattr(settings,'SMS_FORWARD_BASE_URL',None)
+    if sms_forward_base_url is not None:
         connection = cont.Connection.objects.get_or_none(identity=identity)
         if connection is None:
             return forward_message(identity,message_text,external_id,**kwargs)
@@ -82,7 +83,8 @@ def forward_message(identity,message_text,external_id,**kwargs):
         fwrd_status = 'none'
 
     # Save message in transport foward log
-    sms_forward_url = getattr(settings,'SMS_FORWARD_URL',None)
+    sms_forward_base_url = getattr(settings,'SMS_FORWARD_BASE_URL',None)
+    sms_forward_url = os.path.join(sms_forward_base_url,'africas_talking','receive')
     msg = trans.ForwardMessage.objects.create(
         identity=identity,
         text=message_text.strip(),
