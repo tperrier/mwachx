@@ -60,7 +60,7 @@ class Command(BaseCommand):
         csv_parser.add_argument('name',help='csv report type',
             choices=(
                 'hiv_messaging','enrollment','messages','edd','delivery',
-                'sae','visits','msg_dump','hiv_statuschange',
+                'sae','visits','msg_dump','hiv_statuschange','participant_dump',
             )
         )
         csv_parser.set_defaults(action='make_csv_name')
@@ -755,24 +755,41 @@ class Command(BaseCommand):
         return file_path
 
     def make_msg_dump_csv(self):
-        """ Dump stats for each message to csv """
+        """ Dump stats for each incomming message to csv """
         columns = collections.OrderedDict([
             ('timestamp','created'),
             ('study_id','contact.study_id'),
-            ('week','days_str'),
-            # ('group','contact.study_group'),
-            # ('sent_by','sent_by'),
-            # ('status','external_status'),
+            ('facility','contact.facility'),
+            ('since_enrollment', lambda obj: int((obj.created.date() - obj.contact.created.date()).total_seconds() / 86400) ),
+            ('since_delivery', lambda obj: int((obj.created.date() - obj.contact.delivery_date).total_seconds() / 86400) if obj.contact.delivery_date is not None else '' ),
             ('topic','topic'),
             ('related','is_related'),
-            # ('text','display_text'),
-            ('text','text'),
+            ('languages','languages'),
+            ('text','display_text'),
+            ('chars',lambda m: len(m.text)),
+            ('words',lambda m: len( m.text.split() )),
+            ('text_raw','text'),
         ])
-        # m_all = cont.Message.objects.exclude(contact__isnull=True).order_by('contact_study_id').prefetch_related('contact')
         m_all = cont.Message.objects.filter(is_outgoing=False,contact__study_group='two-way') \
             .order_by('contact__study_id').prefetch_related('contact')
         file_path = os.path.join(self.options['dir'],'message_dump.csv')
         make_csv(columns,m_all,file_path)
+        return file_path
+
+    def make_participant_dump_csv(self):
+        """ Dump stats for each participant """
+        columns = collections.OrderedDict([
+            ('id','study_id'),
+            ('created',lambda c: c.created.date()),
+            ('facility','facility'),
+            ('group','study_group'),
+            ('shared',lambda c: 1 if c.phone_shared else 0) ,
+            ('validation',lambda c: 1 if c.is_validated else 0),
+            ('age','age'),
+        ])
+        p_all = cont.Contact.objects.all()
+        file_path = os.path.join(self.options['dir'],'participant_dump.csv')
+        make_csv(columns,p_all,file_path)
         return file_path
 
     def make_edd_csv(self):
@@ -1086,6 +1103,9 @@ system_message_columns = collections.OrderedDict([
     ('id','contact.study_id'),
     ('group','contact.study_group'),
     ('facility','contact.facility'),
+    ('validated','contact.is_validated'),
+    ('since_enrollment', lambda obj: int((obj.created.date() - obj.contact.created.date()).total_seconds() / 86400) ),
+    ('since_delivery', lambda obj: int((obj.created.date() - obj.contact.delivery_date).total_seconds() / 86400) if obj.contact.delivery_date is not None else '' ),
     ('status','contact.status'),
     ('timestamp','created'),
     ('sent_by','sent_by'),
