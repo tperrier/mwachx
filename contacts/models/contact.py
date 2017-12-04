@@ -331,9 +331,9 @@ class ContactBase(TimeStampedModel):
         today = utils.today(today)
         if self.was_pregnant(today):
             if self.delivery_date is None:
-                return (self.due_date - today).days
+                return (today - self.due_date).days
             else:
-                return (self.delivery_date - today).days
+                return (today - self.delivery_date).days
         else: #post-partum
             # Return days since due date
             return (today-self.delivery_date).days
