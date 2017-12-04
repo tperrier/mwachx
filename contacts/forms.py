@@ -261,7 +261,9 @@ class ContactAddMwachNeo(ContactAddGeneric):
 
     class Meta:
         model = cont.Contact
-        exclude = ['status', 'facility']
+
+        # Add any fields here that need to take the default
+        exclude = ['status', 'facility','condition','study_group']
 
         widgets = {
             # validation
