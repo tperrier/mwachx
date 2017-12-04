@@ -24,11 +24,11 @@ def contact_add_form_factory(*args, **kwargs):
 def contact_update_form_factory(*args, **kwargs):
     if hasattr(settings, 'APP_FLAVOR'):
         if settings.APP_FLAVOR.lower() == 'neo':
-            return ContactUpdateMwachNeo(args, kwargs)
+            return ContactUpdateMwachNeo(*args, **kwargs)
         else:
-            return ContactUpdateMwachX(args, kwargs)
+            return ContactUpdateMwachX(*args, **kwargs)
     else:
-        return ContactUpdateMwachX(args, kwargs)
+        return ContactUpdateMwachX(*args, **kwargs)
 
 
 class ContactAddGeneric(forms.ModelForm):
