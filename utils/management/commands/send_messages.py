@@ -62,14 +62,9 @@ class Command(BaseCommand):
             date = datetime.date.today()
 
         # Parse weekday or use selected date
-        day = options.get('day')
-        if day is None:
-            day = date.weekday()
-
-        # Parse hour or use selected time
-        hour = options.get('hour')
-        if hour is None:
-            hour = datetime.datetime.now().hour
+        day = options.get('day', date.weekday() )
+        # Parse hour or use current time
+        hour = options.get('hour', datetime.datetime.now().hour)
 
         # Convert hour to 8,13 or 20
         hour = [0,8,8,8,8,  8,8,8,8,8, 8,13,13,13,13, 13,20,20,20,20, 20,20,20,20][hour]
@@ -104,11 +99,13 @@ def regularly_scheduled_messages(participants, hour, date, email_body, options, 
         :email_body(array): array of strings for email body
     """
 
+    # counter variables for email output
     vals = ns(times={8:0,13:0,20:0}, control=0,
         no_messages=[],sent_to=[],errors=[],exclude=[])
 
     for p in participants:
         if p.study_group == 'control':
+            # Don't do anything with controls
             vals.control += 1
         else:
             vals.times[p.send_time] += 1
@@ -229,13 +226,13 @@ def missed_visit_reminders(hour,email_body,options,send=False):
 
 def append_errors(email_body,vals):
 
-    email_body.append( "\t8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}".format(vals) )
+    # email_body.append( "\t8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}".format(vals) )
     email_body.append( "\tSent: {}\n".format( len(vals.sent_to)) )
 
-    if vals.no_messages:
-        email_body.append( "Messages not sent: {}".format(len(vals.no_messages)) )
-        email_body.extend( "\t{}".format(d) for d in vals.no_messages )
-        email_body.append('')
+    # if vals.no_messages:
+    #     email_body.append( "Messages not sent: {}".format(len(vals.no_messages)) )
+    #     email_body.extend( "\t{}".format(d) for d in vals.no_messages )
+    #     email_body.append('')
 
     if vals.errors:
         email_body.append( "Message Errors: {}".format(len(vals.errors)) )

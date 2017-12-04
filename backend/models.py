@@ -19,9 +19,9 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
         send_base, group, condition, send_offset = description.split('.')
         send_offset = int(send_offset)
 
-        # Special case for post date messages go back and forth between week 41 and 42 messages
-        if send_base == 'edd' and send_offset < -2:
-            send_offset = (send_offset+1)%-2 - 1
+        # # Special case for post date messages go back and forth between week 41 and 42 messages
+        # if send_base == 'edd' and send_offset > 2:
+        #     send_offset = (send_offset+1)%-2 - 1
 
         return self.from_parameters(send_base,group,condition,send_offset,exact=exact)
 
