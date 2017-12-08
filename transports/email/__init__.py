@@ -31,7 +31,7 @@ def email(subject,message,to='default'):
     msg = MIMEMultipart()
     msg['From'] = from_address
     msg['To'] = to
-    msg['Subject'] = "[MX Server] {}".format(subject)
+    msg['Subject'] = "[ NEO ] {}".format(subject)
     msg.attach(MIMEText(message,'html'))
 
     mail_server = smtplib.SMTP(server,587)
