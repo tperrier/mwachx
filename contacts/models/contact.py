@@ -578,7 +578,7 @@ class ContactBase(TimeStampedModel):
         description = self.description(**kwargs)
         message = back.AutomatedMessage.objects.from_description(description,exact=exact)
         if message is None:
-            logger.warning('No message for {}'.format(description))
+            # logger.warning('No message for {}'.format(description))
             return None
 
         text = message.text_for(self,extra_kwargs)
