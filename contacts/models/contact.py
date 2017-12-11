@@ -192,12 +192,12 @@ class ContactBase(TimeStampedModel):
 
     #Study Attributes
     study_id = models.CharField(max_length=10,unique=True,verbose_name='Study ID',help_text="* Use Barcode Scanner")
-    anc_num = models.CharField(max_length=15,verbose_name='ANC #')
+    anc_num = models.CharField(max_length=15,verbose_name='ANC #',blank=True,default='')
     ccc_num = models.CharField(max_length=15,verbose_name='CCC #',blank=True,null=True)
     facility = models.CharField(max_length=15,choices=settings.FACILITY_CHOICES)
 
     study_group = models.CharField(max_length=10,choices=enums.GROUP_CHOICES,default='two-way',verbose_name='Group',blank=True)
-    send_day = models.IntegerField(choices=DAY_CHOICES, default=0,verbose_name='Send Day')
+    send_day = models.IntegerField(choices=DAY_CHOICES, default=0,verbose_name='Send Day',blank=True)
     send_time = models.IntegerField(choices=TIME_CHOICES,default=8,verbose_name='Send Time')
 
     # Required Client Personal Information

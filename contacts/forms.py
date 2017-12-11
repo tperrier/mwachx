@@ -38,7 +38,7 @@ class ContactAddGeneric(forms.ModelForm):
                                    widget=forms.TextInput(attrs={'required': 'True', 'placeholder': '07xxxxxxx',
                                                                  'pattern': '^07[0-9]{8}'}))
 
-    clinic_visit = forms.DateField(label='Next Clinic Visit')
+    # clinic_visit = forms.DateField(label='Next Clinic Visit')
 
     def __init__(self, *args, **kwargs):
         super(ContactAddGeneric, self).__init__(*args, **kwargs)
@@ -205,7 +205,7 @@ class ContactAddMwachNeo(ContactAddGeneric):
         self.fields['birthdate'].widget = util.AngularPopupDatePicker(
             {'required': True, 'datepicker-position-right': True}, max=-5110  # 14 years or older
         )
-        self.fields['clinic_visit'].widget = util.AngularPopupDatePicker({'required': True}, min=7)
+        # self.fields['clinic_visit'].widget = util.AngularPopupDatePicker({'required': True}, min=7)
 
         self.helper.layout = Layout(
             Fieldset(
@@ -213,7 +213,7 @@ class ContactAddMwachNeo(ContactAddGeneric):
                 Div(
                     Div('study_id', css_class="col-md-4"),
                     Div('anc_num', css_class="col-md-4"),
-                    Div('send_time', css_class="col-md-4", ng_if="participant.study_group != 'control'"),
+                    Div('send_time', css_class="col-md-4"),
                     css_class="row"
                 ),
             ),
@@ -242,7 +242,7 @@ class ContactAddMwachNeo(ContactAddGeneric):
                 'Important Dates',
                 Div(
                     Div('due_date', css_class="col-md-6"),
-                    Div('clinic_visit', css_class="col-md-6"),
+                    # Div('clinic_visit', css_class="col-md-6"),
                     css_class="row"
                 )
             ),
@@ -270,7 +270,7 @@ class ContactAddMwachNeo(ContactAddGeneric):
             'study_id': forms.TextInput(attrs={'ng-pattern': '/^(\d{4}|25\d{6}0)$/', 'required': True}),
 
             # TODO: Update this to be dependent on facility of logged in user
-            'anc_num': forms.TextInput(attrs={'ng-pattern': '/^\d{4}|(\d{2,}\/)+\d{2,}$/', 'required': True}),
+            'anc_num': forms.TextInput(attrs={'ng-pattern': '/^\d{4}|(\d{2,}\/)+\d{2,}$/'}),
             'previous_pregnancies': forms.NumberInput(attrs={'min': '0', 'max': '15'}),
             'send_time': forms.Select(attrs={'required': True}),
             'nickname': forms.TextInput(attrs={'required': True}),
