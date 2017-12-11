@@ -55,7 +55,7 @@ def days_as_str(days):
     ''' Return a short string version of days '''
     if -7 <= days <= 7:
         return '{:d}d'.format(days)
-    return '{:d}d'.format(int(round(days/7.0)))
+    return '{:d}w'.format(int(round(days/7.0)))
 
 class SQLiteDate(db.Func):
     function = 'JULIANDAY'

@@ -170,12 +170,12 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                     contact.due_date = new_edd
                     contact.save()
 
-                if contact.due_date:
-                    # Set first study visit after EDD
-
-                    cont.Visit.objects.create(
-                        scheduled=contact.due_date + datetime.timedelta(days=DEFAULT_VISIT_DAYS_DELTA),
-                        participant=contact, visit_type='study')
+                # if contact.due_date:
+                #     # Set first study visit after EDD
+                # 
+                #     cont.Visit.objects.create(
+                #         scheduled=contact.due_date + datetime.timedelta(days=DEFAULT_VISIT_DAYS_DELTA),
+                #         participant=contact, visit_type='study')
 
                 #Send Welcome Message
                 contact.send_automated_message(send_base='signup',send_offset=0,control=True)

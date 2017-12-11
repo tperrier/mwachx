@@ -409,14 +409,14 @@ class ContactBase(TimeStampedModel):
         self.note_set.create(comment=comment,admin=user)
 
         # schedual 6w and 1yr call as needed
-        self.schedule_month_call()
-        self.schedule_year_call()
+        # self.schedule_month_call()
+        # self.schedule_year_call()
 
         # mark any delivery visits as attended
-        self.visit_set.filter(visit_type='delivery').update(status='attended',arrived=delivery_date)
+        # self.visit_set.filter(visit_type='delivery').update(status='attended',arrived=delivery_date)
 
-        # Add 6wk visits
-        six_wk_date = delivery_date + datetime.timedelta(days=42)
+        # Add 14wk visit
+        six_wk_date = delivery_date + datetime.timedelta(days=98)
         self.visit_set.create(scheduled=six_wk_date,visit_type='study')
 
     def set_status(self, new_status, comment='',note=False,user=None):
