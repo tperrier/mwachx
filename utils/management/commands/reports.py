@@ -756,22 +756,53 @@ class Command(BaseCommand):
 
     def make_msg_dump_csv(self):
         """ Dump stats for each incomming message to csv """
-        columns = collections.OrderedDict([
-            ('timestamp','created'),
-            ('study_id','contact.study_id'),
-            ('facility','contact.facility'),
-            ('since_enrollment', lambda obj: int((obj.created.date() - obj.contact.created.date()).total_seconds() / 86400) ),
-            ('since_delivery', lambda obj: int((obj.created.date() - obj.contact.delivery_date).total_seconds() / 86400) if obj.contact.delivery_date is not None else '' ),
-            ('topic','topic'),
-            ('related','is_related'),
-            ('languages','languages'),
-            ('text','display_text'),
-            ('chars',lambda m: len(m.text)),
-            ('words',lambda m: len( m.text.split() )),
-            ('text_raw','text'),
-        ])
-        m_all = cont.Message.objects.filter(is_outgoing=False,contact__study_group='two-way') \
-            .order_by('contact__study_id').prefetch_related('contact')
+        mode = 'system'
+        if mode == 'client':
+            columns = collections.OrderedDict([
+                ('timestamp','created'),
+                ('study_id','contact.study_id'),
+                ('facility','contact.facility'),
+                ('since_enrollment', lambda obj: int((obj.created.date() - obj.contact.created.date()).total_seconds() / 86400) ),
+                ('since_delivery', lambda obj: int((obj.created.date() - obj.contact.delivery_date).total_seconds() / 86400)
+                    if obj.contact.delivery_date is not None else '' ),
+                ('topic','topic'),
+                ('related','is_related'),
+                ('languages','languages'),
+                ('text','display_text'),
+                ('chars',lambda m: len(m.text)),
+                ('words',lambda m: len( m.text.split() )),
+                ('text_raw','text'),
+            ])
+            m_all = cont.Message.objects.filter(is_outgoing=False,contact__study_group='two-way') \
+                .order_by('contact__study_id').prefetch_related('contact')
+        elif mode == 'nurse':
+            columns = collections.OrderedDict([
+                ('timestamp','created'),
+                ('study_id','contact.study_id'),
+                ('facility','contact.facility'),
+                ('since_enrollment', lambda obj: int((obj.created.date() - obj.contact.created.date()).total_seconds() / 86400) ),
+                ('since_delivery', lambda obj: int((obj.created.date() - obj.contact.delivery_date).total_seconds() / 86400)
+                    if obj.contact.delivery_date is not None else '' ),
+                ('languages','languages'),
+                ('text','display_text'),
+                ('chars',lambda m: len(m.text)),
+                ('words',lambda m: len( m.text.split() )),
+                ('reply',lambda m: 1 if m.parent else 0),
+                ('text_raw','text'),
+            ])
+            m_all = cont.Message.objects.filter(is_outgoing=True,is_system=False,contact__study_group='two-way') \
+                .exclude(translation_status='cust').order_by('contact__study_id').prefetch_related('contact')
+        elif mode == 'system':
+            columns = collections.OrderedDict([
+                ('send_base','send_base'),
+                ('send_offset','send_offset'),
+                ('group','group'),
+                ('condition','condition'),
+                ('hiv', lambda m: 1 if m.hiv_messaging else 0),
+                ('text', lambda m: m.english[39:] if m.english[0] == '{' else m.english),
+            ])
+            m_all = back.AutomatedMessage.objects.all().order_by('send_base','send_offset','group','condition','hiv_messaging')
+
         file_path = os.path.join(self.options['dir'],'message_dump.csv')
         make_csv(columns,m_all,file_path)
         return file_path
@@ -1104,7 +1135,7 @@ system_message_columns = collections.OrderedDict([
     ('id','contact.study_id'),
     ('group','contact.study_group'),
     ('facility','contact.facility'),
-    ('validated','contact.is_validated'),
+    ('validated',lambda m: 1 if m.contact.is_validated else 0),
     ('since_enrollment', lambda obj: int((obj.created.date() - obj.contact.created.date()).total_seconds() / 86400) ),
     ('since_delivery', lambda obj: int((obj.created.date() - obj.contact.delivery_date).total_seconds() / 86400) if obj.contact.delivery_date is not None else '' ),
     ('status','contact.status'),

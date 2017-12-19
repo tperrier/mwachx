@@ -6,5 +6,6 @@ import transports.models as trans
 
 @admin.register(trans.ForwardMessage)
 class ForwardMessageAdmin(admin.ModelAdmin):
-    list_display = ('identity','text','fwrd_status','transport','url')
+    list_display = ('created','identity','text','fwrd_status','transport','url')
     list_filter = ('fwrd_status','transport')
+    readonly_fields = ('created','modified')
