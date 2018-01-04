@@ -1,4 +1,6 @@
 # Installation
+Install sqlite3 locally for 'mwach.db'
+
 
 You need to install [nodejs] first. [nvm], the node analog to [rvm] can be useful for getting node installed. 
 
