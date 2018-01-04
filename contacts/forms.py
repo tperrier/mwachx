@@ -75,7 +75,7 @@ class ContactAddMwachX(ContactAddGeneric):
     def __init__(self, *args, **kwargs):
         super(ContactAddMwachX, self).__init__(*args, **kwargs)
 
-        self.fields['due_date'].widget = util.AngularPopupDatePicker({'required': True}, min=3)
+        self.fields['due_date'].widget = util.AngularPopupDatePicker({'required': false}, min=3)
         self.fields['birthdate'].widget = util.AngularPopupDatePicker(
             {'required': True, 'datepicker-position-right': True}, max=-5110  # 14 years or older
         )
