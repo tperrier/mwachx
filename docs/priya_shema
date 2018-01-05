@@ -1,0 +1,349 @@
+    
+CREATE TABLE "auth_group" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"name" varchar(80) NOT NULL UNIQUE
+);
+   
+                 
+CREATE TABLE "auth_group_permissions" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"group_id" integer NOT NULL REFERENCES "auth_group" ("id"), 
+	"permission_id" integer NOT NULL REFERENCES "auth_permission" ("id"), 
+	UNIQUE ("group_id", "permission_id")
+);
+CREATE INDEX "auth_group_permissions_0e939a4f" ON "auth_group_permissions" ("group_id");
+CREATE INDEX "auth_group_permissions_8373b171" ON "auth_group_permissions" ("permission_id");
+
+        
+CREATE TABLE "auth_user" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"password" varchar(128) NOT NULL, 
+	"is_superuser" bool NOT NULL, 
+	"username" varchar(30) NOT NULL UNIQUE, 
+	"first_name" varchar(30) NOT NULL, 
+	"last_name" varchar(30) NOT NULL, 
+	"email" varchar(254) NOT NULL, 
+	"is_staff" bool NOT NULL, 
+	"is_active" bool NOT NULL, 
+	"date_joined" datetime NOT NULL, 
+	"last_login" datetime NULL
+);
+
+
+CREATE TABLE "auth_user_groups" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"user_id" integer NOT NULL REFERENCES "auth_user" ("id"), 
+	"group_id" integer NOT NULL REFERENCES "auth_group" ("id"), 
+	UNIQUE ("user_id", "group_id")
+);
+CREATE INDEX "auth_user_groups_e8701ad4" ON "auth_user_groups" ("user_id");
+CREATE INDEX "auth_user_groups_0e939a4f" ON "auth_user_groups" ("group_id");
+
+ 
+CREATE TABLE "auth_user_user_permissions" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"user_id" integer NOT NULL REFERENCES "auth_user" ("id"), 
+	"permission_id" integer NOT NULL REFERENCES "auth_permission" ("id"), 
+	UNIQUE ("user_id", "permission_id")
+);
+CREATE INDEX "auth_user_user_permissions_e8701ad4" ON "auth_user_user_permissions" ("user_id");
+CREATE INDEX "auth_user_user_permissions_8373b171" ON "auth_user_user_permissions" ("permission_id");
+    
+    
+CREATE TABLE "auth_permission" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"content_type_id" integer NOT NULL REFERENCES "django_content_type" ("id"), 
+	"codename" varchar(100) NOT NULL, "name" varchar(255) NOT NULL, 
+	UNIQUE ("content_type_id", "codename")
+);
+CREATE INDEX "auth_permission_417f1b1c" ON "auth_permission" ("content_type_id");
+
+ 
+CREATE TABLE "contacts_phonecall" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"created" datetime NOT NULL, 
+	"modified" datetime NOT NULL, 
+	"is_outgoing" bool NOT NULL, 
+	"outcome" varchar(10) NOT NULL, 
+	"length" integer NULL, 
+	"comment" text NULL, 
+	"admin_user_id" integer NULL REFERENCES "auth_user" ("id"), 
+	"connection_id" varchar(25) NOT NULL REFERENCES "contacts_connection" ("identity"), 
+	"contact_id" integer NOT NULL REFERENCES "contacts_contact" ("id"), 
+	"scheduled_id" integer NULL REFERENCES "contacts_scheduledphonecall" ("id")
+);
+CREATE INDEX "contacts_phonecall_5b28df01" ON "contacts_phonecall" ("admin_user_id");
+CREATE INDEX "contacts_phonecall_289b4878" ON "contacts_phonecall" ("connection_id");
+CREATE INDEX "contacts_phonecall_6d82f13d" ON "contacts_phonecall" ("contact_id");
+CREATE INDEX "contacts_phonecall_b644afff" ON "contacts_phonecall" ("scheduled_id");
+
+
+CREATE TABLE "contacts_practitioner" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"password_changed" bool NOT NULL, 
+	"user_id" integer NOT NULL UNIQUE REFERENCES "auth_user" ("id"), 
+	"facility" varchar(15) NOT NULL
+);
+                
+
+CREATE TABLE "contacts_scheduledphonecall" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"created" datetime NOT NULL, 
+	"modified" datetime NOT NULL, 
+	"scheduled" date NOT NULL, 
+	"arrived" date NULL, 
+	"notification_last_seen" date NULL, 
+	"notify_count" integer NOT NULL, 
+	"call_type" varchar(2) NOT NULL, 
+	"participant_id" integer NOT NULL REFERENCES "contacts_contact" ("id"), 
+	"status" varchar(15) NOT NULL
+);
+CREATE INDEX "contacts_scheduledphonecall_4a3c2f9c" ON "contacts_scheduledphonecall" ("participant_id");
+                     
+
+CREATE TABLE "contacts_statuschange" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"created" datetime NOT NULL, 
+	"modified" datetime NOT NULL, 
+	"old" varchar(20) NOT NULL, 
+	"new" varchar(20) NOT NULL, 
+	"type" varchar(10) NOT NULL, 
+	"comment" text NOT NULL, 
+	"contact_id" integer NOT NULL REFERENCES "contacts_contact" ("id")
+);
+CREATE INDEX "contacts_statuschange_6d82f13d" ON "contacts_statuschange" ("contact_id");
+               
+
+CREATE TABLE "contacts_visit" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"created" datetime NOT NULL, 
+	"modified" datetime NOT NULL, 
+	"scheduled" date NOT NULL, 
+	"arrived" date NULL, 
+	"notification_last_seen" date NULL, 
+	"notify_count" integer NOT NULL, 
+	"comment" text NULL, "participant_id" integer NOT NULL REFERENCES "contacts_contact" ("id"), 
+	"status" varchar(15) NOT NULL, 
+	"missed_sms_count" integer NOT NULL, 
+	"missed_sms_last_sent" date NULL, 
+	"visit_type" varchar(25) NOT NULL
+);
+CREATE INDEX "contacts_visit_4a3c2f9c" ON "contacts_visit" ("participant_id");
+ 
+
+CREATE TABLE "contacts_connection" (
+	"identity" varchar(25) NOT NULL PRIMARY KEY, 
+	"description" varchar(30) NULL, 
+	"contact_id" integer NULL REFERENCES "contacts_contact" ("id"), 
+	"is_primary" bool NOT NULL
+);
+CREATE INDEX "contacts_connection_6d82f13d" ON "contacts_connection" ("contact_id");
+    
+
+CREATE TABLE "contacts_contact" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"created" datetime NOT NULL, 
+	"modified" datetime NOT NULL, 
+	"study_id" varchar(10) NOT NULL UNIQUE, 
+	"anc_num" varchar(15) NOT NULL, 
+	"ccc_num" varchar(15) NULL, 
+	"study_group" varchar(10) NOT NULL, 
+	"send_day" integer NOT NULL, 
+	"send_time" integer NOT NULL, 
+	"nickname" varchar(20) NOT NULL, 
+	"birthdate" date NOT NULL, 
+	"partner_name" varchar(40) NOT NULL, 
+	"relationship_status" varchar(15) NOT NULL, 
+	"previous_pregnancies" integer NULL, 
+	"phone_shared" bool NULL, 
+	"status" varchar(15) NOT NULL, 
+	"language" varchar(10) NOT NULL, 
+	"condition" varchar(15) NOT NULL, 
+	"due_date" date NOT NULL, 
+	"delivery_date" date NULL, 
+	"delivery_source" varchar(10) NOT NULL, 
+	"art_initiation" date NULL, 
+	"hiv_disclosed" bool NULL, 
+	"hiv_messaging" varchar(15) NOT NULL, 
+	"child_hiv_status" bool NULL, 
+	"family_planning" varchar(10) NOT NULL, 
+	"last_msg_client" date NULL, 
+	"last_msg_system" date NULL, 
+	"is_validated" bool NOT NULL, 
+	"validation_key" varchar(5) NOT NULL, 
+	"loss_date" date NULL, 
+	"facility" varchar(15) NOT NULL
+);      
+ 
+CREATE TABLE "contacts_eventlog" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"created" datetime NOT NULL, 
+	"modified" datetime NOT NULL, 
+	"event" varchar(25) NOT NULL, 
+	"data" text NOT NULL, 
+	"user_id" integer NOT NULL REFERENCES "auth_user" ("id")
+);
+CREATE INDEX "contacts_eventlog_e8701ad4" ON "contacts_eventlog" ("user_id");
+
+  
+CREATE TABLE "contacts_message" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"created" datetime NOT NULL, 
+	"modified" datetime NOT NULL, 
+	"text" text NOT NULL, 
+	"is_outgoing" bool NOT NULL, 
+	"is_system" bool NOT NULL, 
+	"is_viewed" bool NOT NULL, 
+	"is_related" bool NULL, 
+	"translated_text" text NOT NULL, 
+	"languages" varchar(50) NOT NULL, 
+	"topic" varchar(25) NOT NULL, 
+	"external_id" varchar(50) NOT NULL, 
+	"external_success" bool NULL, 
+	"external_data" text NOT NULL, 
+	"auto" varchar(50) NOT NULL, 
+	"admin_user_id" integer NULL REFERENCES "auth_user" ("id"), 
+	"connection_id" varchar(25) NOT NULL REFERENCES "contacts_connection" ("identity"), 
+	"contact_id" integer NULL REFERENCES "contacts_contact" ("id"), 
+	"parent_id" integer NULL REFERENCES "contacts_message" ("id"), 
+	"translation_time" datetime NULL, 
+	"action_time" datetime NULL, 
+	"external_status" varchar(50) NOT NULL, 
+	"external_success_time" datetime NULL, 
+	"translation_status" varchar(5) NOT NULL
+);
+CREATE INDEX "contacts_message_5b28df01" ON "contacts_message" ("admin_user_id");
+CREATE INDEX "contacts_message_289b4878" ON "contacts_message" ("connection_id");
+CREATE INDEX "contacts_message_6d82f13d" ON "contacts_message" ("contact_id");
+CREATE INDEX "contacts_message_6be37982" ON "contacts_message" ("parent_id");
+
+      
+  
+
+
+
+
+django_admin_log  
+CREATE TABLE "django_admin_log" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"action_time" datetime NOT NULL, 
+	"object_id" text NULL, 
+	"object_repr" varchar(200) NOT NULL, 
+	"action_flag" smallint unsigned NOT NULL, 
+	"change_message" text NOT NULL, 
+	"content_type_id" integer NULL REFERENCES "django_content_type" ("id"), 
+	"user_id" integer NOT NULL REFERENCES "auth_user" ("id")
+);
+CREATE INDEX "django_admin_log_417f1b1c" ON "django_admin_log" ("content_type_id");
+CREATE INDEX "django_admin_log_e8701ad4" ON "django_admin_log" ("user_id");
+                 
+  
+django_celery_beat_crontabschedule 
+CREATE TABLE "django_celery_beat_crontabschedule" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"minute" varchar(64) NOT NULL, 
+	"hour" varchar(64) NOT NULL, 
+	"day_of_week" varchar(64) NOT NULL, 
+	"day_of_month" varchar(64) NOT NULL, 
+	"month_of_year" varchar(64) NOT NULL
+);
+
+
+                   
+django_celery_beat_intervalschedule
+CREATE TABLE "django_celery_beat_intervalschedule" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"every" integer NOT NULL, 
+	"period" varchar(24) NOT NULL
+);
+      
+django_celery_beat_periodictask  
+CREATE TABLE "django_celery_beat_periodictask" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"name" varchar(200) NOT NULL UNIQUE, 
+	"task" varchar(200) NOT NULL, 
+	"args" text NOT NULL, 
+	"kwargs" text NOT NULL, 
+	"queue" varchar(200) NULL, 
+	"exchange" varchar(200) NULL, 
+	"routing_key" varchar(200) NULL, 
+	"expires" datetime NULL, 
+	"enabled" bool NOT NULL, 
+	"last_run_at" datetime NULL, 
+	"total_run_count" integer unsigned NOT NULL, 
+	"date_changed" datetime NOT NULL, 
+	"description" text NOT NULL, 
+	"crontab_id" integer NULL REFERENCES "django_celery_beat_crontabschedule" ("id"), 
+	"interval_id" integer NULL REFERENCES "django_celery_beat_intervalschedule" ("id")
+);
+CREATE INDEX "django_celery_beat_periodictask_f3f0d72a" ON "django_celery_beat_periodictask" ("crontab_id");
+CREATE INDEX "django_celery_beat_periodictask_1dcd7040" ON "django_celery_beat_periodictask" ("interval_id");
+            
+django_celery_beat_periodictasks 
+CREATE TABLE "django_celery_beat_periodictasks" (
+	"ident" smallint NOT NULL PRIMARY KEY, 
+	"last_update" datetime NOT NULL
+);
+                  
+django_content_type  
+CREATE TABLE "django_content_type" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"app_label" varchar(100) NOT NULL, 
+	"model" varchar(100) NOT NULL, 
+	UNIQUE ("app_label", "model")
+);
+             
+django_migrations 
+CREATE TABLE "django_migrations" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"app" varchar(255) NOT NULL, 
+	"name" varchar(255) NOT NULL, 
+	"applied" datetime NOT NULL
+);
+                 
+
+                      
+django_session 
+CREATE TABLE "django_session" (
+	"session_key" varchar(40) NOT NULL PRIMARY KEY, 
+	"session_data" text NOT NULL, 
+	"expire_date" datetime NOT NULL
+);
+CREATE INDEX "django_session_de54fa62" ON "django_session" ("expire_date");
+
+
+
+
+
+constance_config  
+CREATE TABLE "constance_config" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"key" varchar(255) NOT NULL UNIQUE, 
+	"value" text NOT NULL
+);
+
+backend_automatedmessage  
+CREATE TABLE "backend_automatedmessage" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "priority" integer NOT NULL, 
+	"english" text NOT NULL, "swahili" text NOT NULL, 
+	"luo" text NOT NULL, "comment" text NOT NULL, 
+	"group" varchar(20) NOT NULL, 
+	"condition" varchar(20) NOT NULL, 
+	"hiv_messaging" bool NOT NULL, 
+	"send_offset" integer NOT NULL, 
+	"todo" bool NOT NULL, 
+	"send_base" varchar(20) NOT NULL
+);
+
+contacts_note  
+CREATE TABLE "contacts_note" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+	"created" datetime NOT NULL, 
+	"modified" datetime NOT NULL, 
+	"comment" text NOT NULL, 
+	"admin_id" integer NULL REFERENCES "auth_user" ("id"), 
+	"participant_id" integer NOT NULL REFERENCES "contacts_contact" ("id")
+);
+CREATE INDEX "contacts_note_156f41ed" ON "contacts_note" ("admin_id");
+CREATE INDEX "contacts_note_4a3c2f9c" ON "contacts_note" ("participant_id");
+tables
