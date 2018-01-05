@@ -14,7 +14,7 @@ APP_NAME = 'mWaChX'
 # The APP_FLAVOR currently informs the registration page which fields to render, and could be used to identify future
 # functionality
 
-# possible values are 'x' and 'neo'
+# possible values are 'x', 'neo', and 'priya'
 APP_FLAVOR = 'x'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
