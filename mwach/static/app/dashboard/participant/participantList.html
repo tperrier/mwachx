@@ -9,8 +9,6 @@
 
   <div class="col-md-3 btn-group" role="group" aria-label="Group Filter">
     <button onclick="this.blur()" type="button" class="btn mw-toggle-btn" ng-disabled="query.text!=''" ng-model="query.study_group.control" btn-checkbox>Control</button>
-    <button onclick="this.blur()" type="button" class="btn mw-toggle-btn" ng-disabled="query.text!=''" ng-model="query.study_group.one_way" btn-checkbox>One Way</button>
-    <button onclick="this.blur()" type="button" class="btn mw-toggle-btn" ng-disabled="query.text!=''" ng-model="query.study_group.two_way" btn-checkbox>Two Way</button>
   </div>
 
   <div class="col-md-3 btn-group" role="group" aria-label="Status Filter">
@@ -46,9 +44,6 @@
       <th><a href ng-click="setSort('nickname')">Name</a>
         <span ng-if="query.sortName=='nickname'"><i class='mw' ng-class='getSortClass()'></i></span>
       </th>
-      <th><a href ng-click="setSort('study_group')">Study Group</a>
-        <span ng-if="query.sortName=='study_group'"><i class='mw' ng-class='getSortClass()'></i></span>
-      </th>
       <th><a href ng-click="setSort('status')">Status</a>
         <span ng-if="query.sortName=='status'"><i class='mw' ng-class='getSortClass()'></i></span>
       </th>
@@ -70,7 +65,6 @@
       <td>{{participant.study_id}}</td>
       <td>{{participant.anc_num}}</td>
       <td>{{participant.nickname}}</td>
-      <td>{{participant.study_group}}</td>
       <td>{{participant.status}}</td>
       <td>{{participant.study_base_date}}</td>
       <td>{{participant.last_msg_client}}</td>

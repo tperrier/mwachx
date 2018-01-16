@@ -96,7 +96,6 @@ class ContactAddMwachX(ContactAddGeneric):
                     css_class="row"
                 ),
                 Div(
-                    Div('ccc_num', css_class="col-md-4"),
                     Div('send_day', css_class="col-md-4", ng_if="participant.study_group != 'control'"),
                     Div('send_time', css_class="col-md-4", ng_if="participant.study_group != 'control'"),
                     css_class="row",
@@ -168,7 +167,6 @@ class ContactAddMwachX(ContactAddGeneric):
 
             # TODO: Update this to be dependent on facility of logged in user
             'anc_num': forms.TextInput(attrs={'ng-pattern': '/^\d{4}|(\d{2,}\/)+\d{2,}$/', 'required': True}),
-            'ccc_num': forms.TextInput(attrs={'required': True}),
             'previous_pregnancies': forms.NumberInput(attrs={'min': '0', 'max': '15'}),
             'study_group': forms.Select(attrs={'required': True}),
             'send_day': forms.Select(attrs={'required': True}),
@@ -329,7 +327,6 @@ class ContactAddMwachPriya(ContactAddGeneric):
                     css_class="row"
                 ),
                 Div(
-                    Div('ccc_num', css_class="col-md-4"),
                     Div('send_time', css_class="col-md-4", ng_if="participant.study_group != 'control'"),
                     css_class="row",
                 ),
@@ -404,7 +401,6 @@ class ContactAddMwachPriya(ContactAddGeneric):
 
             # TODO: Update this to be dependent on facility of logged in user
             'anc_num': forms.TextInput(attrs={'ng-pattern': '/^\d{4}|(\d{2,}\/)+\d{2,}$/', 'required': True}),
-            'ccc_num': forms.TextInput(attrs={'required': True}),
             'previous_pregnancies': forms.NumberInput(attrs={'min': '0', 'max': '15'}),
             'study_group': forms.Select(attrs={'required': True}),
             'send_day': forms.Select(attrs={'required': True}),
