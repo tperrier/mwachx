@@ -18,7 +18,6 @@
 
       $scope.status = {
         birthdate:false,
-        art_initiation:false,
         due_date:false,
       };
 
