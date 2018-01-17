@@ -65,8 +65,7 @@ class Command(BaseCommand):
         day = options.get('day')
         if day is None:
             day = date.weekday()
-
-        # Parse hour or use selected time
+        # Parse hour or use current time
         hour = options.get('hour')
         if hour is None:
             hour = datetime.datetime.now().hour
@@ -104,11 +103,13 @@ def regularly_scheduled_messages(participants, hour, date, email_body, options, 
         :email_body(array): array of strings for email body
     """
 
+    # counter variables for email output
     vals = ns(times={8:0,13:0,20:0}, control=0,
         no_messages=[],sent_to=[],errors=[],exclude=[])
 
     for p in participants:
         if p.study_group == 'control':
+            # Don't do anything with controls
             vals.control += 1
         else:
             vals.times[p.send_time] += 1
@@ -125,9 +126,9 @@ def regularly_scheduled_messages(participants, hour, date, email_body, options, 
                     else:
                         vals.sent_to.append( "{} (#{}) {}".format(message.description(),p.study_id,p.send_time) )
 
-    email_body.append( "Total: {0} Control: {1}".format(participants.count(), vals.control ) )
+    email_body.append( "Total: {0}   8h: {1.times[8]} 13h: {1.times[13]} 20h: {1.times[20]}".format(participants.count(), vals ) )
 
-    append_errors(email_body,vals)
+    append_errors(email_body,vals,options['verbosity'])
 
 
 def daily_messages(hour, date, email_body, options, send=False):
@@ -227,14 +228,19 @@ def missed_visit_reminders(hour,email_body,options,send=False):
     )
     append_errors(email_body,vals)
 
-def append_errors(email_body,vals):
+def append_errors(email_body,vals,verbosity=1):
 
-    email_body.append( "\t8h: {0.times[8]} 13h: {0.times[13]} 20h: {0.times[20]}".format(vals) )
     email_body.append( "\tSent: {}\n".format( len(vals.sent_to)) )
 
-    if vals.no_messages:
+    print 'Verbosity:',verbosity
+    if vals.no_messages and (verbosity >= 3):
         email_body.append( "Messages not sent: {}".format(len(vals.no_messages)) )
         email_body.extend( "\t{}".format(d) for d in vals.no_messages )
+        email_body.append('')
+
+    if vals.no_messages and (verbosity >= 3):
+        email_body.append( "Messages Sent: {}".format(len(vals.sent_to)) )
+        email_body.extend( "\t{}".format(d) for d in vals.sent_to)
         email_body.append('')
 
     if vals.errors:

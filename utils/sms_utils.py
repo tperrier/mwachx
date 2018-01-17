@@ -5,8 +5,8 @@ import operator, collections, re, itertools
 class MessageRowBase(object):
 
     def __init__(self,row,status,group,track,send_base,offset,english,swahili,luo,**kwargs):
-        self.group, self.track = group if group else '', track
-        self.send_base, self.offset = send_base, offset
+        self.group, self.track = group.strip() if group else '', track.strip()
+        self.send_base, self.offset = send_base.strip(), offset
         self.english, self.swahili, self.luo, = map(clean_msg,(english,swahili,luo))
 
         self.comment = kwargs.get('comment','')
@@ -206,9 +206,11 @@ class TranslationRow(MessageRowBase):
 
 def parse_messages(ws,cls,**kwargs):
     for row in ws.rows:
-        msg = cls(row,**kwargs)
-        if msg.is_valid():
-            yield msg
+        # skip rows with None as group, condition, and send_base
+        if row[1].value and row[2].value and row[3].value:
+            msg = cls(row,**kwargs)
+            if msg.is_valid():
+                yield msg
 
 def read_sms_bank(bank,old=None,*args):
     return filter(lambda msg: msg.is_valid(), [

@@ -192,12 +192,12 @@ class ContactBase(TimeStampedModel):
 
     #Study Attributes
     study_id = models.CharField(max_length=10,unique=True,verbose_name='Study ID',help_text="* Use Barcode Scanner")
-    anc_num = models.CharField(max_length=15,verbose_name='ANC #')
+    anc_num = models.CharField(max_length=15,verbose_name='ANC #',blank=True,default='')
     ccc_num = models.CharField(max_length=15,verbose_name='CCC #',blank=True,null=True)
     facility = models.CharField(max_length=15,choices=settings.FACILITY_CHOICES)
 
     study_group = models.CharField(max_length=10,choices=enums.GROUP_CHOICES,default='two-way',verbose_name='Group',blank=True)
-    send_day = models.IntegerField(choices=DAY_CHOICES, default=0,verbose_name='Send Day')
+    send_day = models.IntegerField(choices=DAY_CHOICES, default=0,verbose_name='Send Day',blank=True)
     send_time = models.IntegerField(choices=TIME_CHOICES,default=8,verbose_name='Send Time')
 
     # Required Client Personal Information
@@ -338,7 +338,7 @@ class ContactBase(TimeStampedModel):
                 else:
                     return (self.due_date - today).days
             else:
-                return (self.delivery_date - today).days
+                return (today - self.delivery_date).days
         else: #post-partum
             # Return days since due date
             return (today-self.delivery_date).days
@@ -414,14 +414,14 @@ class ContactBase(TimeStampedModel):
         self.note_set.create(comment=comment,admin=user)
 
         # schedual 6w and 1yr call as needed
-        self.schedule_month_call()
-        self.schedule_year_call()
+        # self.schedule_month_call()
+        # self.schedule_year_call()
 
         # mark any delivery visits as attended
-        self.visit_set.filter(visit_type='delivery').update(status='attended',arrived=delivery_date)
+        # self.visit_set.filter(visit_type='delivery').update(status='attended',arrived=delivery_date)
 
-        # Add 6wk visits
-        six_wk_date = delivery_date + datetime.timedelta(days=42)
+        # Add 14wk visit
+        six_wk_date = delivery_date + datetime.timedelta(days=98)
         self.visit_set.create(scheduled=six_wk_date,visit_type='study')
 
     def set_status(self, new_status, comment='',note=False,user=None):
@@ -583,7 +583,7 @@ class ContactBase(TimeStampedModel):
         description = self.description(**kwargs)
         message = back.AutomatedMessage.objects.from_description(description,exact=exact)
         if message is None:
-            logger.warning('No message for {}'.format(description))
+            # logger.warning('No message for {}'.format(description))
             return None
 
         text = message.text_for(self,extra_kwargs)

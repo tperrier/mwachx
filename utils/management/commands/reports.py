@@ -1333,8 +1333,6 @@ def message_status_groups(start=None,delta='day'):
     status_counts = [('Success',0),('Sent',0),('Failed',0),('Other',0),('',0),('Total',0)]
     msg_dict = collections.OrderedDict( [
         ('two-way',collections.OrderedDict( status_counts ) ),
-        ('one-way',collections.OrderedDict( status_counts ) ),
-        ('control',collections.OrderedDict( status_counts ) ),
         (None,collections.OrderedDict( status_counts ) )
     ] )
 

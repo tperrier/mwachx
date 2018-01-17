@@ -54,7 +54,7 @@ class ParticipantBasicTests(test.TestCase):
 
     @override_settings(FAKE_DATE=False)
     def test_description(self):
-        self.assertEqual(self.p1.description(), "edd.two-way.normal.21")
+        self.assertEqual(self.p1.description(), "edd.two-way.normal.-21")
         self.assertEqual(self.p2.description(), "dd.two-way.normal.21")
         self.assertEqual(self.p3.description(send_base='signup', send_offset=0), "signup.control.art.0")
 
@@ -147,7 +147,7 @@ class ParticipantSerializerTests(rf_test.APITestCase):
         data = { "previous_pregnancies":0,"study_id":"0004","anc_num":"0004","study_group":"two-way",
                  "language":"english","phone_number":"0700000004","nickname":"Test","birthdate":"1990-02-05",
                  "relationship_status":"single","due_date":"2016-07-29","condition":"normal",
-                 "clinic_visit":"2016-07-22","send_day":0,"send_time":8}
+                 "clinic_visit":"2016-07-22","send_day":'',"send_time":20}
         response = self.client.post(url.reverse("participant-list"), data, format="json")
         # import code;code.interact(local=locals())
 
@@ -161,36 +161,10 @@ class ParticipantSerializerTests(rf_test.APITestCase):
         self.assertEqual(new_participant.nickname,'Test')
         self.assertEqual(new_participant.facility,self.user.practitioner.facility)
         self.assertEqual(new_participant.phone_number(),"+254700000004")
+        self.assertEqual(new_participant.send_time,20)
+        self.assertEqual(new_participant.send_day,0)
 
         # Check that the welcome message was sent
         self.assertEqual(new_participant.message_set.count(),1)
         self.assertEqual(new_participant.message_set.first().text,self.signup_msg.english)
         self.assertEqual(new_participant.message_set.first().auto,self.signup_msg.description())
-
-    @unittest.skipUnless(not settings.TEST_CONTACT_SWAPPING, "not compatible with swapped models")
-    def test_create_control(self):
-
-        start_count = Contact.objects.count()
-        data = { "previous_pregnancies":0,"study_id":"0004","anc_num":"0004","study_group":"control",
-                 "language":"english","nickname":"Test","phone_number":"0700000004","birthdate":"1990-02-05",
-                 "relationship_status":"single","partner_invited":"invited","due_date":"2016-07-29",
-                 "clinic_visit":"2016-07-22","send_day":0,"send_time":8,"condition":"normal"
-                }
-        response = self.client.post(url.reverse("participant-list"), data, format="json")
-        # import code;code.interact(local=locals())
-
-        try:
-            new_participant = Contact.objects.get(study_id="0004")
-        except Contact.DoesNotExist as e:
-            self.fail( response )
-
-        # Check that the participant was created
-        self.assertEqual(Contact.objects.count(),start_count+1)
-        self.assertEqual(new_participant.nickname,'Test')
-        self.assertEqual(new_participant.facility,self.user.practitioner.facility)
-        self.assertEqual(new_participant.phone_number(),"+254700000004")
-
-        # Check that the welcome message was sent
-        self.assertEqual(new_participant.message_set.count(),1)
-        self.assertEqual(new_participant.message_set.first().text,self.signup_control_msg.english)
-        self.assertEqual(new_participant.message_set.first().auto,self.signup_control_msg.description())

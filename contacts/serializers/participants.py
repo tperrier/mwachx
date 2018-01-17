@@ -134,6 +134,9 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                 if contact.study_group == '':
                     contact.study_group = 'two-way'
 
+                if contact.send_day == '':
+                    contact.send_day = 0
+
                 #Set contacts facility to facility of current user
                 facility = '' # Default to blank facility if none found
                 try:
@@ -150,9 +153,9 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                 cont.Connection.objects.create(identity=phone_number,contact=contact,is_primary=True)
 
                 # Set the next visits
-                if cf.cleaned_data['clinic_visit']:
-                    cont.Visit.objects.create(scheduled=cf.cleaned_data['clinic_visit'],
-                        participant=contact,visit_type='clinic')
+                # if cf.cleaned_data['clinic_visit']:
+                #     cont.Visit.objects.create(scheduled=cf.cleaned_data['clinic_visit'],
+                #         participant=contact,visit_type='clinic')
 
                 # If edd is more than 35 weeks away reset and make note
                 if contact.due_date and (contact.due_date - datetime.date.today() > datetime.timedelta(weeks=35)):
@@ -167,12 +170,12 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                     contact.due_date = new_edd
                     contact.save()
 
-                if contact.due_date:
-                    # Set first study visit after EDD
-
-                    cont.Visit.objects.create(
-                        scheduled=contact.due_date + datetime.timedelta(days=DEFAULT_VISIT_DAYS_DELTA),
-                        participant=contact, visit_type='study')
+                # if contact.due_date:
+                #     # Set first study visit after EDD
+                # 
+                #     cont.Visit.objects.create(
+                #         scheduled=contact.due_date + datetime.timedelta(days=DEFAULT_VISIT_DAYS_DELTA),
+                #         participant=contact, visit_type='study')
 
                 #Send Welcome Message
                 contact.send_automated_message(send_base='signup',send_offset=0,control=True)

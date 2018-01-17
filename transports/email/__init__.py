@@ -25,13 +25,15 @@ def email(subject,message,to='default'):
         print "Email Settings Options", from_address, to, password, username, password
         return False
 
+    prefix = email_settings.get('prefix','[ mWACH Script ]')
+
     # Make Message monspace and preserve whitespace
     message = "<pre style='font-family:monospace;font-size:12pt;'>\n{}</pre>".format(message)
 
     msg = MIMEMultipart()
     msg['From'] = from_address
     msg['To'] = to
-    msg['Subject'] = "[MX Server] {}".format(subject)
+    msg['Subject'] = "{} {}".format(prefix,subject)
     msg.attach(MIMEText(message,'html'))
 
     mail_server = smtplib.SMTP(server,587)
