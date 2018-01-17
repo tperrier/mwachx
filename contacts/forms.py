@@ -83,7 +83,7 @@ class ContactAddMwachX(ContactAddGeneric):
         self.fields['birthdate'].widget = util.AngularPopupDatePicker(
             {'required': True, 'datepicker-position-right': True}, max=-5110  # 14 years or older
         )
-        self.fields['art_initiation'].widget = util.AngularPopupDatePicker(max=0)
+
         self.fields['clinic_visit'].widget = util.AngularPopupDatePicker({'required': True}, min=7)
 
         self.helper.layout = Layout(
@@ -126,9 +126,7 @@ class ContactAddMwachX(ContactAddGeneric):
             Fieldset(
                 'Disclosure and Consent',
                 Div(
-                    Div('hiv_disclosed', css_class="col-md-4"),
                     Div('phone_shared', css_class="col-md-4"),
-                    Div('hiv_messaging', css_class="col-md-4"),
                     css_class="row"
                 )
             ),
@@ -136,7 +134,7 @@ class ContactAddMwachX(ContactAddGeneric):
             Fieldset(
                 'Important Dates',
                 Div(
-                    Div('art_initiation', css_class="col-md-4"),
+
                     Div('due_date', css_class="col-md-4"),
                     Div('clinic_visit', css_class="col-md-4"),
                     css_class="row"
@@ -174,9 +172,7 @@ class ContactAddMwachX(ContactAddGeneric):
             'condition': forms.Select(attrs={'required': True}),
             'nickname': forms.TextInput(attrs={'required': True}),
             'language': forms.Select(attrs={'required': True}),
-            'hiv_disclosed': forms.NullBooleanSelect(attrs={'required': True}),
             'phone_shared': forms.NullBooleanSelect(attrs={'required': True}),
-            'hiv_messaging': forms.Select(attrs={'required': True}),
         }
 
 
@@ -184,12 +180,11 @@ class ContactUpdateMwachX(ContactUpdateGeneric):
     class Meta:
         # todo: can this be changed to a swappable version?
         model = cont.Contact
-        fields = ['send_day', 'send_time', 'due_date', 'art_initiation', 'hiv_messaging', 'hiv_disclosed']
+        fields = ['send_day', 'send_time', 'due_date']
 
     def __init__(self, *args, **kwargs):
         super(ContactUpdateMwachX, self).__init__(*args, **kwargs)
 
-        self.fields['art_initiation'].widget = util.AngularPopupDatePicker(max=0)
         self.fields['due_date'].widget = util.AngularPopupDatePicker(min=3, max=280)
 
         # thank you: http://stackoverflow.com/questions/24663564/django-add-attribute-to-every-field-by-default
@@ -313,7 +308,7 @@ class ContactAddMwachPriya(ContactAddGeneric):
         self.fields['birthdate'].widget = util.AngularPopupDatePicker(
             {'required': True, 'datepicker-position-right': True}, max=-5110  # 14 years or older
         )
-        self.fields['art_initiation'].widget = util.AngularPopupDatePicker(max=0)
+
         self.fields['clinic_visit'].widget = util.AngularPopupDatePicker({'required': True}, min=7)
         self.fields['prep_initiation'].widget = util.AngularPopupDatePicker()
 
@@ -356,9 +351,7 @@ class ContactAddMwachPriya(ContactAddGeneric):
             Fieldset(
                 'Disclosure and Consent',
                 Div(
-                    Div('hiv_disclosed', css_class="col-md-4"),
                     Div('phone_shared', css_class="col-md-4"),
-                    Div('hiv_messaging', css_class="col-md-4"),
                     css_class="row"
                 )
             ),
@@ -366,7 +359,6 @@ class ContactAddMwachPriya(ContactAddGeneric):
             Fieldset(
                 'Important Dates',
                 Div(
-                    Div('art_initiation', css_class="col-md-6"),
                     Div('due_date', css_class="col-md-6"),
                     css_class="row"
                 ),
@@ -408,9 +400,7 @@ class ContactAddMwachPriya(ContactAddGeneric):
             'condition': forms.Select(attrs={'required': True}),
             'nickname': forms.TextInput(attrs={'required': True}),
             'language': forms.Select(attrs={'required': True}),
-            'hiv_disclosed': forms.NullBooleanSelect(attrs={'required': True}),
             'phone_shared': forms.NullBooleanSelect(attrs={'required': True}),
-            'hiv_messaging': forms.Select(attrs={'required': True}),
         }
 
 
@@ -418,12 +408,11 @@ class ContactUpdateMwachPriya(ContactUpdateGeneric):
     class Meta:
         # todo: can this be changed to a swappable version?
         model = cont.Contact
-        fields = ['send_day', 'send_time', 'due_date', 'art_initiation', 'hiv_messaging', 'hiv_disclosed']
+        fields = ['send_day', 'send_time', 'due_date']
 
     def __init__(self, *args, **kwargs):
         super(ContactUpdateMwachPriya, self).__init__(*args, **kwargs)
 
-        self.fields['art_initiation'].widget = util.AngularPopupDatePicker(max=0)
         self.fields['due_date'].widget = util.AngularPopupDatePicker(min=3, max=280)
         self.fields['prep_initiation'].widget = util.AngularPopupDatePicker()
 

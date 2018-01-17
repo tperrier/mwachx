@@ -133,11 +133,9 @@ class ContactBase(TimeStampedModel):
     )
 
     CONDITION_CHOICES = (
-        ('art','1 - Starting ART'),
-        ('adolescent','2 - Adolescent'),
-        ('first','3 - First Time Mother'),
-        ('normal','4 -  Normal'),
-        ('multiple','5 - Twins'),
+        ('preg','1 - Pregant'),
+        ('post','2 - Post-partum'),
+
     )
 
     FAMILY_PLANNING_CHOICES = (
@@ -170,12 +168,6 @@ class ContactBase(TimeStampedModel):
         (8,'Morning (8 AM)'),
         (13,'Afternoon (1 PM)'),
         (20,'Evening (8 PM)'),
-    )
-
-    MESSAGING_CHOICES = (
-        ('none','No HIV Messaging'),
-        ('initiated','HIV Content If Initiated'),
-        ('system','HIV Content Allowed'),
     )
 
     DELIVERY_SOURCE_CHOICES = (
@@ -222,9 +214,8 @@ class ContactBase(TimeStampedModel):
     delivery_source = models.CharField(max_length=10,verbose_name="Delivery Notification Source",choices=DELIVERY_SOURCE_CHOICES,blank=True)
 
     # Optional Medical Informaton
-    art_initiation = models.DateField(blank=True,null=True,help_text='Date of ART Initiation',verbose_name='ART Initiation')
-    hiv_disclosed = models.NullBooleanField(blank=True,verbose_name='HIV Disclosed')
-    hiv_messaging = models.CharField(max_length=15,choices=MESSAGING_CHOICES,default='none',verbose_name='HIV Messaging',blank=True)
+
+
     child_hiv_status = models.NullBooleanField(blank=True,verbose_name='Child HIV Status')
     family_planning = models.CharField(max_length=10,blank=True,choices=FAMILY_PLANNING_CHOICES,verbose_name='Family Planning')
     loss_date = models.DateField(blank=True,null=True,help_text='SAE date if applicable')
@@ -250,10 +241,7 @@ class ContactBase(TimeStampedModel):
         if not self._old_status == self.status and self.id is not None:
             self.statuschange_set.create(old=self._old_status,new=self.status,comment='Status Admin Change')
 
-        if not self._old_hiv_messaging == self.hiv_messaging and self.id is not None:
-            print self._old_hiv_messaging, self.hiv_messaging
-            self.statuschange_set.create(old=self._old_hiv_messaging,new=self.hiv_messaging,
-                comment='HIV messaging changed',type='hiv')
+
 
         # Force capitalization of nickname
         self.nickname = self.nickname.capitalize()

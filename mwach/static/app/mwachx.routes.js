@@ -28,7 +28,7 @@
           .state('participant-new', {
             url:          '/participant/new',
             templateUrl:   'crispy-forms/participant/new',
-            // controller:   'ParticipantNewController'
+            controller:   'ParticipantNewController'
           })
           .state('participant-details', {
             url:          '/participant/:study_id',
