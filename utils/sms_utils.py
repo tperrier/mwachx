@@ -72,6 +72,15 @@ class MessageRowBase(object):
         has_offset = self.offset is not None
         return group_valid and has_offset
 
+    def format_vars(self):
+        frmt_vars = {'name':'n','nurse':'n','clinic':'c','date':'d','days':'d'}
+        for language in ('english','swahili','luo'):
+            try:
+                getattr(self,language).format(**frmt_vars)
+            except (KeyError,ValueError) as e:
+                msg = '{}.{}: {}'.format(self.description(),language,e.message)
+                raise e.__class__(msg)
+
     def set_status(self,status):
         if status is None:
             self.status =  'clean'
@@ -210,6 +219,7 @@ def parse_messages(ws,cls,**kwargs):
         if row[1].value and row[2].value and row[3].value:
             msg = cls(row,**kwargs)
             if msg.is_valid():
+                msg.format_vars()
                 yield msg
 
 def read_sms_bank(bank,old=None,*args):
@@ -235,7 +245,7 @@ multiple_whitespace = re.compile(r'\s{2,}',re.M)
 def clean_msg(msg):
     if not isinstance(msg,basestring):
         return ''
-    msg = msg.replace(u'\u2019','\'')  # replace right quot
+    msg = msg.replace(u'\u2019','\'')  # replace right quote
     msg = msg.replace(u'\xa0',' ') # replace non blank space
     msg = msg.strip()
     msg = msg.replace('\n',' ')
