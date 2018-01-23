@@ -135,6 +135,7 @@ class ContactBase(TimeStampedModel):
     CONDITION_CHOICES = (
         ('preg','1 - Pregant'),
         ('post','2 - Post-partum'),
+	('famp','3 - Family Planning'),
 
     )
 
