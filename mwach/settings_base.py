@@ -203,12 +203,8 @@ MESSAGING_CONNECTION = 'contacts.Connection'
 MESSAGING_ADMIN = 'auth.User'
 
 FACILITY_CHOICES = (
-    ('mathare','Mathare'),
-    ('bondo','Bondo'),
-    ('ahero','Ahero'),
-    ('siaya','Siaya'),
-    ('rachuonyo','Rachuonyo'),
-    ('riruta','Riruta'),
+    ('migosi','Migosi'),
+    ('kisumu','Kisumu'),
 )
 
 

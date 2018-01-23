@@ -13,15 +13,9 @@
       $scope.query = participantService.query;
 
       var query_functions = {
-        study_group:{
-          control:function(participant){ return participant.study_group == 'Control'},
-          one_way:function(participant){ return participant.study_group == 'One Way'},
-          two_way:function(participant){ return participant.study_group == 'Two Way'},
-        },
         status:{
-            pregnant:function(participant){ return participant.status == 'Pregnant'},
-            post_partum:function(participant){ return participant.status == 'Post-Partum'},
-            other:function(participant){ return participant.status !== 'Pregnant' && participant.status !== 'Post-Partum'},
+            active:function(participant){ return participant.status == 'Active'},
+            other:function(participant){ return participant.status !== 'Active'},
         }
       };
 
@@ -50,7 +44,7 @@
       $scope.participantFilter = function(participant) {
 
           if ($scope.query.text == '') {
-            var filter_buttons = ['study_group','status'].every( function(query) {
+            var filter_buttons = ['status'].every( function(query) {
               return compare_participant(participant,query);
             })
             return filter_buttons;
