@@ -400,7 +400,7 @@ class ContactUpdateMwachPriya(ContactUpdateGeneric):
     class Meta:
         # todo: can this be changed to a swappable version?
         model = cont.Contact
-        fields = ['send_day', 'send_time', 'due_date']
+        fields = ['send_day', 'send_time', 'due_date', 'prep_initiation']
 
     def __init__(self, *args, **kwargs):
         super(ContactUpdateMwachPriya, self).__init__(*args, **kwargs)

@@ -24,18 +24,18 @@
        {'label': 'Phone number',           'value': 'phone_number',},
       //  {'label': 'Status',                 'value': 'status_display',},
       //  {'label': 'Study ID',               'value': 'study_id',},
+       {'label': 'PreP Initiation',   'value': 'prep_initiation',},
        {'label': 'Estimated Delivery Date','value': 'due_date',}
        ];
 
-       if ( !participant.is_pregnant)
+       if ( !participant.delivery_date)
         $scope.detailsList.push({'label':'Delivery Date', 'value':'delivery_date'});
 
        Array.prototype.push.apply($scope.detailsList,[
          {'label': 'Age',                    'value': 'age',},
         //  {'label': 'Send Day',               'value': 'send_day_display',},
          {'label': 'Send Time',              'value': 'send_time_display',},
-        //  {'label': 'SMS Track',              'value': 'condition',},
-        //  {'label': 'ART Initiation',         'value': 'art_initiation',},
+         {'label': 'SMS Track',              'value': 'condition',},
          {'label': 'Previous pregnancies',   'value': 'previous_pregnancies',},
         //  {'label': 'Family Planning',        'value': 'family_planning',},
         //  {'label': 'HIV Disclosure',         'value': 'hiv_disclosed_display',},
