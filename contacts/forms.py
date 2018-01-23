@@ -68,6 +68,9 @@ class ContactUpdateGeneric(forms.ModelForm):
 
 
 class ContactAddMwachX(ContactAddGeneric):
+
+    clinic_visit = forms.DateField(label='Next Clinic Visit')
+
     def clean_phone_number(self):
         """ Add custom validation for unique phone number """
         phone_number = '+254%s' % self.cleaned_data['phone_number'][1:]
@@ -293,6 +296,9 @@ class ContactUpdateMwachNeo(ContactUpdateGeneric):
 
 
 class ContactAddMwachPriya(ContactAddGeneric):
+
+    clinic_visit = forms.DateField(label='Next Clinic Visit', required=False)
+
     def clean_phone_number(self):
         """ Add custom validation for unique phone number """
         phone_number = '+254%s' % self.cleaned_data['phone_number'][1:]
@@ -309,8 +315,8 @@ class ContactAddMwachPriya(ContactAddGeneric):
             {'required': True, 'datepicker-position-right': True}, max=-5110  # 14 years or older
         )
 
-        self.fields['clinic_visit'].widget = util.AngularPopupDatePicker({'required': True}, min=7)
-        self.fields['prep_initiation'].widget = util.AngularPopupDatePicker()
+        self.fields['clinic_visit'].widget = util.AngularPopupDatePicker( min=7)
+        self.fields['prep_initiation'].widget = util.AngularPopupDatePicker( {'required':True}, max=1)
 
         self.helper.layout = Layout(
             Fieldset(
@@ -318,11 +324,12 @@ class ContactAddMwachPriya(ContactAddGeneric):
                 Div(
                     Div('study_id', css_class="col-md-4"),
                     Div('anc_num', css_class="col-md-4"),
-                    Div('study_group', css_class="col-md-4"),
+                    Div('send_time', css_class="col-md-4", ng_if="participant.study_group != 'control'"),
                     css_class="row"
                 ),
                 Div(
-                    Div('send_time', css_class="col-md-4", ng_if="participant.study_group != 'control'"),
+                    Div('phone_number', css_class="col-md-4"),
+                    Div('phone_shared', css_class="col-md-4"),
                     css_class="row",
                 ),
             ),
@@ -331,8 +338,8 @@ class ContactAddMwachPriya(ContactAddGeneric):
                 'Client Information',
                 Div(
                     Div('nickname', css_class="col-md-4"),
-                    Div('phone_number', css_class="col-md-4"),
-                    Div('birthdate', css_class="col-md-4"),
+                    Div('language', css_class="col-md-4"),
+                    Div('condition', css_class="col-md-4"),
                     css_class="row"
                 ),
                 Div(
@@ -341,24 +348,13 @@ class ContactAddMwachPriya(ContactAddGeneric):
                     Div('previous_pregnancies', css_class="col-md-4"),
                     css_class="row"
                 ),
-                Div(
-                    Div('language', css_class="col-md-4"),
-                    Div('condition', css_class="col-md-4"),
-                    css_class="row"
-                ),
             ),
 
-            Fieldset(
-                'Disclosure and Consent',
-                Div(
-                    Div('phone_shared', css_class="col-md-4"),
-                    css_class="row"
-                )
-            ),
 
             Fieldset(
                 'Important Dates',
                 Div(
+                    Div('birthdate', css_class="col-md-6"),
                     Div('due_date', css_class="col-md-6"),
                     css_class="row"
                 ),
@@ -390,12 +386,8 @@ class ContactAddMwachPriya(ContactAddGeneric):
         widgets = {
             # validation
             'study_id': forms.TextInput(attrs={'ng-pattern': '/^(\d{4}|25\d{6}0)$/', 'required': True}),
-
-            # TODO: Update this to be dependent on facility of logged in user
-            'anc_num': forms.TextInput(attrs={'ng-pattern': '/^\d{4}|(\d{2,}\/)+\d{2,}$/', 'required': True}),
+            'anc_num': forms.TextInput(attrs={'ng-pattern': '/^\d{4}|(\d{2,}\/)+\d{2,}$/'}),
             'previous_pregnancies': forms.NumberInput(attrs={'min': '0', 'max': '15'}),
-            'study_group': forms.Select(attrs={'required': True}),
-            'send_day': forms.Select(attrs={'required': True}),
             'send_time': forms.Select(attrs={'required': True}),
             'condition': forms.Select(attrs={'required': True}),
             'nickname': forms.TextInput(attrs={'required': True}),

@@ -109,15 +109,10 @@ class ContactManager(models.Manager):
         )
 
 
-
-
 class ContactBase(TimeStampedModel):
 
     STATUS_CHOICES = (
-        ('pregnant','Pregnant'),
-        ('over','Post-Date'),
-        ('post','Post-Partum'),
-        ('ccc','CCC'),
+        ('active','Active'),
         ('completed','Completed'),
         ('stopped','Withdrew'),
         ('loss','SAE opt-in'),
@@ -135,7 +130,6 @@ class ContactBase(TimeStampedModel):
     CONDITION_CHOICES = (
         ('preg','1 - Pregant'),
         ('post','2 - Post-partum'),
-
     )
 
     FAMILY_PLANNING_CHOICES = (
@@ -203,7 +197,7 @@ class ContactBase(TimeStampedModel):
     phone_shared = models.NullBooleanField(verbose_name='Phone Shared')
 
     # Required Medical Information
-    status = models.CharField(max_length=15,choices=STATUS_CHOICES, default='pregnant')
+    status = models.CharField(max_length=15,choices=STATUS_CHOICES, default='active')
     language = models.CharField(max_length=10,choices=LANGUAGE_CHOICES,default='english')
     condition = models.CharField(max_length=15,choices=CONDITION_CHOICES,default='normal',blank=True)
     due_date = models.DateField(verbose_name='Estimated Delivery Date',blank=True,null=True)
@@ -216,7 +210,7 @@ class ContactBase(TimeStampedModel):
     # Optional Medical Informaton
 
 
-    child_hiv_status = models.NullBooleanField(blank=True,verbose_name='Child HIV Status')
+    # child_hiv_status = models.NullBooleanField(blank=True,verbose_name='Child HIV Status')
     family_planning = models.CharField(max_length=10,blank=True,choices=FAMILY_PLANNING_CHOICES,verbose_name='Family Planning')
     loss_date = models.DateField(blank=True,null=True,help_text='SAE date if applicable')
 
@@ -234,7 +228,6 @@ class ContactBase(TimeStampedModel):
         ''' Override __init__ to save old status'''
         super(ContactBase, self).__init__(*args,**kwargs)
         self._old_status = self.status
-        self._old_hiv_messaging = self.hiv_messaging
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
         # Check that self.id exists so this is not the first save
@@ -248,7 +241,6 @@ class ContactBase(TimeStampedModel):
 
         super(ContactBase,self).save(force_insert,force_update,*args,**kwargs)
         self._old_status = self.status
-        self._old_hiv_messaging = self.hiv_messaging
 
     def __str__ (self):
         return self.nickname.title()
@@ -347,12 +339,8 @@ class ContactBase(TimeStampedModel):
         send_base = kwargs.get("send_base",'edd' if self.was_pregnant(today=today) else 'dd')
         send_offset = kwargs.get("send_offset",self.delta_days(today=today))
 
-        hiv_messaging = kwargs.get("hiv_messaging", self.hiv_messaging == "system")
-        hiv = "Y" if hiv_messaging else "N"
-
         # Special Case: Visit Messages
         if send_base == 'visit':
-            hiv = "N"
             send_offset = 0
 
         # Special Case: SAE opt in messaging
@@ -365,8 +353,7 @@ class ContactBase(TimeStampedModel):
                 send_offset = loss_offset
 
         return "{send_base}.{group}.{condition}.{send_offset}".format(
-            group=group, condition=condition, hiv=hiv,
-            send_base=send_base , send_offset=send_offset
+            group=group, condition=condition, send_base=send_base , send_offset=send_offset
         )
 
     def days_str(self,today=None):
@@ -561,7 +548,6 @@ class ContactBase(TimeStampedModel):
             :param exact bool - if True only send exact match
             :param send bool - if True send message
             :kwargs
-                - hiv_messaging bool - hiv_messaging or not
                 - group - string for study group
                 - today - date for sending to (default today)
                 - send_base - string send_base

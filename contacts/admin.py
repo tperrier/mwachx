@@ -33,9 +33,9 @@ revert_status.short_description = 'Revert to last status'
 class ContactAdmin(admin.ModelAdmin):
 
     list_display = ('study_id','nickname','status','description','facility',
-        'phone_number','due_date','language','send_day','is_validated','created')
+        'phone_number','prep_initiation','language','send_day','is_validated','created')
     list_display_links = ('study_id','nickname')
-    list_filter = ('facility','study_group', ('created',admin.DateFieldListFilter), 'hiv_messaging','status','is_validated','language','send_day')
+    list_filter = ('facility','study_group', ('created',admin.DateFieldListFilter), 'status', 'is_validated', 'language')
 
     ordering = ('study_id',)
 
