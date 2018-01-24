@@ -11,23 +11,15 @@ Contact = get_contact_model()
 def setup_auth_user(cls):
     # Creat dummy admin user
     cls.user = auth.User.objects.create_user("test", "t@t.com", "test",first_name="Test Nurse")
-    cont.Practitioner.objects.create(user=cls.user, facility="bondo")
+    cont.Practitioner.objects.create(user=cls.user, facility="migosi")
 
 def setup_auto_messages(cls):
     # Create dummy auto messages
-    cls.signup_control_msg = auto.AutomatedMessage.objects.create(
-        send_base="signup",
-        english="Control English Signup Message",
-        todo=False,
-        group='control',
-        condition='normal',
-    )
 
     cls.signup_msg = auto.AutomatedMessage.objects.create(
         send_base="signup",
         english="English Signup Message",
         todo=False,
-        group='two-way',
         condition='normal',
     )
 
@@ -49,12 +41,12 @@ def setup_basic_contacts(cls):
     # Create basic contact objects
     cls.p1 = Contact.objects.create(
         study_id="0001",
-        anc_num="0001",
-        facility="bondo",
-        study_group="two-way",
+        facility="migosi",
         nickname="p1 one",
         birthdate=datetime.date(1986, 8, 5),
         due_date=datetime.date.today() + datetime.timedelta(weeks=3),
+        prep_initiation=datetime.date.today() - datetime.timedelta(weeks=1),
+        condition="preg",
     )
 
     cls.p1_connection = cont.Connection.objects.create(
@@ -66,14 +58,14 @@ def setup_basic_contacts(cls):
     cls.p2 = Contact.objects.create(
         study_id="0002",
         anc_num="0002",
-        facility="bondo",
-        study_group="two-way",
+        facility="kisumu",
         language='luo',
         nickname="p2",
         birthdate=datetime.date(1986, 8, 5),
         due_date=datetime.date.today() - datetime.timedelta(weeks=3),
         delivery_date=datetime.date.today() - datetime.timedelta(weeks=3),
-        status="post",
+        prep_initiation=datetime.date.today() - datetime.timedelta(weeks=2),
+        condition="post",
     )
 
     cls.p2_connection = cont.Connection.objects.create(
@@ -85,14 +77,14 @@ def setup_basic_contacts(cls):
     cls.p3 = Contact.objects.create(
         study_id="0003",
         anc_num="0003",
-        facility="ahero",
-        study_group="control",
+        facility="migosi",
         nickname="p3",
         birthdate=datetime.date(1986, 8, 5),
         due_date=datetime.date.today() - datetime.timedelta(weeks=6),
         status="stopped",
         delivery_date=datetime.date.today() - datetime.timedelta(weeks=3),
-        condition="art",
+        prep_initiation=datetime.date.today() - datetime.timedelta(weeks=3),
+        condition="famp",
     )
 
     cls.p3_connection = cont.Connection.objects.create(

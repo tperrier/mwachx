@@ -54,19 +54,19 @@ class ParticipantBasicTests(test.TestCase):
 
     @override_settings(FAKE_DATE=False)
     def test_description(self):
-        self.assertEqual(self.p1.description(), "edd.two-way.normal.-21")
-        self.assertEqual(self.p2.description(), "dd.two-way.normal.21")
-        self.assertEqual(self.p3.description(send_base='signup', send_offset=0), "signup.control.art.0")
+        self.assertEqual(self.p1.description(), "prep.preg.7")
+        self.assertEqual(self.p2.description(), "prep.post.14")
+        self.assertEqual(self.p3.description(send_base='signup', send_offset=0), "signup.famp.0")
 
         # Test FP Methods
         def plus_td(weeks=0,days=0):
             return datetime.date.today() + datetime.timedelta(days=days,weeks=weeks)
 
-        self.assertEqual(self.p2.description(today=plus_td(days=2)), "dd.two-way.normal.23")
-        self.assertEqual(self.p2.description(today=plus_td(days=8)), "dd.two-way.normal.29")
-        self.assertEqual(self.p2.description(today=plus_td(2)), "dd.two-way.normal.35")
-        self.assertEqual(self.p2.description(today=plus_td(3)), "dd.two-way.normal.42")
-        self.assertEqual(self.p2.description(today=plus_td(7)), "dd.two-way.normal.70")
+        self.assertEqual(self.p2.description(today=plus_td(days=2)), "prep.post.16")
+        self.assertEqual(self.p2.description(today=plus_td(days=8)), "prep.post.22")
+        self.assertEqual(self.p2.description(today=plus_td(2)), "prep.post.28")
+        self.assertEqual(self.p2.description(today=plus_td(3)), "prep.post.35")
+        self.assertEqual(self.p2.description(today=plus_td(7)), "prep.post.63")
 
     def test_send_batch(self):
 
@@ -146,8 +146,8 @@ class ParticipantSerializerTests(rf_test.APITestCase):
         start_count = Contact.objects.count()
         data = { "previous_pregnancies":0,"study_id":"0004","anc_num":"0004","study_group":"two-way",
                  "language":"english","phone_number":"0700000004","nickname":"Test","birthdate":"1990-02-05",
-                 "relationship_status":"single","due_date":"2016-07-29","condition":"normal",
-                 "clinic_visit":"2016-07-22","send_day":'',"send_time":20}
+                 "relationship_status":"single","due_date":"2016-07-29","condition":"preg",
+                 "clinic_visit":"2016-07-22","send_day":'',"send_time":20, "prep_initiation":"2016-06-15"}
         response = self.client.post(url.reverse("participant-list"), data, format="json")
         # import code;code.interact(local=locals())
 

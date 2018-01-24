@@ -303,25 +303,15 @@ class ContactBase(TimeStampedModel):
         '''
         if self.delivery_date is not None:
             today = utils.today(today)
-            return today <= self.delivery_date
+            return today < self.delivery_date
         return True
 
     def delta_days(self,today=None):
         '''
-        Return the number days until EDD or since delivery
+        Return the number days until since prep initiation
         '''
         today = utils.today(today)
-        if self.was_pregnant(today):
-            if self.delivery_date is None:
-                if self.due_date is None:
-                    return 0
-                else:
-                    return (self.due_date - today).days
-            else:
-                return (today - self.delivery_date).days
-        else: #post-partum
-            # Return days since due date
-            return (today-self.delivery_date).days
+        return (today - self.prep_initiation).days
 
     def description(self, **kwargs):
         """
@@ -334,9 +324,9 @@ class ContactBase(TimeStampedModel):
         today = kwargs.get("today")
 
         condition = kwargs.get("condition",self.condition)
-        group = kwargs.get("group",self.study_group)
+        # group = kwargs.get("group",self.study_group)
 
-        send_base = kwargs.get("send_base",'edd' if self.was_pregnant(today=today) else 'dd')
+        send_base = kwargs.get("send_base",'prep')
         send_offset = kwargs.get("send_offset",self.delta_days(today=today))
 
         # Special Case: Visit Messages
@@ -352,9 +342,7 @@ class ContactBase(TimeStampedModel):
                 send_base = 'loss'
                 send_offset = loss_offset
 
-        return "{send_base}.{group}.{condition}.{send_offset}".format(
-            group=group, condition=condition, send_base=send_base , send_offset=send_offset
-        )
+        return "{send_base}.{condition}.{send_offset}".format( condition=condition, send_base=send_base , send_offset=send_offset )
 
     def days_str(self,today=None):
         return utils.days_as_str(self.delta_days(today) )
