@@ -4,8 +4,8 @@ import operator, collections, re, itertools
 
 class MessageRowBase(object):
 
-    def __init__(self,row,status,group,track,send_base,offset,english,swahili,luo,**kwargs):
-        self.group, self.track = group.strip() if group else '', track.strip()
+    def __init__(self,row,status,track,send_base,offset,english,swahili,luo,**kwargs):
+        self.track , self.offset =  track.strip() , offset
         self.send_base, self.offset = send_base.strip(), offset
         self.english, self.swahili, self.luo, = map(clean_msg,(english,swahili,luo))
 
@@ -16,14 +16,13 @@ class MessageRowBase(object):
         self.new = kwargs.get('new','')
         self.row = row[0].row
 
-        if any( [s is None for s in group,track,send_base,offset ] ):
-            status = '#'
-        if any( [s is None for s in swahili, english ] ):
-            status = '!'
+        if any( [s is None for s in track,send_base,offset ] ):
+            status = '#' # comment
+        if any( [s is None for s in swahili, english , luo ] ):
+            status = '!' # todo
         self.set_status(status)
 
         if self.status != 'comment':
-            self.group = self.group.replace('_','-')
             self.configure_variables()
 
             if self.offset is None:
@@ -32,11 +31,11 @@ class MessageRowBase(object):
 
     def description(self):
         ''' Return base_group_track_offset '''
-        return "{0.send_base}.{0.group}.{0.track}.{0.offset}".format(
+        return "{0.send_base}.{0.track}.{0.offset}".format(
             self)
 
     def kwargs(self):
-        return {'send_base':self.send_base,'send_offset':self.offset,'group':self.group,
+        return {'send_base':self.send_base,'send_offset':self.offset,
                 'condition':self.track,'comment':self.comment,
                 'english':self.english if self.english != '' else self.new,
                 'swahili':self.swahili,'luo':self.luo,
@@ -68,9 +67,17 @@ class MessageRowBase(object):
     def is_valid(self):
         if self.status == 'comment':
             return False
-        group_valid = self.group in ['one-way','two-way','control']
         has_offset = self.offset is not None
-        return group_valid and has_offset
+        return has_offset
+
+    def format_vars(self):
+        frmt_vars = {'name':'n','nurse':'n','clinic':'c','date':'d','days':'d'}
+        for language in ('english','swahili','luo'):
+            try:
+                getattr(self,language).format(**frmt_vars)
+            except (KeyError,ValueError) as e:
+                msg = '{}.{}: {}'.format(self.description(),language,e.message)
+                raise e.__class__(msg)
 
     def set_status(self,status):
         if status is None:
@@ -101,7 +108,6 @@ class MessageRowBase(object):
     def get_translation_row(self,language):
         return (
             '!' if self.is_todo() and self.status != language else '',
-            self.group,
             self.track,
             self.send_base,
             self.offset,
@@ -113,7 +119,6 @@ class MessageRowBase(object):
     def get_final_row(self):
         return (
             self.get_status_str(),
-            self.group,
             self.track,
             self.send_base,
             self.offset,
@@ -125,18 +130,17 @@ class MessageRowBase(object):
 
     @classmethod
     def from_bank_row(cls,row):
-        status, group, track, send_base, offset, english, comment= \
-            cell_values( *operator.itemgetter(0,1,2,3,4,5,6,8)(row))
+        status, track, send_base, offset, english, comment= \
+            cell_values( *operator.itemgetter(0,1,2,3,4,5)(row))
 
 class FinalRow(MessageRowBase):
 
-    header = ('Todo','Group','Track','Base','Offset','English','Swahili','Luo','Comment')
+    header = ('Todo','Track','Base','Offset','English','Swahili','Luo','Comment')
 
     def __init__(self,row):
-        status, group, track, send_base, offset, english, swahili, luo, comment= \
-            cell_values( *operator.itemgetter(0,1,2,3,4,5,6,7,8)(row))
-        super(FinalRow,self).__init__(row,status,group,track,send_base,offset,
-            english,swahili,luo,comment=comment)
+        status, track, send_base, offset, english, swahili, luo, comment= \
+            cell_values( *operator.itemgetter(0,1,2,3,4,5,6,7)(row))
+        super(FinalRow,self).__init__(row,status,track,send_base,offset,english,swahili,luo,comment=comment)
 
         # If message is translated make old equal new
         if self.status == 'done':
@@ -145,11 +149,10 @@ class FinalRow(MessageRowBase):
 class MessageBankRow(MessageRowBase):
 
     def __init__(self,row,old_translations=None):
-        status, group, track, hiv, send_base, offset, english, comment= \
-            cell_values( *operator.itemgetter(0,1,2,3,4,5,6,8)(row))
+        status, track, hiv, send_base, offset, english, comment= \
+            cell_values( *operator.itemgetter(0,1,2,3,4,5,6,7)(row))
         swahili , luo = '' , ''
-        super(MessageBankRow,self).__init__(row,status,group,track,hiv,send_base,offset,
-            english,swahili,luo,comment=comment)
+        super(MessageBankRow,self).__init__(row,status,track,hiv,send_base,offset,english,swahili,luo,comment=comment)
 
         self.set_old(old_translations)
 
@@ -185,7 +188,7 @@ class TranslationRow(MessageRowBase):
         return ('Todo','Group','Track','HIV','Base','Offset','Old','New',language)
 
     def __init__(self,row,language_name):
-        status, group, track, hiv, send_base, offset, english, new, language = \
+        status, track, hiv, send_base, offset, english, new, language = \
             cell_values( *operator.itemgetter(0,1,2,3,4,5,6,7,8)(row))
 
         language_name = language_name.lower()[0]
@@ -196,7 +199,7 @@ class TranslationRow(MessageRowBase):
             swahili = ''
             luo = language
 
-        super(TranslationRow,self).__init__(row,status,group,track,hiv,send_base,offset,
+        super(TranslationRow,self).__init__(row,status,track,hiv,send_base,offset,
             english,swahili,luo,new=new)
 
 
@@ -206,10 +209,11 @@ class TranslationRow(MessageRowBase):
 
 def parse_messages(ws,cls,**kwargs):
     for row in ws.rows:
-        # skip rows with None as group, condition, and send_base
-        if row[1].value and row[2].value and row[3].value:
+        # skip rows with None as condition, and send_base, offset
+        if row[1].value is not None and row[2].value is not None and row[3].value is not None and row[0].value != 'Todo':
             msg = cls(row,**kwargs)
             if msg.is_valid():
+                msg.format_vars()
                 yield msg
 
 def read_sms_bank(bank,old=None,*args):
@@ -235,7 +239,7 @@ multiple_whitespace = re.compile(r'\s{2,}',re.M)
 def clean_msg(msg):
     if not isinstance(msg,basestring):
         return ''
-    msg = msg.replace(u'\u2019','\'')  # replace right quot
+    msg = msg.replace(u'\u2019','\'')  # replace right quote
     msg = msg.replace(u'\xa0',' ') # replace non blank space
     msg = msg.strip()
     msg = msg.replace('\n',' ')

@@ -40,8 +40,7 @@ angular.module('mwachx')
     var service = {
       query:{
         text:'',
-        study_group:{control:false,one_way:true,two_way:true},
-        status:{pregnant:true,post_partum:true,other:false},
+        status:{active:true,other:false},
         sortName:'study_id',
         sortDirection:false,
       }

@@ -209,7 +209,7 @@ class Command(BaseCommand):
         total = 0
         for msg in messages:
             total += 1
-            stats[ '{}_{}'.format(msg.send_base,msg.group) ].append(msg)
+            stats[ '{}_{}'.format(msg.send_base,msg.track) ].append(msg)
 
             description = msg.description()
             if description not in descriptions:

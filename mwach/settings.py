@@ -1,2 +1,5 @@
 #!/usr/bin/python
-from local_settings import *
+try:
+    from local_settings import *
+except ImportError as e:
+    from settings_base import *

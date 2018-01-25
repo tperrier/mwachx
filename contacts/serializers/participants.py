@@ -50,11 +50,6 @@ class ParticipantSerializer(serializers.ModelSerializer):
     is_pregnant = serializers.BooleanField(read_only=True)
     active = serializers.BooleanField(read_only=True,source='is_active')
 
-    hiv_disclosed_display = serializers.SerializerMethodField()
-    hiv_disclosed = serializers.SerializerMethodField()
-    hiv_messaging_display = serializers.CharField(source='get_hiv_messaging_display')
-    hiv_messaging = serializers.CharField()
-
     href = serializers.HyperlinkedIdentityField(view_name='participant-detail',lookup_field='study_id')
     messages_url = serializers.HyperlinkedIdentityField(view_name='participant-messages',lookup_field='study_id')
     visits_url = serializers.HyperlinkedIdentityField(view_name='participant-visits',lookup_field='study_id')
@@ -72,12 +67,6 @@ class ParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         # todo: can this be changed to a swappable version?
         model = cont.Contact
-
-    def get_hiv_disclosed_display(self,obj):
-        return utils.null_boolean_display(obj.hiv_disclosed)
-
-    def get_hiv_disclosed(self,obj):
-        return utils.null_boolean_form_value(obj.hiv_disclosed)
 
     def get_note_count(self,obj):
         try:
@@ -153,9 +142,9 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                 cont.Connection.objects.create(identity=phone_number,contact=contact,is_primary=True)
 
                 # Set the next visits
-                # if cf.cleaned_data['clinic_visit']:
-                #     cont.Visit.objects.create(scheduled=cf.cleaned_data['clinic_visit'],
-                #         participant=contact,visit_type='clinic')
+                if cf.cleaned_data['clinic_visit']:
+                    cont.Visit.objects.create(scheduled=cf.cleaned_data['clinic_visit'],
+                        participant=contact,visit_type='clinic')
 
                 # If edd is more than 35 weeks away reset and make note
                 if contact.due_date and (contact.due_date - datetime.date.today() > datetime.timedelta(weeks=35)):
@@ -169,13 +158,6 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                     )
                     contact.due_date = new_edd
                     contact.save()
-
-                # if contact.due_date:
-                #     # Set first study visit after EDD
-                # 
-                #     cont.Visit.objects.create(
-                #         scheduled=contact.due_date + datetime.timedelta(days=DEFAULT_VISIT_DAYS_DELTA),
-                #         participant=contact, visit_type='study')
 
                 #Send Welcome Message
                 contact.send_automated_message(send_base='signup',send_offset=0,control=True)
@@ -197,8 +179,6 @@ class ParticipantViewSet(viewsets.ModelViewSet):
         instance.send_day = request.data['send_day']
         instance.art_initiation = utils.angular_datepicker(request.data['art_initiation'])
         instance.due_date = utils.angular_datepicker(request.data['due_date'])
-        instance.hiv_disclosed = request.data['hiv_disclosed']
-        instance.hiv_messaging = request.data['hiv_messaging']
 
         instance.save()
         instance_serialized = ParticipantSerializer(cont.get_contact_model().objects.get(pk=instance.pk),
