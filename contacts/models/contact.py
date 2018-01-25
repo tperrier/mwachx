@@ -130,6 +130,7 @@ class ContactBase(TimeStampedModel):
     CONDITION_CHOICES = (
         ('preg','1 - Pregant'),
         ('post','2 - Post-partum'),
+      	('famp','3 - Family Planning'),
     )
 
     FAMILY_PLANNING_CHOICES = (
@@ -177,7 +178,7 @@ class ContactBase(TimeStampedModel):
     objects_no_link = ContactQuerySet.as_manager()
 
     #Study Attributes
-    study_id = models.CharField(max_length=10,unique=True,verbose_name='Study ID',help_text="* Use Barcode Scanner")
+    study_id = models.CharField(max_length=10,unique=True,verbose_name='RAST ID',help_text="* Use Barcode Scanner")
     anc_num = models.CharField(max_length=15,verbose_name='ANC #',blank=True,default='')
     ccc_num = models.CharField(max_length=15,verbose_name='CCC #',blank=True,null=True)
     facility = models.CharField(max_length=15,choices=settings.FACILITY_CHOICES)
