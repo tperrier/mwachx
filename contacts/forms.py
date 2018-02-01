@@ -385,7 +385,7 @@ class ContactAddMwachPriya(ContactAddGeneric):
 
         widgets = {
             # validation
-            'study_id': forms.TextInput(attrs={'ng-pattern': '/^(\d{4}|25\d{6}0)$/', 'required': True}),
+            'study_id': forms.TextInput(attrs={'ng-pattern': '/^\d{11}$/', 'required': True}),
             'anc_num': forms.TextInput(attrs={'ng-pattern': '/^\d{4}|(\d{2,}\/)+\d{2,}$/'}),
             'previous_pregnancies': forms.NumberInput(attrs={'min': '0', 'max': '15'}),
             'send_time': forms.Select(attrs={'required': True}),
