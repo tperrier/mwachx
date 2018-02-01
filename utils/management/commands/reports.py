@@ -1,18 +1,24 @@
 #!/usr/bin/python
  # -*- coding: utf-8 -*-
+from argparse import Namespace
 import datetime, openpyxl as xl, os
 import code
-import operator, collections, csv
+import operator, collections
+import unicodecsv as csv
 import re
 
+# Django Imports
 from django.core.management.base import BaseCommand, CommandError
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
 
+# Local Imports
 import backend.models as back
 import contacts.models as cont
 import utils
+
+from utils.xl import xl_add_header_row , xl_style_current_row , make_column , bold_font
 
 class Command(BaseCommand):
 
@@ -48,6 +54,7 @@ class Command(BaseCommand):
         xlsx_parser.add_argument('-d','--detail',action='store_true',default=False,help='create detail report')
         xlsx_parser.add_argument('-a','--all',action='store_true',default=False,help='create all reports')
         xlsx_parser.add_argument('-i','--interaction',action='store_true',default=False,help='create participant interaction report')
+        xlsx_parser.add_argument('-m','--messages',action='store_true',default=False,help='create system message dump')
         xlsx_parser.add_argument('-w','--weekly',action='store_true',default=False,help='create weakly stats report')
         xlsx_parser.add_argument('-c','--custom',action='store_true',default=False,help='create custom report')
         xlsx_parser.add_argument('--dir',default='ignore',help='directory to save report in')
@@ -59,6 +66,7 @@ class Command(BaseCommand):
             choices=(
                 'hiv_messaging','enrollment','messages','edd','delivery',
                 'sae','visits','msg_success','msg_dump','hiv_statuschange',
+                'msg_dump',
             )
         )
         csv_parser.set_defaults(action='make_csv_name')
@@ -119,6 +127,8 @@ class Command(BaseCommand):
         if self.options['interaction']:
             workbook_columns['interaction'] =  interaction_columns
             interaction_columns.queryset = make_interaction_columns()
+        if self.options['messages']:
+            make_message_wb()
         if self.options['weekly']:
             make_weekly_wb()
 
@@ -764,22 +774,6 @@ class Command(BaseCommand):
 
         return file_path
 
-    def make_msg_dump_csv(self):
-        """ Dump stats for each message to csv """
-        columns = collections.OrderedDict([
-            ('timestamp','created'),
-            ('study_id','contact.study_id'),
-            ('group','contact.study_group'),
-            ('sent_by','sent_by'),
-            ('status','external_status'),
-            ('topic','topic'),
-            ('related','related'),
-        ])
-        m_all = cont.Message.objects.exclude(contact__isnull=True).order_by('contact_study_id').prefetch_related('contact')
-        file_path = os.path.join(self.options['dir'],'message_dump.csv')
-        make_csv(columns,m_all,file_path)
-        return file_path
-
     def make_edd_csv(self):
         """ Make report of delivery_date to edd time delta in weeks """
 
@@ -858,6 +852,76 @@ class Command(BaseCommand):
                 total_row += loss_deltas[week]
             csv_writer.writerow( ["Total"] + list(total_row) + [total_row.total()] )
 
+        return file_path
+
+    def make_msg_dump_csv(self):
+        """ Dump stats for each incomming message to csv """
+        mode = 'spam'
+        if mode == 'client':
+            columns = collections.OrderedDict([
+                ('timestamp','created'),
+                ('study_id','contact.study_id'),
+                ('facility','contact.facility'),
+                ('since_enrollment', lambda obj: int((obj.created.date() - obj.contact.created.date()).total_seconds() / 86400) ),
+                ('since_delivery', lambda obj: int((obj.created.date() - obj.contact.delivery_date).total_seconds() / 86400)
+                    if obj.contact.delivery_date is not None else '' ),
+                ('topic','topic'),
+                ('related','is_related'),
+                ('languages','languages'),
+                ('text','display_text'),
+                ('chars',lambda m: len(m.text)),
+                ('words',lambda m: len( m.text.split() )),
+                ('text_raw','text'),
+            ])
+            m_all = cont.Message.objects.filter(is_outgoing=False,contact__study_group='two-way') \
+                .order_by('contact__study_id','created').prefetch_related('contact')
+        elif mode == 'nurse':
+            columns = collections.OrderedDict([
+                ('timestamp','created'),
+                ('study_id','contact.study_id'),
+                ('facility','contact.facility'),
+                ('since_enrollment', lambda obj: int((obj.created.date() - obj.contact.created.date()).total_seconds() / 86400) ),
+                ('since_delivery', lambda obj: int((obj.created.date() - obj.contact.delivery_date).total_seconds() / 86400)
+                    if obj.contact.delivery_date is not None else '' ),
+                ('languages','languages'),
+                ('text','display_text'),
+                ('chars',lambda m: len(m.text)),
+                ('words',lambda m: len( m.text.split() )),
+                ('reply',lambda m: 1 if m.parent else 0),
+                ('text_raw','text'),
+            ])
+            m_all = cont.Message.objects.filter(is_outgoing=True,is_system=False,contact__study_group='two-way') \
+                .exclude(translation_status='cust').order_by('contact__study_id','created').prefetch_related('contact')
+        elif mode == 'system':
+            columns = collections.OrderedDict([
+                ('send_base','send_base'),
+                ('send_offset','send_offset'),
+                ('group','group'),
+                ('condition','condition'),
+                ('hiv', lambda m: 1 if m.hiv_messaging else 0),
+                ('text', lambda m: m.english[39:] if m.english[0] == '{' else m.english),
+            ])
+            m_all = back.AutomatedMessage.objects.all().order_by('send_base','send_offset','group','condition','hiv_messaging')
+        elif mode == 'spam':
+            columns = collections.OrderedDict([
+                ('timestamp','created'),
+                ('number','connection.identity'),
+                ('text','display_text'),
+            ])
+            m_all = cont.Message.objects.filter(is_outgoing=False,contact__isnull=True).order_by('created')
+        elif mode == 'all':
+            columns = collections.OrderedDict([
+                ('timestamp','created'),
+                ('study_id','contact.study_id'),
+                ('sent_by','sent_by'),
+                ('status','external_status'),
+                ('topic','topic'),
+                ('related','related'),
+            ])
+            m_all = cont.Message.objects.filter(contact__study_group='two-way').order_by('contact_study_id','created').prefetch_related('contact')
+
+        file_path = os.path.join(self.options['dir'],'message_dump_{}.csv'.format(mode))
+        make_csv(columns,m_all,file_path)
         return file_path
 
 ########################################
@@ -1095,6 +1159,52 @@ def make_weekly_wb():
 
     wb.save('ignore/weely_messages.xlsx')
 
+def make_message_wb():
+
+    print "Making Message XLSX Report"
+    wb = xl.Workbook()
+    ws = wb.active
+    header =  ('id','day','created','sent_by','auto','external',
+               'delta_human','delta','delta_last',
+               'study_wk','edd_wk','chars','words','language')
+    widths = {'B':5,'C':25,'D':12,'E':25,'G':12,'H':12,'I':12,'L':20}
+    xl_add_header_row(ws,header,widths)
+
+    def date_day(datetime):
+        return (datetime.strftime('%a') , datetime)
+
+    two_way = cont.Contact.objects.filter(study_group='two-way')
+    # for p in two_way.filter(study_id__in=('0042','0035')):
+    for p in two_way.all():
+        previous  = Namespace(participant=None)
+        p_cols = (p.study_id,)
+        for m in p.message_set.prefetch_related('contact').order_by('created'):
+            study_wk , edd_wk = m.study_wk , m.edd_wk
+            if m.is_system:
+                previous.system , previous.out = m , m
+                ws.append( p_cols + date_day(m.created) + (m.sent_by(),m.auto, m.external_status,'','','',study_wk,edd_wk,'','','') )
+                xl_style_current_row(ws)
+            else:
+                if m.is_outgoing is True: # Nurse message
+                    delta = m.created - (previous.participant.created if previous.participant is not None else m.contact.created)
+                    previous.out = m
+                    ws.append( p_cols + date_day(m.created) + (m.sent_by(), '',
+                              m.external_status,seconds_as_str(delta,True),delta.total_seconds(),'',study_wk,edd_wk,
+                              len(m.text),len(m.text.split()),m.languages,
+                              ) )
+                    ws["E{0}".format(ws._current_row)].font = bold_font
+                else: # Participant message
+                    previous.participant = m
+                    if hasattr(previous,'system'):
+                        delta = m.created - previous.system.created
+                        delta_last = '' if previous.out == previous.system else (m.created - previous.out.created).total_seconds()
+                        ws.append( p_cols + date_day(m.created) + (m.sent_by(),'','',seconds_as_str(delta,True),delta.total_seconds(),delta_last,
+                            study_wk,edd_wk, len(m.text),len(m.text.split()),m.languages) )
+                    else:
+                        print p.study_id, m
+
+    wb.save('ignore/messages_export.xlsx')
+
 def null_boolean_factory(attribute):
 
     def null_boolean(obj):
@@ -1129,13 +1239,27 @@ def make_csv(columns,data,file_path):
 ########################################
 #SEC::Utility Functions
 ########################################
-
-def seconds_as_str(seconds):
+def seconds_as_str(seconds,as_min=False):
     if seconds is None:
         return None
-    if seconds <= 3600:
-        return '{:.2f}'.format(seconds/60)
-    return '{:.2f} (h)'.format(seconds/3600)
+    if isinstance(seconds,datetime.timedelta):
+        seconds = seconds.total_seconds()
+    if as_min is False:
+        if seconds <= 3600:
+            return '{:.2f}'.format(seconds/60)
+        return '{:.2f} (h)'.format(seconds/3600)
+    else:
+        days , hours = divmod(seconds, 86400)
+        hours , mins = divmod(hours, 3600)
+        mins , secons = divmod(mins,60)
+        outstr = ''
+        if days != 0:
+            outstr += '{:.0f}d '.format(days)
+        if hours != 0:
+            outstr += '{:.0f}h '.format(hours)
+        if mins != 0:
+            outstr += '{:.0f}m '.format(mins)
+        return outstr
 
 def delta_days(date,past=False):
     if date is not None:

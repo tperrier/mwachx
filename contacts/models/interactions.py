@@ -139,6 +139,43 @@ class Message(TimeStampedModel):
         return 'none'
 
     @property
+    def study_wk(self):
+        return (self.created.date() - self.contact.created.date()).total_seconds() / 604800
+
+    @property
+    def edd_wk(self):
+        return (self.created.date() - self.contact.due_date).total_seconds() / 604800
+
+    def get_auto(self):
+        if self.auto:
+            try:
+                auto_msg = back.AutomatedMessage.objects.from_description(self.auto)
+            except ValueError as e:
+                return None
+            return auto_msg
+
+    @property
+    def display_text(self):
+        if self.auto:
+            auto_msg = self.get_auto()
+            return auto_msg.english if auto_msg is not None else self.auto
+        if self.translation_status == 'done':
+            return self.translated_text
+        else:
+            return self.text
+
+    @property
+    def auto_type(self):
+        if self.auto:
+            split = self.auto.split('.')
+            if split[0] in ('edd','dd','signup','loss','stop'):
+                return '{0[0]}.{0[-1]}'.format(split)
+            elif split[0] == 'visit':
+                return '{0[0]}.{0[2]}'.format(split)
+            elif split[0] == 'bounce':
+                return '{0[0]}.{0[1]}'.format(split)
+
+    @property
     def auto_type(self):
         if self.auto:
             split = self.auto.split('.')
