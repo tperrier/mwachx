@@ -321,7 +321,7 @@ class ContactBase(TimeStampedModel):
         '''
         if self.delivery_date is not None:
             today = utils.today(today)
-            return today <= self.delivery_date
+            return today < self.delivery_date
         return True
 
     def delta_days(self,today=None):
