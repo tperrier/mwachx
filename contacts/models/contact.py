@@ -371,7 +371,7 @@ class Contact(TimeStampedModel):
             today = utils.today(today)
             loss_offset = ((today - self.loss_date).days - 1)/7  + 1
             condition = 'nbaby'
-            second = 'N'
+            # second = 'N'
             if loss_offset <= 4:
                 send_base = 'loss'
                 send_offset = loss_offset
