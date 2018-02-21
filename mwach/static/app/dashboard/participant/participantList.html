@@ -33,6 +33,9 @@
       <th><a href ng-click="setSort('nickname')">Name</a>
         <span ng-if="query.sortName=='nickname'"><i class='mw' ng-class='getSortClass()'></i></span>
       </th>
+      <th><a href ng-click="setSort('study_id')">RAST ID</a>
+        <span ng-if="query.sortName=='study_id'"><i class='mw' ng-class='getSortClass()'></i></span>
+      </th>
       <th><a href ng-click="setSort('status')">Status</a>
         <span ng-if="query.sortName=='status'"><i class='mw' ng-class='getSortClass()'></i></span>
       </th>
@@ -52,6 +55,7 @@
       ng-repeat="participant in participants | filter:participantFilter | orderBy:query.sortName:query.sortDirection as filteredParticipants"
     >
       <td>{{participant.nickname}}</td>
+      <td>{{participant.study_id}}</td>
       <td>{{participant.status}}</td>
       <td>{{participant.study_base_date}}</td>
       <td>{{participant.last_msg_client}}</td>

@@ -111,13 +111,10 @@
 
         modalInstance.result.then(function(result){
           var patch = {
-            status:result.status,
             send_day:result.send_day,
             send_time:result.send_time,
-            art_initiation:mwachxUtils.convert_form_date(result.art_initiation),
+            prep_initiation:mwachxUtils.convert_form_date(result.prep_initiation),
             due_date:mwachxUtils.convert_form_date(result.due_date),
-            hiv_disclosed:result.hiv_disclosed,
-            hiv_messaging:result.hiv_messaging,
           }
           console.log('Update',result,patch);
           $scope.participant.patch(patch).then(function(result){

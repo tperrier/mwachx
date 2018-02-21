@@ -174,10 +174,9 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
         instance = self.get_object()
 
-        instance.status = request.data['status']
         instance.send_time = request.data['send_time']
         instance.send_day = request.data['send_day']
-        instance.art_initiation = utils.angular_datepicker(request.data['art_initiation'])
+        instance.prep_initiation = utils.angular_datepicker(request.data['prep_initiation'])
         instance.due_date = utils.angular_datepicker(request.data['due_date'])
 
         instance.save()
