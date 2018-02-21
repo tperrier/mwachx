@@ -1,0 +1,206 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import jsonfield.fields
+import django.utils.timezone
+from django.conf import settings
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='Contact',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
+                ('modified', models.DateTimeField(auto_now=True)),
+                ('study_id', models.CharField(help_text=b'* Use Barcode Scanner', unique=True, max_length=11, verbose_name=b'RAST ID')),
+                ('anc_num', models.CharField(default=b'', max_length=15, verbose_name=b'ANC #', blank=True)),
+                ('ccc_num', models.CharField(max_length=15, null=True, verbose_name=b'CCC #', blank=True)),
+                ('facility', models.CharField(max_length=15, choices=[(b'migosi', b'Migosi'), (b'kisumu', b'Kisumu')])),
+                ('study_group', models.CharField(default=b'two-way', max_length=10, verbose_name=b'Group', blank=True, choices=[(b'control', b'Control'), (b'one-way', b'One Way'), (b'two-way', b'Two Way')])),
+                ('send_day', models.IntegerField(default=0, blank=True, verbose_name=b'Send Day', choices=[(0, b'Monday'), (1, b'Tuesday'), (2, b'Wednesday'), (3, b'Thursday')])),
+                ('send_time', models.IntegerField(default=8, verbose_name=b'Send Time', choices=[(8, b'Morning (8 AM)'), (13, b'Afternoon (1 PM)'), (20, b'Evening (8 PM)')])),
+                ('nickname', models.CharField(max_length=20)),
+                ('birthdate', models.DateField(verbose_name=b'DOB')),
+                ('partner_name', models.CharField(max_length=40, verbose_name=b'Partner Name', blank=True)),
+                ('relationship_status', models.CharField(blank=True, max_length=15, verbose_name=b'Relationship Status', choices=[(b'single', b'Single'), (b'partner', b'Partner'), (b'married', b'Married'), (b'seperated', b'Seperated')])),
+                ('previous_pregnancies', models.IntegerField(help_text=b'* excluding current', null=True, blank=True)),
+                ('phone_shared', models.NullBooleanField(verbose_name=b'Phone Shared')),
+                ('status', models.CharField(default=b'active', max_length=15, choices=[(b'active', b'Active'), (b'completed', b'Completed'), (b'stopped', b'Withdrew'), (b'loss', b'SAE opt-in'), (b'sae', b'SAE opt-out'), (b'other', b'Admin Stop'), (b'quit', b'Left Study')])),
+                ('language', models.CharField(default=b'english', max_length=10, choices=[(b'english', b'English'), (b'luo', b'Luo'), (b'swahili', b'Swahili')])),
+                ('condition', models.CharField(default=b'normal', max_length=15, blank=True, choices=[(b'preg', b'1 - Pregant'), (b'post', b'2 - Post-partum'), (b'famp', b'3 - Family Planning')])),
+                ('due_date', models.DateField(null=True, verbose_name=b'Estimated Delivery Date', blank=True)),
+                ('prep_initiation', models.DateField(null=True, verbose_name=b'PrEP Initiation Date', blank=True)),
+                ('delivery_date', models.DateField(null=True, verbose_name=b'Delivery Date', blank=True)),
+                ('delivery_source', models.CharField(blank=True, max_length=10, verbose_name=b'Delivery Notification Source', choices=[(b'phone', b'Phone'), (b'sms', b'SMS'), (b'visit', b'Clinic Visit'), (b'm2m', b'Mothers to Mothers'), (b'other', b'Other')])),
+                ('family_planning', models.CharField(blank=True, max_length=10, verbose_name=b'Family Planning', choices=[(b'none', b'None'), (b'iud', b'IUD'), (b'pill', b'Pills'), (b'depot', b'Depot'), (b'implant', b'Implant')])),
+                ('loss_date', models.DateField(help_text=b'SAE date if applicable', null=True, blank=True)),
+                ('last_msg_client', models.DateField(help_text=b'Date of last client message received', null=True, editable=False, blank=True)),
+                ('last_msg_system', models.DateField(help_text=b'Date of last system message sent', null=True, editable=False, blank=True)),
+                ('is_validated', models.BooleanField(default=False)),
+                ('validation_key', models.CharField(max_length=5, blank=True)),
+            ],
+            options={
+                'swappable': 'CONTACTS_CONTACT_MODEL',
+            },
+        ),
+        migrations.CreateModel(
+            name='Connection',
+            fields=[
+                ('identity', models.CharField(max_length=25, serialize=False, primary_key=True)),
+                ('description', models.CharField(help_text=b'Description of phone numbers relationship to contact', max_length=30, null=True, blank=True)),
+                ('is_primary', models.BooleanField(default=False, verbose_name=b'Primary')),
+                ('contact', models.ForeignKey(blank=True, to=settings.CONTACTS_CONTACT_MODEL, null=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='EventLog',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
+                ('modified', models.DateTimeField(auto_now=True)),
+                ('event', models.CharField(help_text=b'Event Name', max_length=25)),
+                ('data', jsonfield.fields.JSONField()),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Message',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
+                ('modified', models.DateTimeField(auto_now=True)),
+                ('text', models.TextField(help_text=b'Text of the SMS message')),
+                ('is_outgoing', models.BooleanField(default=True, verbose_name=b'Out')),
+                ('is_system', models.BooleanField(default=True, verbose_name=b'System')),
+                ('is_viewed', models.BooleanField(default=False, verbose_name=b'Viewed')),
+                ('is_related', models.NullBooleanField(default=None)),
+                ('action_time', models.DateTimeField(default=None, null=True, blank=True)),
+                ('translated_text', models.TextField(default=b'', help_text=b'Text of the translated message', max_length=1000, blank=True)),
+                ('translation_status', models.CharField(default=b'todo', help_text=b'Status of translation', max_length=5, verbose_name=b'Translated', choices=[(b'todo', b'Todo'), (b'none', b'None'), (b'done', b'Done'), (b'auto', b'Auto'), (b'cust', b'Custom')])),
+                ('translation_time', models.DateTimeField(null=True, blank=True)),
+                ('languages', models.CharField(default=b'', help_text=b'Semi colon seperated list of languages', max_length=50, blank=True)),
+                ('topic', models.CharField(default=b'', help_text=b'The topic of this message', max_length=25, blank=True)),
+                ('external_id', models.CharField(max_length=50, blank=True)),
+                ('external_success', models.NullBooleanField(verbose_name=b'Success')),
+                ('external_status', models.CharField(blank=True, max_length=50, choices=[(b'', b'Received'), (b'Success', b'Success'), (b'Failed', b'Failed'), (b'Sent', b'Sent'), (b'Message Rejected By Gateway', b'Message Rejected By Gateway'), (b'Could Not Send', b'Could Not Send')])),
+                ('external_success_time', models.DateTimeField(default=None, null=True, blank=True)),
+                ('external_data', jsonfield.fields.JSONField(blank=True)),
+                ('auto', models.CharField(max_length=50, blank=True)),
+                ('admin_user', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('connection', models.ForeignKey(to='contacts.Connection')),
+                ('contact', models.ForeignKey(blank=True, to=settings.CONTACTS_CONTACT_MODEL, null=True)),
+                ('parent', models.ForeignKey(related_name='replies', blank=True, to='contacts.Message', null=True)),
+            ],
+            options={
+                'ordering': ('-created',),
+            },
+        ),
+        migrations.CreateModel(
+            name='Note',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
+                ('modified', models.DateTimeField(auto_now=True)),
+                ('comment', models.TextField(blank=True)),
+                ('admin', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('participant', models.ForeignKey(to=settings.CONTACTS_CONTACT_MODEL)),
+            ],
+            options={
+                'ordering': ('-created',),
+            },
+        ),
+        migrations.CreateModel(
+            name='PhoneCall',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
+                ('modified', models.DateTimeField(auto_now=True)),
+                ('is_outgoing', models.BooleanField(default=False)),
+                ('outcome', models.CharField(default=b'answered', max_length=10, choices=[(b'no_ring', b'No Ring'), (b'no_answer', b'No Answer'), (b'answered', b'Answered')])),
+                ('length', models.IntegerField(null=True, blank=True)),
+                ('comment', models.TextField(null=True, blank=True)),
+                ('admin_user', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('connection', models.ForeignKey(to='contacts.Connection')),
+                ('contact', models.ForeignKey(to=settings.CONTACTS_CONTACT_MODEL)),
+            ],
+            options={
+                'ordering': ('-created',),
+            },
+        ),
+        migrations.CreateModel(
+            name='Practitioner',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('facility', models.CharField(max_length=15, choices=[(b'migosi', b'Migosi'), (b'kisumu', b'Kisumu')])),
+                ('password_changed', models.BooleanField(default=False)),
+                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='ScheduledPhoneCall',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
+                ('modified', models.DateTimeField(auto_now=True)),
+                ('scheduled', models.DateField()),
+                ('arrived', models.DateField(default=None, null=True, blank=True)),
+                ('notification_last_seen', models.DateField(default=None, null=True, blank=True)),
+                ('notify_count', models.IntegerField(default=0)),
+                ('status', models.CharField(default=b'pending', help_text=b'current status of event', max_length=15, choices=[(b'pending', b'Pending'), (b'missed', b'Missed'), (b'deleted', b'Deleted'), (b'attended', b'Attended')])),
+                ('call_type', models.CharField(default=b'm', max_length=2, choices=[(b'm', b'One Month'), (b'y', b'One Year')])),
+                ('participant', models.ForeignKey(to=settings.CONTACTS_CONTACT_MODEL)),
+            ],
+            options={
+                'ordering': ('-scheduled',),
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
+            name='StatusChange',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
+                ('modified', models.DateTimeField(auto_now=True)),
+                ('old', models.CharField(max_length=20)),
+                ('new', models.CharField(max_length=20)),
+                ('type', models.CharField(default=b'status', max_length=10)),
+                ('comment', models.TextField(blank=True)),
+                ('contact', models.ForeignKey(to=settings.CONTACTS_CONTACT_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Visit',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(default=django.utils.timezone.now, editable=False)),
+                ('modified', models.DateTimeField(auto_now=True)),
+                ('scheduled', models.DateField()),
+                ('arrived', models.DateField(default=None, null=True, blank=True)),
+                ('notification_last_seen', models.DateField(default=None, null=True, blank=True)),
+                ('notify_count', models.IntegerField(default=0)),
+                ('status', models.CharField(default=b'pending', help_text=b'current status of event', max_length=15, choices=[(b'pending', b'Pending'), (b'missed', b'Missed'), (b'deleted', b'Deleted'), (b'attended', b'Attended')])),
+                ('comment', models.TextField(null=True, blank=True)),
+                ('visit_type', models.CharField(default=b'clinic', max_length=25, choices=[(b'clinic', b'Clinic Visit'), (b'study', b'Study Visit'), (b'both', b'Both'), (b'delivery', b'Delivery')])),
+                ('missed_sms_last_sent', models.DateField(default=None, null=True, blank=True)),
+                ('missed_sms_count', models.IntegerField(default=0)),
+                ('participant', models.ForeignKey(to=settings.CONTACTS_CONTACT_MODEL)),
+            ],
+            options={
+                'ordering': ('-scheduled',),
+                'abstract': False,
+            },
+        ),
+        migrations.AddField(
+            model_name='phonecall',
+            name='scheduled',
+            field=models.ForeignKey(blank=True, to='contacts.ScheduledPhoneCall', null=True),
+        ),
+    ]
