@@ -162,7 +162,7 @@ class ParticipantSerializerTests(rf_test.APITestCase):
         self.assertEqual(new_participant.facility,self.user.practitioner.facility)
         self.assertEqual(new_participant.phone_number(),"+254700000004")
         self.assertEqual(new_participant.send_time,20)
-        self.assertEqual(new_participant.send_day,0)
+        self.assertEqual(new_participant.send_day,1)
 
         # Check that the welcome message was sent
         self.assertEqual(new_participant.message_set.count(),1)

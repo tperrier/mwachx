@@ -124,7 +124,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
                     contact.study_group = 'two-way'
 
                 if contact.send_day == '':
-                    contact.send_day = 0
+                    contact.send_day = 1 # default to Tuesday
 
                 #Set contacts facility to facility of current user
                 facility = '' # Default to blank facility if none found

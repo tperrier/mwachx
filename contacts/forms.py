@@ -96,12 +96,13 @@ class ContactAddMwachPriya(ContactAddGeneric):
                 Div(
                     Div('study_id', css_class="col-md-4"),
                     Div('anc_num', css_class="col-md-4"),
-                    Div('send_time', css_class="col-md-4", ng_if="participant.study_group != 'control'"),
+                    Div('send_time', css_class="col-md-4"),
                     css_class="row"
                 ),
                 Div(
                     Div('phone_number', css_class="col-md-4"),
                     Div('phone_shared', css_class="col-md-4"),
+                    Div('send_day', css_class="col-md-4"),
                     css_class="row",
                 ),
             ),
