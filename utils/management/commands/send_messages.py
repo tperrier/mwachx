@@ -25,8 +25,8 @@ class Command(BaseCommand):
         parser.add_argument('-w', '--weekly', help='send weekly messages', action='store_true', default=False)
         parser.add_argument('-a', '--appointment', help='send visit reminders', action='store_true', default=False)
         # Can't have -v as a parameter since it conflicts with verbose
-        parser.add_argument('-m', '--missed', help='send visit missed visit reminders', action='store_true',
-                            default=False)
+        parser.add_argument('-m', '--missed', help='send visit missed visit reminders', action='store_true', default=False)
+        parser.add_argument('-p','--special',help='send special messages from settings.SEND_SPECIAL or all', action='store_true', default=False)
 
         parser.add_argument('--exclude', nargs='*', help='list of 4 digit study_ids to exclude')
 
@@ -43,7 +43,7 @@ class Command(BaseCommand):
             return None
 
         # Check for required arguments
-        required = ['daily','weekly','appointment','missed']
+        required = ['daily','weekly','appointment','missed','special']
         for key,value in options.items():
             if key in required and value == True:
                 break
@@ -87,6 +87,8 @@ class Command(BaseCommand):
             appointment_reminders(date,hour,email_body,options,send=send)
         if options["missed"]:
             missed_visit_reminders(hour,email_body,options,send=send)
+        if options["special"]:
+            special_messages(date,hour,email_body,options,send=send)
 
         email_body = '\n'.join(email_body)
         if options.get('email'):
@@ -147,8 +149,7 @@ def weekly_messages(day, hour, date, email_body, options, send=False):
 
     email_body.append("***** Weekly Messages ******\n")
 
-    regularly_scheduled_messages(cont.Contact.objects.active_users().filter(send_day=day), hour,
-                                 date - datetime.timedelta(days=day), email_body, options, send)
+    regularly_scheduled_messages(cont.Contact.objects.active_users().filter(send_day=day), hour, date , email_body, options, send)
 
 def appointment_reminders(date,hour,email_body,options,send=False):
 
@@ -228,6 +229,23 @@ def missed_visit_reminders(hour,email_body,options,send=False):
     )
     append_errors(email_body,vals)
 
+def special_messages(date,hour,email_body,options,send=False):
+    """
+    Run special message senders
+        - all manager fuctions of the from Conacts.objects.send_special_<name>
+    """
+
+    senders = [ sender for sender in dir(cont.Contact.objects) if sender.startswith('send_special_')]
+
+    email_body.append("***** Send Special ******\n")
+    email_body.append( "\t Senders Found: {}".format(len(senders)) )
+
+    for sender in senders:
+        sent_to = getattr(cont.Contact.objects.filter(send_time=hour),sender)(date,send)
+        email_body.append("\t - {} {}".format(sender,sent_to.count()) )
+
+    email_body.append('')
+
 def append_errors(email_body,vals,verbosity=1):
 
     email_body.append( "\tSent: {}\n".format( len(vals.sent_to)) )
@@ -238,7 +256,7 @@ def append_errors(email_body,vals,verbosity=1):
         email_body.extend( "\t{}".format(d) for d in vals.no_messages )
         email_body.append('')
 
-    if vals.no_messages and (verbosity >= 3):
+    if vals.sent_to and (verbosity >= 3):
         email_body.append( "Messages Sent: {}".format(len(vals.sent_to)) )
         email_body.extend( "\t{}".format(d) for d in vals.sent_to)
         email_body.append('')

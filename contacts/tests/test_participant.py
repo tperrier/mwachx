@@ -62,8 +62,8 @@ class ParticipantBasicTests(test.TestCase):
         def plus_td(weeks=0,days=0):
             return datetime.date.today() + datetime.timedelta(days=days,weeks=weeks)
 
-        self.assertEqual(self.p2.description(today=plus_td(days=2)), "prep.post.16")
-        self.assertEqual(self.p2.description(today=plus_td(days=8)), "prep.post.22")
+        self.assertEqual(self.p2.description(today=plus_td(days=2)), "prep.post.14")
+        self.assertEqual(self.p2.description(today=plus_td(days=8)), "prep.post.21")
         self.assertEqual(self.p2.description(today=plus_td(2)), "prep.post.28")
         self.assertEqual(self.p2.description(today=plus_td(3)), "prep.post.35")
         self.assertEqual(self.p2.description(today=plus_td(7)), "prep.post.63")

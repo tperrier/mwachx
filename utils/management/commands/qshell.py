@@ -71,4 +71,6 @@ def test_handler(ns):
 
     test = "Test Working"
 
+    yesterday = ns['c_all'].send_special_signup()
+
     return locals()

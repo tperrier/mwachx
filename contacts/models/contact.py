@@ -22,7 +22,29 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class ContactQuerySet(ForUserQuerySet):
+class ContactSendSpecialQuerySet(models.QuerySet):
+    """
+    QuerySet with methods to send special SMS messages to predefined subset of contacts.
+    Each mechod send_special_<name> should send s special SMS to the given users.
+    """
+
+    def send_special_signup(self,date=None,send=False,filter=True):
+        """
+        Send the one day post signup message to users who signed up
+        filter <bool> : flag to filter current querset based on signup day
+        """
+
+        if filter is True:
+            today = utils.make_date(utils.today(date))
+            yesterday = today - datetime.timedelta(days=1)
+            self = self.filter(created__range=(yesterday,today))
+
+        for c in self:
+            c.send_automated_message(send=send,send_base='signup',send_offset=1,condition='normal')
+
+        return self
+
+class ContactQuerySet(ForUserQuerySet,ContactSendSpecialQuerySet):
 
     participant_field = None
 
@@ -325,7 +347,7 @@ class ContactBase(TimeStampedModel):
         # group = kwargs.get("group",self.study_group)
 
         send_base = kwargs.get("send_base",'prep')
-        send_offset = kwargs.get("send_offset",self.delta_days(today=today))
+        send_offset = kwargs.get("send_offset",self.delta_days(today=today) / 7 * 7)
 
         # Special Case: Visit Messages
         if send_base == 'visit':

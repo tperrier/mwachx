@@ -45,7 +45,7 @@ def setup_basic_contacts(cls):
         nickname="p1 one",
         birthdate=datetime.date(1986, 8, 5),
         due_date=datetime.date.today() + datetime.timedelta(weeks=3),
-        prep_initiation=datetime.date.today() - datetime.timedelta(weeks=1),
+        prep_initiation=datetime.date.today() - datetime.timedelta(weeks=1,days=6),
         condition="preg",
     )
 
@@ -64,7 +64,7 @@ def setup_basic_contacts(cls):
         birthdate=datetime.date(1986, 8, 5),
         due_date=datetime.date.today() - datetime.timedelta(weeks=3),
         delivery_date=datetime.date.today() - datetime.timedelta(weeks=3),
-        prep_initiation=datetime.date.today() - datetime.timedelta(weeks=2),
+        prep_initiation=datetime.date.today() - datetime.timedelta(weeks=2,days=3),
         condition="post",
     )
 
