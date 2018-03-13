@@ -182,12 +182,15 @@ class Visit(ScheduledEvent):
     missed_sms_count = models.IntegerField(default=0)
 
     def send_visit_reminder(self,send=True,extra_kwargs=None):
-        if self.no_sms:
+        today = utils.today()
+        scheduled_date = self.scheduled
+        if self.no_sms or scheduled_date < today or self.status != 'pending':
+            # Don't send if scheduled date in past  or visit is not pending
             return
 
         if extra_kwargs is None:
-            scheduled_date = datetime.date.today() + datetime.timedelta(days=2)
-            extra_kwargs = {'days':2,'date':scheduled_date.strftime('%b %d')}
+            delta_days = (scheduled_date - utils.today() ).days
+            extra_kwargs = {'days':delta_days, 'date':scheduled_date.strftime('%b %d')}
         condition = self.get_condition('pre')
 
         return self.participant.send_automated_message(send=send,send_base='visit',
@@ -202,8 +205,11 @@ class Visit(ScheduledEvent):
         message = self.participant.send_automated_message(send=send,send_base='visit',
             condition=condition,exact=True)
 
-    def send_missed_visit_reminder(self,send=True):
-        if self.no_sms:
+    def send_missed_visit_reminder(self,send=True,extra_kwargs=None):
+        today = utils.today()
+        scheduled_date = self.scheduled
+        if self.no_sms or scheduled_date > today or self.status != 'pending':
+            # Don't send if scheduled date in the future or visit is not pending
             return
 
         if send is True and self.missed_sms_count < 2:
@@ -211,8 +217,13 @@ class Visit(ScheduledEvent):
             self.missed_sms_last_sent = datetime.date.today()
             self.save()
 
+        if extra_kwargs is None:
+            delta_days = (scheduled_date - utils.today() ).days
+            extra_kwargs = {'days':delta_days, 'date':scheduled_date.strftime('%b %d')}
+
             condition = self.get_condition('missed')
-            return self.participant.send_automated_message(send=send,send_base='visit',condition=condition)
+            return self.participant.send_automated_message(send=send,send_base='visit',
+                condition=condition,extra_kwargs=extra_kwargs)
         else:
             return
 
