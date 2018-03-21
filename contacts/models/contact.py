@@ -152,7 +152,7 @@ class ContactBase(TimeStampedModel):
     CONDITION_CHOICES = (
         ('preg','1 - Pregant'),
         ('post','2 - Post-partum'),
-      	('famp','3 - Family Planning'),
+        ('famp','3 - Family Planning'),
     )
 
     FAMILY_PLANNING_CHOICES = (
@@ -315,7 +315,7 @@ class ContactBase(TimeStampedModel):
         return pending.visit_type.capitalize() if pending is not None else None
 
     def is_pregnant(self):
-        return self.status == 'pregnant' or self.status == 'over'
+        return self.delivery_date is None
 
     def was_pregnant(self,today=None):
         '''
@@ -392,20 +392,9 @@ class ContactBase(TimeStampedModel):
         self.delivery_date = delivery_date
         self.delivery_source = source
 
-        # set_status calls self.save()
-        self.set_status('post',comment='Post-partum set by {0}'.format(user))
         self.note_set.create(comment=comment,admin=user)
+        self.save()
 
-        # schedual 6w and 1yr call as needed
-        # self.schedule_month_call()
-        # self.schedule_year_call()
-
-        # mark any delivery visits as attended
-        # self.visit_set.filter(visit_type='delivery').update(status='attended',arrived=delivery_date)
-
-        # Add 14wk visit
-        six_wk_date = delivery_date + datetime.timedelta(days=98)
-        self.visit_set.create(scheduled=six_wk_date,visit_type='study')
 
     def set_status(self, new_status, comment='',note=False,user=None):
         old_status = self.status

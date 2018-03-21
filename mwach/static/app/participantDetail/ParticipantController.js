@@ -28,7 +28,7 @@
        {'label': 'Estimated Delivery Date','value': 'due_date',}
        ];
 
-       if ( !participant.delivery_date)
+       if ( !participant.is_pregnant)
         $scope.detailsList.push({'label':'Delivery Date', 'value':'delivery_date'});
 
        Array.prototype.push.apply($scope.detailsList,[
