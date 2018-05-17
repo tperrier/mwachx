@@ -102,7 +102,7 @@ class MessageRowBase(object):
             if not self.swahili.startswith('{name},') and self.swahili:
                 self.swahili = '{name}, huyu ni {nurse} kutoka {clinic}. ' + self.swahili
             if not self.luo.startswith('{name},') and self.luo:
-                self.luo = '{name}, mae en {nurse} mawuok {clinic}.' + self.luo
+                self.luo = '{name}, mae en {nurse} mawuok {clinic}. ' + self.luo
 
     def __repr__(self):
         return self.description()

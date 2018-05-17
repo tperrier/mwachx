@@ -615,15 +615,20 @@ class ContactBase(TimeStampedModel):
                 delta = validation_msg.created - welcome_msg.created
                 return delta.total_seconds()
 
+    @property
     def delivery_delta(self):
         ''' Return the number of days between the delivery and delivery notification '''
         if self.delivery_date is None:
             return None
         else:
-            status_change = self.statuschange_set.filter(type='status',new='post').last()
-            if status_change is not None:
-                return (status_change.created.date() - self.delivery_date).days
+            delivery_notify_date = self.delivery_notify_date
+            if delivery_notify_date is not None:
+                return (delivery_notify_date.created.date() - self.delivery_date).days
             return None
+
+    @property
+    def delivery_notify_date(self):
+        return self.statuschange_set.filter(type='status',new='post').last()
 
 
 class Contact(ContactBase):

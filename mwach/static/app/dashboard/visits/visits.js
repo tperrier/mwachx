@@ -7,8 +7,12 @@ angular.module('mwachx') .controller('PendingVisitsController',
   function ($scope, mwachxAPI) {
 
     mwachxAPI.pending.all('visits').getList().then(function(visits) {
-      $scope.current = visits.filter(function(item,index){return item.days_overdue <= 7});
-      $scope.bookchecks = visits.filter(function(item,index){return item.days_overdue > 7});
+      var week_day = (new Date()).getDay();
+      var start_week = - week_day;
+      var end_week = 6 - week_day;
+      $scope.future = visits.filter(function(item,index){return item.days_overdue < 0});
+      $scope.current = visits.filter(function(item,index){return item.days_overdue >= 0 && item.days_overdue <= 7});
+      $scope.past = visits.filter(function(item,index){return item.days_overdue > 7});
     });
 
 }]);

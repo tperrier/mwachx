@@ -129,19 +129,13 @@ class VisitQuerySet(ScheduleQuerySet):
             - weekly: between 1-5 weeks away and not seen this week
             - monthly: after 5 weeks and not seen for four weeks
         """
-        visits_this_week = self.pending().is_active().visit_range(
-            start={'weeks':0},end={'days':7},notification_start={'days':1}
-        )
-        bookcheck_weekly = self.pending().is_active().visit_range(
-            start={'days':8},end={'days':35},notification_start={'weeks':1}
-        )
-        # # Don't think we need this since visits will be missed
-        # bookcheck_monthly = self.pending().visit_range(
-        #     start={'days':36},notification_start={'weeks':4}
-        # )
 
-        # print visits_this_week
-        return visits_this_week | bookcheck_weekly
+        today = utils.today()
+        start = today - datetime.timedelta(weeks=3)
+        end = today - datetime.timedelta(weeks=3)
+        return self.pending().is_active().visit_range(
+            start={'days':-14},end={'days':21}
+        ).order_by('scheduled')
 
     def get_missed_visits(self,date=None,delta_days=3):
         """ Return pending visits that are 3 days late and have been seen or it has been 3 days
@@ -233,6 +227,9 @@ class Visit(ScheduledEvent):
     def no_sms(self):
         return self.visit_type in Visit.NO_SMS_TYPES
 
+    @property
+    def edited(self):
+        return (self.modified - self.created).days > 21
 
 class ScheduledPhoneCallQuerySet(ScheduleQuerySet):
 

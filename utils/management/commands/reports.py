@@ -66,7 +66,6 @@ class Command(BaseCommand):
             choices=(
                 'hiv_messaging','enrollment','messages','edd','delivery',
                 'sae','visits','msg_success','msg_dump','hiv_statuschange',
-                'msg_dump',
             )
         )
         csv_parser.set_defaults(action='make_csv_name')
@@ -142,12 +141,8 @@ class Command(BaseCommand):
             self.stdout.write( "Making xlsx file {}".format(xlsx_path_out) )
 
             if hasattr(columns,'facility_sheet'):
-                make_facility_worksheet(columns,wb.active,'ahero')
-                make_facility_worksheet(columns,wb.create_sheet(),'bondo')
-                make_facility_worksheet(columns,wb.create_sheet(),'mathare')
-                make_facility_worksheet(columns,wb.create_sheet(),'siaya')
+                make_facility_worksheet(columns,wb.active,'mathare')
                 make_facility_worksheet(columns,wb.create_sheet(),'rachuonyo')
-                make_facility_worksheet(columns,wb.create_sheet(),'riruta')
             else:
                 make_worksheet(columns,wb.active,columns.queryset)
 
@@ -934,22 +929,15 @@ detail_columns = collections.OrderedDict([
     ('Enrolled',lambda c: c.created.date()),
     ('Group','study_group'),
     ('Status','get_status_display'),
-    ('HIV','hiv_messaging') ,
-    ('Disclosed','hiv_disclosed') ,
     ('Shared','phone_shared') ,
     ('EDD','due_date'),
     ('Δ EDD',lambda c:delta_days(c.due_date)),
     ('Delivery','delivery_date'),
-    ('CCC Num','ccc_num'),
     ('ANC Num','anc_num'),
     ('Δ Delivery',lambda c:delta_days(c.delivery_date,past=True)),
     ('Client', lambda c: c.message_set.filter(is_outgoing=False).count() ),
-    ('Δ C', lambda c: c.message_set.filter(is_outgoing=False,created__gte=last_week).count() ),
     ('System', lambda c: c.message_set.filter(is_system=True).count() ),
-    ('Δ S', lambda c: c.message_set.filter(is_system=True,created__gte=last_week).count() ),
     ('Nurse', lambda c: c.message_set.filter(is_system=False,is_outgoing=True).count() ),
-    ('Δ N', lambda c: c.message_set.filter(is_system=False,is_outgoing=True,created__gte=last_week).count() ),
-    ('Validation Δ',lambda c: seconds_as_str(c.validation_delta()) ),
 ])
 detail_columns.facility_sheet = True
 

@@ -1,10 +1,25 @@
 <div class='row'>
-  <h3><i class="mw mw-hospital-o"></i> Pending visits this week </h3>
+  <h3><i class="mw mw-hospital-o"></i> Past Weeks (3) </h3>
 
 <table class='table table-hover table-striped table-condensed'>
   <thead>
     <tr>
-      <th></th> <th>Study ID</th><th>ANC</th><th>Name</th> <th>Type</th> <th>Study Group</th>
+      <th></th> <th>Study ID</th><th>ANC</th><th>Name</th> <th>Type</th>
+      <th>Status</th> <th>Orig. Scheduled Visit</th> <th>Days Overdue</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr mw-pending-visit ng-repeat='visit in past' visit='visit' visits='past'
+        ui-sref='participant-details({study_id:visit.participant.study_id})' class='pointer' ></tr>
+  </tbody>
+</table>
+
+  <h3><i class="mw mw-hospital-o"></i> Current Week </h3>
+
+<table class='table table-hover table-striped table-condensed'>
+  <thead>
+    <tr>
+      <th></th> <th>Study ID</th><th>ANC</th><th>Name</th> <th>Type</th>
       <th>Status</th> <th>Orig. Scheduled Visit</th> <th>Days Overdue</th>
     </tr>
   </thead>
@@ -13,18 +28,17 @@
         ui-sref='participant-details({study_id:visit.participant.study_id})' class='pointer' ></tr>
   </tbody>
 </table>
-
-<h3><i class="mw mw-book"></i> Today's Bookchecks </h3>
+<h3><i class="mw mw-book"></i> Upcomming Weeks (2) </h3>
 
 <table class='table table-hover table-stribed table-condensed'>
   <thead>
     <tr>
-      <th></th> <th>Study ID</th> <th>Name</th> <th>Type</th> <th>Study Group</th>
-      <th>ANC</th> <th>Orig. Scheduled Visit</th> <th>Days Overdue</th>
+      <th></th> <th>Study ID</th><th>ANC</th><th>Name</th> <th>Type</th>
+      <th>Status</th> <th>Orig. Scheduled Visit</th> <th>Days Overdue</th>
     </tr>
   </thead>
   <tbody>
-    <tr mw-pending-visit ng-repeat='visit in bookchecks' visit='visit' visits='bookchecks'
+    <tr mw-pending-visit ng-repeat='visit in future' visit='visit' visits='future'
         ui-sref='participant-details({study_id:visit.participant.study_id})' class='pointer' ></tr>
   </tbody>
 </table>

@@ -26,7 +26,7 @@ class VisitSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = cont.Visit
-        fields = ('id','href','participant','scheduled','arrived','notification_last_seen','status',
+        fields = ('id','href','participant','scheduled','arrived','notification_last_seen','status','edited',
                   'comment','visit_type','visit_type_display','days_overdue','days_str','is_pregnant')
 
     def get_status(self,obj):
