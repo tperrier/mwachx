@@ -8,6 +8,7 @@ from django.utils import timezone
 
 #Local Imports
 import swapper
+import backend.models as back
 from visit import ScheduledPhoneCall
 import utils
 from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
@@ -133,21 +134,22 @@ class Message(TimeStampedModel):
         if self.action_time is None:
             self.action_time = timezone.now()
 
+    def get_auto(self):
+        if self.auto:
+            try:
+                auto_msg = back.AutomatedMessage.objects.from_description(self.auto)
+            except ValueError as e:
+                return None
+            return auto_msg
+
     def description(self):
         if self.is_system:
             return self.auto
         return 'none'
 
     @property
-    def auto_type(self):
-        if self.auto:
-            split = self.auto.split('.')
-            if split[0] in ('edd','dd','signup','loss','stop'):
-                return '{0[0]}.{0[4]}'.format(split)
-            elif split[0] == 'visit':
-                return '{0[0]}.{0[2]}'.format(split)
-            elif split[0] == 'bounce':
-                return '{0[0]}.{0[1]}'.format(split)
+    def reason(self):
+        return self.external_data.get('reason',None)
 
     @property
     def msg_type(self):

@@ -13,6 +13,7 @@ from django.conf import settings
 import backend.models as back
 import contacts.models as cont
 import utils
+from utils.xl import xl_add_header_row , xl_style_current_row , make_column , bold_font
 
 class Command(BaseCommand):
 
@@ -49,7 +50,7 @@ class Command(BaseCommand):
         xlsx_parser.add_argument('-a','--all',action='store_true',default=False,help='create all reports')
         xlsx_parser.add_argument('-i','--interaction',action='store_true',default=False,help='create participant interaction report')
         xlsx_parser.add_argument('-w','--weekly',action='store_true',default=False,help='create weakly stats report')
-        xlsx_parser.add_argument('-c','--custom',action='store_true',default=False,help='create custom report')
+        xlsx_parser.add_argument('-c','--conversations',action='store_true',default=False,help='create conversations report')
         xlsx_parser.add_argument('--dir',default='ignore',help='directory to save report in')
         xlsx_parser.set_defaults(action='make_xlsx')
 
@@ -114,13 +115,13 @@ class Command(BaseCommand):
             workbook_columns['visit'] =  visit_columns
         if self.options['detail'] or self.options['all']:
             workbook_columns['detail'] =  detail_columns
-        if self.options['custom']:
-            workbook_columns['custom'] =  detail_columns
         if self.options['interaction']:
             workbook_columns['interaction'] =  interaction_columns
             interaction_columns.queryset = make_interaction_columns()
         if self.options['weekly']:
             make_weekly_wb()
+        if self.options['conversations']:
+            make_conversations_wb()
 
         for name, columns in workbook_columns.items():
 
@@ -1074,9 +1075,9 @@ def make_weekly_wb():
     wb = xl.Workbook()
     ws = wb.active
 
-    week_start = timezone.make_aware(datetime.datetime(2015,11,22))
+    week_start = timezone.make_aware(datetime.datetime(2018,2,18))
     today = timezone.make_aware( datetime.datetime( *datetime.date.today().timetuple()[:3] ) )
-    ws.append( ('Start','End','Enrolled','System','Success','Participant','Nurse','Spam') )
+    ws.append( ('Start','End','Enrolled','System','Success','Participant','(Uniques)','Nurse','(Uniques)','Spam') )
     ws.freeze_panes = 'A2'
     while week_start < today:
         week_end = week_start + datetime.timedelta(days=7)
@@ -1085,15 +1086,82 @@ def make_weekly_wb():
         count = cont.Contact.objects.filter(created__lt=week_end).count()
         system = messages.filter(is_outgoing=True,is_system=True).count()
         success = messages.filter(is_outgoing=True,is_system=True,external_status='Success').count()
-        nurse = messages.filter(is_outgoing=True,is_system=False).count()
         participant = messages.filter(is_outgoing=False,is_system=False,contact__isnull=False).count()
+        participant_unique = len( { m['contact'] for m in messages.filter(is_outgoing=False,is_system=False,contact__isnull=False).values('contact') } )
+        nurse = messages.filter(is_outgoing=True,is_system=False).count()
+        nurse_unique = len( { m['contact'] for m in messages.filter(is_outgoing=True,is_system=False).values('contact') } )
         spam = messages.filter(is_outgoing=False,is_system=False,contact__isnull=True).count()
 
-        ws.append( (week_start.date(),week_end.date(),count,system,success,participant,nurse,spam) )
+        ws.append( (week_start.date(),week_end.date(),count,system,success,participant,participant_unique,nurse,nurse_unique,spam) )
 
         week_start = week_end
 
     wb.save('ignore/weely_messages.xlsx')
+
+def make_conversations_wb():
+    """ Create a report of all conversations from system messages """
+
+    print "Making Conversations XLSX Report"
+    wb = xl.Workbook()
+    ws = wb.active
+    header =  ('id','sent','auto','topic','status','delivery_delta','response_delta',
+                'participant','nurse','total','order',)
+    widths = {'A':20,'B':20,'C':20,'D':30,'L':30}
+    xl_add_header_row(ws,header,widths)
+
+    auto_memory = {}
+
+    cur_system , first_response = None , None
+    counts, order =  collections.defaultdict(int) , []
+    two_way = cont.Contact.objects.filter(study_group='two-way').prefetch_related('message_set')
+    # for p in two_way.filter(study_id__in=('13807020983','13807000226')):
+    for p in two_way.all():
+        for msg in p.message_set.all().order_by('created'):
+            if msg.is_system is True:
+                if cur_system is not None:
+                    if cur_system.auto not in auto_memory:
+                        auto_memory[cur_system.auto] = cur_system.get_auto()
+                    auto = auto_memory[cur_system.auto]
+                    delivery_delta = (cur_system.external_success_time - cur_system.created).total_seconds() / 3600.0 if cur_system.external_success_time else ''
+                    response_delta = (first_response.created - cur_system.created).total_seconds() / 3600.0  if first_response else ''
+                    if cur_system.external_status not in ('Success','Sent',''):
+                        order = cur_system.reason
+                    else:
+                        order = ','.join(order)
+                    ws.append(( p.study_id, cur_system.created, cur_system.auto, auto.comment if auto else '',
+                                cur_system.external_status, delivery_delta, response_delta,
+                                counts['in'], counts['nurse'], counts['total'], order
+                            ))
+                cur_system , first_response = msg , None
+                counts, order =  collections.defaultdict(int) , []
+            elif msg.is_outgoing is True: # Non System Outgoing Message
+                counts['nurse'] += 1
+                order.append('n')
+            else:
+                if first_response is None:
+                    first_response = msg
+                counts['in'] += 1
+                order.append('p')
+            counts['total'] += 1
+        # Print last row
+        if cur_system is not None:
+            if cur_system.auto not in auto_memory:
+                auto_memory[cur_system.auto] = cur_system.get_auto()
+            auto = auto_memory[cur_system.auto]
+            delivery_delta = (cur_system.external_success_time - cur_system.created).total_seconds() / 3600.0 if cur_system.external_success_time else ''
+            response_delta = (first_response.created - cur_system.created).total_seconds() / 3600.0  if first_response else ''
+            if cur_system.external_status not in ('Success','Sent',''):
+                order = cur_system.reason
+            else:
+                order = ','.join(order)
+            ws.append(( p.study_id, cur_system.created, cur_system.auto, auto.comment if auto else '',
+                        cur_system.external_status, delivery_delta, response_delta,
+                        counts['in'], counts['nurse'], counts['total'], order
+                    ))
+        cur_system , first_response = None , None
+        counts, order =  collections.defaultdict(int) , []
+
+    wb.save('ignore/conversations.xlsx')
 
 def null_boolean_factory(attribute):
 
