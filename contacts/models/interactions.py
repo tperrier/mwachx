@@ -180,7 +180,7 @@ class Message(TimeStampedModel):
         if self.auto:
             split = self.auto.split('.')
             if split[0] in ('edd','dd','signup','loss','stop'):
-                return '{0[0]}.{0[4]}'.format(split)
+                return '{0[0]}.{0[3]}'.format(split)
             elif split[0] == 'visit':
                 return '{0[0]}.{0[2]}'.format(split)
             elif split[0] == 'bounce':

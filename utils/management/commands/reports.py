@@ -64,7 +64,7 @@ class Command(BaseCommand):
         csv_parser.add_argument('--dir',default='ignore',help='directory to save csv in')
         csv_parser.add_argument('name',help='csv report type',
             choices=(
-                'hiv_messaging','enrollment','messages','edd','delivery',
+                'hiv_messaging','enrollment','messages','edd','delivery', 'participant_week',
                 'sae','visits','msg_success','msg_dump','hiv_statuschange',
             )
         )
@@ -211,6 +211,8 @@ class Command(BaseCommand):
         self.stdout.write( "{:^12}{:^12}{:^12}{:^12}{:^12}".format(
             "Total", total_row['control'], total_row['one-way'], total_row['two-way'], total_row.total() )
         )
+
+        self.stdout.write('\nMost Recent Message: %s' % cont.Message.objects.first().created )
 
     def validation_stats(self):
 
@@ -471,13 +473,13 @@ class Command(BaseCommand):
         dd_min , dd_max , dd_total , dd_count = None , None , 0 , dd.count()
         dd_hist = [0 for _ in range(-10,11)]
         for p in dd:
-            p.delivery_delta = (p.delivery_date - p.due_date).total_seconds()
-            if dd_min is None or dd_min.delivery_delta > p.delivery_delta:
+            p.delivery_offset = (p.delivery_date - p.due_date).total_seconds()
+            if dd_min is None or dd_min.delivery_delta > p.delivery_offset:
                 dd_min = p
-            if dd_max is None or dd_max.delivery_delta < p.delivery_delta:
+            if dd_max is None or dd_max.delivery_delta < p.delivery_offset:
                 dd_max = p
-            dd_total += p.delivery_delta
-            dd_weeks = int(p.delivery_delta / 604800) + 10
+            dd_total += p.delivery_offset
+            dd_weeks = int(p.delivery_offset / 604800) + 10
             if dd_weeks < 0:
                 dd_weeks = 0
             elif dd_weeks > 20:
@@ -485,8 +487,8 @@ class Command(BaseCommand):
             dd_hist[dd_weeks] += 1
 
         self.stdout.write( 'Min {:s} (weeks {:.0f})  Max: {:s} (weeks {:.0f}) Average: {:f}'.format(
-            dd_min.study_id , dd_min.delivery_delta/604800 ,
-            dd_max.study_id , dd_max.delivery_delta/604800,
+            dd_min.study_id , dd_min.delivery_offset/604800 ,
+            dd_max.study_id , dd_max.delivery_offset/604800,
             dd_total/(dd_count*604800)
         ) )
 
@@ -919,6 +921,61 @@ class Command(BaseCommand):
         make_csv(columns,m_all,file_path)
         return file_path
 
+    def make_participant_week_csv(self):
+        # Report with number of system, participant and nurse messages per week
+
+        file_path = os.path.join(self.options['dir'],'participant_msg_per_week.csv')
+        csv_fp = open(file_path,'w')
+        csv_writer = csv.writer(csv_fp)
+
+        # Header Row
+        csv_writer.writerow( ('id','group','study_week','delivery_week',
+                            'participant','nurse','system',
+                            # 'delivered','unkown','failed',
+                            # 'n_delivered','n_unkown','n_failed'
+                            ) )
+
+        def week_start(d):
+            return d - datetime.timedelta(days=d.weekday()+1)
+        def week_end(d):
+            return d + datetime.timedelta(days=6-d.weekday())
+        def m_status(m):
+            return {'Success':'delivered','Sent':'unkown'}.get(m.external_status,'failed')
+
+        participants = cont.Contact.objects.all().prefetch_related('message_set')
+        # participants = cont.Contact.objects.filter(study_id__in=['0003','0803']).prefetch_related('message_set')
+        for p in participants:
+
+            p.study_start , p.delivery_start = week_start(p.created.date()) , week_start(p.delivery_date if p.delivery_date else p.due_date)
+            p.study_end = week_end( p.message_set.first().created.date() )
+            week_range = (p.study_end - p.study_start).days // 7
+            delivery_offset = (p.delivery_start - p.study_start).days // 7
+
+            counts = [ dict(system=0,participant=0,nurse=0, delivered=0,unkown=0,failed=0, n_delivered=0,n_unkown=0,n_failed=0 )
+                        for _ in range( week_range )
+                    ]
+            for m in p.message_set.all():
+
+                week = ( week_start(m.created.date()) - p.study_start ).days // 7
+
+                if m.is_outgoing is True:
+                    if m.is_system is True:
+                        counts[week]['system'] += 1
+                        counts[week][m_status(m)] += 1
+                    else:
+                        counts[week]['nurse'] += 1
+                        counts[week]['n_%s'%m_status(m)] += 1
+                else:
+                    counts[week]['participant'] += 1
+
+            for idx , row in enumerate(counts):
+
+                csv_writer.writerow( (p.study_id, p.study_group, idx , idx - delivery_offset,
+                            row['participant'], row['nurse'], row['system'],
+                            # row['delivered'], row['unkown'], row['failed'],
+                            # row['n_delivered'], row['n_unkown'], row['n_failed'],
+                            ) )
+
 ########################################
 # SEC::XLSX Helper Functions
 ########################################
@@ -926,6 +983,7 @@ class Command(BaseCommand):
 last_week = datetime.date.today() - datetime.timedelta(days=7)
 detail_columns = collections.OrderedDict([
     ('Study ID','study_id'),
+    ('ANC Num','anc_num'),
     ('Enrolled',lambda c: c.created.date()),
     ('Group','study_group'),
     ('Status','get_status_display'),
@@ -933,13 +991,14 @@ detail_columns = collections.OrderedDict([
     ('EDD','due_date'),
     ('Δ EDD',lambda c:delta_days(c.due_date)),
     ('Delivery','delivery_date'),
-    ('ANC Num','anc_num'),
     ('Δ Delivery',lambda c:delta_days(c.delivery_date,past=True)),
+    ('Deliver Notify', 'delivery_delta'),
     ('Client', lambda c: c.message_set.filter(is_outgoing=False).count() ),
     ('System', lambda c: c.message_set.filter(is_system=True).count() ),
     ('Nurse', lambda c: c.message_set.filter(is_system=False,is_outgoing=True).count() ),
 ])
-detail_columns.facility_sheet = True
+# detail_columns.facility_sheet = True
+detail_columns.queryset = cont.Contact.objects.all()
 
 visit_columns = collections.OrderedDict([
     ('Study ID','study_id'),
