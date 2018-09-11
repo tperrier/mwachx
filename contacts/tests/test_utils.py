@@ -24,17 +24,35 @@ def setup_auto_messages(cls):
     )
 
     cls.auto_edd_message = auto.AutomatedMessage.objects.create(
-        send_base="edd",
-        send_offset=3,
+        send_base="prep",
+        send_offset=7,
         english="Hi {name} Hi",
-        todo=False
+        todo=False,
+        condition='preg'
     )
 
     cls.auto_dd_message = auto.AutomatedMessage.objects.create(
-        send_base="fp",
-        send_offset=2,
+        send_base="prep",
+        send_offset=14,
         english="DD {name} DD",
-        todo=False
+        todo=False,
+        condition='post'
+    )
+
+    cls.auto_dd_message = auto.AutomatedMessage.objects.create(
+        send_base="prep",
+        send_offset=21,
+        english="DD {name} DD",
+        todo=False,
+        condition='famp'
+    )
+
+    cls.auto_dd_message = auto.AutomatedMessage.objects.create(
+        send_base="prep",
+        send_offset=13,
+        english="DD {name} DD",
+        todo=False,
+        condition='normal'
     )
 
 def setup_basic_contacts(cls):
@@ -81,7 +99,6 @@ def setup_basic_contacts(cls):
         nickname="p3",
         birthdate=datetime.date(1986, 8, 5),
         due_date=datetime.date.today() - datetime.timedelta(weeks=6),
-        status="stopped",
         delivery_date=datetime.date.today() - datetime.timedelta(weeks=3),
         prep_initiation=datetime.date.today() - datetime.timedelta(weeks=3),
         condition="famp",
@@ -90,4 +107,40 @@ def setup_basic_contacts(cls):
     cls.p3_connection = cont.Connection.objects.create(
         identity="P3 Connection",
         contact=cls.p3,
+        is_primary=True
+    )
+
+    cls.p4 = Contact.objects.create(
+        study_id="0004",
+        anc_num="0004",
+        facility="migosi",
+        nickname="p4",
+        birthdate=datetime.date(1986, 8, 5),
+        due_date=datetime.date.today() - datetime.timedelta(weeks=10),
+        prep_initiation=datetime.date.today() - datetime.timedelta(weeks=13,days=5),
+        condition="normal",
+    )
+
+    cls.p4_connection = cont.Connection.objects.create(
+        identity="P4 Connection",
+        contact=cls.p4,
+        is_primary=True
+    )
+
+    cls.p5 = Contact.objects.create(
+        study_id="0005",
+        anc_num="0005",
+        facility="migosi",
+        nickname="p5",
+        status='stopped',
+        birthdate=datetime.date(1986, 8, 5),
+        due_date=datetime.date.today() - datetime.timedelta(weeks=6),
+        prep_initiation=datetime.date.today() - datetime.timedelta(weeks=3),
+        condition="famp",
+    )
+
+    cls.p5_connection = cont.Connection.objects.create(
+        identity="P5 Connection",
+        contact=cls.p5,
+        is_primary=True
     )

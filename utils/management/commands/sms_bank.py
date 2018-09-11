@@ -20,13 +20,8 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(help='sms bank commands')
 
         # The cmd argument is required for django.core.management.base.CommandParser
-        make_parser = subparsers.add_parser('make',cmd=parser.cmd,help='make final translations or todos')
-        make_parser.add_argument('type',type=todo_or_final,help='type of make. one of (t)do or (f)inal')
-        make_parser.add_argument('--copy',help='make copy of todo messages',action='store_true',default=False)
-        make_parser.add_argument('-c','--check',help='check final messages',action='store_true',default=False)
-        make_parser.set_defaults(action='make_messages')
-
         check_parser = subparsers.add_parser('check',cmd=parser.cmd,help='check and print stats for final translations')
+        check_parser.add_argument('--ascii',default=False,action='store_true', help='count non-ascii chars too')
         check_parser.set_defaults(action='check_messages')
 
         clean_parser = subparsers.add_parser('clean',cmd=parser.cmd,help='clean messages bank')
@@ -52,14 +47,6 @@ class Command(BaseCommand):
         self.stdout.write( 'Action: {} Root: {}'.format(options['action'],options['dir']) )
 
         self.paths = argparse.Namespace(
-            bank = os.path.join(options['dir'],'bank.xlsx'),
-
-            todo_swahili = os.path.join(options['dir'],'todo_swahili.xlsx'),
-            todo_luo = os.path.join(options['dir'],'todo_luo.xlsx'),
-
-            done_swahili = os.path.join(options['dir'],'done_swahili.xlsx'),
-            done_luo = os.path.join(options['dir'],'done_luo.xlsx'),
-
             final = os.path.join(options['dir'],options['final'])
         )
 
@@ -71,7 +58,7 @@ class Command(BaseCommand):
     ########################################
 
     def custom(self):
-        sms_bank = xl.load_workbook(self.paths.final)
+        sms_bank = xl.load_workbook(self.paths.final,data_only=True)
 
         counts = collections.defaultdict(int)
         for row in sms_bank.active.rows[1:]:
@@ -81,128 +68,18 @@ class Command(BaseCommand):
         for track , count in counts.items():
             print track, count, len(track)
 
-
-    def make_messages(self):
-        self.stdout.write( 'Making Messages: {}'.format(self.options['type'].capitalize()) )
-        if self.options['type'] == 'todo':
-            self.make_todo_messages()
-        elif self.options['type'] == 'final':
-            self.make_final_messages()
-
-    def make_todo_messages(self):
-        ''' Take a formated SMS bank and create language specific todo files'''
-        sms_bank = xl.load_workbook(self.paths.bank)
-        try:
-            final_wb = xl.load_workbook(self.paths.final)
-            old_translations = sms.message_dict(final_wb.active,sms.FinalRow)
-        except IOError as e:
-            old_translations = None
-
-        translations = sms.read_sms_bank(sms_bank,old_translations,'anc','postpartum','visits','special')
-
-        print "Total Found: {} Todo: {}".format( len(translations),
-            len([t for t in translations if t.is_todo()]) )
-
-        swahili_wb = make_language_todos(translations,'swahili')
-        luo_wb = make_language_todos(translations,'luo')
-
-        swahili_wb.save(self.paths.todo_swahili)
-        luo_wb.save(self.paths.todo_luo)
-
-        if self.options['copy']:
-            swahili_copy_path = path_with_date(self.paths.todo_swahili)
-            luo_copy_path = path_with_date(self.paths.todo_luo)
-            swahili_wb.save(swahili_copy_path)
-            luo_wb.save(luo_copy_path)
-
-    def make_final_messages(self):
-        '''Take language specific todo files and done files and make a final translations file '''
-
-        # Load todo messages or fail
-        try:
-            todo_swahili_wb = xl.load_workbook(self.paths.todo_swahili)
-            todo_luo_wb = xl.load_workbook(self.paths.todo_luo)
-        except IOError as e:
-            self.stderr.write('Error: Swahili and or Lue todo files not found')
-            return
-
-        todo_swahili_bank = sms.message_dict(todo_swahili_wb.active,sms.TranslationRow,language_name='swahili')
-        todo_luo_bank = sms.message_dict(todo_luo_wb.active,sms.TranslationRow,language_name='luo')
-
-        # Load done messages or fail
-        try:
-            done_swahili_wb = xl.load_workbook(self.paths.done_swahili)
-            done_luo_wb = xl.load_workbook(self.paths.done_luo)
-        except IOError as e:
-            self.stderr.write('Error: Swahili and or Lue done files not found')
-            return
-        done_swahili_bank = sms.message_dict(done_swahili_wb.active,sms.TranslationRow,language_name='swahili')
-        done_luo_bank = sms.message_dict(done_luo_wb.active,sms.TranslationRow,language_name='luo')
-
-        # Load sms bank
-        sms_bank = xl.load_workbook(self.paths.bank)
-        translations = sms.read_sms_bank(sms_bank,None,'anc','postpartum','visits','special')
-
-        # Create final wb and add header
-        final_wb = xl.workbook.Workbook()
-        new_ws = final_wb.active
-        new_ws.append(sms.FinalRow.header)
-
-        for msg in translations:
-            description = msg.description()
-
-            todo_swahili , todo_luo = todo_swahili_bank[description] , todo_luo_bank[description]
-            done_swahili , done_luo = done_swahili_bank[description] , done_luo_bank[description]
-            msg.swahili , msg.luo , msg.english = done_swahili.swahili , done_luo.luo , msg.english
-
-            # Determine done status
-            is_done_swahili = not done_swahili.is_todo() or todo_swahili.swahili != done_swahili.swahili
-            is_done_luo = not done_luo.is_todo() or todo_luo.luo != done_luo.luo
-            if not ( done_luo.is_todo() and done_swahili.is_todo() ):
-                msg.status = 'clean'
-            elif is_done_swahili and is_done_luo:
-                msg.status = 'done'
-            elif is_done_swahili:
-                msg.status = 'swahili'
-            elif is_done_luo:
-                msg.status = 'luo'
-            else:
-                msg.status = 'todo'
-
-            msg.configure_variables()
-            new_ws.append(msg.get_final_row())
-
-            # Wrap text on english, swahili, luo columns
-            last = new_ws.rows[-1]
-            for i in [6,7,8]:
-                last[i].alignment = WRAP_TEXT
-
-            new_ws.freeze_panes = 'A2'
-            new_ws.auto_filter.ref = 'A1:I1'
-
-            column_widths = {'A':4,'D':6,'E':6,'F':6,'G':50,'H':50,'I':50}
-            for col_letter, width in column_widths.items():
-                new_ws.column_dimensions[col_letter].width = width
-
-
-        final_wb.save(self.paths.final)
-
-        if self.options['check']:
-            self.check_messages()
-        else:
-            self.stdout.write('{} translations. {} todo.'.format( len(translations),
-                len([m for m in translations if m.is_todo()])
-            ) )
-
-
     def check_messages(self):
         ''' Check Final Translations
             report base_group
                 track_HIV (count) [offset]
         '''
-        sms_wb = xl.load_workbook(self.paths.final)
-        messages = sms.parse_messages(sms_wb.active,sms.FinalRow)
+        sms_wb = xl.load_workbook(self.paths.final,data_only=True)
+        for ws in sms_wb.worksheets:
+            self.check_sheet(ws)
 
+    def check_sheet(self,ws):
+        messages = list(sms.parse_messages(ws,sms.FinalRow))
+        self.stdout.write( 'Worksheet: {} found {} messages'.format(ws.title,len(messages)) )
         stats = collections.defaultdict(list)
         descriptions = set()
         duplicates = []
@@ -232,19 +109,40 @@ class Command(BaseCommand):
         else:
             self.stdout.write(' No Duplicates ')
 
-        # self.options['ascii_msg'] = 'Warning: non-ascii chars found: {count}'
-        # non_ascii_dict = self.non_ascii_count()
-        #
+        if self.options['ascii'] is True:
+            self.options['ascii_msg'] = 'Warning: non-ascii chars found: {count}'
+            non_ascii_dict = self.non_ascii_count()
+
+    def non_ascii_count(self):
+        sms_bank = xl.load_workbook(self.paths.final,data_only=True)
+        non_ascii = collections.defaultdict(int)
+
+        # Count non ascii characters (ord value greater than 127)
+        sms_bank.active.rows.next() #skip header row
+        for row in sms_bank.active.rows:
+            msg = sms.FinalRow(row)
+
+            for c in msg.english + msg.swahili + msg.luo:
+                if ord(c) > 127:
+                    non_ascii[c] += 1
+
+        # Print non ascii counts
+        print self.options.get('ascii_msg','non-ascii count: {count}').format(count=len(non_ascii))
+        for c,count in non_ascii.items():
+            print u'({0!r} {0!s}) => {1}'.format(c,count)
+
+        return len(non_ascii) > 0
 
     def clean_messages(self):
-        sms_bank = xl.load_workbook(self.paths.bank)
+        sms_bank = xl.load_workbook(self.paths.final,data_only=True)
         for ws in sms_bank.worksheets:
             self.clean_sheet(ws)
         sms_bank.save(os.path.join(self.options['dir'],'new_bank.xlsx'))
 
     def clean_sheet(self,ws):
         self.stdout.write( "Cleaning Sheet: {}".format(ws.title) )
-        for row in ws.rows[1:]:
+        ws.rows.next() # skip header
+        for row in ws.rows:
             self.clean_cell(row[6])
 
     def clean_cell(self,cell):
@@ -253,8 +151,14 @@ class Command(BaseCommand):
 
     def import_messages(self):
         sms_bank_file = self.paths.final if self.options['file'] is None else self.options['file']
-        sms_bank = xl.load_workbook(sms_bank_file)
-        messages = sms.parse_messages(sms_bank.active,sms.FinalRow)
+        sms_bank = xl.load_workbook(sms_bank_file,data_only=True)
+
+        for ws in sms_bank.worksheets:
+            self.import_sheet(ws)
+
+    def import_sheet(self,ws):
+
+        messages = sms.parse_messages(ws,sms.FinalRow)
 
         clear = self.options.get('clear')
         do_all = not self.options.get('done') or clear
@@ -263,7 +167,7 @@ class Command(BaseCommand):
             self.stdout.write('Deleting All Backend Messages')
             back.AutomatedMessage.objects.all().delete()
 
-        self.stdout.write('Importing....')
+        self.stdout.write('Importing from {} ....'.format(ws.title) )
         total , add , todo, create = 0 , 0 , 0 , 0
         counts = collections.defaultdict(int)
         diff , existing = [] , []
@@ -323,28 +227,9 @@ class Command(BaseCommand):
         else:
             self.stdout.write( "Missing Participants: 0" )
 
-    def non_ascii_count(self):
-        sms_bank = xl.load_workbook(self.options['bank'])
-        non_ascii = collections.defaultdict(int)
-
-        # Count non ascii characters (ord value greater than 127)
-        for row in sms_bank.active.rows[1:]:
-            msg = sms.MessageRow(row,translation=True)
-
-            for c in msg.english + msg.swahili + msg.luo:
-                if ord(c) > 127:
-                    non_ascii[c] += 1
-
-        # Print non ascii counts
-        print self.options.get('ascii_msg','non-ascii count: {count}').format(count=len(non_ascii))
-        for c,count in non_ascii.items():
-            print u'({0!r} {0!s}) => {1}'.format(c,count)
-
-        return len(non_ascii) > 0
-
     def test(self):
 
-        final_wb = xl.load_workbook(self.paths.final)
+        final_wb = xl.load_workbook(self.paths.final,data_only=True)
         old_translations = sms.message_dict(final_wb.active,sms.FinalRow)
 
         print 'Count: {} Example: {!r}'.format(len(old_translations),old_translations.get(old_translations.keys()[0]))

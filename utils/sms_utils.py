@@ -138,7 +138,7 @@ class FinalRow(MessageRowBase):
     header = ('Todo','Track','Base','Offset','English','Swahili','Luo','Comment')
 
     def __init__(self,row):
-        status, track, send_base, offset, english, swahili, luo, comment= \
+        status, track, send_base, offset, english, swahili, luo, comment = \
             cell_values( *operator.itemgetter(0,1,2,3,4,5,6,7)(row))
         super(FinalRow,self).__init__(row,status,track,send_base,offset,english,swahili,luo,comment=comment)
 

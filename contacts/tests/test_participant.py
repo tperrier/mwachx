@@ -4,7 +4,6 @@ from django import test
 from django.conf import settings
 from django.db import models
 from django.test import override_settings
-from django.utils import unittest
 from rest_framework import test as rf_test
 import django.core.urlresolvers as url
 from django.core import management
@@ -49,8 +48,8 @@ class ParticipantBasicTests(test.TestCase):
     def test_active(self):
         self.assertTrue(self.p1.is_active)
         self.assertFalse(self.p1.no_sms)
-        self.assertFalse(self.p3.is_active)
-        self.assertTrue(self.p3.no_sms)
+
+        # self.assertFalse(self.p3.is_active)
 
     @override_settings(FAKE_DATE=False)
     def test_description(self):
@@ -71,7 +70,8 @@ class ParticipantBasicTests(test.TestCase):
     def test_send_batch(self):
 
         participants = Contact.objects.annotate(msg_count=models.Count('message'))
-        self.assertEqual( participants.count() , 3 )
+
+        self.assertEqual( participants.count() , 5 )
 
         before_count = sum( p.msg_count for p in participants )
 
@@ -104,6 +104,39 @@ class ParticipantBasicTests(test.TestCase):
         self.assertEqual( new_message.auto , 'custom' )
         self.assertEqual( new_message.translation_status , 'cust' )
 
+    def test_send_auto(self):
+
+        p1_count = self.p1.message_set.count()
+        new_message = self.p1.send_automated_message()
+
+        self.assertEqual(new_message.text,self.auto_edd_message.english.format(name=self.p1.nickname.title()))
+        self.assertEqual(self.p1.message_set.count(),p1_count+1)
+        self.assertEqual(new_message.external_id,"Default Transport")
+        self.assertEqual(new_message.external_status,"Sent")
+
+        p2_count = self.p2.message_set.count()
+        new_message = self.p2.send_automated_message()
+
+        self.assertEqual(new_message.text,self.auto_dd_message.luo.format(name=self.p2.nickname.title()))
+        self.assertEqual(self.p2.message_set.count(),p2_count+1)
+        self.assertEqual(new_message.external_id,"Default Transport")
+        self.assertEqual(new_message.external_status,"Sent")
+
+        p3_count = self.p3.message_set.count()
+        new_message = self.p3.send_automated_message()
+
+        self.assertEqual(new_message.text,self.auto_dd_message.english.format(name=self.p3.nickname.title()))
+        self.assertEqual(self.p3.message_set.count(),p3_count+1)
+        self.assertEqual(new_message.external_id,"Default Transport")
+        self.assertEqual(new_message.external_status,"Sent")
+
+        # new_message = self.p4.send_automated_message(today=plus_td(days=7))
+        #
+        # self.assertEqual(new_message.text,self.auto_second_message.english.format(name=self.p4.nickname.title()))
+        # self.assertEqual(self.p4.message_set.count(),p4_count+2)
+        # self.assertEqual(new_message.external_id,"Default Transport")
+        # self.assertEqual(new_message.external_status,"Sent")
+
 class ParticipantSerializerTests(rf_test.APITestCase):
 
     @classmethod
@@ -117,7 +150,7 @@ class ParticipantSerializerTests(rf_test.APITestCase):
 
     def test_participant_list(self):
         response = self.client.get(url.reverse('participant-list'))
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data), 4)
 
     def test_participant_detail(self):
         response = self.client.get(url.reverse('participant-detail',args=['0001']))
@@ -139,32 +172,3 @@ class ParticipantSerializerTests(rf_test.APITestCase):
         response = self.client.get(url.reverse("pending-messages"))
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['text'], "Message Content")
-
-    @unittest.skipUnless(not settings.TEST_CONTACT_SWAPPING, "not compatible with swapped models")
-    def test_create(self):
-
-        start_count = Contact.objects.count()
-        data = { "previous_pregnancies":0,"study_id":"0004","anc_num":"0004","study_group":"two-way",
-                 "language":"english","phone_number":"0700000004","nickname":"Test","birthdate":"1990-02-05",
-                 "relationship_status":"single","due_date":"2016-07-29","condition":"preg",
-                 "clinic_visit":"2016-07-22","send_day":'',"send_time":20, "prep_initiation":"2016-06-15"}
-        response = self.client.post(url.reverse("participant-list"), data, format="json")
-        # import code;code.interact(local=locals())
-
-        try:
-            new_participant = Contact.objects.get(study_id="0004")
-        except Contact.DoesNotExist as e:
-            self.fail( response )
-
-        # Check that the participant was created
-        self.assertEqual(Contact.objects.count(),start_count+1)
-        self.assertEqual(new_participant.nickname,'Test')
-        self.assertEqual(new_participant.facility,self.user.practitioner.facility)
-        self.assertEqual(new_participant.phone_number(),"+254700000004")
-        self.assertEqual(new_participant.send_time,20)
-        self.assertEqual(new_participant.send_day,1)
-
-        # Check that the welcome message was sent
-        self.assertEqual(new_participant.message_set.count(),1)
-        self.assertEqual(new_participant.message_set.first().text,self.signup_msg.english)
-        self.assertEqual(new_participant.message_set.first().auto,self.signup_msg.description())
