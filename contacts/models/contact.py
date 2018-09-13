@@ -153,6 +153,7 @@ class ContactBase(TimeStampedModel):
         ('preg','1 - Pregant'),
         ('post','2 - Post-partum'),
       	('famp','3 - Family Planning'),
+        ('norm','4 - Normal'),
     )
 
     FAMILY_PLANNING_CHOICES = (
