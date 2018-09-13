@@ -23,7 +23,7 @@ def setup_auto_messages(cls):
         condition='normal',
     )
 
-    cls.auto_edd_message = auto.AutomatedMessage.objects.create(
+    cls.auto_1_message = auto.AutomatedMessage.objects.create(
         send_base="prep",
         send_offset=7,
         english="Hi {name} Hi",
@@ -31,7 +31,7 @@ def setup_auto_messages(cls):
         condition='preg'
     )
 
-    cls.auto_dd_message = auto.AutomatedMessage.objects.create(
+    cls.auto_2_message = auto.AutomatedMessage.objects.create(
         send_base="prep",
         send_offset=14,
         english="DD {name} DD",
@@ -39,7 +39,7 @@ def setup_auto_messages(cls):
         condition='post'
     )
 
-    cls.auto_dd_message = auto.AutomatedMessage.objects.create(
+    cls.auto_3_message = auto.AutomatedMessage.objects.create(
         send_base="prep",
         send_offset=21,
         english="DD {name} DD",
@@ -47,9 +47,9 @@ def setup_auto_messages(cls):
         condition='famp'
     )
 
-    cls.auto_dd_message = auto.AutomatedMessage.objects.create(
+    cls.auto_4_message = auto.AutomatedMessage.objects.create(
         send_base="prep",
-        send_offset=13,
+        send_offset=91,
         english="DD {name} DD",
         todo=False,
         condition='normal'
@@ -117,8 +117,8 @@ def setup_basic_contacts(cls):
         nickname="p4",
         birthdate=datetime.date(1986, 8, 5),
         due_date=datetime.date.today() - datetime.timedelta(weeks=10),
-        prep_initiation=datetime.date.today() - datetime.timedelta(weeks=13,days=5),
-        condition="normal",
+        prep_initiation=datetime.date.today() - datetime.timedelta(weeks=13,days=3),
+        condition="norm",
     )
 
     cls.p4_connection = cont.Connection.objects.create(

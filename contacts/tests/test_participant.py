@@ -109,7 +109,7 @@ class ParticipantBasicTests(test.TestCase):
         p1_count = self.p1.message_set.count()
         new_message = self.p1.send_automated_message()
 
-        self.assertEqual(new_message.text,self.auto_edd_message.english.format(name=self.p1.nickname.title()))
+        self.assertEqual(new_message.text,self.auto_1_message.english.format(name=self.p1.nickname.title()))
         self.assertEqual(self.p1.message_set.count(),p1_count+1)
         self.assertEqual(new_message.external_id,"Default Transport")
         self.assertEqual(new_message.external_status,"Sent")
@@ -117,7 +117,7 @@ class ParticipantBasicTests(test.TestCase):
         p2_count = self.p2.message_set.count()
         new_message = self.p2.send_automated_message()
 
-        self.assertEqual(new_message.text,self.auto_dd_message.luo.format(name=self.p2.nickname.title()))
+        self.assertEqual(new_message.text,self.auto_2_message.luo.format(name=self.p2.nickname.title()))
         self.assertEqual(self.p2.message_set.count(),p2_count+1)
         self.assertEqual(new_message.external_id,"Default Transport")
         self.assertEqual(new_message.external_status,"Sent")
@@ -125,17 +125,20 @@ class ParticipantBasicTests(test.TestCase):
         p3_count = self.p3.message_set.count()
         new_message = self.p3.send_automated_message()
 
-        self.assertEqual(new_message.text,self.auto_dd_message.english.format(name=self.p3.nickname.title()))
+        self.assertEqual(new_message.text,self.auto_3_message.english.format(name=self.p3.nickname.title()))
         self.assertEqual(self.p3.message_set.count(),p3_count+1)
         self.assertEqual(new_message.external_id,"Default Transport")
         self.assertEqual(new_message.external_status,"Sent")
 
-        # new_message = self.p4.send_automated_message(today=plus_td(days=7))
-        #
-        # self.assertEqual(new_message.text,self.auto_second_message.english.format(name=self.p4.nickname.title()))
-        # self.assertEqual(self.p4.message_set.count(),p4_count+2)
-        # self.assertEqual(new_message.external_id,"Default Transport")
-        # self.assertEqual(new_message.external_status,"Sent")
+        p4_count = self.p4.message_set.count()
+        new_message = self.p4.send_automated_message()
+
+        print self.p4.description()
+
+        self.assertEqual(new_message.text,self.auto_4_message.english.format(name=self.p4.nickname.title()))
+        self.assertEqual(self.p4.message_set.count(),p4_count+1)
+        self.assertEqual(new_message.external_id,"Default Transport")
+        self.assertEqual(new_message.external_status,"Sent")
 
 class ParticipantSerializerTests(rf_test.APITestCase):
 
