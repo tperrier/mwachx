@@ -35,7 +35,7 @@
          {'label': 'Age',                    'value': 'age',},
          {'label': 'Send Day',               'value': 'send_day_display',},
          {'label': 'Send Time',              'value': 'send_time_display',},
-         {'label': 'SMS Track',              'value': 'condition',},
+         {'label': 'SMS Track',              'value': 'condition_display',},
          {'label': 'Previous pregnancies',   'value': 'previous_pregnancies',},
         //  {'label': 'Family Planning',        'value': 'family_planning',},
         //  {'label': 'HIV Disclosure',         'value': 'hiv_disclosed_display',},
@@ -264,7 +264,7 @@
       $scope.participant.doPUT(delivery,'delivery/').then(function(result) {
         console.log('Result',result);
         if ( ! result.hasOwnProperty('error') ){
-          ['status','status_display','is_pregnant','delivery_date','note_count'].forEach(function(ele) {
+          ['condition_display','is_pregnant','delivery_date','note_count'].forEach(function(ele) {
             $scope.participant[ele] = result[ele];
           });
         }

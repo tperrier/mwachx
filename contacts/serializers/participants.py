@@ -42,7 +42,8 @@ class ParticipantSerializer(serializers.ModelSerializer):
     send_day_display = serializers.CharField(source='get_send_day_display')
     send_day = serializers.CharField()
 
-    condition = serializers.CharField(source='get_condition_display')
+    condition = serializers.CharField()
+    condition_display = serializers.CharField(source='get_condition_display')
     validation_key = serializers.CharField()
     phone_number = serializers.CharField()
     facility = serializers.CharField(source='get_facility_display')

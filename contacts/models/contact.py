@@ -152,7 +152,7 @@ class ContactBase(TimeStampedModel):
     CONDITION_CHOICES = (
         ('preg','1 - Pregant'),
         ('post','2 - Post-partum'),
-        ('famp','3 - Family Planning'),
+      	('famp','3 - Family Planning'),
     )
 
     FAMILY_PLANNING_CHOICES = (
@@ -392,9 +392,9 @@ class ContactBase(TimeStampedModel):
         self.delivery_date = delivery_date
         self.delivery_source = source
 
+        self.condition = 'post'
         self.note_set.create(comment=comment,admin=user)
         self.save()
-
 
     def set_status(self, new_status, comment='',note=False,user=None):
         old_status = self.status
