@@ -115,6 +115,7 @@
             send_time:result.send_time,
             prep_initiation:mwachxUtils.convert_form_date(result.prep_initiation),
             due_date:mwachxUtils.convert_form_date(result.due_date),
+            condition:result.condition,
           }
           console.log('Update',result,patch);
           $scope.participant.patch(patch).then(function(result){

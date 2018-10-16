@@ -179,6 +179,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
         instance.send_day = request.data['send_day']
         instance.prep_initiation = utils.angular_datepicker(request.data['prep_initiation'])
         instance.due_date = utils.angular_datepicker(request.data['due_date'])
+        instance.condition = request.data['condition']
 
         instance.save()
         instance_serialized = ParticipantSerializer(cont.get_contact_model().objects.get(pk=instance.pk),
@@ -321,7 +322,7 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 
         elif instance.status == 'other':
             comment = "{}\nMessaging changed in web interface by {}".format(reason,request.user.practitioner)
-            status = 'pregnant' if instance.delivery_date is None else 'post'
+            status = 'active'
             instance.set_status(status, comment=comment)
         else:
             comment = "{}\nStopped in web interface by {}".format(reason,request.user.practitioner)
