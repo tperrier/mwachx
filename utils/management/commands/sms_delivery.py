@@ -66,9 +66,9 @@ class Command(BaseCommand):
                         "Start: {}\nTime:  {}\nDelta: {} Send:{}".format(start,delta,valid_time,send,now),
                         '' ]
         if send is True:
-            identity = '+254720364170'
+            test_participant = cont.Contact.objects.get(study_id='12345000001')
             message = 'AT_Message: {0} {1}'.format(intervals.index(delta) + 1, now)
-            transports.send(identity,message)
+            test_participant.send_message(message, is_system=False, auto='msg_delivery_test', topic='testing')
 
         email_body = '\n'.join(email_body)
         if options.get('email'):
