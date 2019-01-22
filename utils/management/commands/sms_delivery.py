@@ -63,7 +63,7 @@ class Command(BaseCommand):
         send = options.get('send')
         email_subject = '{}{}'.format( date.strftime('%a %b %d (%j) %Y'), '' if options.get('send') else ' (FAKE)' )
         email_body = [ "Script started at {}".format(datetime.datetime.now()),
-                        "Start: {}\nTime:  {}\nDelta: {} Send:{}".format(start,delta,valid_time,send,now),
+                        "Start: {}\nTime:  {}\nDelta: {} Valid: {} Send: {}".format(start,now,delta,send,valid_time),
                         '' ]
         if send is True:
             test_participant = cont.Contact.objects.get(study_id='12345000001')
