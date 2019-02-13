@@ -7,6 +7,7 @@ from django.utils import timezone
 
 
 #Local Imports
+import backend.models as back
 from visit import ScheduledPhoneCall
 import utils
 from utils.models import TimeStampedModel, BaseQuerySet, ForUserQuerySet
@@ -138,22 +139,60 @@ class Message(TimeStampedModel):
         return 'none'
 
     @property
+    def study_wk(self):
+        return (self.created.date() - self.contact.created.date()).total_seconds() / 604800
+
+    @property
+    def edd_wk(self):
+        return (self.created.date() - self.contact.due_date).total_seconds() / 604800
+
+    @property
+    def delivery_wk(self):
+        ref_date = self.contact.delivery_date if self.contact.delivery_date is not None else self.contact.due_date
+        return (self.created.date() - ref_date).total_seconds() / 604800
+
+    @property
+    def delivery_delta(self):
+        # Return number of hours between sending the message and when a message delivery confermation was receeived
+        if self.external_success_time is not None:
+            return (self.external_success_time - self.created).total_seconds() / 3600
+        return None
+
+    def get_auto(self):
+        if self.auto:
+            try:
+                auto_msg = back.AutomatedMessage.objects.from_description(self.auto)
+            except ValueError as e:
+                return None
+            return auto_msg
+
+    @property
     def display_text(self):
+        if self.auto:
+            auto_msg = self.get_auto()
+            return auto_msg.english if auto_msg is not None else self.auto
         if self.translation_status == 'done':
             return self.translated_text
         else:
             return self.text
 
     @property
+    def reason(self):
+        return self.external_data.get('reason',None)
+
+    @property
     def auto_type(self):
         if self.auto:
             split = self.auto.split('.')
-            if split[0] in ('edd','dd','signup','loss','stop'):
-                return '{0[0]}.{0[-1]}'.format(split)
+            if split[0] == 'signup':
+                return 'signup'
+            elif split[0] in ('edd','dd','loss','stop'):
+                return '{0}.{1}'.format(split[0],split[-1])
             elif split[0] == 'visit':
                 return '{0[0]}.{0[2]}'.format(split)
             elif split[0] == 'bounce':
                 return '{0[0]}.{0[1]}'.format(split)
+        return ''
 
     @property
     def msg_type(self):
@@ -176,6 +215,20 @@ class Message(TimeStampedModel):
         except AttributeError as e:
             self._previous_outgoing = self.contact.message_set.filter(created__lt=self.created,is_outgoing=True).first()
             return self._previous_outgoing
+
+    def get_details(self,verbose=False):
+        details = [str(self)]
+        details.append( "\t{0.languages} {0.translation_status} {0.external_success}".format(self) )
+        details.append( self.display_text )
+
+        if verbose is True:
+            details.append( "-" * 40 )
+            details.append( self.text )
+
+        return "\n".join( details )
+
+    def __str__(self):
+        return "<Message: {0.created} {1} #{0.contact.study_id}>".format(self,self.sent_by())
 
 class PhoneCallQuerySet(ForUserQuerySet):
 

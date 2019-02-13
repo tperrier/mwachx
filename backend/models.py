@@ -51,7 +51,7 @@ class AutomatedMessageQuerySet(utils.BaseQuerySet):
         # Create the base query set with send_base and offset
         message_offset = self.filter(send_base=send_base,send_offset=send_offset)
 
-        if condition == 'preg2':
+        if condition == 'preg2' and sp is True:
             if hiv is True:
                 # Find alternative second pregnancy message if hiv is true
                 try:

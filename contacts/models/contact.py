@@ -282,10 +282,15 @@ class Contact(TimeStampedModel):
     def no_sms(self):
         return self.status in Contact.NO_SMS_STATUS
 
-    def age(self):
-        today = utils.today()
-        delta = today - self.birthdate
-        return int((delta.days - delta.seconds/86400.0)/365.2425)
+    def age(self,signup=False):
+        if signup is True:
+            today = self.created.date()
+        else:
+            today = utils.today()
+        if today < datetime.date(today.year,self.birthdate.month,self.birthdate.day):
+            return today.year - self.birthdate.year - 1
+        else:
+            return today.year - self.birthdate.year
 
     def next_visit(self):
         ''' Return The Next Visit'''
@@ -371,7 +376,6 @@ class Contact(TimeStampedModel):
             today = utils.today(today)
             loss_offset = ((today - self.loss_date).days - 1)/7  + 1
             condition = 'nbaby'
-            # second = 'N'
             if loss_offset <= 4:
                 send_base = 'loss'
                 send_offset = loss_offset
@@ -615,15 +619,45 @@ class Contact(TimeStampedModel):
                 delta = validation_msg.created - welcome_msg.created
                 return delta.total_seconds()
 
-    def delivery_delta(self):
+    def delta_art(self):
+        # return number of weeks between signup and art initiation
+        if self.art_initiation is not None:
+            return (self.created.date() - self.art_initiation).days / 7
+        return None
+
+    @property
+    def sae_opt_in_status(self):
+        if self.loss_date is not None:
+            if self.status == 'loss':
+                return 'in'
+            elif self.status == 'sae':
+                return 'out'
+            elif self.statuschange_set.filter(new='loss').first() is not None:
+                return 'in'
+            elif self.statuschange_set.filter(new='sae').first() is not None:
+                return 'out'
+        return None
+
+    @property
+    def delivery_notification_delta(self):
         ''' Return the number of days between the delivery and delivery notification '''
         if self.delivery_date is None:
-            return None
+            return 0
         else:
             status_change = self.statuschange_set.filter(type='status',new='post').last()
             if status_change is not None:
                 return (status_change.created.date() - self.delivery_date).days
-            return None
+            return 0
+        return None
+
+    @property
+    def stopped_study_delta(self):
+        ''' Return the number of days between start of study and when a participant left '''
+        status_change = self.statuschange_set.filter(type='status',new__in=('stopped','quite','other')).last()
+        if status_change is not None:
+            return (status_change.created - self.created).days
+        return None
+
 
 class StatusChangeQuerySet(ForUserQuerySet):
 
@@ -657,4 +691,4 @@ class StatusChange(TimeStampedModel):
     comment = models.TextField(blank=True)
 
     def __str__(self):
-        return "{0.old} {0.new} ({0.type})".format(self)
+        return "[{0.created_date}] {0.old} -> {0.new} ({0.type})".format(self)
