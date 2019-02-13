@@ -18,6 +18,14 @@ class TimeStampedModel(models.Model):
     def created_str(self, format='%Y-%m-%d %H:%M'):
         return self.created.strftime(format)
 
+    @property
+    def created_date(self):
+        return self.created.date()
+
+    @property
+    def modifed_date(self):
+        return self.modified.date()
+
     class Meta:
         abstract = True
         ordering = ['-created']
