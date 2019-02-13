@@ -1,14 +1,14 @@
 import datetime
+import unittest
 
 from django import test
 from django.conf import settings
 from django.db import models
 from django.test import override_settings
-from django.utils import unittest
 from rest_framework import test as rf_test
 import django.core.urlresolvers as url
 from django.core import management
-from contacts import get_contact_model
+from contacts.models import get_contact_model
 
 import test_utils
 

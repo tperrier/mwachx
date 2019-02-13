@@ -67,6 +67,7 @@ class PhoneCallSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = cont.PhoneCall
+        fields = '__all__'
 
 class NoteSerializer(serializers.ModelSerializer):
 
@@ -74,6 +75,7 @@ class NoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = cont.Note
+        fields = '__all__'
 
 ########################################
 # Scheduled Phone Calls

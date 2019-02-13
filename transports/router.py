@@ -3,7 +3,6 @@ import datetime
 from django.conf import settings
 
 # Local imports
-import contacts.models as cont
 import validation
 
 def send(identity, message, transport_name=None):
@@ -28,6 +27,7 @@ def receive(identity,message_text,external_id='',**kwargs):
         * kwargs: dict of extra data associated with transport
     '''
     #Get incoming connection or create if not found
+    from contacts import models as cont
     connection,created = cont.Connection.objects.get_or_create(identity=identity)
     contact = None if created else connection.contact
     message = cont.Message(
@@ -53,7 +53,6 @@ def receive(identity,message_text,external_id='',**kwargs):
 
     message.save()
     return message
-
 
 class TransportError(Exception):
     pass

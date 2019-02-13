@@ -1,8 +1,9 @@
+import unittest
+
 from django import test
 from django.conf import settings
 from django.test import override_settings, modify_settings
-from django.utils import unittest
-from contacts import get_contact_model
+from contacts.models import get_contact_model
 from contacts.tests import test_utils
 from implementations.example.models import ExampleContact
 

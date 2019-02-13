@@ -72,6 +72,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         # todo: can this be changed to a swappable version?
         model = cont.Contact
+        fields = '__all__'
 
     def get_hiv_disclosed_display(self,obj):
         return utils.null_boolean_display(obj.hiv_disclosed)

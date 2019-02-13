@@ -1,7 +1,7 @@
 import datetime
 
 from django.contrib.auth import models as auth
-from contacts import get_contact_model
+from contacts.models import get_contact_model
 
 import contacts.models as cont
 import backend.models as auto
