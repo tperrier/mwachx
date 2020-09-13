@@ -228,6 +228,8 @@ class Message(TimeStampedModel):
         return "\n".join( details )
 
     def __str__(self):
+        if self.contact is None:
+            return "<Message: {0.created} {1} unkown>".format(self,self.sent_by())
         return "<Message: {0.created} {1} #{0.contact.study_id}>".format(self,self.sent_by())
 
 class PhoneCallQuerySet(ForUserQuerySet):

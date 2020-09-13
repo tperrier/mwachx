@@ -110,11 +110,11 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Africa/Nairobi'
 DATE_INPUT_FORMATS = ('%d-%m-%Y','%Y-%m-%d')
 USE_I18N = False
 USE_L10N = False
 USE_TZ = True
+TIME_ZONE = 'Africa/Nairobi'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/

@@ -33,7 +33,7 @@ class ContactQuerySet(ForUserQuerySet):
             msg_outgoing=utils.sql_count_when(message__is_outgoing=True),
             msg_system=utils.sql_count_when(message__is_system=True),
             msg_nurse=utils.sql_count_when(~models.Q(message__translation_status='cust'),
-                message__is_system=False,message__is_outgoing=True),
+            message__is_system=False,message__is_outgoing=True),
             msg_incoming=utils.sql_count_when(message__is_outgoing=False),
             msg_delivered=utils.sql_count_when(message__external_status='Success'),
             msg_sent=utils.sql_count_when(message__external_status='Sent'),
@@ -41,6 +41,7 @@ class ContactQuerySet(ForUserQuerySet):
         ).annotate(
             msg_missed=models.F('msg_outgoing') - models.F('msg_delivered'),
             msg_other=models.F('msg_outgoing') - models.F('msg_delivered') - models.F('msg_sent'),
+            # sim_count=models.Count('connection',distinct=True),
         )
 
     def send_batch(self,english,swahili=None,luo=None,auto='',send=False,control=False):
@@ -291,6 +292,9 @@ class Contact(TimeStampedModel):
             return today.year - self.birthdate.year - 1
         else:
             return today.year - self.birthdate.year
+
+    def age_signup(self):
+        return self.age(True)
 
     def next_visit(self):
         ''' Return The Next Visit'''
@@ -638,17 +642,43 @@ class Contact(TimeStampedModel):
                 return 'out'
         return None
 
+    _delivery_notification_delta = None
     @property
     def delivery_notification_delta(self):
         ''' Return the number of days between the delivery and delivery notification '''
         if self.delivery_date is None:
             return 0
+        elif self._delivery_notification_delta is not None:
+            return self._delivery_notification_delta
         else:
             status_change = self.statuschange_set.filter(type='status',new='post').last()
             if status_change is not None:
-                return (status_change.created.date() - self.delivery_date).days
+                self._delivery_notification_delta = (status_change.created.date() - self.delivery_date).days
+            else:
+                self._delivery_notification_delta = 0
+            return self._delivery_notification_delta
+
+    _loss_notification_delta = None
+    @property
+    def loss_notification_delta(self):
+        ''' Return the number of days between a loss and when the study was notified '''
+        if self.loss_date is None:
             return 0
-        return None
+        elif self._loss_notification_delta is not None:
+            return self._loss_notification_delta
+        else:
+            status_change = self.statuschange_set.filter(type='status',new__in=['loss','sae']).last()
+            if status_change is not None:
+                self._loss_notification_delta =  (status_change.created.date() - self.loss_date).days
+            else:
+                self._loss_notification_delta = 0
+            return self._loss_notification_delta
+
+    @property
+    def sim_count(self):
+        if not hasattr(self,'_sim_count'):
+            self._sim_count =  self.connection_set.count()
+        return self._sim_count
 
     @property
     def stopped_study_delta(self):
@@ -657,7 +687,6 @@ class Contact(TimeStampedModel):
         if status_change is not None:
             return (status_change.created - self.created).days
         return None
-
 
 class StatusChangeQuerySet(ForUserQuerySet):
 

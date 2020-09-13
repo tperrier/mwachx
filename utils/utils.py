@@ -69,5 +69,5 @@ def sql_count_when(*qargs,**kwargs):
     for q in qargs:
         condition &= q
     return db.Count( db.Case(
-        db.When(condition,then=1),output_field=db.IntegerField()
+        db.When(condition,then=1),output_field=db.IntegerField(),
     ))
