@@ -1,0 +1,116 @@
+{% load tz %}
+<html>
+
+ <head>
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+ <link rel="stylesheet" href="{{static_dir}}styles.css"/>
+ <script src="{{static_dir}}script.js"></script>
+</head>
+
+<body>
+
+<header>
+  <span><a href="../">&#8612; Back</a></span>
+  <h1> <p class="text-center p-3"> {{ p.study_id }} -- {{ p.nickname }} -- {{ p.study_group|title}} -- {{ p.facility|title }}</p></h1>
+  <ul id="menu-bar"></ul>
+</header>
+
+<div id="tab-holder">
+
+  <section id="messages" class="tab visible">
+    {% for msg in p.message_set.all %}
+    <div class="item msg {{msg.sent_by}}">
+      <h4>{{msg.sent_by}} <small class="text-mutted">{{msg.created}}</small></h4>
+      <div class="content original">
+        {{ msg.text }}
+      </div>
+      <div class="content translation visible">
+        {% if msg.translated_text.strip %}
+          {{ msg.translated_text }}
+        {% else %}
+          {{ msg.text }}
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section id="visits" class="tab">
+    {% for visit in p.visit_set.all %}
+    <div class="item visit">
+      <h4>{{visit.visit_type}} <small class="text-mutted">{{visit.status}}</small> </h4>
+          <b>Scheduled: </b>{{ visit.scheduled }}
+          {% if visit.arrived %}
+          <b>Attended: </b>{{ visit.arrived }}
+          {% endif %}
+    </div>
+    {% endfor %}
+  </section>
+
+  <section id="calls" class="tab">
+    {% for call in p.phonecall_set.all %}
+    <div class="item visit">
+      <h4>{% if call.is_outgoing %} Nurse {% else %} Participant {% endif %} -- {{call.outcome}}
+        <small class="text-mutted">{{call.created|date:'M d, Y H:i'}}</small></h4>
+      <div class="content">
+        {{call.comment}}
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section id="notes" class="tab">
+    {% for note in p.note_set.all %}
+    <div class="item visit">
+      <h4>{{note.created}}</h1>
+      <div class="content">
+        {{note.comment}}
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section id="status-updates" class="tab">
+    {% for update in p.statuschange_set.all %}
+      <div class="item update">
+        <h4>{{update.type}} <small class="text-mutted">{{update.created|date:'M d, Y'}}</small></h4>
+        {{update.old}} &#8594; {{update.new}}
+      </div>
+    {% endfor %}
+  </section>
+
+</div>
+
+<div id="participant-info">
+  <ul>
+    <li id="translate-sms" class="d-none" ><h1>Show Original SMS:</h1><input name="toggle-translate" type="checkbox"/></li>
+    <li><h1>Language:</h1>{{p.get_language_display}}</li>
+    <li><h1>Enrolled:</h1><span>{{p.created|date:'M d, Y'}}</li>
+    <li><h1>Status:</h1><span>{{p.get_status_display}}</li>
+    <li><h1>Group:</h1><span>{{p.get_study_group_display}}</li>
+    <li><h1>Site:</h1>{{p.get_facility_display}}</li>
+    <li><h1>Due Date:</h1><span>{{p.due_date}}</li>
+    {% if not p.is_pregnant %}
+    <li><h1>Delivery Date:</h1><span>{{p.delivery_date}}</li>
+    {% endif %}
+    {% if p.loss_date %}
+    <li><h1>Loss Date:</h1><span>{{p.loss_date}}</li>
+    {% endif %}
+    <li><h1>Age:</h1><span>{{p.age_signup}}</li>
+    <li><h1>Condition:</h1>{{p.get_condition_display}}</li>
+    <li><h1>Previous Pregnancies:</h1>{{p.previous_pregnancies}}</li>
+    <li><h1>Second Pregnancy:</h1>{{p.second_preg}}</li>
+    <li><h1>Phone Shared:</h1>{{p.phone_shared}}</li>
+    <li><h1><u>Counts and Stats</u></h1></li>
+    <li><h1>Participant:</h1><span>{{p.msg_incoming}}</li>
+    <li><h1>System:</h1><span>{{p.msg_system}}</li>
+    <li><h1>Nurse:</h1><span>{{p.msg_nurse}}</li>
+    <li><h1>Visits:</h1><span>{{p.visit_set.count}}</li>
+    <li><h1>Calls:</h1><span>{{p.phonecall_set.count}}</li>
+    <li><h1>Notes:</h1><span>{{p.note_set.count}}</li>
+  </ul>
+</div>
+
+</body>
+
+</html>

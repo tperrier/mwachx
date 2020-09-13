@@ -1,0 +1,49 @@
+<html>
+
+ <head>
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+ <link rel="stylesheet" href="{{static_dir}}styles.css"/>
+
+ <script>
+
+function gotoID() {
+  var study_id = document.querySelector("#study-id").value;
+  if (study_id.match(/\d{4}/) == null) {
+    console.log("Invalid ID. Must be four digit number");
+    return;
+  }
+  window.location.assign("participants/"+study_id+".html#messages");
+}
+</script>
+ </head>
+
+<body>
+
+<header>
+  <h1 class="display-3 text-center"> Static mWaChX Files</h1>
+  <div class="text-center">
+    <span class="h4">Study ID: </span>
+    <input onkeydown="if (event.keyCode == 13) gotoID()" id="study-id" class="mx-2" type="number"/>
+    <button onclick="gotoID()">Go</button>
+  </div>
+</header>
+
+<div id="table-holder">
+  <table class="table table-striped table-hover">
+    <tr>
+      <th>ID
+      <th>Nickname
+      <th>Study Group
+      <th>Facility
+      <th>Enrolled
+    {% for participant in participants %}
+      <a href=>
+      <tr onclick="window.location.assign('participants/{{participant.study_id}}.html#messages')">
+        <td>{{participant.study_id}}
+        <td>{{participant.nickname}}
+        <td>{{participant.study_group|title}}
+        <td>{{participant.facility|title}}
+        <td>{{participant.created|date:'M d, Y'}}
+    {% endfor %}
+  </table>
+</div>

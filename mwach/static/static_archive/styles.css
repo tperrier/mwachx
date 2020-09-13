@@ -1,0 +1,135 @@
+body {
+  padding:0px;
+  margin:0px;
+}
+
+header {
+  background-color: grey;
+  height:150px;
+  width:100%;
+  position:fixed;
+  z-index:10;
+}
+
+header > span {
+  float: left;
+  padding: 5px;
+  margin: 5px;
+  border-radius: 5px;
+  background-color: #555;
+}
+
+header > span > a {
+  color: black;
+}
+
+header > span > a:hover {
+  text-decoration: none;
+  color: black;
+  font-weight: bolder;
+}
+
+header > h1 {
+  height:100px;
+  margin:0px;
+}
+
+header > ul {
+  list-style-type: none;
+}
+
+header > ul > li {
+  display:inline-block;
+  margin: 5px 25px;
+  text-transform: capitalize;
+  font-size:16pt;
+  font-weight:bold;
+}
+
+header > ul > li:hover {
+  text-decoration:underline;
+  cursor:pointer;
+}
+
+div#table-holder {
+  position:absolute;
+  top:160px;
+  left:5%;
+  width:90%;
+}
+
+div#tab-holder {
+  position:absolute;
+  top:150px;
+  left:150px;
+  width:800px;
+}
+
+
+#tab-holder>.tab {
+  display:none;
+}
+
+#tab-holder>.tab.visible {
+  display:block;
+}
+
+.item {
+  width:85%;
+  float:left;
+  border: 2px black solid;
+  margin: 5px;
+  padding: 10px;
+  border-radius: 15px;
+}
+
+#messages>label>h3 {
+  display:inline-block;
+}
+
+.msg.system {
+  float:right;
+  background-color: #eee;
+}
+
+.msg.nurse {
+  background-color: #ddd;
+}
+
+.msg.participant {
+  background-color: #aaa;
+}
+
+.msg>.content {
+  display:none;
+}
+
+.msg>.content.visible {
+  display:block;
+}
+
+.item h4 {
+  margin:0px;
+  text-transform:capitalize;
+}
+
+.item>.content {
+  margin-left:25px;
+}
+
+div#participant-info {
+  position:fixed;
+  top:200px;
+  left:1000px;
+  width:400px;
+}
+
+div#participant-info>ul {
+  list-style: none;
+}
+
+div#participant-info>ul>li>h1 {
+  display:inline-block;
+  font-size:14pt;
+  margin-right:20px;
+ }

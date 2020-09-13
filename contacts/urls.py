@@ -23,4 +23,9 @@ urlpatterns = patterns('',
     # crispy-form partial
     url(r'^crispy-forms/participant/new/?$','contacts.views.crispy.participant_add'),
     url(r'^crispy-forms/participant/update/?$','contacts.views.crispy.participant_update'),
+
+    # static archive site
+    url(r'^static_archive/?$', 'contacts.views.static_archive_index'),
+    url(r'^static_archive/participants/(?P<study_id>\d{4})(.html)?$', 'contacts.views.static_archive_participant'),
+
 )

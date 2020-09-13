@@ -22,5 +22,6 @@ mwach/static/components.js
 
 ignore/
 translations/
+static_archive/
 local_settings.py
 **/commands/tests.py

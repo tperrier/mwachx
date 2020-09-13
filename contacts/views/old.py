@@ -52,3 +52,21 @@ def get_status_by_group():
     statuses.append(totals)
 
     return statuses
+
+#############
+# Static Archive Site
+#############
+
+def static_archive_index(request):
+    context = {
+        'participants': cont.Contact.objects.all(),
+        'static_dir': '/static/static_archive/',
+    }
+    return render(request, 'static_archive/index.html', context)
+
+def static_archive_participant(request, study_id):
+    context = {
+        'p' : cont.Contact.objects.annotate_messages().get(study_id=study_id),
+        'static_dir': '/static/static_archive/',
+    }
+    return render(request, 'static_archive/participant.html', context)
